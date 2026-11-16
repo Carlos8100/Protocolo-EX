@@ -3,22 +3,21 @@ import {
   Flame, Trophy, Dumbbell, Moon, Camera, Sparkles, Shield,
   CheckCircle2, XCircle, CloudRain, Zap, Lock, EyeOff,
   Upload, Scan, Cpu, FileText, AlertTriangle,
-  ChevronRight, Sword, Clock, Save, TrendingUp
+  ChevronRight, Sword, Clock, Save, TrendingUp, Crown, Check
 } from 'lucide-react';
 
 // ============================================================================
-// ESTILOS INTEGRADOS (HOLOGRAPHIC SYSTEM + DARK SOULS AESTHETIC)
+// ESTILOS INTEGRADOS (HOLOGRAPHIC SYSTEM + CODE VEIN / SOULS ANIME AESTHETIC)
 // ============================================================================
 const SYSTEM_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
   :root {
     --bg-void: #05070d;
-    --bg-panel: rgba(11, 16, 30, 0.88);
+    --bg-panel: rgba(11, 16, 30, 0.9);
     --cyan-glow: #00f0ff;
     --gold-rank: #d4af37;
-    --ember-souls: #ea580c;
-    --crimson-alert: #e11d48;
+    --crimson-vein: #be123c;
     --emerald-ok: #10b981;
     --text-main: #e2e8f0;
     --text-dim: #94a3b8;
@@ -33,8 +32,8 @@ const SYSTEM_CSS = `
   body {
     background-color: var(--bg-void);
     background-image:
-      radial-gradient(circle at 18% 12%, rgba(212, 175, 55, 0.08) 0%, transparent 42%),
-      radial-gradient(circle at 82% 85%, rgba(0, 240, 255, 0.09) 0%, transparent 45%),
+      radial-gradient(circle at 18% 12%, rgba(190, 18, 60, 0.1) 0%, transparent 42%),
+      radial-gradient(circle at 82% 85%, rgba(212, 175, 55, 0.08) 0%, transparent 45%),
       linear-gradient(180deg, #04060b 0%, #090e1c 100%);
     color: var(--text-main);
     font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -75,7 +74,7 @@ const SYSTEM_CSS = `
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold-rank), var(--cyan-glow), transparent);
+    background: linear-gradient(90deg, transparent, var(--crimson-vein), var(--gold-rank), transparent);
   }
 
   .sys-btn {
@@ -250,28 +249,26 @@ const SYSTEM_CSS = `
 `;
 
 // ============================================================================
-// DATOS DEL SISTEMA: 15 RANGOS x 6 DIVISIONES, ESTÁNDARES CIENTÍFICOS F -> EX
+// DATOS DEL SISTEMA: RANGOS, ESTÁNDARES CIENTÍFICOS Y COSMÉTICOS DESBLOQUEABLES
 // ============================================================================
 const RANKS = [
-  { name: 'Tierra', tier: 0, color: '#92400e', steelDark: '#1c1917', steelLight: '#57534e', cloakColor: '#292524', weaponTier: 1 },
-  { name: 'Madera', tier: 1, color: '#4d7c0f', steelDark: '#1a2e05', steelLight: '#4d7c0f', cloakColor: '#1f2937', weaponTier: 1 },
-  { name: 'Piedra', tier: 2, color: '#64748b', steelDark: '#1e293b', steelLight: '#64748b', cloakColor: '#0f172a', weaponTier: 1 },
-  { name: 'Carbón', tier: 3, color: '#475569', steelDark: '#090d16', steelLight: '#334155', cloakColor: '#111827', weaponTier: 2 },
-  { name: 'Hierro', tier: 4, color: '#9ca3af', steelDark: '#1f2937', steelLight: '#9ca3af', cloakColor: '#1e1b18', weaponTier: 2 },
-  { name: 'Bronce', tier: 5, color: '#c2410c', steelDark: '#431407', steelLight: '#ea580c', cloakColor: '#271713', weaponTier: 2 },
-  { name: 'Plata', tier: 6, color: '#cbd5e1', steelDark: '#334155', steelLight: '#e2e8f0', cloakColor: '#1e293b', weaponTier: 3 },
-  { name: 'Oro', tier: 7, color: '#d4af37', steelDark: '#422006', steelLight: '#facc15', cloakColor: '#2c1414', weaponTier: 3 },
-  { name: 'Platino', tier: 8, color: '#2dd4bf', steelDark: '#115e59', steelLight: '#5eead4', cloakColor: '#0f292e', weaponTier: 3 },
-  { name: 'Esmeralda', tier: 9, color: '#10b981', steelDark: '#064e3b', steelLight: '#34d399', cloakColor: '#07241c', weaponTier: 4 },
-  { name: 'Diamante', tier: 10, color: '#38bdf8', steelDark: '#0c4a6e', steelLight: '#7dd3fc', cloakColor: '#0a192f', weaponTier: 4 },
-  { name: 'Especialista', tier: 11, color: '#a855f7', steelDark: '#3b0764', steelLight: '#c084fc', cloakColor: '#1e0b36', weaponTier: 4 },
-  { name: 'Maestro', tier: 12, color: '#e879f9', steelDark: '#4a044e', steelLight: '#f0abfc', cloakColor: '#29072b', weaponTier: 5 },
-  { name: 'Jefe Maestro', tier: 13, color: '#f43f5e', steelDark: '#4c0519', steelLight: '#fb7185', cloakColor: '#2b0610', weaponTier: 5 },
-  { name: 'Challenger', tier: 14, color: '#fbbf24', steelDark: '#171717', steelLight: '#fde047', cloakColor: '#3b0712', weaponTier: 5 },
+  { name: 'Tierra', tier: 0, color: '#92400e', coatDark: '#1c1917', coatTrim: '#78350f', weaponTier: 1 },
+  { name: 'Madera', tier: 1, color: '#4d7c0f', coatDark: '#182214', coatTrim: '#4d7c0f', weaponTier: 1 },
+  { name: 'Piedra', tier: 2, color: '#64748b', coatDark: '#1e293b', coatTrim: '#64748b', weaponTier: 1 },
+  { name: 'Carbón', tier: 3, color: '#475569', coatDark: '#0f131c', coatTrim: '#991b1b', weaponTier: 2 },
+  { name: 'Hierro', tier: 4, color: '#9ca3af', coatDark: '#18181b', coatTrim: '#9ca3af', weaponTier: 2 },
+  { name: 'Bronce', tier: 5, color: '#c2410c', coatDark: '#231411', coatTrim: '#ea580c', weaponTier: 2 },
+  { name: 'Plata', tier: 6, color: '#cbd5e1', coatDark: '#1e293b', coatTrim: '#e2e8f0', weaponTier: 3 },
+  { name: 'Oro', tier: 7, color: '#d4af37', coatDark: '#171512', coatTrim: '#d4af37', weaponTier: 3 },
+  { name: 'Platino', tier: 8, color: '#2dd4bf', coatDark: '#0f2226', coatTrim: '#2dd4bf', weaponTier: 3 },
+  { name: 'Esmeralda', tier: 9, color: '#10b981', coatDark: '#091e18', coatTrim: '#10b981', weaponTier: 4 },
+  { name: 'Diamante', tier: 10, color: '#38bdf8', coatDark: '#0b192c', coatTrim: '#38bdf8', weaponTier: 4 },
+  { name: 'Especialista', tier: 11, color: '#a855f7', coatDark: '#1b0d2e', coatTrim: '#a855f7', weaponTier: 4 },
+  { name: 'Maestro', tier: 12, color: '#e879f9', coatDark: '#230b26', coatTrim: '#e879f9', weaponTier: 5 },
+  { name: 'Jefe Maestro', tier: 13, color: '#f43f5e', coatDark: '#260912', coatTrim: '#f43f5e', weaponTier: 5 },
+  { name: 'Challenger', tier: 14, color: '#fbbf24', coatDark: '#121018', coatTrim: '#fbbf24', weaponTier: 5 },
 ];
 
-// Estándares científicos de Fuerza Relativa (Índice Compuesto 1RM / Peso Corporal)
-// Basado en coeficientes de fuerza relativa multiarticular (Empuje + Sentadilla + Bisagra/Tracción)
 const PHYSICAL_STANDARDS = [
   { grade: 'F', minComposite: 0.0, benchReq: 0.50, squatReq: 0.65, deadliftReq: 0.80, desc: 'Iniciado / Adaptación neural inicial' },
   { grade: 'E', minComposite: 0.70, benchReq: 0.65, squatReq: 0.85, deadliftReq: 1.00, desc: 'Novato consolidado' },
@@ -285,17 +282,27 @@ const PHYSICAL_STANDARDS = [
   { grade: 'EX', minComposite: 2.50, benchReq: 2.15, squatReq: 2.75, deadliftReq: 3.10, desc: 'Cúspide humana absoluta' },
 ];
 
+// Cosméticos básicos ganables cumpliendo misiones diarias
+const COSMETICS_CATALOG = [
+  { id: 'scar', name: 'Cicatriz de Combate', slot: 'faceMark', reqMissions: 1, desc: 'Marca de veterano sobre el pómulo derecho.' },
+  { id: 'blindfold', name: 'Venda Táctica Oscura', slot: 'eyeWear', reqMissions: 2, desc: 'Venda estilizada estilo Revenant.' },
+  { id: 'mask', name: 'Máscara Purificadora', slot: 'mouthWear', reqMissions: 3, desc: 'Respirador metálico gótico de caza.' },
+  { id: 'armband', name: 'Brazalete Carmesí', slot: 'armGear', reqMissions: 4, desc: 'Banda de sangre sellada en brazo izquierdo.' },
+  { id: 'cloak', name: 'Capa Corta de Cazador', slot: 'backGear', reqMissions: 5, desc: 'Manto asimétrico oscuro para misiones nocturnas.' },
+  { id: 'silverHair', name: 'Tinte Ceniza Plateado', slot: 'hairTint', reqMissions: 7, desc: 'Cabello plateado de rango superior.' },
+];
+
 const RACES_POOL = [
-  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai Sombrío: +15% LP al superar misiones retomadas', hairStyle: 'spiky', hairColor: '#0f172a', skin: '#d8b49c', horns: false, ears: 'human', halo: false },
-  { id: 'abyss_demon', name: 'Caballero Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairStyle: 'wild', hairColor: '#881337', skin: '#cbb0a0', horns: true, ears: 'pointed', halo: false },
-  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairStyle: 'twin', hairColor: '#e2e8f0', skin: '#e8cbb8', horns: false, ears: 'human', halo: true },
-  { id: 'fenrir_kin', name: 'Licántropo / Bestia de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairStyle: 'medium', hairColor: '#44403c', skin: '#d6b49c', horns: false, ears: 'beast', halo: false },
-  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairStyle: 'long', hairColor: '#cbd5e1', skin: '#dfc5b4', horns: false, ears: 'pointed', halo: true },
-  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairStyle: 'messy', hairColor: '#090d16', skin: '#cfa992', horns: false, ears: 'human', halo: false },
+  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai Sombrío: +15% LP al superar misiones retomadas', hairColor: '#27201c', hairHighlight: '#4a3f38', skin: '#e8c3a8', eyeColor: '#be123c', horns: false, ears: 'human', halo: false },
+  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#3b0d16', hairHighlight: '#881337', skin: '#dfbca6', eyeColor: '#f43f5e', horns: true, ears: 'pointed', halo: false },
+  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#cbd5e1', hairHighlight: '#f8fafc', skin: '#f0d2be', eyeColor: '#38bdf8', horns: false, ears: 'human', halo: true },
+  { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#44362b', hairHighlight: '#78604d', skin: '#e4bfa4', eyeColor: '#eab308', horns: false, ears: 'beast', halo: false },
+  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#94a3b8', hairHighlight: '#e2e8f0', skin: '#ebd0be', eyeColor: '#00f0ff', horns: false, ears: 'pointed', halo: true },
+  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#18181b', hairHighlight: '#3f3f46', skin: '#e5be9f', eyeColor: '#d4af37', horns: false, ears: 'human', halo: false },
 ];
 
 const CLASSES_POOL = [
-  { id: 'martial_artist', name: 'Pugilista de Guantelete Oscuro', weapon: 'gauntlets', desc: 'Combate cuerpo a cuerpo brutal con cota y guanteletes.' },
+  { id: 'martial_artist', name: 'Pugilista de Guantelete Oscuro', weapon: 'gauntlets', desc: 'Combate cuerpo a cuerpo con guanteletes reforzados.' },
   { id: 'sword_saint', name: 'Espadachín de la Ceniza', weapon: 'sword', desc: 'Hoja recta de acero templado y postura impecable.' },
   { id: 'dragon_lancer', name: 'Lancero del Abismo', weapon: 'spear', desc: 'Lanza larga de caballería y potencia de tren inferior.' },
   { id: 'staff_monk', name: 'Peregrino del Báculo', weapon: 'staff', desc: 'Control absoluto del centro de gravedad y resistencia.' },
@@ -315,7 +322,7 @@ const MOTIVATIONAL_QUOTES = [
   '«Levántate de las cenizas, Cazador. Cada kilo vencido forja tu armadura.»',
   '«La fuerza relativa no miente: el acero responde únicamente a tu disciplina.»',
   '«Quien domina su cuerpo en la oscuridad merece portar el rango Challenger.»',
-  '«No hay atajos en el Sistema: solo repeticiones, descanso y voluntad.»',
+  '«Cumple tus misiones diarias para reclamar nuevo equipo de caza.»',
 ];
 
 function getRankFromLP(lp) {
@@ -340,37 +347,38 @@ function calcEpley1RM(weight, reps) {
 }
 
 // ============================================================================
-// AVATAR ANIME 2D ESTILIZADO ESTILO DARK SOULS (SIN AURA DE KI)
+// AVATAR ANIME 2.5D ESTILO CODE VEIN (CEL-SHADING DETALLADO + COSMÉTICOS)
 // ============================================================================
-function SoulsAnimeAvatar({ hunterClass, rankInfo, physicalGrade }) {
+function CodeVeinAnimeAvatar({ hunterClass, rankInfo, physicalGrade, equipped }) {
   const gradeIdx = PHYSICAL_STANDARDS.findIndex((s) => s.grade === physicalGrade);
   const safeGradeIdx = gradeIdx >= 0 ? gradeIdx : 0;
   const tier = rankInfo.tier;
 
-  // Proporciones estilizadas (hombros atléticos, cintura marcada, piernas largas)
-  const shoulderW = 31 + safeGradeIdx * 1.15 + tier * 0.25;
-  const chestW = 22 + safeGradeIdx * 0.85;
-  const waistW = 13.5 + safeGradeIdx * 0.3;
-  const armThick = 6.8 + safeGradeIdx * 0.45;
-  const legThick = 8.5 + safeGradeIdx * 0.45;
+  // Proporciones estilizadas tipo Code Vein (cuello definido, chaqueta entallada, hombros atléticos)
+  const shoulderOffset = 38 + safeGradeIdx * 1.1 + tier * 0.25;
+  const waistOffset = 22 + safeGradeIdx * 0.4;
+  const armWidth = 11 + safeGradeIdx * 0.45;
 
-  const race = hunterClass?.race || RACES_POOL[5];
+  const race = hunterClass?.race || RACES_POOL[0];
   const cls = hunterClass?.cls || CLASSES_POOL[0];
   const weaponTier = rankInfo.weaponTier || 1;
+
+  const hairMain = equipped.hairTint ? '#cbd5e1' : race.hairColor;
+  const hairLight = equipped.hairTint ? '#f8fafc' : race.hairHighlight;
 
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      background: 'radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.12) 0%, rgba(4, 6, 12, 0.98) 76%)',
+      background: 'radial-gradient(circle at 50% 35%, rgba(190, 18, 60, 0.14) 0%, rgba(10, 12, 18, 0.98) 78%)',
       border: `1px solid ${rankInfo.color}`,
       borderRadius: '14px',
       padding: '16px 12px',
       position: 'relative',
-      boxShadow: 'inset 0 0 30px rgba(0,0,0,0.85)'
+      boxShadow: 'inset 0 0 35px rgba(0,0,0,0.9)'
     }}>
-      {/* Insignias Superiores */}
+      {/* Insignias superiores */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '6px' }}>
         <span className="sys-badge" style={{ background: 'rgba(212, 175, 55, 0.14)', color: '#d4af37', border: '1px solid rgba(212, 175, 55, 0.45)' }}>
           {race.name}
@@ -380,199 +388,284 @@ function SoulsAnimeAvatar({ hunterClass, rankInfo, physicalGrade }) {
         </span>
       </div>
 
-      {/* ILUSTRACIÓN SVG ESTILIZADA ESTILO DARK FANTASY / SOULS (SIN AURA DE KI) */}
-      <svg viewBox="0 0 240 335" width="220" height="305" style={{ overflow: 'visible' }}>
+      {/* ILUSTRACIÓN DE MEDIO CUERPO / TRES CUARTOS ESTILO CODE VEIN */}
+      <svg viewBox="0 0 260 320" width="235" height="290" style={{ overflow: 'visible' }}>
         <defs>
-          <linearGradient id="soulsSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor={rankInfo.steelLight} />
-            <stop offset="50%" stopColor={rankInfo.steelDark} />
-            <stop offset="100%" stopColor="#05070d" />
-          </linearGradient>
-          <linearGradient id="soulsCloak" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={rankInfo.cloakColor} />
-            <stop offset="100%" stopColor="#05070d" />
-          </linearGradient>
-          <linearGradient id="soulsSkin" x1="0%" y1="0%" x2="100%" y2="0%">
+          {/* Sombreado suave de piel tipo anime 3D */}
+          <linearGradient id="cvSkin" x1="0%" y1="0%" x2="100%" y2="15%">
             <stop offset="0%" stopColor={race.skin} />
-            <stop offset="70%" stopColor={race.skin} />
-            <stop offset="100%" stopColor="#8c6d5b" />
+            <stop offset="68%" stopColor={race.skin} />
+            <stop offset="100%" stopColor="#a87c64" />
           </linearGradient>
-          <linearGradient id="darkBlade" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="cvSkinShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#9c7058" />
+            <stop offset="100%" stopColor={race.skin} />
+          </linearGradient>
+          {/* Chaqueta de cuero táctico estilo Revenant */}
+          <linearGradient id="cvJacket" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#27272a" />
+            <stop offset="45%" stopColor={rankInfo.coatDark} />
+            <stop offset="100%" stopColor="#09090b" />
+          </linearGradient>
+          <linearGradient id="cvJacketPanel" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3f3f46" />
+            <stop offset="100%" stopColor="#18181b" />
+          </linearGradient>
+          {/* Cabello en capas */}
+          <linearGradient id="cvHair" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={hairLight} />
+            <stop offset="55%" stopColor={hairMain} />
+            <stop offset="100%" stopColor="#09090b" />
+          </linearGradient>
+          {/* Acero de arma */}
+          <linearGradient id="cvBlade" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#f8fafc" />
-            <stop offset="45%" stopColor="#94a3b8" />
+            <stop offset="50%" stopColor="#94a3b8" />
             <stop offset="100%" stopColor="#1e293b" />
           </linearGradient>
         </defs>
 
-        {/* Sello Rúnico en el Suelo */}
-        <ellipse cx="120" cy="316" rx="64" ry="9" fill="rgba(0,0,0,0.7)" stroke={rankInfo.color} strokeWidth="1.2" />
-        <ellipse cx="120" cy="316" rx="44" ry="5" fill="none" stroke="rgba(212,175,55,0.35)" strokeDasharray="3 4" />
-
-        {/* CAPA RASGADA ESTILO SOULS (APARECE DESDE RANGO PIEDRA / TIER 2) */}
-        {tier >= 2 && (
+        {/* CAPA CORTA DE CAZADOR (COSMÉTICO DESBLOQUEABLE) */}
+        {equipped.backGear && (
           <path
-            d={`M ${120 - shoulderW + 4} 96 L ${120 - shoulderW - 18} 278 L ${120 - 15} 268 L 120 282 L ${120 + 18} 266 L ${120 + shoulderW + 18} 278 L ${120 + shoulderW - 4} 96 Z`}
-            fill="url(#soulsCloak)"
-            stroke="#05070d"
-            strokeWidth="1.5"
-            opacity="0.92"
+            d={`M ${130 - shoulderOffset - 4} 118 L ${130 - shoulderOffset - 22} 285 L 130 272 L ${130 + shoulderOffset + 22} 285 L ${130 + shoulderOffset + 4} 118 Z`}
+            fill="#141419"
+            stroke="#be123c"
+            strokeWidth="1.2"
           />
         )}
 
-        {/* Corona / Halo Espectral Tenue */}
-        {race.halo && (
-          <ellipse cx="120" cy="18" rx="20" ry="4" fill="none" stroke="#d4af37" strokeWidth="1.8" opacity="0.85" />
-        )}
-
-        {/* ARMA DE ACERO TEMPLADO (EVOLUCIONA CON EL RANGO) */}
+        {/* ARMA DE CLASE EN LA ESPALDA / COSTADO */}
         {cls.weapon === 'sword' && (
-          <g transform="translate(172, 86) rotate(12)">
-            <rect x="-2.5" y="102" width="5" height="28" rx="1.5" fill="#1c1917" stroke="#78716c" />
-            <circle cx="0" cy="132" r="4" fill={rankInfo.color} />
-            <path d="M -16 98 L 16 98 L 12 103 L -12 103 Z" fill={rankInfo.color} />
-            <polygon points={`0,${12 - weaponTier * 6} -${4 + weaponTier * 0.8},98 ${4 + weaponTier * 0.8},98`} fill="url(#darkBlade)" stroke="#090d16" strokeWidth="1.2" />
+          <g transform="translate(194, 88) rotate(14)">
+            <rect x="-3" y="108" width="6" height="30" rx="2" fill="#18181b" stroke="#a1a1aa" />
+            <path d="M -16 104 L 16 104 L 12 109 L -12 109 Z" fill={rankInfo.color} />
+            <polygon points={`0,${12 - weaponTier * 6} -${4.5 + weaponTier * 0.7},104 ${4.5 + weaponTier * 0.7},104`} fill="url(#cvBlade)" stroke="#09090b" strokeWidth="1.2" />
           </g>
         )}
-
         {cls.weapon === 'greatsword' && (
-          <g transform="translate(177, 74) rotate(15)">
-            <rect x="-3.5" y="116" width="7" height="34" rx="2" fill="#090d16" stroke={rankInfo.color} />
-            <polygon points="-22,110 22,110 15,118 -15,118" fill="url(#soulsSteel)" stroke={rankInfo.color} />
-            <polygon points={`0,${2 - weaponTier * 5} -${10 + weaponTier * 1.4},110 ${10 + weaponTier * 1.4},110`} fill="url(#darkBlade)" stroke="#05070d" strokeWidth="1.5" />
+          <g transform="translate(198, 76) rotate(16)">
+            <rect x="-4" y="120" width="8" height="34" rx="2" fill="#09090b" stroke={rankInfo.color} />
+            <polygon points="-22,114 22,114 15,122 -15,122" fill="#27272a" stroke={rankInfo.color} />
+            <polygon points={`0,${4 - weaponTier * 5} -${11 + weaponTier * 1.3},114 ${11 + weaponTier * 1.3},114`} fill="url(#cvBlade)" stroke="#09090b" strokeWidth="1.4" />
           </g>
         )}
-
         {cls.weapon === 'spear' && (
-          <g transform="translate(175, 32) rotate(7)">
-            <rect x="-2" y="45" width="4" height="238" fill="#292524" stroke="#05070d" />
-            <polygon points={`0,${8 - weaponTier * 4} -${6 + weaponTier},52 ${6 + weaponTier},52`} fill="url(#darkBlade)" stroke="#05070d" strokeWidth="1.2" />
+          <g transform="translate(196, 36) rotate(8)">
+            <rect x="-2.5" y="45" width="5" height="240" fill="#27272a" stroke="#09090b" />
+            <polygon points={`0,${8 - weaponTier * 4} -${7 + weaponTier},54 ${7 + weaponTier},54`} fill="url(#cvBlade)" stroke="#09090b" strokeWidth="1.2" />
           </g>
         )}
-
         {cls.weapon === 'staff' && (
-          <g transform="translate(174, 42) rotate(6)">
-            <rect x="-3" y="26" width="6" height="250" rx="2" fill="#271713" stroke="#78350f" strokeWidth="1.2" />
-            <path d="M -8 26 Q 0 8 8 26 Q 0 34 -8 26 Z" fill="none" stroke={rankInfo.color} strokeWidth="2.2" />
-            <circle cx="0" cy="22" r={3.5 + weaponTier * 0.7} fill={rankInfo.color} />
+          <g transform="translate(194, 44) rotate(7)">
+            <rect x="-3" y="28" width="6" height="250" rx="2" fill="#291d18" stroke="#d4af37" strokeWidth="1.2" />
+            <circle cx="0" cy="24" r={4.5 + weaponTier * 0.8} fill={rankInfo.color} stroke="#fff" strokeWidth="1" />
           </g>
         )}
 
-        {/* PIERNAS ESTILIZADAS Y GREBAS DE CABALLERO */}
+        {/* CABELLO TRASERO (VOLUMEN EN CAPAS) */}
         <path
-          d={`M ${120 - waistW * 0.72} 174 L ${108 - legThick * 0.45} 242 L ${104 - legThick * 0.35} 308 L ${107 + legThick * 0.55} 308 L ${118} 242 L ${120} 186 Z`}
-          fill="#0f172a"
-          stroke="#04060b"
-          strokeWidth="1.5"
-        />
-        <path
-          d={`M ${120 + waistW * 0.72} 174 L ${132 + legThick * 0.45} 242 L ${136 + legThick * 0.35} 308 L ${133 - legThick * 0.55} 308 L ${122} 242 L ${120} 186 Z`}
-          fill="#0f172a"
-          stroke="#04060b"
-          strokeWidth="1.5"
-        />
-        {/* Grebas Metálicas */}
-        <path d={`M ${103 - legThick * 0.35} 252 L ${107 + legThick * 0.55} 252 L ${108 + legThick * 0.55} 312 L ${99 - legThick * 0.35} 312 Z`} fill="url(#soulsSteel)" stroke="#04060b" strokeWidth="1.4" />
-        <path d={`M ${137 + legThick * 0.35} 252 L ${133 - legThick * 0.55} 252 L ${132 - legThick * 0.55} 312 L ${141 + legThick * 0.35} 312 Z`} fill="url(#soulsSteel)" stroke="#04060b" strokeWidth="1.4" />
-
-        {/* FALDÓN DE COTA DE MALLA */}
-        <polygon
-          points={`${120 - waistW - 3},172 ${120 + waistW + 3},172 ${120 + waistW + 8},208 ${120},215 ${120 - waistW - 8},208`}
-          fill="url(#soulsSteel)"
-          stroke="#04060b"
+          d="M 92 66 C 84 40, 102 18, 130 18 C 158 18, 176 40, 168 66 C 173 78, 168 94, 159 102 L 101 102 C 92 94, 87 78, 92 66 Z"
+          fill="url(#cvHair)"
+          stroke="#09090b"
           strokeWidth="1.4"
         />
 
-        {/* TORSO ESTILIZADO (CORAZA OSCURA DESDE RANGO CARBÓN / TIER 3) */}
-        <path
-          d={`M ${120 - shoulderW} 94 Q 120 88 ${120 + shoulderW} 94 L ${120 + chestW} 138 L ${120 + waistW} 174 L ${120 - waistW} 174 L ${120 - chestW} 138 Z`}
-          fill={tier >= 3 ? 'url(#soulsSteel)' : 'url(#soulsSkin)'}
-          stroke="#04060b"
-          strokeWidth="1.7"
-        />
-        {/* Grabado pectoral estilo armadura gótica */}
-        <path
-          d={`M ${120 - chestW * 0.8} 106 L 120 128 L ${120 + chestW * 0.8} 106`}
-          fill="none"
-          stroke={tier >= 3 ? rankInfo.color : '#8c6d5b'}
-          strokeWidth="1.6"
-        />
-        {/* Cinturón con Hebilla Rúnica */}
-        <rect x={120 - waistW - 1} y="166" width={waistW * 2 + 2} height="9" rx="2" fill="#1c1917" stroke={rankInfo.color} strokeWidth="1.2" />
-
-        {/* HOMBRERAS ASIMÉTRICAS ESTILO SOULS (DESDE RANGO HIERRO / TIER 4) */}
-        {tier >= 4 && (
-          <>
-            <path d={`M ${120 - shoulderW - 7} 92 Q ${120 - shoulderW + 5} 78 ${120 - shoulderW + 19} 96 L ${120 - shoulderW - 3} 115 Z`} fill="url(#soulsSteel)" stroke={rankInfo.color} strokeWidth="1.4" />
-            <path d={`M ${120 + shoulderW + 5} 94 Q ${120 + shoulderW - 5} 82 ${120 + shoulderW - 16} 98 L ${120 + shoulderW + 2} 112 Z`} fill="url(#soulsSteel)" stroke={rankInfo.color} strokeWidth="1.2" />
-          </>
+        {/* Halo Celestial si corresponde */}
+        {race.halo && (
+          <ellipse cx="130" cy="14" rx="22" ry="4.5" fill="none" stroke="#d4af37" strokeWidth="2" />
         )}
 
-        {/* BRAZOS ESTILIZADOS */}
+        {/* CUELLO Y CLAVÍCULAS ANATÓMICAS */}
         <path
-          d={`M ${120 - shoulderW + 2} 96 Q ${120 - shoulderW - armThick} 126 ${120 - shoulderW - armThick * 0.4} 152 L ${120 - shoulderW + 3} 182 L ${120 - shoulderW + 11} 180 L ${120 - shoulderW + 9} 148 Q ${120 - shoulderW + 10} 124 ${120 - shoulderW + 11} 104 Z`}
-          fill="url(#soulsSkin)"
-          stroke="#04060b"
+          d="M 119 92 L 119 114 L 100 124 L 160 124 L 141 114 L 141 92 Z"
+          fill="url(#cvSkin)"
+          stroke="#09090b"
+          strokeWidth="1.3"
+        />
+        {/* Sombra bajo el mentón */}
+        <path d="M 119 94 Q 130 103 141 94 L 141 102 Q 130 108 119 102 Z" fill="url(#cvSkinShadow)" opacity="0.65" />
+        {/* Líneas de clavícula y esternón */}
+        <path d="M 106 123 Q 122 127 128 124 M 154 123 Q 138 127 132 124" fill="none" stroke="#9c7058" strokeWidth="1.3" strokeLinecap="round" />
+        <path d="M 125 130 Q 130 138 135 130" fill="none" stroke="#9c7058" strokeWidth="1.2" />
+
+        {/* TORSO Y CHAQUETA TÁCTICA DE CUELLO ALTO (ESTILO CODE VEIN) */}
+        {/* Pecho descubierto en V estilizada */}
+        <path
+          d={`M ${130 - shoulderOffset} 122 L ${130 + shoulderOffset} 122 L ${130 + waistOffset + 4} 235 L ${130 - waistOffset - 4} 235 Z`}
+          fill="url(#cvSkin)"
+        />
+        {/* Definición pectoral según grado físico */}
+        <path
+          d="M 112 146 Q 124 153 129 147 M 148 146 Q 136 153 131 147"
+          fill="none"
+          stroke="#9c7058"
           strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+
+        {/* Chaqueta Izquierda y Derecha con paneles acanalados */}
+        <path
+          d={`M ${130 - shoulderOffset} 120 L 112 116 L 128 164 L 128 242 L ${130 - waistOffset - 5} 242 L ${130 - shoulderOffset - 6} 145 Z`}
+          fill="url(#cvJacket)"
+          stroke="#09090b"
+          strokeWidth="1.5"
         />
         <path
-          d={`M ${120 + shoulderW - 2} 96 Q ${120 + shoulderW + armThick} 126 ${120 + shoulderW + armThick * 0.4} 152 L ${120 + shoulderW - 3} 182 L ${120 + shoulderW - 11} 180 L ${120 + shoulderW - 9} 148 Q ${120 + shoulderW - 10} 124 ${120 + shoulderW - 11} 104 Z`}
-          fill="url(#soulsSkin)"
-          stroke="#04060b"
-          strokeWidth="1.4"
+          d={`M ${130 + shoulderOffset} 120 L 148 116 L 132 164 L 132 242 L ${130 + waistOffset + 5} 242 L ${130 + shoulderOffset + 6} 145 Z`}
+          fill="url(#cvJacket)"
+          stroke="#09090b"
+          strokeWidth="1.5"
         />
 
-        {/* Brazales de Acero */}
-        <rect x={120 - shoulderW - 1} y="158" width="12" height="25" rx="2" fill={cls.weapon === 'gauntlets' ? rankInfo.color : 'url(#soulsSteel)'} stroke="#04060b" strokeWidth="1.3" />
-        <rect x={120 + shoulderW - 11} y="158" width="12" height="25" rx="2" fill={cls.weapon === 'gauntlets' ? rankInfo.color : 'url(#soulsSteel)'} stroke="#04060b" strokeWidth="1.3" />
+        {/* Paneles laterales texturizados de la chaqueta */}
+        <path
+          d={`M ${130 - shoulderOffset + 4} 135 L ${130 - waistOffset - 2} 145 L ${130 - waistOffset - 4} 238 L ${130 - shoulderOffset + 2} 238 Z`}
+          fill="url(#cvJacketPanel)"
+          opacity="0.7"
+        />
+        <path
+          d={`M ${130 + shoulderOffset - 4} 135 L ${130 + waistOffset + 2} 145 L ${130 + waistOffset + 4} 238 L ${130 + shoulderOffset - 2} 238 Z`}
+          fill="url(#cvJacketPanel)"
+          opacity="0.7"
+        />
 
-        {/* CUELLO Y CABEZA ANIME ESTILIZADA */}
-        <rect x="113" y="75" width="14" height="16" rx="3" fill="url(#soulsSkin)" stroke="#04060b" strokeWidth="1.3" />
+        {/* Cuello Alto Levantado con Interior Carmesí / Dorado (Icónico de Code Vein) */}
+        <path
+          d="M 111 116 L 103 98 L 118 106 L 122 128 Z"
+          fill={rankInfo.coatTrim}
+          stroke="#09090b"
+          strokeWidth="1.3"
+        />
+        <path
+          d="M 149 116 L 157 98 L 142 106 L 138 128 Z"
+          fill={rankInfo.coatTrim}
+          stroke="#09090b"
+          strokeWidth="1.3"
+        />
+        {/* Cremallera metálica central */}
+        <line x1="130" y1="164" x2="130" y2="242" stroke="#a1a1aa" strokeWidth="2" />
 
+        {/* Correas tácticas y hebillas en el torso */}
+        <rect x={130 - waistOffset - 5} y="218" width={(waistOffset + 5) * 2} height="10" rx="2" fill="#18181b" stroke={rankInfo.color} strokeWidth="1.3" />
+        <rect x="125" y="216" width="10" height="14" rx="2" fill={rankInfo.color} />
+
+        {/* MANGAS Y BRAZOS ESTILIZADOS */}
+        <path
+          d={`M ${130 - shoulderOffset} 121 Q ${130 - shoulderOffset - armWidth} 165 ${130 - shoulderOffset - armWidth * 0.6} 235 L ${130 - shoulderOffset + 6} 235 L ${130 - shoulderOffset + 8} 165 Z`}
+          fill="url(#cvJacket)"
+          stroke="#09090b"
+          strokeWidth="1.5"
+        />
+        <path
+          d={`M ${130 + shoulderOffset} 121 Q ${130 + shoulderOffset + armWidth} 165 ${130 + shoulderOffset + armWidth * 0.6} 235 L ${130 + shoulderOffset - 6} 235 L ${130 + shoulderOffset - 8} 165 Z`}
+          fill="url(#cvJacket)"
+          stroke="#09090b"
+          strokeWidth="1.5"
+        />
+
+        {/* COSMÉTICO: BRAZALETE CARMESÍ DE REVENANT */}
+        {equipped.armGear && (
+          <rect
+            x={130 + shoulderOffset - 3}
+            y="162"
+            width="15"
+            height="14"
+            rx="2"
+            fill="#be123c"
+            stroke="#fbbf24"
+            strokeWidth="1.2"
+          />
+        )}
+
+        {/* PANTALÓN TÁCTICO Y CORREA DE PIERNA */}
+        <path
+          d={`M ${130 - waistOffset - 4} 242 L ${130 + waistOffset + 4} 242 L ${130 + waistOffset + 7} 308 L 132 308 L 130 266 L 128 308 L ${130 - waistOffset - 7} 308 Z`}
+          fill="#11131a"
+          stroke="#09090b"
+          strokeWidth="1.5"
+        />
+
+        {/* ROSTRO ANIME ESTILIZADO (CURVAS SUAVES Y MENTÓN FINO) */}
         {race.ears === 'beast' && (
           <>
-            <polygon points="99,45 93,23 110,37" fill={race.hairColor} stroke="#04060b" strokeWidth="1.3" />
-            <polygon points="141,45 147,23 130,37" fill={race.hairColor} stroke="#04060b" strokeWidth="1.3" />
+            <path d="M 103 48 L 94 20 L 116 38 Z" fill="url(#cvHair)" stroke="#09090b" strokeWidth="1.3" />
+            <path d="M 157 48 L 166 20 L 144 38 Z" fill="url(#cvHair)" stroke="#09090b" strokeWidth="1.3" />
           </>
         )}
-
         {race.horns && (
           <>
-            <path d="M 103 43 Q 89 29 96 15 Q 105 27 109 39 Z" fill="#1c1917" stroke="#e11d48" strokeWidth="1.2" />
-            <path d="M 137 43 Q 151 29 144 15 Q 135 27 131 39 Z" fill="#1c1917" stroke="#e11d48" strokeWidth="1.2" />
+            <path d="M 107 44 C 94 30, 96 16, 104 12 C 106 24, 110 34, 114 40 Z" fill="#18181b" stroke="#be123c" strokeWidth="1.3" />
+            <path d="M 153 44 C 166 30, 164 16, 156 12 C 154 24, 150 34, 146 40 Z" fill="#18181b" stroke="#be123c" strokeWidth="1.3" />
           </>
         )}
 
-        {/* Rostro Estilizado (mandíbula definida) */}
-        <polygon points="103,43 137,43 135,67 120,80 105,67" fill="url(#soulsSkin)" stroke="#04060b" strokeWidth="1.5" />
+        {/* Contorno facial suave */}
+        <path
+          d="M 106 46 C 105 64, 108 78, 130 94 C 152 78, 155 64, 154 46 Z"
+          fill="url(#cvSkin)"
+          stroke="#09090b"
+          strokeWidth="1.4"
+        />
 
-        {/* Ojos penetrantes estilo Anime Oscuro */}
-        <polygon points="107,55 116,57 115,61 108,60" fill="#f8fafc" stroke="#04060b" strokeWidth="0.9" />
-        <circle cx="112" cy="58.5" r="2" fill={rankInfo.color} />
-
-        <polygon points="133,55 124,57 125,61 132,60" fill="#f8fafc" stroke="#04060b" strokeWidth="0.9" />
-        <circle cx="128" cy="58.5" r="2" fill={rankInfo.color} />
-
-        {/* Expresión seria / estoica */}
-        <line x1="106" y1="52" x2="117" y2="55" stroke="#04060b" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="134" y1="52" x2="123" y2="55" stroke="#04060b" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="116" y1="71" x2="124" y2="71" stroke="#04060b" strokeWidth="1.5" strokeLinecap="round" />
-
-        {/* Cabello Anime */}
-        {race.hairStyle === 'spiky' ? (
-          <polygon
-            points="98,52 91,34 103,38 107,18 118,32 126,15 133,33 147,26 141,48 137,43 120,40 103,43"
-            fill={race.hairColor}
-            stroke="#04060b"
-            strokeWidth="1.5"
-          />
-        ) : (
-          <path
-            d="M 98 56 Q 97 26 120 24 Q 143 26 142 56 L 137 44 L 128 49 L 120 41 L 112 49 L 103 44 Z"
-            fill={race.hairColor}
-            stroke="#04060b"
-            strokeWidth="1.5"
-          />
+        {/* COSMÉTICO: CICATRIZ DE COMBATE */}
+        {equipped.faceMark && (
+          <path d="M 139 68 L 147 75 M 141 73 L 145 70" stroke="#9f1239" strokeWidth="1.6" strokeLinecap="round" />
         )}
+
+        {/* OJOS ANIME DETALLADOS (O VENDA TÁCTICA SI ESTÁ EQUIPADA) */}
+        {!equipped.eyeWear ? (
+          <>
+            {/* Ojo Izquierdo */}
+            <path d="M 111 61 Q 118 57 124 62 Q 118 66 111 63 Z" fill="#ffffff" stroke="#09090b" strokeWidth="1" />
+            <ellipse cx="118" cy="61.8" rx="3" ry="3.2" fill={race.eyeColor} />
+            <circle cx="118" cy="61.8" r="1.4" fill="#09090b" />
+            <circle cx="116.8" cy="60.5" r="1" fill="#ffffff" />
+            <path d="M 110 58 Q 118 55 125 59" fill="none" stroke="#09090b" strokeWidth="1.8" strokeLinecap="round" />
+
+            {/* Ojo Derecho */}
+            <path d="M 149 61 Q 142 57 136 62 Q 142 66 149 63 Z" fill="#ffffff" stroke="#09090b" strokeWidth="1" />
+            <ellipse cx="142" cy="61.8" rx="3" ry="3.2" fill={race.eyeColor} />
+            <circle cx="142" cy="61.8" r="1.4" fill="#09090b" />
+            <circle cx="140.8" cy="60.5" r="1" fill="#ffffff" />
+            <path d="M 150 58 Q 142 55 135 59" fill="none" stroke="#09090b" strokeWidth="1.8" strokeLinecap="round" />
+          </>
+        ) : (
+          /* COSMÉTICO: VENDA TÁCTICA OSCURA */
+          <path d="M 105 55 L 155 57 L 154 67 L 106 65 Z" fill="#18181b" stroke="#be123c" strokeWidth="1.3" />
+        )}
+
+        {/* Nariz sutil y boca */}
+        <path d="M 130 66 L 128.5 72 L 131 73" fill="none" stroke="#9c7058" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M 124 80 Q 130 81.5 136 80" fill="none" stroke="#7c533e" strokeWidth="1.4" strokeLinecap="round" />
+
+        {/* COSMÉTICO: MÁSCARA PURIFICADORA GÓTICA */}
+        {equipped.mouthWear && (
+          <g>
+            <path d="M 108 70 L 130 67 L 152 70 L 148 89 L 130 95 L 112 89 Z" fill="#18181b" stroke="#71717a" strokeWidth="1.4" />
+            <circle cx="119" cy="80" r="4" fill="#27272a" stroke="#be123c" strokeWidth="1.2" />
+            <circle cx="141" cy="80" r="4" fill="#27272a" stroke="#be123c" strokeWidth="1.2" />
+            <path d="M 126 75 L 134 75 L 132 88 L 128 88 Z" fill="#3f3f46" />
+          </g>
+        )}
+
+        {/* FLEQUILLO ANIME EN MECHONES SUPERPUESTOS (ESTILO CODE VEIN) */}
+        <path
+          d="M 96 64 C 95 34, 112 22, 130 22 C 148 22, 165 34, 164 64 L 158 52 L 153 66 L 146 46 L 139 63 L 132 45 L 126 65 L 119 46 L 112 64 L 106 48 L 101 64 Z"
+          fill="url(#cvHair)"
+          stroke="#09090b"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+        {/* Brillo superior del cabello */}
+        <path
+          d="M 110 35 Q 130 29 150 35"
+          fill="none"
+          stroke={hairLight}
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          opacity="0.65"
+        />
       </svg>
 
       {/* Pie de tarjeta del Avatar */}
@@ -599,11 +692,11 @@ export default function App() {
     return () => document.head.removeChild(styleTag);
   }, []);
 
-  const [awakened, setAwakened] = useState(() => localStorage.getItem('pex_awakened_v2') === 'true');
+  const [awakened, setAwakened] = useState(() => localStorage.getItem('pex_awakened_v3') === 'true');
   const [surveyStep, setSurveyStep] = useState(1);
 
   const [profile, setProfile] = useState(() => {
-    const saved = localStorage.getItem('pex_profile_v2');
+    const saved = localStorage.getItem('pex_profile_v3');
     return saved ? JSON.parse(saved) : {
       hunterName: 'CAZADOR_01',
       goal: 'Hipertrofia y Estética',
@@ -622,18 +715,23 @@ export default function App() {
   });
 
   const [hunterClass, setHunterClass] = useState(() => {
-    const saved = localStorage.getItem('pex_class_v2');
+    const saved = localStorage.getItem('pex_class_v3');
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Cargas guardadas por separado para cada ejercicio
   const [savedLifts, setSavedLifts] = useState(() => {
-    const saved = localStorage.getItem('pex_saved_lifts_v2');
+    const saved = localStorage.getItem('pex_saved_lifts_v3');
     return saved ? JSON.parse(saved) : DEFAULT_LIFTS;
   });
 
-  const [lp, setLp] = useState(() => Number(localStorage.getItem('pex_lp_v2') || 1840));
-  const [streak, setStreak] = useState(() => Number(localStorage.getItem('pex_streak_v2') || 5));
+  const [lp, setLp] = useState(() => Number(localStorage.getItem('pex_lp_v3') || 1840));
+  const [streak, setStreak] = useState(() => Number(localStorage.getItem('pex_streak_v3') || 5));
+  const [completedMissionsCount, setCompletedMissionsCount] = useState(() => Number(localStorage.getItem('pex_missions_done_v3') || 2));
+  const [equippedCosmetics, setEquippedCosmetics] = useState(() => {
+    const saved = localStorage.getItem('pex_cosmetics_v3');
+    return saved ? JSON.parse(saved) : { scar: true, blindfold: false, mask: false, armband: false, cloak: false, hairTint: false };
+  });
+
   const [activeTab, setActiveTab] = useState('quests');
   const [toast, setToast] = useState(null);
 
@@ -649,12 +747,10 @@ export default function App() {
   const [justifyModalId, setJustifyModalId] = useState(null);
   const [justifyReason, setJustifyReason] = useState('Tormenta / Lluvia intensa');
 
-  // Selector de ejercicio en Fuerza F -> EX
   const [selectedExercise, setSelectedExercise] = useState('Press Banca');
   const [liftWeightInput, setLiftWeightInput] = useState(savedLifts['Press Banca']?.weight || 80);
   const [liftRepsInput, setLiftRepsInput] = useState(savedLifts['Press Banca']?.reps || 5);
 
-  // Bóveda Física Trimestral (90 días)
   const [daysUntilEval] = useState(64);
   const [vaultPhotos, setVaultPhotos] = useState({ front: null, back: null });
   const [yearlyRecap] = useState([
@@ -663,12 +759,10 @@ export default function App() {
     { quarter: 'Q3 (Actual)', grade: 'B', weight: '75 kg', note: 'Densidad muscular y simetría escapular.' },
   ]);
 
-  // Rutinas y Escáner
   const [routineEnv, setRoutineEnv] = useState('Gimnasio');
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
 
-  // Sueño semanal (49 - 63h recomendado)
   const [sleepLog, setSleepLog] = useState([
     { day: 'Lun', hours: 7.5 },
     { day: 'Mar', hours: 7.0 },
@@ -683,20 +777,21 @@ export default function App() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem('pex_awakened_v2', String(awakened));
-    localStorage.setItem('pex_profile_v2', JSON.stringify(profile));
-    if (hunterClass) localStorage.setItem('pex_class_v2', JSON.stringify(hunterClass));
-    localStorage.setItem('pex_saved_lifts_v2', JSON.stringify(savedLifts));
-    localStorage.setItem('pex_lp_v2', String(lp));
-    localStorage.setItem('pex_streak_v2', String(streak));
-  }, [awakened, profile, hunterClass, savedLifts, lp, streak]);
+    localStorage.setItem('pex_awakened_v3', String(awakened));
+    localStorage.setItem('pex_profile_v3', JSON.stringify(profile));
+    if (hunterClass) localStorage.setItem('pex_class_v3', JSON.stringify(hunterClass));
+    localStorage.setItem('pex_saved_lifts_v3', JSON.stringify(savedLifts));
+    localStorage.setItem('pex_lp_v3', String(lp));
+    localStorage.setItem('pex_streak_v3', String(streak));
+    localStorage.setItem('pex_missions_done_v3', String(completedMissionsCount));
+    localStorage.setItem('pex_cosmetics_v3', JSON.stringify(equippedCosmetics));
+  }, [awakened, profile, hunterClass, savedLifts, lp, streak, completedMissionsCount, equippedCosmetics]);
 
   const triggerToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3800);
   };
 
-  // Sincronizar inputs al cambiar de ejercicio en el desplegable
   const handleSelectExercise = (exName) => {
     setSelectedExercise(exName);
     const existing = savedLifts[exName];
@@ -709,7 +804,6 @@ export default function App() {
     }
   };
 
-  // Guardar la marca de forma independiente para ese ejercicio
   const handleSaveExerciseLoad = () => {
     const w = Math.max(1, Number(liftWeightInput));
     const r = Math.max(1, Number(liftRepsInput));
@@ -725,9 +819,19 @@ export default function App() {
     triggerToast(`[SISTEMA] Marca guardada en ${selectedExercise}: ${w} kg x ${r} reps.`);
   };
 
-  // ==========================================================================
-  // CÁLCULO CIENTÍFICO AUTOMÁTICO DEL GRADO FÍSICO (BLOQUEADO AL USUARIO)
-  // ==========================================================================
+  const toggleCosmetic = (item) => {
+    if (completedMissionsCount < item.reqMissions) {
+      triggerToast(`[BLOQUEADO] Completa ${item.reqMissions} misiones diarias para desbloquear "${item.name}".`);
+      return;
+    }
+    setEquippedCosmetics((prev) => ({
+      ...prev,
+      [item.id]: !prev[item.id],
+    }));
+    triggerToast(`[VESTIDOR] Cosmético "${item.name}" ${!equippedCosmetics[item.id] ? 'equipado' : 'guardado'}.`);
+  };
+
+  // Cálculo científico automático del Grado Físico (Bloqueado al usuario)
   const bw = Math.max(40, Number(profile.weightKg));
   const bench1RM = calcEpley1RM(savedLifts['Press Banca']?.weight || 0, savedLifts['Press Banca']?.reps || 1);
   const squat1RM = calcEpley1RM(savedLifts['Sentadilla Trasera']?.weight || 0, savedLifts['Sentadilla Trasera']?.reps || 1);
@@ -736,11 +840,8 @@ export default function App() {
   const benchRatio = bench1RM / bw;
   const squatRatio = squat1RM / bw;
   const deadliftRatio = deadlift1RM / bw;
-
-  // Índice Compuesto de Fuerza Relativa (promedio de los 3 patrones básicos)
   const compositeRelStrength = (benchRatio + squatRatio + deadliftRatio) / 3;
 
-  // Determinar el grado físico ganado legítimamente
   let currentStandardIdx = 0;
   for (let i = PHYSICAL_STANDARDS.length - 1; i >= 0; i--) {
     const std = PHYSICAL_STANDARDS[i];
@@ -758,7 +859,6 @@ export default function App() {
   const nextPhysicalStd = PHYSICAL_STANDARDS[Math.min(PHYSICAL_STANDARDS.length - 1, currentStandardIdx + 1)];
   const physicalGrade = currentPhysicalStd.grade;
 
-  // Procesador de foto con censura facial automática
   const handleSecurePhotoUpload = (e, target = 'onboarding') => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -797,7 +897,6 @@ export default function App() {
   };
 
   const awakenHunter = () => {
-    // Guardar cargas iniciales declaradas en la encuesta por separado
     const initialLifts = {
       ...savedLifts,
       'Press Banca': { weight: Number(profile.benchKg) || 60, reps: 5, date: 'Despertar' },
@@ -829,8 +928,6 @@ export default function App() {
   const rankInfo = getRankFromLP(lp);
   const totalSleep = sleepLog.reduce((acc, d) => acc + d.hours, 0);
   const sleepOptimal = totalSleep >= 49 && totalSleep <= 63;
-
-  // Cálculos del ejercicio seleccionado actualmente
   const currentEx1RM = calcEpley1RM(liftWeightInput, liftRepsInput);
   const currentExRatio = (currentEx1RM / bw).toFixed(2);
 
@@ -860,7 +957,7 @@ export default function App() {
               Paso {surveyStep} de 4 — Calibración biométrica del aspirante
             </p>
             <div className="progress-track" style={{ marginTop: '12px' }}>
-              <div className="progress-fill" style={{ width: `${surveyStep * 25}%`, background: 'linear-gradient(90deg, #d4af37, #00f0ff)' }} />
+              <div className="progress-fill" style={{ width: `${surveyStep * 25}%`, background: 'linear-gradient(90deg, #be123c, #d4af37)' }} />
             </div>
           </div>
 
@@ -1030,6 +1127,9 @@ export default function App() {
               <span className="sys-badge" style={{ background: 'rgba(234,88,12,0.2)', color: '#fdba74', border: '1px solid #ea580c' }}>
                 <Flame size={13} /> RACHA {streak} DÍAS
               </span>
+              <span className="sys-badge" style={{ background: 'rgba(190,18,60,0.2)', color: '#fda4af', border: '1px solid #be123c' }}>
+                <Crown size={13} /> {completedMissionsCount} MISIONES CUMPLIDAS
+              </span>
             </div>
             <h1 className="font-souls" style={{ fontSize: '23px', marginTop: '6px', color: '#fff' }}>
               {profile.hunterName}
@@ -1077,8 +1177,8 @@ export default function App() {
           <span>Retos & Rangos</span>
         </button>
         <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
-          <Sword size={18} color="#00f0ff" />
-          <span>Clase & Avatar</span>
+          <Sword size={18} color="#be123c" />
+          <span>Avatar & Equipo</span>
         </button>
         <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
           <Dumbbell size={18} color="#e11d48" />
@@ -1105,7 +1205,7 @@ export default function App() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
-              MISIONES DIARIAS DECLARADAS
+              MISIONES DIARIAS DECLARADAS (DESBLOQUEAN COSMÉTICOS)
             </h2>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
@@ -1145,7 +1245,7 @@ export default function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                     <div>
                       <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{q.title}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>Entorno: {q.env} • Recompensa: +{q.lp} LP</div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>Entorno: {q.env} • Recompensa: +{q.lp} LP + 1 Hito Cosmético</div>
                     </div>
                     <span className="sys-badge" style={{
                       background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(225,29,72,0.2)' : 'rgba(212,175,55,0.15)',
@@ -1161,10 +1261,17 @@ export default function App() {
                         className="sys-btn sys-btn-success"
                         style={{ padding: '8px 12px', fontSize: '11px' }}
                         onClick={() => {
+                          const nextCount = completedMissionsCount + 1;
                           setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'completed' } : item));
                           setLp((prev) => prev + q.lp);
                           setStreak((s) => s + 1);
-                          triggerToast(`¡MISIÓN CUMPLIDA! +${q.lp} LP obtenidos.`);
+                          setCompletedMissionsCount(nextCount);
+                          const unlockedItem = COSMETICS_CATALOG.find((c) => c.reqMissions === nextCount);
+                          if (unlockedItem) {
+                            triggerToast(`¡MISIÓN CUMPLIDA! +${q.lp} LP y nuevo cosmético desbloqueado: ${unlockedItem.name}`);
+                          } else {
+                            triggerToast(`¡MISIÓN CUMPLIDA! +${q.lp} LP obtenidos.`);
+                          }
                         }}
                       >
                         <CheckCircle2 size={14} /> LOGRADO
@@ -1280,53 +1387,114 @@ export default function App() {
       )}
 
       {/* ====================================================================
-          MÓDULO 2: AVATAR ESTILIZADO ESTILO SOULS + REQUISITOS DE GRADO FÍSICO
+          MÓDULO 2: AVATAR ESTILO CODE VEIN + COSMÉTICOS DESBLOQUEABLES
          ==================================================================== */}
       {activeTab === 'avatar' && (
-        <div className="grid-2">
-          <SoulsAnimeAvatar hunterClass={hunterClass} rankInfo={rankInfo} physicalGrade={physicalGrade} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="grid-2">
+            <CodeVeinAnimeAvatar
+              hunterClass={hunterClass}
+              rankInfo={rankInfo}
+              physicalGrade={physicalGrade}
+              equipped={equippedCosmetics}
+            />
 
-          <div className="sys-window" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h2 className="font-souls" style={{ fontSize: '16px', color: '#d4af37' }}>
-              FICHA DE CAZADOR Y EVOLUCIÓN FÍSICA
-            </h2>
-            <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.5 }}>
-              Tu avatar evoluciona automáticamente en musculatura, armadura de acero oscuro y armamento según tu rango y tu <strong>Grado Físico científico ({physicalGrade})</strong>. No puede alterarse manualmente.
-            </p>
+            <div className="sys-window" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <h2 className="font-souls" style={{ fontSize: '16px', color: '#d4af37' }}>
+                FICHA DE CAZADOR Y EVOLUCIÓN
+              </h2>
+              <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.5 }}>
+                Tu personaje evoluciona automáticamente según tu rango y tu <strong>Grado Físico científico ({physicalGrade})</strong>. Completa misiones diarias para desbloquear cosméticos de caza.
+              </p>
 
-            <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(212,175,55,0.25)' }}>
-              <div style={{ fontSize: '11px', color: '#94a3b8' }}>ESTIRPE / RAZA SELLADA</div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff' }}>{hunterClass?.race?.name}</div>
-              <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '8px' }}>CLASE DE COMBATE</div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: '#d4af37' }}>{hunterClass?.cls?.name}</div>
-              <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>{hunterClass?.cls?.desc}</div>
+              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(212,175,55,0.25)' }}>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>ESTIRPE / RAZA SELLADA</div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff' }}>{hunterClass?.race?.name}</div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '8px' }}>CLASE DE COMBATE</div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: '#d4af37' }}>{hunterClass?.cls?.name}</div>
+                <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>{hunterClass?.cls?.desc}</div>
+              </div>
+
+              {/* Condiciones Científicas Bloqueadas para subir de Grado Físico */}
+              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(190,18,60,0.08)', border: '1px solid rgba(190,18,60,0.35)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af' }}>
+                    <Lock size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                    GRADO FÍSICO ACTUAL: {physicalGrade}
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                    Índice: {compositeRelStrength.toFixed(2)}x BW
+                  </span>
+                </div>
+                {physicalGrade !== 'EX' && (
+                  <div style={{ fontSize: '12px', color: '#e2e8f0', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '8px' }}>
+                    <div style={{ color: '#00f0ff', fontWeight: 700, marginBottom: '4px' }}>
+                      REQUISITOS PARA SUBIR A GRADO {nextPhysicalStd.grade}:
+                    </div>
+                    <div>• Press Banca: <strong>{Math.round(nextPhysicalStd.benchReq * bw)} kg</strong> (Actual: {bench1RM} kg)</div>
+                    <div>• Sentadilla: <strong>{Math.round(nextPhysicalStd.squatReq * bw)} kg</strong> (Actual: {squat1RM} kg)</div>
+                    <div>• Peso Muerto: <strong>{Math.round(nextPhysicalStd.deadliftReq * bw)} kg</strong> (Actual: {deadlift1RM} kg)</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* VESTIDOR DE COSMÉTICOS BÁSICOS POR MISIONES DIARIAS */}
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+              <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37' }}>
+                COSMÉTICOS BÁSICOS (DESBLOQUEO POR MISIONES DIARIAS)
+              </h3>
+              <span className="sys-badge" style={{ background: 'rgba(16,185,129,0.18)', color: '#6ee7b7' }}>
+                MISIONES COMPLETADAS: {completedMissionsCount}
+              </span>
             </div>
 
-            {/* Panel Bloqueado de Condiciones Científicas para subir de Grado Físico */}
-            <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(225,29,72,0.08)', border: '1px solid rgba(225,29,72,0.35)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af' }}>
-                  <Lock size={12} style={{ display: 'inline', marginRight: '4px' }} />
-                  GRADO FÍSICO ACTUAL: {physicalGrade}
-                </span>
-                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                  Índice actual: {compositeRelStrength.toFixed(2)}x BW
-                </span>
-              </div>
-              <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '8px' }}>
-                {currentPhysicalStd.desc}
-              </div>
-
-              {physicalGrade !== 'EX' && (
-                <div style={{ fontSize: '12px', color: '#e2e8f0', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '8px' }}>
-                  <div style={{ color: '#00f0ff', fontWeight: 700, marginBottom: '4px' }}>
-                    CONDICIONES PARA DESBLOQUEAR GRADO {nextPhysicalStd.grade}:
+            <div className="grid-2">
+              {COSMETICS_CATALOG.map((item) => {
+                const unlocked = completedMissionsCount >= item.reqMissions;
+                const isEquipped = !!equippedCosmetics[item.id];
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => toggleCosmetic(item)}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      background: isEquipped ? 'rgba(212,175,55,0.14)' : 'rgba(4,6,12,0.85)',
+                      border: `1px solid ${isEquipped ? '#d4af37' : unlocked ? 'rgba(148,163,184,0.3)' : 'rgba(190,18,60,0.3)'}`,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      opacity: unlocked ? 1 : 0.72
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>
+                        {item.name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>{item.desc}</div>
+                    </div>
+                    <div>
+                      {!unlocked ? (
+                        <span className="sys-badge" style={{ background: 'rgba(190,18,60,0.2)', color: '#fda4af' }}>
+                          <Lock size={11} /> {item.reqMissions} Misiones
+                        </span>
+                      ) : isEquipped ? (
+                        <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.25)', color: '#fde047' }}>
+                          <Check size={11} /> Equipado
+                        </span>
+                      ) : (
+                        <span className="sys-badge" style={{ background: 'rgba(148,163,184,0.2)', color: '#e2e8f0' }}>
+                          Equipar
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div>• Press Banca: <strong>{Math.round(nextPhysicalStd.benchReq * bw)} kg</strong> ({nextPhysicalStd.benchReq}x BW) — Actual: {bench1RM} kg</div>
-                  <div>• Sentadilla: <strong>{Math.round(nextPhysicalStd.squatReq * bw)} kg</strong> ({nextPhysicalStd.squatReq}x BW) — Actual: {squat1RM} kg</div>
-                  <div>• Peso Muerto: <strong>{Math.round(nextPhysicalStd.deadliftReq * bw)} kg</strong> ({nextPhysicalStd.deadliftReq}x BW) — Actual: {deadlift1RM} kg</div>
-                </div>
-              )}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1386,7 +1554,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Tabla / Tarjetas de todas las cargas guardadas por separado */}
             <h3 className="font-hud" style={{ fontSize: '12px', color: '#d4af37', marginBottom: '10px' }}>
               BITÁCORA DE CARGAS GUARDADAS ({bw} KG PESO CORPORAL)
             </h3>
@@ -1426,7 +1593,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Resumen de Clasificación Científica Global */}
           <div className="sys-window" style={{ padding: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <div>
