@@ -1,4 +1,3 @@
-```react
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Flame,
@@ -3155,4 +3154,3 @@ export default function App() {
     </div>
   );
 }
-```
