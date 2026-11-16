@@ -286,8 +286,8 @@ const SYSTEM_CSS = `
   .gacha-corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #fbbf24; border-right: 2px solid #fbbf24; }
 
   @keyframes gachaAuraPulse {
-    0%, 100% { opacity: 0.55; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.03); }
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.02); }
   }
   .gacha-aura-overlay {
     animation: gachaAuraPulse 4s ease-in-out infinite;
@@ -670,10 +670,10 @@ const CITY_BUILDINGS_CATALOG = [
 ];
 
 const RACES_POOL = [
-  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#3b82f6' },
+  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#6366f1' },
   { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#00f0ff' },
   { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#fbbf24' },
-  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#00f0ff' },
+  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#6366f1' },
   { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b' },
   { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8' },
 ];
@@ -835,9 +835,9 @@ function generateCharacterAIReply(char, userMsg, memoryList, context) {
 }
 
 // ============================================================================
-// MOTOR PROCEDURAL LEGENDARY GACHA (NEON BLUE + GOLD LIGHTING & ARCANE CIRCLES)
+// MOTOR PROCEDURAL LEGENDARY GACHA (BASE EXACTA: 1000272220.jpg Y 1000272221.jpg)
 // ============================================================================
-function LegendaryGachaCanvas({ gender, weaponType, stage }) {
+function LegendaryGachaCanvas({ gender, stage }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -845,260 +845,389 @@ function LegendaryGachaCanvas({ gender, weaponType, stage }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const W = 720;
-    const H = 860;
+    const H = 960;
     const isFemale = gender === 'female';
     const neonBlue = '#00f0ff';
     const royalGold = '#fbbf24';
 
     ctx.clearRect(0, 0, W, H);
 
-    // 1. ATMÓSFERA ÉPICA DE ALTA FANTASÍA (NEON BLUE IZQUIERDA + GOLD DERECHA)
-    const skyGrad = ctx.createRadialGradient(340, 320, 30, 360, 420, 580);
-    skyGrad.addColorStop(0, '#13244c');
-    skyGrad.addColorStop(0.45, '#081026');
-    skyGrad.addColorStop(1, '#02040a');
-    ctx.fillStyle = skyGrad;
+    // 1. CIELO ESTELAR DE ALTA FANTASÍA CON NEBULOSA VIOLETA/AZUL Y RAYOS DORADOS
+    const bgGrad = ctx.createRadialGradient(350, 360, 40, 360, 460, 650);
+    bgGrad.addColorStop(0, '#1e2756');
+    bgGrad.addColorStop(0.45, '#111633');
+    bgGrad.addColorStop(0.85, '#070a19');
+    bgGrad.addColorStop(1, '#03050c');
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
 
-    // Iluminación ambiental Neon Blue (lado izquierdo)
-    const blueGlow = ctx.createRadialGradient(170, 340, 10, 170, 340, 320);
-    blueGlow.addColorStop(0, 'rgba(0, 240, 255, 0.36)');
-    blueGlow.addColorStop(0.55, 'rgba(37, 99, 235, 0.16)');
-    blueGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = blueGlow;
+    // Halo dorado trasero central
+    const centerGold = ctx.createRadialGradient(360, 430, 15, 360, 430, 300);
+    centerGold.addColorStop(0, 'rgba(251, 191, 36, 0.34)');
+    centerGold.addColorStop(0.55, 'rgba(217, 119, 6, 0.14)');
+    centerGold.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = centerGold;
     ctx.fillRect(0, 0, W, H);
 
-    // Iluminación ambiental Gold (lado derecho / halo divino)
-    const goldGlow = ctx.createRadialGradient(500, 290, 10, 500, 290, 340);
-    goldGlow.addColorStop(0, 'rgba(251, 191, 36, 0.34)');
-    goldGlow.addColorStop(0.5, 'rgba(217, 119, 6, 0.14)');
-    goldGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = goldGlow;
+    // Resplandor Neon Blue detrás del torso y círculos arcanos
+    const centerBlue = ctx.createRadialGradient(340, 500, 10, 340, 500, 340);
+    centerBlue.addColorStop(0, 'rgba(0, 240, 255, 0.38)');
+    centerBlue.addColorStop(0.6, 'rgba(37, 99, 235, 0.14)');
+    centerBlue.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = centerBlue;
     ctx.fillRect(0, 0, W, H);
 
-    // Rayos volumétricos diagonales (God-rays)
-    const rayGrad = ctx.createLinearGradient(580, 40, 220, 580);
-    rayGrad.addColorStop(0, 'rgba(251, 191, 36, 0.18)');
-    rayGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.08)');
-    rayGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = rayGrad;
+    // Rayos de luz verticales/diagonales
+    const beamGrad = ctx.createLinearGradient(360, 40, 360, 650);
+    beamGrad.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+    beamGrad.addColorStop(0.6, 'rgba(0, 240, 255, 0.08)');
+    beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = beamGrad;
     ctx.beginPath();
-    ctx.moveTo(470, 0);
-    ctx.lineTo(720, 0);
-    ctx.lineTo(380, 680);
-    ctx.lineTo(140, 680);
+    ctx.moveTo(275, 0);
+    ctx.lineTo(445, 0);
+    ctx.lineTo(540, 620);
+    ctx.lineTo(180, 620);
     ctx.closePath();
     ctx.fill();
 
-    // 2. CÍRCULO MÁGICO ARCANO GIRATORIO DETRÁS DEL PERSONAJE
-    const magicCx = 325;
-    const magicCy = 320;
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.42)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(magicCx, magicCy, 215, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.48)';
-    ctx.lineWidth = 1.6;
-    ctx.setLineDash([12, 8]);
-    ctx.beginPath();
-    ctx.arc(magicCx, magicCy, 196, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Estrella rúnica inscrita en el círculo mágico
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.24)';
-    ctx.lineWidth = 1.5;
-    for (let r = 0; r < 2; r++) {
+    // Estrellas de 4 puntas doradas y blancas
+    const drawFourPointStar = (sx, sy, size, color) => {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = color;
       ctx.beginPath();
-      for (let i = 0; i <= 4; i++) {
-        const ang = (i * Math.PI) / 2 + (r * Math.PI) / 4;
-        const px = magicCx + Math.cos(ang) * 195;
-        const py = magicCy + Math.sin(ang) * 195;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.stroke();
-    }
+      ctx.moveTo(sx, sy - size);
+      ctx.quadraticCurveTo(sx, sy, sx + size, sy);
+      ctx.quadraticCurveTo(sx, sy, sx, sy + size);
+      ctx.quadraticCurveTo(sx, sy, sx - size, sy);
+      ctx.quadraticCurveTo(sx, sy, sx, sy - size);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    };
+    drawFourPointStar(188, 175, 22, '#fde047');
+    drawFourPointStar(132, 92, 11, '#c084fc');
+    drawFourPointStar(232, 238, 12, '#e879f9');
+    drawFourPointStar(575, 112, 9, '#7dd3fc');
 
-    // Partículas de maná doradas y azul neón
+    // 2. DOBLE CÍRCULO MÁGICO ARCANO (IZQUIERDA Y DERECHA COMO EN LA ILUSTRACIÓN)
+    const drawArcaneSeal = (mx, my, rad) => {
+      ctx.save();
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = neonBlue;
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.72)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(mx, my, rad, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(mx, my, rad * 0.84, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(mx, my, rad * 0.44, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Triángulos entrelazados estilo sello rúnico
+      for (let t = 0; t < 2; t++) {
+        ctx.beginPath();
+        for (let i = 0; i <= 3; i++) {
+          const a = (i * (Math.PI * 2)) / 3 - Math.PI / 2 + t * Math.PI;
+          const px = mx + Math.cos(a) * (rad * 0.82);
+          const py = my + Math.sin(a) * (rad * 0.82);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    drawArcaneSeal(105, 345, 92);
+    drawArcaneSeal(615, 265, 96);
+
+    // Pétalos y ascuas doradas flotando
     const embers = [
-      [82, 160, 3.2, neonBlue], [132, 310, 2.6, royalGold], [68, 490, 3.8, neonBlue],
-      [165, 620, 2.8, royalGold], [635, 145, 3.4, royalGold], [662, 315, 2.6, neonBlue],
-      [620, 480, 3.8, royalGold], [648, 610, 3, neonBlue], [240, 95, 2.6, royalGold],
-      [445, 92, 3, neonBlue], [510, 215, 2.4, '#ffffff'], [185, 215, 2.6, neonBlue]
+      [85, 220, 4, royalGold], [65, 480, 5, royalGold], [145, 760, 4.5, royalGold],
+      [645, 165, 4, royalGold], [665, 420, 5, royalGold], [630, 620, 4.5, neonBlue],
+      [530, 88, 3.5, royalGold], [275, 62, 3, '#ffffff'], [470, 145, 3, neonBlue]
     ];
     embers.forEach(([ex, ey, er, ec]) => {
       ctx.save();
-      ctx.shadowBlur = 14;
-      ctx.shadowColor = ec;
       ctx.fillStyle = ec;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = ec;
       ctx.beginPath();
-      ctx.arc(ex, ey, er, 0, Math.PI * 2);
+      ctx.ellipse(ex, ey, er * 1.4, er * 0.7, -0.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
     ctx.restore();
 
-    const cx = 325;
+    const cx = 345;
 
-    // 3. CAPA REAL CARMESÍ Y ORO CON PLIEGUES CINEMATOGRÁFICOS
+    // 3. CAPA CARMESÍ DESGARRADA ONDEANDO A AMBOS LADOS
     ctx.save();
-    const capeGrad = ctx.createLinearGradient(50, 360, 280, 820);
-    capeGrad.addColorStop(0, '#be123c');
-    capeGrad.addColorStop(0.5, '#7f1d1d');
-    capeGrad.addColorStop(1, '#29060e');
+    const capeGrad = ctx.createLinearGradient(60, 420, 660, 740);
+    capeGrad.addColorStop(0, '#9f1239');
+    capeGrad.addColorStop(0.5, '#be123c');
+    capeGrad.addColorStop(1, '#881337');
     ctx.fillStyle = capeGrad;
+
+    // Ala izquierda de la capa
     ctx.beginPath();
-    ctx.moveTo(cx - 125, 375);
-    ctx.bezierCurveTo(cx - 230, 440, 55, 600, 22, 810);
-    ctx.lineTo(cx + 135, 820);
-    ctx.lineTo(cx + 115, 385);
+    ctx.moveTo(cx - 120, 445);
+    ctx.bezierCurveTo(cx - 210, 470, 70, 515, 16, 560);
+    ctx.lineTo(28, 610);
+    ctx.lineTo(14, 650);
+    ctx.lineTo(44, 685);
+    ctx.lineTo(24, 725);
+    ctx.lineTo(140, 650);
     ctx.closePath();
     ctx.fill();
 
-    // Ribete dorado en la capa
+    // Ala derecha de la capa
+    ctx.beginPath();
+    ctx.moveTo(cx + 120, 445);
+    ctx.bezierCurveTo(cx + 220, 465, 635, 495, 706, 515);
+    ctx.lineTo(688, 565);
+    ctx.lineTo(708, 605);
+    ctx.lineTo(672, 650);
+    ctx.lineTo(560, 615);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 4. CABELLO TRASERO LARGO (FEMENINO) O NUCA (MASCULINO)
+    ctx.save();
+    const hairDark = ctx.createLinearGradient(cx, 130, cx, 620);
+    hairDark.addColorStop(0, '#090c18');
+    hairDark.addColorStop(0.55, '#151a30');
+    hairDark.addColorStop(1, '#232946');
+    ctx.fillStyle = hairDark;
+
+    if (isFemale) {
+      ctx.beginPath();
+      ctx.moveTo(cx - 88, 200);
+      ctx.bezierCurveTo(cx - 175, 290, cx - 220, 420, cx - 185, 515);
+      ctx.quadraticCurveTo(cx - 135, 495, cx - 105, 465);
+      ctx.lineTo(cx + 105, 465);
+      ctx.quadraticCurveTo(cx + 145, 495, cx + 195, 505);
+      ctx.bezierCurveTo(cx + 225, 415, cx + 180, 290, cx + 88, 200);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(cx - 82, 210);
+      ctx.quadraticCurveTo(cx - 98, 275, cx - 72, 326);
+      ctx.lineTo(cx + 72, 326);
+      ctx.quadraticCurveTo(cx + 98, 275, cx + 82, 210);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 5. ARMADURA DE OBSIDIANA CON FILIGRANA DORADA Y CIRCUITO NEON BLUE
+    ctx.save();
+    const armorGrad = ctx.createLinearGradient(cx - 150, 370, cx + 150, 860);
+    armorGrad.addColorStop(0, '#1e2642');
+    armorGrad.addColorStop(0.45, '#0e1324');
+    armorGrad.addColorStop(1, '#070a14');
+
+    // Torso y faldón blindado
+    ctx.fillStyle = armorGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - 125, 405);
+    ctx.lineTo(cx + 125, 405);
+    ctx.lineTo(cx + 96, 635);
+    ctx.lineTo(cx + 158, 955);
+    ctx.lineTo(cx - 158, 955);
+    ctx.lineTo(cx - 96, 635);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ribetes de oro del peto
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 3.2;
+    ctx.stroke();
+
+    // Cuello alto blindado con borde dorado y línea azul neón
+    ctx.fillStyle = '#0c1122';
+    ctx.beginPath();
+    ctx.moveTo(cx - 64, 336);
+    ctx.lineTo(cx - 86, 412);
+    ctx.lineTo(cx, 446);
+    ctx.lineTo(cx + 86, 412);
+    ctx.lineTo(cx + 64, 336);
+    ctx.lineTo(cx, 368);
+    ctx.closePath();
+    ctx.fill();
     ctx.strokeStyle = royalGold;
     ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(cx - 125, 375);
-    ctx.bezierCurveTo(cx - 230, 440, 55, 600, 22, 810);
-    ctx.stroke();
-    ctx.restore();
-
-    // 4. CABELLO TRASERO ORGÁNICO (CURVAS SUAVES SIN PICOS GEOMÉTRICOS)
-    ctx.save();
-    const backHairGrad = ctx.createLinearGradient(cx, 120, cx, 620);
-    backHairGrad.addColorStop(0, '#070b16');
-    backHairGrad.addColorStop(0.6, '#0d152a');
-    backHairGrad.addColorStop(1, '#172554');
-    ctx.fillStyle = backHairGrad;
-
-    if (isFemale) {
-      ctx.beginPath();
-      ctx.moveTo(cx - 86, 195);
-      ctx.bezierCurveTo(cx - 140, 320, cx - 150, 500, cx - 115, 660);
-      ctx.lineTo(cx + 115, 660);
-      ctx.bezierCurveTo(cx + 150, 500, cx + 140, 320, cx + 86, 195);
-      ctx.closePath();
-      ctx.fill();
-    } else {
-      ctx.beginPath();
-      ctx.moveTo(cx - 76, 210);
-      ctx.bezierCurveTo(cx - 96, 260, cx - 94, 305, cx - 76, 326);
-      ctx.quadraticCurveTo(cx, 310, cx + 76, 326);
-      ctx.bezierCurveTo(cx + 94, 305, cx + 96, 260, cx + 76, 210);
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // 5. ARMADURA DE OBSIDIANA CON FILIGRANA DORADA Y RUNAS NEON BLUE
-    ctx.save();
-    const plateGrad = ctx.createLinearGradient(cx - 140, 350, cx + 140, 780);
-    plateGrad.addColorStop(0, '#16213e');
-    plateGrad.addColorStop(0.45, '#090e1d');
-    plateGrad.addColorStop(1, '#04060d');
-
-    ctx.fillStyle = plateGrad;
-    ctx.beginPath();
-    if (isFemale) {
-      ctx.moveTo(cx - 102, 370);
-      ctx.lineTo(cx + 102, 370);
-      ctx.lineTo(cx + 76, 545);
-      ctx.lineTo(cx + 98, 790);
-      ctx.lineTo(cx - 98, 790);
-      ctx.lineTo(cx - 76, 545);
-    } else {
-      ctx.moveTo(cx - 122, 366);
-      ctx.lineTo(cx + 122, 366);
-      ctx.lineTo(cx + 90, 555);
-      ctx.lineTo(cx + 112, 790);
-      ctx.lineTo(cx - 112, 790);
-      ctx.lineTo(cx - 90, 555);
-    }
-    ctx.closePath();
-    ctx.fill();
-
-    // Cuello alto blindado con borde dorado
-    ctx.fillStyle = '#070b16';
-    ctx.beginPath();
-    ctx.moveTo(cx - 50, 330);
-    ctx.lineTo(cx - 64, 376);
-    ctx.lineTo(cx, 398);
-    ctx.lineTo(cx + 64, 376);
-    ctx.lineTo(cx + 50, 330);
-    ctx.lineTo(cx, 350);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 2.6;
     ctx.stroke();
 
-    // Circuitos Neon Blue internos
-    ctx.shadowBlur = 16;
+    ctx.shadowBlur = 12;
     ctx.shadowColor = neonBlue;
     ctx.strokeStyle = neonBlue;
-    ctx.lineWidth = 2.4;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(cx - 94, 405);
-    ctx.lineTo(cx - 46, 448);
-    ctx.moveTo(cx + 94, 405);
-    ctx.lineTo(cx + 46, 448);
-    ctx.moveTo(cx - 78, 560);
-    ctx.lineTo(cx - 34, 595);
-    ctx.moveTo(cx + 78, 560);
-    ctx.lineTo(cx + 34, 595);
+    ctx.moveTo(cx - 58, 352);
+    ctx.lineTo(cx - 74, 404);
+    ctx.moveTo(cx + 58, 352);
+    ctx.lineTo(cx + 74, 404);
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Hombreras Esculpidas con Filigrana Dorada y Rim-Light Azul Neón
-    const drawPauldron = (side) => {
-      const s = side; // -1 izq, +1 der
+    // Hombreras curvas de obsidiana con volutas doradas y rombo cian
+    const drawOrnatePauldron = (dir) => {
       ctx.save();
-      const pGrad = ctx.createLinearGradient(cx + s * 80, 340, cx + s * 185, 450);
-      pGrad.addColorStop(0, '#1e293b');
-      pGrad.addColorStop(0.5, '#090e1c');
-      pGrad.addColorStop(1, '#040711');
+      const pGrad = ctx.createLinearGradient(cx + dir * 95, 365, cx + dir * 215, 510);
+      pGrad.addColorStop(0, '#273052');
+      pGrad.addColorStop(0.5, '#11162b');
+      pGrad.addColorStop(1, '#070a14');
       ctx.fillStyle = pGrad;
 
       ctx.beginPath();
-      ctx.moveTo(cx + s * 80, 372);
-      ctx.bezierCurveTo(cx + s * 135, 335, cx + s * 185, 360, cx + s * 192, 430);
-      ctx.lineTo(cx + s * 102, 446);
+      ctx.moveTo(cx + dir * 92, 402);
+      ctx.bezierCurveTo(cx + dir * 155, 362, cx + dir * 218, 392, cx + dir * 224, 488);
+      ctx.lineTo(cx + dir * 116, 502);
       ctx.closePath();
       ctx.fill();
 
-      // Filigrana de oro en el borde exterior
       ctx.strokeStyle = royalGold;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 3.5;
       ctx.stroke();
 
-      // Línea interna Neon Blue
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = neonBlue;
-      ctx.strokeStyle = neonBlue;
+      // Voluta interior dorada
+      ctx.strokeStyle = '#fde047';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(cx + s * 92, 392);
-      ctx.quadraticCurveTo(cx + s * 142, 368, cx + s * 175, 415);
+      ctx.moveTo(cx + dir * 118, 418);
+      ctx.bezierCurveTo(cx + dir * 165, 395, cx + dir * 195, 435, cx + dir * 165, 468);
       ctx.stroke();
+
+      // Rombo cian en hombrera
+      const rx = cx + dir * 116;
+      const ry = 434;
+      ctx.fillStyle = neonBlue;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry - 12);
+      ctx.lineTo(rx + 10, ry);
+      ctx.lineTo(rx, ry + 12);
+      ctx.lineTo(rx - 10, ry);
+      ctx.closePath();
+      ctx.fill();
       ctx.restore();
     };
-    drawPauldron(-1);
-    drawPauldron(1);
+    drawOrnatePauldron(-1);
+    drawOrnatePauldron(1);
 
-    // Núcleo Pectoral Diamante Dorado y Azul Neón
-    const coreY = 496;
-    ctx.shadowBlur = 26;
-    ctx.shadowColor = neonBlue;
-    ctx.fillStyle = '#041b29';
+    // Brazos y Guanteletes con runas azul neón
+    ctx.fillStyle = '#0d1224';
     ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 3.5;
+    ctx.lineWidth = 2.6;
+    // Brazo izquierdo (puño cerrado)
+    ctx.beginPath();
+    ctx.moveTo(cx - 126, 495);
+    ctx.lineTo(cx - 178, 635);
+    ctx.lineTo(cx - 154, 755);
+    ctx.lineTo(cx - 105, 748);
+    ctx.lineTo(cx - 118, 632);
+    ctx.lineTo(cx - 94, 505);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Brazo derecho (empuñando la espada)
+    ctx.beginPath();
+    ctx.moveTo(cx + 126, 495);
+    ctx.lineTo(cx + 188, 635);
+    ctx.lineTo(cx + 168, 768);
+    ctx.lineTo(cx + 115, 758);
+    ctx.lineTo(cx + 124, 635);
+    ctx.lineTo(cx + 94, 505);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Runas Neon Blue en peto, guanteletes y faldón
+    ctx.save();
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = neonBlue;
+    ctx.strokeStyle = neonBlue;
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(cx - 88, 465);
+    ctx.lineTo(cx - 56, 512);
+    ctx.moveTo(cx + 88, 465);
+    ctx.lineTo(cx + 56, 512);
+    ctx.moveTo(cx - 72, 548);
+    ctx.lineTo(cx, 588);
+    ctx.lineTo(cx + 72, 548);
+    ctx.moveTo(cx - 64, 582);
+    ctx.lineTo(cx, 620);
+    ctx.lineTo(cx + 64, 582);
+    // Runas en guanteletes
+    ctx.moveTo(cx - 156, 610);
+    ctx.lineTo(cx - 142, 710);
+    ctx.moveTo(cx + 162, 610);
+    ctx.lineTo(cx + 148, 715);
+    ctx.stroke();
+    ctx.restore();
+
+    // Hebilla de cinturón con diamante cian
+    const beltY = 678;
+    ctx.fillStyle = '#11162b';
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx, beltY - 26);
+    ctx.lineTo(cx + 28, beltY);
+    ctx.lineTo(cx, beltY + 26);
+    ctx.lineTo(cx - 28, beltY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = neonBlue;
+    ctx.beginPath();
+    ctx.moveTo(cx, beltY - 14);
+    ctx.lineTo(cx + 15, beltY);
+    ctx.lineTo(cx, beltY + 14);
+    ctx.lineTo(cx - 15, beltY);
+    ctx.closePath();
+    ctx.fill();
+
+    // GRAN DIAMANTE PECTORAL CIAN CON DESTELLO LUMINOSO HORIZONTAL
+    const coreY = 505;
+    ctx.save();
+    ctx.shadowBlur = 32;
+    ctx.shadowColor = neonBlue;
+    ctx.fillStyle = '#071b2e';
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, coreY - 62);
+    ctx.lineTo(cx + 52, coreY);
+    ctx.lineTo(cx, coreY + 62);
+    ctx.lineTo(cx - 52, coreY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    const diamondGrad = ctx.createRadialGradient(cx, coreY, 4, cx, coreY, 44);
+    diamondGrad.addColorStop(0, '#ffffff');
+    diamondGrad.addColorStop(0.45, '#67e8f9');
+    diamondGrad.addColorStop(0.85, '#0284c7');
+    diamondGrad.addColorStop(1, '#0369a1');
+    ctx.fillStyle = diamondGrad;
     ctx.beginPath();
     ctx.moveTo(cx, coreY - 46);
     ctx.lineTo(cx + 38, coreY);
@@ -1106,195 +1235,180 @@ function LegendaryGachaCanvas({ gender, weaponType, stage }) {
     ctx.lineTo(cx - 38, coreY);
     ctx.closePath();
     ctx.fill();
-    ctx.stroke();
 
-    const gemGrad = ctx.createRadialGradient(cx, coreY, 2, cx, coreY, 24);
-    gemGrad.addColorStop(0, '#ffffff');
-    gemGrad.addColorStop(0.45, neonBlue);
-    gemGrad.addColorStop(1, '#0284c7');
-    ctx.fillStyle = gemGrad;
-    ctx.beginPath();
-    ctx.moveTo(cx, coreY - 23);
-    ctx.lineTo(cx + 19, coreY);
-    ctx.lineTo(cx, coreY + 23);
-    ctx.lineTo(cx - 19, coreY);
-    ctx.closePath();
-    ctx.fill();
+    // Lens flare horizontal blanco/cian sobre el diamante del pecho
+    ctx.globalCompositeOperation = 'lighter';
+    const flareGrad = ctx.createLinearGradient(cx - 260, coreY, cx + 260, coreY);
+    flareGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+    flareGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.35)');
+    flareGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
+    flareGrad.addColorStop(0.65, 'rgba(0, 240, 255, 0.35)');
+    flareGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    ctx.fillStyle = flareGrad;
+    ctx.fillRect(cx - 260, coreY - 4, 520, 8);
+    ctx.restore();
     ctx.restore();
 
-    // 6. ROSTRO ANIME CINEMATOGRÁFICO CON SOMBREADO SUAVE Y RIM LIGHTING
+    // 6. ROSTRO ANIME CON OJOS VIOLETA-ÍNDIGO INTENSO
     ctx.save();
-    const neckGrad = ctx.createLinearGradient(cx, 305, cx, 368);
-    neckGrad.addColorStop(0, '#dfa98e');
-    neckGrad.addColorStop(0.45, '#ffedd5');
-    neckGrad.addColorStop(1, '#fed7aa');
+    const neckGrad = ctx.createLinearGradient(cx, 305, cx, 378);
+    neckGrad.addColorStop(0, '#d69e82');
+    neckGrad.addColorStop(0.5, '#f6cbb2');
+    neckGrad.addColorStop(1, '#eab89b');
     ctx.fillStyle = neckGrad;
     ctx.beginPath();
-    ctx.moveTo(cx - 22, 306);
-    ctx.lineTo(cx + 22, 306);
-    ctx.lineTo(cx + 26, 368);
-    ctx.lineTo(cx - 26, 368);
+    ctx.moveTo(cx - 24, 306);
+    ctx.lineTo(cx + 24, 306);
+    ctx.lineTo(cx + 30, 378);
+    ctx.lineTo(cx - 30, 378);
     ctx.closePath();
     ctx.fill();
 
-    // Contorno facial estilizado
-    const faceGrad = ctx.createLinearGradient(cx - 60, 175, cx + 60, 325);
-    faceGrad.addColorStop(0, '#ffe4d0');
-    faceGrad.addColorStop(0.55, '#ffedd5');
-    faceGrad.addColorStop(1, '#f7be97');
+    const faceGrad = ctx.createLinearGradient(cx - 64, 180, cx + 64, 332);
+    faceGrad.addColorStop(0, '#ffe2ce');
+    faceGrad.addColorStop(0.6, '#f8cdb4');
+    faceGrad.addColorStop(1, '#e8b090');
     ctx.fillStyle = faceGrad;
-
     ctx.beginPath();
-    if (isFemale) {
-      ctx.moveTo(cx - 58, 218);
-      ctx.bezierCurveTo(cx - 60, 272, cx - 42, 306, cx, 322);
-      ctx.bezierCurveTo(cx + 42, 306, cx + 60, 272, cx + 58, 218);
-      ctx.bezierCurveTo(cx + 58, 168, cx + 34, 152, cx, 152);
-      ctx.bezierCurveTo(cx - 34, 152, cx - 58, 168, cx - 58, 218);
-    } else {
-      ctx.moveTo(cx - 61, 216);
-      ctx.bezierCurveTo(cx - 62, 274, cx - 45, 309, cx, 326);
-      ctx.bezierCurveTo(cx + 45, 309, cx + 62, 274, cx + 61, 216);
-      ctx.bezierCurveTo(cx + 61, 166, cx + 36, 150, cx, 150);
-      ctx.bezierCurveTo(cx - 36, 150, cx - 61, 166, cx - 61, 216);
-    }
+    ctx.moveTo(cx - 62, 224);
+    ctx.bezierCurveTo(cx - 63, 282, cx - 44, 316, cx, 334);
+    ctx.bezierCurveTo(cx + 44, 316, cx + 63, 282, cx + 62, 224);
+    ctx.bezierCurveTo(cx + 62, 172, cx + 36, 156, cx, 156);
+    ctx.bezierCurveTo(cx - 36, 156, cx - 62, 172, cx - 62, 224);
     ctx.closePath();
     ctx.fill();
 
-    // Rim-light dorado en el borde derecho del rostro y azul neón en el izquierdo
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.55)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(cx - 58, 222);
-    ctx.bezierCurveTo(cx - 60, 272, cx - 42, 306, cx - 4, 324);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
-    ctx.beginPath();
-    ctx.moveTo(cx + 58, 222);
-    ctx.bezierCurveTo(cx + 60, 272, cx + 42, 306, cx + 4, 324);
-    ctx.stroke();
-
-    // Ojos Anime Gacha de Alta Definición
-    const drawGachaEye = (ex, isLeft) => {
+    // Ojos Violeta-Índigo como en 1000272220.jpg y 1000272221.jpg
+    const drawVioletAnimeEye = (ex, isLeft) => {
       ctx.save();
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(ex - 17, 254);
-      ctx.quadraticCurveTo(ex, 241, ex + 17, 254);
-      ctx.quadraticCurveTo(ex, 266, ex - 17, 254);
+      ctx.moveTo(ex - 18, 260);
+      ctx.quadraticCurveTo(ex, 246, ex + 18, 260);
+      ctx.quadraticCurveTo(ex, 272, ex - 18, 260);
       ctx.closePath();
       ctx.fill();
 
-      // Iris con degradado zafiro -> azul neón -> dorado
-      const irisGrad = ctx.createLinearGradient(ex, 244, ex, 264);
-      irisGrad.addColorStop(0, '#0f172a');
-      irisGrad.addColorStop(0.45, '#0284c7');
-      irisGrad.addColorStop(0.82, neonBlue);
-      irisGrad.addColorStop(1, '#fde047');
+      const irisGrad = ctx.createLinearGradient(ex, 249, ex, 270);
+      irisGrad.addColorStop(0, '#1e1b4b');
+      irisGrad.addColorStop(0.45, '#4f46e5');
+      irisGrad.addColorStop(0.85, '#818cf8');
+      irisGrad.addColorStop(1, '#c7d2fe');
       ctx.fillStyle = irisGrad;
       ctx.beginPath();
-      ctx.ellipse(ex, 254, 9, 9.8, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, 260, 9.5, 10.2, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#030712';
+      ctx.fillStyle = '#090d1a';
       ctx.beginPath();
-      ctx.ellipse(ex, 254, 4.2, 4.8, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, 260, 4.4, 5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Catchlights brillantes
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(ex - 3.4, 250, 3, 0, Math.PI * 2);
-      ctx.arc(ex + 3.5, 257, 1.5, 0, Math.PI * 2);
+      ctx.arc(ex - 3.5, 256, 3.1, 0, Math.PI * 2);
+      ctx.arc(ex + 3.6, 263, 1.6, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pestaña superior estilizada
-      ctx.strokeStyle = '#060913';
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#090c18';
+      ctx.lineWidth = 4.2;
       ctx.lineCap = 'round';
       ctx.beginPath();
       if (isLeft) {
-        ctx.moveTo(ex - 20, 252);
-        ctx.quadraticCurveTo(ex - 2, 239, ex + 17, 253);
+        ctx.moveTo(ex - 21, 258);
+        ctx.quadraticCurveTo(ex - 2, 244, ex + 18, 259);
       } else {
-        ctx.moveTo(ex - 17, 253);
-        ctx.quadraticCurveTo(ex + 2, 239, ex + 20, 252);
+        ctx.moveTo(ex - 18, 259);
+        ctx.quadraticCurveTo(ex + 2, 244, ex + 21, 258);
       }
       ctx.stroke();
 
-      // Ceja expresiva
       ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.8;
       ctx.beginPath();
       if (isLeft) {
-        ctx.moveTo(ex - 19, 234);
-        ctx.lineTo(ex + 14, 240);
+        ctx.moveTo(ex - 20, 239);
+        ctx.lineTo(ex + 15, 246);
       } else {
-        ctx.moveTo(ex - 14, 240);
-        ctx.lineTo(ex + 19, 234);
+        ctx.moveTo(ex - 15, 246);
+        ctx.lineTo(ex + 20, 239);
       }
       ctx.stroke();
       ctx.restore();
     };
+    drawVioletAnimeEye(cx - 30, true);
+    drawVioletAnimeEye(cx + 30, false);
 
-    drawGachaEye(cx - 29, true);
-    drawGachaEye(cx + 29, false);
-
-    // Nariz y expresión confiada
-    ctx.strokeStyle = '#c27d5e';
+    // Nariz y boca seria/determinada
+    ctx.strokeStyle = '#b97455';
     ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.moveTo(cx - 1, 268);
-    ctx.lineTo(cx - 3, 280);
-    ctx.lineTo(cx + 2, 282);
+    ctx.moveTo(cx - 1, 276);
+    ctx.lineTo(cx - 3, 288);
+    ctx.lineTo(cx + 2, 290);
     ctx.stroke();
 
     ctx.strokeStyle = '#7c2d12';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(cx - 13, 297);
-    ctx.quadraticCurveTo(cx, 303, cx + 14, 296);
+    ctx.moveTo(cx - 12, 306);
+    ctx.quadraticCurveTo(cx, 304, cx + 12, 306);
     ctx.stroke();
     ctx.restore();
 
-    // 7. CABELLO FRONTAL CON CURVAS BEZIER FLUIDAS Y REFLEJOS NEON BLUE + GOLD
+    // 7. CABELLO NEGRO CON REFLEJOS VIOLETA/AZUL (CORTO MASCULINO / LARGO FEMENINO)
     ctx.save();
-    const hairFrontGrad = ctx.createLinearGradient(cx - 75, 125, cx + 75, 265);
-    hairFrontGrad.addColorStop(0, '#070b15');
-    hairFrontGrad.addColorStop(0.55, '#0f172a');
-    hairFrontGrad.addColorStop(1, '#1e293b');
-    ctx.fillStyle = hairFrontGrad;
+    const frontHairGrad = ctx.createLinearGradient(cx - 85, 115, cx + 85, 275);
+    frontHairGrad.addColorStop(0, '#0a0d1a');
+    frontHairGrad.addColorStop(0.55, '#171c36');
+    frontHairGrad.addColorStop(1, '#262d52');
+    ctx.fillStyle = frontHairGrad;
 
     ctx.beginPath();
-    ctx.moveTo(cx - 72, 242);
-    ctx.bezierCurveTo(cx - 86, 175, cx - 44, 126, cx, 126);
-    ctx.bezierCurveTo(cx + 44, 126, cx + 86, 175, cx + 72, 242);
-    // Mechones orgánicos fluidos (curvas bezier, nunca triángulos rectos)
-    ctx.quadraticCurveTo(cx + 66, 212, cx + 56, 204);
-    ctx.quadraticCurveTo(cx + 52, 236, cx + 44, 250);
-    ctx.quadraticCurveTo(cx + 38, 220, cx + 28, 202);
-    ctx.quadraticCurveTo(cx + 22, 238, cx + 12, 254);
-    ctx.quadraticCurveTo(cx + 6, 218, cx - 2, 200);
-    ctx.quadraticCurveTo(cx - 10, 236, cx - 20, 252);
-    ctx.quadraticCurveTo(cx - 26, 218, cx - 36, 202);
-    ctx.quadraticCurveTo(cx - 44, 234, cx - 54, 248);
-    ctx.quadraticCurveTo(cx - 62, 216, cx - 72, 242);
+    if (isFemale) {
+      ctx.moveTo(cx - 86, 255);
+      ctx.bezierCurveTo(cx - 102, 165, cx - 52, 118, cx, 118);
+      ctx.bezierCurveTo(cx + 52, 118, cx + 102, 165, cx + 86, 255);
+      ctx.quadraticCurveTo(cx + 72, 215, cx + 56, 206);
+      ctx.quadraticCurveTo(cx + 48, 242, cx + 36, 258);
+      ctx.quadraticCurveTo(cx + 26, 218, cx + 14, 202);
+      ctx.quadraticCurveTo(cx + 4, 244, cx - 8, 260);
+      ctx.quadraticCurveTo(cx - 18, 220, cx - 30, 204);
+      ctx.quadraticCurveTo(cx - 42, 240, cx - 56, 254);
+      ctx.quadraticCurveTo(cx - 70, 218, cx - 86, 255);
+    } else {
+      ctx.moveTo(cx - 88, 242);
+      ctx.lineTo(cx - 108, 212);
+      ctx.lineTo(cx - 86, 188);
+      ctx.lineTo(cx - 98, 152);
+      ctx.lineTo(cx - 64, 144);
+      ctx.lineTo(cx - 56, 112);
+      ctx.lineTo(cx - 22, 128);
+      ctx.lineTo(cx + 4, 102);
+      ctx.lineTo(cx + 28, 128);
+      ctx.lineTo(cx + 62, 114);
+      ctx.lineTo(cx + 68, 146);
+      ctx.lineTo(cx + 102, 156);
+      ctx.lineTo(cx + 86, 192);
+      ctx.lineTo(cx + 106, 218);
+      ctx.lineTo(cx + 82, 246);
+      ctx.quadraticCurveTo(cx + 66, 214, cx + 52, 206);
+      ctx.quadraticCurveTo(cx + 44, 238, cx + 32, 254);
+      ctx.quadraticCurveTo(cx + 22, 216, cx + 10, 202);
+      ctx.quadraticCurveTo(cx, 242, cx - 12, 258);
+      ctx.quadraticCurveTo(cx - 22, 218, cx - 34, 204);
+      ctx.quadraticCurveTo(cx - 46, 238, cx - 60, 252);
+      ctx.quadraticCurveTo(cx - 72, 216, cx - 88, 242);
+    }
     ctx.closePath();
     ctx.fill();
 
-    // Brillo especular doble en el cabello (Neon Blue izquierda, Gold derecha)
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.55)';
-    ctx.lineWidth = 2.4;
+    // Brillo violeta/azulado en el flequillo
+    ctx.strokeStyle = 'rgba(129, 140, 248, 0.45)';
+    ctx.lineWidth = 2.6;
     ctx.beginPath();
-    ctx.moveTo(cx - 48, 178);
-    ctx.quadraticCurveTo(cx - 16, 162, cx + 4, 170);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
-    ctx.beginPath();
-    ctx.moveTo(cx + 12, 170);
-    ctx.quadraticCurveTo(cx + 34, 162, cx + 52, 180);
+    ctx.moveTo(cx - 52, 182);
+    ctx.quadraticCurveTo(cx, 162, cx + 52, 182);
     ctx.stroke();
 
     if (stage >= 3) {
@@ -1303,91 +1417,119 @@ function LegendaryGachaCanvas({ gender, weaponType, stage }) {
       ctx.strokeStyle = royalGold;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(cx - 46, 146);
-      ctx.lineTo(cx - 24, 118);
-      ctx.lineTo(cx, 136);
-      ctx.lineTo(cx + 24, 118);
-      ctx.lineTo(cx + 46, 146);
+      ctx.moveTo(cx - 46, 142);
+      ctx.lineTo(cx - 24, 114);
+      ctx.lineTo(cx, 132);
+      ctx.lineTo(cx + 24, 114);
+      ctx.lineTo(cx + 46, 142);
       ctx.stroke();
     }
     ctx.restore();
 
-    // 8. ARMA LEGENDARIA CON ENERGÍA NEON BLUE + GOLD (DERECHA)
-    const sx = 568;
+    // 8. ESPADA RÚNICA DIAGONAL INFERIOR DERECHA CON RAYOS ELÉCTRICOS NEON BLUE
     ctx.save();
+    ctx.translate(495, 765);
+    ctx.rotate(-0.62);
+
+    // Resplandor eléctrico de la hoja
     ctx.globalCompositeOperation = 'lighter';
+    const swordGlow = ctx.createRadialGradient(-80, 0, 10, -80, 0, 190);
+    swordGlow.addColorStop(0, 'rgba(0, 240, 255, 0.65)');
+    swordGlow.addColorStop(0.6, 'rgba(56, 189, 248, 0.22)');
+    swordGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = swordGlow;
+    ctx.fillRect(-290, -140, 380, 280);
+    ctx.globalCompositeOperation = 'source-over';
 
-    const weaponAura = ctx.createRadialGradient(sx, 360, 12, sx, 360, 200);
-    weaponAura.addColorStop(0, 'rgba(0, 240, 255, 0.55)');
-    weaponAura.addColorStop(0.5, 'rgba(251, 191, 36, 0.25)');
-    weaponAura.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = weaponAura;
-    ctx.fillRect(360, 80, 360, 680);
-
-    // Hoja / Báculo radiante
-    const bladeGrad = ctx.createLinearGradient(sx - 18, 110, sx + 18, 570);
-    bladeGrad.addColorStop(0, '#ffffff');
-    bladeGrad.addColorStop(0.45, neonBlue);
-    bladeGrad.addColorStop(1, royalGold);
-    ctx.fillStyle = bladeGrad;
-    ctx.shadowBlur = 28;
-    ctx.shadowColor = neonBlue;
-
-    ctx.beginPath();
-    ctx.moveTo(sx, 108);
-    ctx.lineTo(sx + 16, 166);
-    ctx.lineTo(sx + 13, 565);
-    ctx.lineTo(sx - 13, 565);
-    ctx.lineTo(sx - 16, 166);
-    ctx.closePath();
-    ctx.fill();
-
-    // Estelas espirales duales (una Neon Blue, otra Royal Gold)
-    ctx.strokeStyle = neonBlue;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(sx - 38, 210);
-    ctx.bezierCurveTo(sx + 52, 260, sx - 48, 345, sx + 42, 415);
-    ctx.bezierCurveTo(sx - 34, 475, sx + 38, 520, sx - 20, 560);
-    ctx.stroke();
-
-    ctx.shadowColor = royalGold;
+    // Hoja de acero rúnico con filo dorada y núcleo Neon Blue
+    ctx.fillStyle = '#0284c7';
     ctx.strokeStyle = royalGold;
     ctx.lineWidth = 3.5;
     ctx.beginPath();
-    ctx.moveTo(sx + 38, 180);
-    ctx.bezierCurveTo(sx - 48, 265, sx + 52, 360, sx - 40, 455);
+    ctx.moveTo(-260, 0);
+    ctx.lineTo(-210, -24);
+    ctx.lineTo(0, -22);
+    ctx.lineTo(0, 22);
+    ctx.lineTo(-210, 24);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
-    ctx.restore();
 
-    // Guarda Dorada Ornamentada
-    ctx.save();
-    const guardGrad = ctx.createLinearGradient(sx - 50, 562, sx + 50, 586);
-    guardGrad.addColorStop(0, '#92400e');
-    guardGrad.addColorStop(0.5, '#fde047');
-    guardGrad.addColorStop(1, '#92400e');
-    ctx.fillStyle = guardGrad;
+    ctx.fillStyle = '#67e8f9';
     ctx.beginPath();
-    ctx.moveTo(sx - 52, 564);
-    ctx.lineTo(sx + 52, 564);
-    ctx.lineTo(sx + 38, 584);
-    ctx.lineTo(sx - 38, 584);
+    ctx.moveTo(-240, 0);
+    ctx.lineTo(-195, -11);
+    ctx.lineTo(-10, -10);
+    ctx.lineTo(-10, 10);
+    ctx.lineTo(-195, 11);
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = '#090e1d';
+    // Guarda dorada ornamentada y núcleo de diamante
+    ctx.fillStyle = '#d97706';
+    ctx.strokeStyle = '#fde047';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(-12, -52);
+    ctx.lineTo(14, -36);
+    ctx.lineTo(14, 36);
+    ctx.lineTo(-12, 52);
+    ctx.lineTo(-4, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = neonBlue;
+    ctx.beginPath();
+    ctx.moveTo(0, -14);
+    ctx.lineTo(14, 0);
+    ctx.lineTo(0, 14);
+    ctx.lineTo(-14, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Empuñadura y pomo de diamante
+    ctx.fillStyle = '#0f172a';
     ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 2.2;
-    ctx.fillRect(sx - 9, 584, 18, 72);
-    ctx.strokeRect(sx - 9, 584, 18, 72);
+    ctx.lineWidth = 2.5;
+    ctx.fillRect(14, -10, 74, 20);
+    ctx.strokeRect(14, -10, 74, 20);
+
+    ctx.fillStyle = neonBlue;
+    ctx.beginPath();
+    ctx.moveTo(104, -14);
+    ctx.lineTo(120, 0);
+    ctx.lineTo(104, 14);
+    ctx.lineTo(88, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Rayos eléctricos cian rodeando la hoja
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = neonBlue;
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(-235, -12);
+    ctx.lineTo(-190, -34);
+    ctx.lineTo(-155, -18);
+    ctx.lineTo(-110, -40);
+    ctx.lineTo(-65, -20);
+    ctx.lineTo(-25, -36);
+    ctx.moveTo(-210, 16);
+    ctx.lineTo(-165, 36);
+    ctx.lineTo(-120, 18);
+    ctx.lineTo(-75, 38);
+    ctx.stroke();
     ctx.restore();
-  }, [gender, weaponType, stage]);
+  }, [gender, stage]);
 
   return (
     <canvas
       ref={canvasRef}
       width={720}
-      height={860}
+      height={960}
       style={{ width: '100%', height: 'auto', display: 'block' }}
     />
   );
@@ -1416,20 +1558,25 @@ function JrpgFantasyPortrait({
   };
   const stage = classEvolution.stage;
   const isFemale = gender === 'female';
-  const [staticFallbackFailed, setStaticFallbackFailed] = useState(false);
+
+  // Lista ordenada de rutas candidatas en /public/ (incluye nombres originales de tus 2 imágenes)
+  const candidateSources = isFemale
+    ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg', '/1000272221.png']
+    : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg', '/1000272220.png'];
+
+  const [candidateIdx, setCandidateIdx] = useState(0);
 
   useEffect(() => {
-    setStaticFallbackFailed(false);
+    setCandidateIdx(0);
   }, [gender]);
 
   const uploadedSrc = customGachaArt?.[gender] || null;
-  const staticPath = isFemale ? '/avatar-female.png' : '/avatar-male.png';
-  const activeImageSrc = uploadedSrc || (!staticFallbackFailed ? staticPath : null);
+  const staticPath = candidateIdx < candidateSources.length ? candidateSources[candidateIdx] : null;
+  const activeImageSrc = uploadedSrc || staticPath;
   const starCount = Math.min(6, Math.max(4, 3 + stage));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      {/* TARJETA LEGENDARY GACHA CON NEON BLUE & GOLD LIGHTING */}
       <div className="gacha-card-outer">
         <div className="gacha-card-inner">
           <div className="gacha-corner-tl" />
@@ -1437,7 +1584,7 @@ function JrpgFantasyPortrait({
           <div className="gacha-corner-bl" />
           <div className="gacha-corner-br" />
 
-          {/* BARRA SUPERIOR: NV • ETAPA + CONTROLES DE GÉNERO Y ARTE GACHA */}
+          {/* BARRA SUPERIOR: NV • ETAPA + CONTROLES DE GÉNERO Y BASE GACHA */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -1466,7 +1613,7 @@ function JrpgFantasyPortrait({
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <label
                 className="sys-btn"
-                title="Sube la ilustración Gacha generada desde tu galería"
+                title="Cargar ilustración base (1000272220.jpg / 1000272221.jpg)"
                 style={{
                   padding: '5px 10px',
                   fontSize: '9px',
@@ -1477,7 +1624,7 @@ function JrpgFantasyPortrait({
                   cursor: 'pointer'
                 }}
               >
-                <ImageIcon size={11} color="#fbbf24" /> ARTE GACHA
+                <ImageIcon size={11} color="#fbbf24" /> BASE GACHA
                 <input
                   type="file"
                   accept="image/*"
@@ -1515,26 +1662,24 @@ function JrpgFantasyPortrait({
             {activeImageSrc ? (
               <img
                 src={activeImageSrc}
-                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Gacha`}
-                onError={() => !uploadedSrc && setStaticFallbackFailed(true)}
+                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Legendary Gacha`}
+                onError={() => !uploadedSrc && setCandidateIdx((prev) => prev + 1)}
                 style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
               />
             ) : (
               <LegendaryGachaCanvas
                 gender={gender}
-                weaponType={cls.weaponType || 'sword'}
                 stage={stage}
               />
             )}
 
-            {/* RESPLANDOR ATMOSFÉRICO NEON BLUE & GOLD SOBRE EL RETRATO */}
             <div
               className="gacha-aura-overlay"
               style={{
                 position: 'absolute',
                 inset: 0,
                 pointerEvents: 'none',
-                background: 'radial-gradient(circle at 20% 25%, rgba(0,240,255,0.16) 0%, transparent 45%), radial-gradient(circle at 80% 20%, rgba(251,191,36,0.16) 0%, transparent 45%)'
+                background: 'radial-gradient(circle at 20% 25%, rgba(0,240,255,0.14) 0%, transparent 45%), radial-gradient(circle at 80% 20%, rgba(251,191,36,0.14) 0%, transparent 45%)'
               }}
             />
 
@@ -1575,7 +1720,6 @@ function JrpgFantasyPortrait({
                 </div>
               </div>
 
-              {/* SELLO CIRCULAR DE GRADO CON DOBLE ARO DORADO Y CIAN */}
               <div style={{
                 width: '56px',
                 height: '56px',
@@ -2333,7 +2477,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
-      // Si el almacenamiento local excede cuota por imágenes muy grandes, guardar sin customGachaArt
       const fallbackPayload = {
         awakened,
         profile,
@@ -2367,7 +2510,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setTimeout(() => setToast(null), 4600);
   };
 
-  // CARGA Y COMPRESIÓN LIGERA DE ARTE GACHA DESDE GALERÍA
+  // CARGA Y COMPRESIÓN LIGERA DE BASE GACHA DESDE GALERÍA
   const handleUploadGachaArt = (e, targetGender) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -2384,7 +2527,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         ctx.drawImage(img, 0, 0, c.width, c.height);
         const compressedUrl = c.toDataURL('image/jpeg', 0.88);
         setCustomGachaArt((prev) => ({ ...prev, [targetGender]: compressedUrl }));
-        triggerToast(`¡Arte Gacha ${targetGender === 'female' ? 'Femenino' : 'Masculino'} equipado con éxito!`);
+        triggerToast(`¡Base Gacha ${targetGender === 'female' ? 'Femenina' : 'Masculina'} aplicada con éxito!`);
       };
       img.src = ev.target.result;
     };
