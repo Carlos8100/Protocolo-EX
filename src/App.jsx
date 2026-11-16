@@ -1,115 +1,117 @@
 ```react
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Shield,
   Flame,
   Trophy,
   Dumbbell,
   Moon,
   User,
-  Lock,
-  Upload,
+  Camera,
+  Sparkles,
+  Shield,
   CheckCircle2,
   XCircle,
-  AlertTriangle,
-  Sparkles,
+  CloudRain,
+  Zap,
+  Award,
+  Lock,
+  EyeOff,
+  Upload,
+  Scan,
   Cpu,
+  FileText,
   Calendar,
+  Plus,
+  RefreshCw,
+  Sliders,
+  HeartPulse,
+  AlertTriangle,
   ChevronUp,
   ChevronDown,
-  RefreshCw,
-  EyeOff,
-  Sliders,
-  Zap,
   Target,
-  FileText,
-  Clock,
-  HeartPulse,
-  Plus,
-  Menu,
-  X,
-  CloudRain,
-  Scan,
-  ShieldCheck,
   Swords,
-  RotateCcw
+  Crown,
+  Star,
+  RotateCcw,
+  Check,
+  X
 } from 'lucide-react';
 
 /**
  * ============================================================================
- * PROTOCOLO EX // SYSTEM FITNESS (EDICIÓN ANIME HUD v5.0)
- * Plataforma Holográfica RPG de Alto Rendimiento y Ciencia Biomecánica
+ * ¡PROTOCOLO EX! // ANIME FITNESS SYSTEM
+ * Plataforma Anime-Gaming de Alto Rendimiento, Gamificación RPG y Biomecánica
  * ============================================================================
  */
 
-const STORAGE_KEY = 'protocolo_ex_anime_hud_v5';
+const STORAGE_KEY = 'protocolo_ex_anime_vibrant_v1';
 
-// 1. DEFINICIÓN DE LOS 15 RANGOS COMPETITIVOS (6 divisiones cada uno: 6 -> 1)
+// 1. LOS 15 RANGOS COMPETITIVOS (Cada uno con 6 divisiones: 6 -> 1)
 const COMPETITIVE_RANKS = [
-  { id: 'tierra', name: 'Tierra', color: '#A87954', glow: 'rgba(168, 121, 84, 0.55)', badgeBg: 'from-amber-950/90 via-stone-950 to-black', tierGroup: 'Iniciado' },
-  { id: 'madera', name: 'Madera', color: '#C88A4B', glow: 'rgba(200, 138, 75, 0.55)', badgeBg: 'from-amber-900/80 via-neutral-950 to-black', tierGroup: 'Iniciado' },
-  { id: 'piedra', name: 'Piedra', color: '#94A3B8', glow: 'rgba(148, 163, 184, 0.55)', badgeBg: 'from-slate-800/85 via-zinc-950 to-black', tierGroup: 'Iniciado' },
-  { id: 'carbon', name: 'Carbón', color: '#64748B', glow: 'rgba(100, 116, 139, 0.6)', badgeBg: 'from-zinc-800/90 via-slate-950 to-black', tierGroup: 'Forja' },
-  { id: 'hierro', name: 'Hierro', color: '#CBD5E1', glow: 'rgba(203, 213, 225, 0.6)', badgeBg: 'from-slate-700/80 via-slate-950 to-black', tierGroup: 'Forja' },
-  { id: 'bronce', name: 'Bronce', color: '#EA580C', glow: 'rgba(234, 88, 12, 0.6)', badgeBg: 'from-orange-950/85 via-stone-950 to-black', tierGroup: 'Forja' },
-  { id: 'plata', name: 'Plata', color: '#E2E8F0', glow: 'rgba(226, 232, 240, 0.65)', badgeBg: 'from-slate-600/70 via-slate-950 to-black', tierGroup: 'Competitivo' },
-  { id: 'oro', name: 'Oro', color: '#F59E0B', glow: 'rgba(245, 158, 11, 0.7)', badgeBg: 'from-yellow-800/75 via-amber-950/90 to-black', tierGroup: 'Competitivo' },
-  { id: 'platino', name: 'Platino', color: '#2DD4BF', glow: 'rgba(45, 212, 191, 0.7)', badgeBg: 'from-teal-900/75 via-slate-950 to-black', tierGroup: 'Competitivo' },
-  { id: 'esmeralda', name: 'Esmeralda', color: '#10B981', glow: 'rgba(16, 185, 129, 0.75)', badgeBg: 'from-emerald-900/80 via-slate-950 to-black', tierGroup: 'Élite' },
-  { id: 'diamante', name: 'Diamante', color: '#38BDF8', glow: 'rgba(56, 189, 248, 0.8)', badgeBg: 'from-sky-800/80 via-indigo-950/90 to-black', tierGroup: 'Élite' },
-  { id: 'especialista', name: 'Especialista', color: '#818CF8', glow: 'rgba(129, 140, 248, 0.8)', badgeBg: 'from-indigo-900/80 via-slate-950 to-black', tierGroup: 'Élite' },
-  { id: 'maestro', name: 'Maestro', color: '#A855F7', glow: 'rgba(168, 85, 247, 0.85)', badgeBg: 'from-purple-900/85 via-slate-950 to-black', tierGroup: 'Soberano' },
-  { id: 'jefe_maestro', name: 'Jefe Maestro', color: '#EC4899', glow: 'rgba(236, 72, 153, 0.9)', badgeBg: 'from-fuchsia-950/90 via-slate-950 to-black', tierGroup: 'Soberano' },
-  { id: 'challenger', name: 'Challenger', color: '#00F0FF', glow: 'rgba(0, 240, 255, 0.95)', badgeBg: 'from-cyan-900/80 via-purple-950/85 to-amber-950/70', tierGroup: 'Cúspide' }
+  { id: 'tierra', name: 'Tierra', color: '#D97706', secondary: '#92400E', glow: 'rgba(217, 119, 6, 0.6)', league: 'Iniciado' },
+  { id: 'madera', name: 'Madera', color: '#F59E0B', secondary: '#B45309', glow: 'rgba(245, 158, 11, 0.6)', league: 'Iniciado' },
+  { id: 'piedra', name: 'Piedra', color: '#94A3B8', secondary: '#475569', glow: 'rgba(148, 163, 184, 0.6)', league: 'Iniciado' },
+  { id: 'carbon', name: 'Carbón', color: '#64748B', secondary: '#334155', glow: 'rgba(100, 116, 139, 0.65)', league: 'Forja' },
+  { id: 'hierro', name: 'Hierro', color: '#E2E8F0', secondary: '#64748B', glow: 'rgba(226, 232, 240, 0.65)', league: 'Forja' },
+  { id: 'bronce', name: 'Bronce', color: '#FB923C', secondary: '#C2410C', glow: 'rgba(251, 146, 60, 0.7)', league: 'Forja' },
+  { id: 'plata', name: 'Plata', color: '#F8FAFC', secondary: '#94A3B8', glow: 'rgba(248, 250, 252, 0.75)', league: 'Competitivo' },
+  { id: 'oro', name: 'Oro', color: '#FACC15', secondary: '#CA8A04', glow: 'rgba(250, 204, 21, 0.8)', league: 'Competitivo' },
+  { id: 'platino', name: 'Platino', color: '#2DD4BF', secondary: '#0D9488', glow: 'rgba(45, 212, 191, 0.8)', league: 'Competitivo' },
+  { id: 'esmeralda', name: 'Esmeralda', color: '#10B981', secondary: '#047857', glow: 'rgba(16, 185, 129, 0.85)', league: 'Élite' },
+  { id: 'diamante', name: 'Diamante', color: '#38BDF8', secondary: '#0284C7', glow: 'rgba(56, 189, 248, 0.9)', league: 'Élite' },
+  { id: 'especialista', name: 'Especialista', color: '#818CF8', secondary: '#4F46E5', glow: 'rgba(129, 140, 248, 0.9)', league: 'Élite' },
+  { id: 'maestro', name: 'Maestro', color: '#C084FC', secondary: '#7E22CE', glow: 'rgba(192, 132, 252, 0.9)', league: 'Soberano' },
+  { id: 'jefe_maestro', name: 'Jefe Maestro', color: '#F472B6', secondary: '#BE185D', glow: 'rgba(244, 114, 182, 0.95)', league: 'Soberano' },
+  { id: 'challenger', name: 'Challenger', color: '#00F5FF', secondary: '#FACC15', glow: 'rgba(0, 245, 255, 1)', league: 'Leyenda EX' }
 ];
 
-// 2. ESCALA CIENTÍFICA F A EX
+// 2. ESCALA CIENTÍFICA F A EX (Fuerza Absoluta, Fuerza Relativa y Físico)
 const SCIENTIFIC_GRADES = [
-  { grade: 'F', label: 'Base Inicial', color: '#64748B', bg: 'bg-slate-900/90 border-slate-600 text-slate-300', desc: 'Adaptación neuromuscular inicial y aprendizaje motor.' },
-  { grade: 'E', label: 'Novato Activo', color: '#94A3B8', bg: 'bg-zinc-900/90 border-zinc-500 text-zinc-200', desc: 'Coordinación intermuscular básica consolidada.' },
-  { grade: 'D', label: 'Intermedio Inicial', color: '#22C55E', bg: 'bg-green-950/90 border-green-500/70 text-green-300', desc: 'Reclutamiento eficiente en patrones multiarticulares.' },
-  { grade: 'C', label: 'Intermedio Sólido', color: '#10B981', bg: 'bg-emerald-950/90 border-emerald-400/80 text-emerald-300', desc: 'Hipertrofia funcional visible y control excéntrico.' },
-  { grade: 'B', label: 'Avanzado', color: '#06B6D4', bg: 'bg-cyan-950/90 border-cyan-400/80 text-cyan-300', desc: 'Alta densidad miofibrilar y eficiencia biomecánica.' },
-  { grade: 'A', label: 'Atleta Avanzado', color: '#3B82F6', bg: 'bg-blue-950/90 border-blue-400/90 text-blue-300', desc: 'Producción de fuerza y simetría muscular superior.' },
-  { grade: 'S', label: 'Élite Regional', color: '#A855F7', bg: 'bg-purple-950/90 border-purple-400/90 text-purple-300', desc: 'Tasa de desarrollo de fuerza (RFD) de alto nivel.' },
-  { grade: 'SS', label: 'Élite Nacional', color: '#D946EF', bg: 'bg-fuchsia-950/90 border-fuchsia-400/90 text-fuchsia-300', desc: 'Optimización extrema de palancas y composición corporal.' },
-  { grade: 'SSS', label: 'Clase Mundial', color: '#F59E0B', bg: 'bg-amber-950/90 border-amber-400 text-amber-300', desc: 'Límite fisiológico natural y reclutamiento máximo.' },
-  { grade: 'EX', label: 'Anomalía Biomecánica', color: '#00F0FF', bg: 'bg-gradient-to-r from-cyan-950 via-purple-950 to-amber-950 border-cyan-300 text-cyan-200 shadow-[0_0_15px_rgba(0,240,255,0.4)]', desc: 'Nivel sobrehumano. Referente absoluto del Sistema.' }
+  { grade: 'F', label: 'Despertar Inicial', badge: 'bg-slate-800 border-slate-500 text-slate-200', desc: 'Adaptación neuromuscular inicial y aprendizaje técnico.' },
+  { grade: 'E', label: 'Aprendiz Activo', badge: 'bg-zinc-800 border-zinc-400 text-zinc-100', desc: 'Coordinación intermuscular básica consolidada.' },
+  { grade: 'D', label: 'Guerrero Novato', badge: 'bg-emerald-950 border-emerald-500 text-emerald-300', desc: 'Reclutamiento sólido en patrones multiarticulares.' },
+  { grade: 'C', label: 'Atleta Intermedio', badge: 'bg-teal-950 border-teal-400 text-teal-200', desc: 'Hipertrofia funcional visible y control excéntrico.' },
+  { grade: 'B', label: 'Atleta Avanzado', badge: 'bg-cyan-950 border-cyan-400 text-cyan-200', desc: 'Alta densidad miofibrilar y eficiencia biomecánica.' },
+  { grade: 'A', label: 'Vanguardia Élite', badge: 'bg-blue-950 border-blue-400 text-blue-200', desc: 'Producción de fuerza y simetría muscular superior.' },
+  { grade: 'S', label: 'Rango S // Regional', badge: 'bg-purple-950 border-purple-400 text-purple-200', desc: 'Tasa de desarrollo de fuerza (RFD) extraordinaria.' },
+  { grade: 'SS', label: 'Rango SS // Nacional', badge: 'bg-fuchsia-950 border-fuchsia-400 text-fuchsia-200', desc: 'Optimización extrema de palancas y composición corporal.' },
+  { grade: 'SSS', label: 'Rango SSS // Mundial', badge: 'bg-amber-950 border-amber-400 text-amber-200', desc: 'Límite fisiológico natural y reclutamiento máximo.' },
+  { grade: 'EX', label: 'RANGO EX // ANOMALÍA', badge: 'bg-gradient-to-r from-cyan-600 via-fuchsia-600 to-amber-500 border-yellow-300 text-white shadow-[0_0_20px_rgba(250,204,21,0.6)]', desc: 'Nivel sobrehumano. Referente absoluto del Sistema.' }
 ];
 
-// 3. CONTINGENCIAS INTELIGENTES ANTE IMPREVISTOS
-const CONTINGENCY_PRESETS = [
+// 3. CONTINGENCIAS INTELIGENTES PARA IMPREVISTOS
+const CONTINGENCY_OPTIONS = [
   {
     id: 'lluvia',
-    label: 'Está lloviendo / Clima adverso',
-    icon: '🌧️',
-    title: 'Protocolo Indoor HIIT & Potencia Reactiva (Casa)',
-    detail: '5 rondas: 45s Burpees explosivos + 45s Sentadillas con salto + 45s Mountain Climbers + 45s Plancha dinámica (30s descanso entre rondas).',
-    lpBonus: 30
+    emoji: '🌧️',
+    reason: 'Está lloviendo / Clima adverso',
+    title: 'Desafío Relámpago Indoor HIIT & Potencia (Casa)',
+    plan: '5 rondas explosivas: 45s Burpees + 45s Sentadillas con salto + 45s Mountain Climbers + 45s Plancha dinámica (30s descanso).',
+    lp: 35
   },
   {
     id: 'gym_cerrado',
-    label: 'Gimnasio cerrado / Sin acceso a máquinas',
-    icon: '🔒',
-    title: 'Protocolo Biomecánico Calisténico de Alta Tensión (Casa)',
-    detail: '4 series al fallo técnico (RIR 1): Sentadilla Búlgara con pausa 3s + Flexiones en déficit profundo + Remo invertido bajo mesa + Elevaciones de talón unilaterales.',
-    lpBonus: 35
+    emoji: '🔒',
+    reason: 'Gimnasio cerrado / Sin acceso a máquinas',
+    title: 'Protocolo Calisténico de Alta Tensión Mecánica (Casa)',
+    plan: '4 series al fallo técnico (RIR 1): Sentadilla Búlgara con pausa 3s + Flexiones en déficit profundo + Remo invertido bajo mesa.',
+    lp: 40
   },
   {
     id: 'poco_tiempo',
-    label: 'Poco tiempo disponible (< 25 min)',
-    icon: '⏱️',
-    title: 'Protocolo Myo-Reps / Densidad Metabólica Express',
-    detail: 'Bloque de 20 min: 1 serie de activación (15 reps) + 4 mini-series de 5 reps con 15s de descanso en patrones de empuje, tracción y dominancia de rodilla.',
-    lpBonus: 25
+    emoji: '⚡',
+    reason: 'Poco tiempo disponible (< 25 min)',
+    title: 'Circuito Myo-Reps Metabólico Express (Casa)',
+    plan: 'Bloque de 20 min: 1 serie de activación (15 reps) + 4 mini-series de 5 reps con 15s de pausa en empuje, tracción y pierna.',
+    lp: 30
   },
   {
-    id: 'fatiga_articular',
-    label: 'Molestia articular / Fatiga acumulada',
-    icon: '🧬',
-    title: 'Protocolo Isométrico Analgésico & Movilidad Activa',
-    detail: '3 rondas: Isometría de sentadilla 45s (60° flexión) + Dead Hang 40s + Puente glúteo unilateral 15 reps + Flujo torácico controlado.',
-    lpBonus: 25
+    id: 'fatiga',
+    emoji: '🧬',
+    reason: 'Cansancio acumulado / Molestia articular',
+    title: 'Flujo Isométrico Recuperador & Movilidad Activa',
+    plan: '3 rondas: Sentadilla isométrica en pared 45s + Puente glúteo unilateral 15 reps + Movilidad escapular y torácica controlada.',
+    lp: 30
   }
 ];
 
@@ -117,86 +119,61 @@ const CONTINGENCY_PRESETS = [
 const BIOMECHANICAL_ROUTINES = {
   gimnasio: {
     hipertrofia: {
-      focus: 'Tensión Mecánica en Estiramiento + Estabilidad Externa',
-      rationale: 'Prioriza ejercicios con perfil de resistencia descendente o carga máxima en longitud muscular larga, maximizando el reclutamiento de unidades motoras de alto umbral (principio de Henneman) con fatiga sistémica controlada.',
-      days: [
+      title: 'Hipertrofia Científica // Tensión en Estiramiento',
+      summary: 'Maximiza el reclutamiento de unidades motoras de alto umbral cargando los músculos en longitud larga con estabilidad externa.',
+      blocks: [
         {
-          day: 'Día 1: Torso A (Énfasis Estiramiento & Plano Frontal)',
+          day: 'Sesión A: Torso (Énfasis Estiramiento & Plano Frontal)',
           exercises: [
-            { name: 'Press Inclinado con Mancuernas (30°)', sets: '3x8-10', rir: 'RIR 1', rest: '2.5 min', tempo: '3-1-1-0', biomech: 'Máxima elongación de fibras claviculares del pectoral mayor sin bloqueo escapular.' },
-            { name: 'Jalón al Pecho Agarre Neutro Estrecho', sets: '3x10-12', rir: 'RIR 1', rest: '2 min', tempo: '2-1-1-1', biomech: 'Alinea el brazo de momento en el plano sagital para maximizar el dorsal ancho.' },
-            { name: 'Elevaciones Laterales en Polea (altura muñeca)', sets: '4x12-15', rir: 'RIR 0-1', rest: '90 s', tempo: '2-0-1-1', biomech: 'Tensión continua en los primeros 30° de abducción donde la mancuerna pierde torque.' },
-            { name: 'Extensión de Tríceps sobre la Cabeza en Polea', sets: '3x10-12', rir: 'RIR 1', rest: '90 s', tempo: '3-1-1-0', biomech: 'Aprovecha la hipertrofia mediada por estiramiento de la cabeza larga del tríceps.' }
+            { name: 'Press Inclinado con Mancuernas (30°)', sets: '3x8-10', rir: 'RIR 1', biomech: 'Elongación máxima de fibras claviculares del pectoral sin bloqueo escapular.' },
+            { name: 'Jalón al Pecho Agarre Neutro Estrecho', sets: '3x10-12', rir: 'RIR 1', biomech: 'Alinea el brazo de momento en el plano sagital para aislar el dorsal ancho.' },
+            { name: 'Elevaciones Laterales en Polea', sets: '4x12-15', rir: 'RIR 0-1', biomech: 'Tensión continua en los primeros 30° de abducción donde la mancuerna pierde torque.' },
+            { name: 'Extensión de Tríceps sobre la Cabeza en Polea', sets: '3x10-12', rir: 'RIR 1', biomech: 'Hipertrofia mediada por estiramiento de la cabeza larga del tríceps.' }
           ]
         },
         {
-          day: 'Día 2: Pierna A (Dominancia de Rodilla & Cadena Posterior)',
+          day: 'Sesión B: Pierna (Dominancia de Rodilla & Cadena Posterior)',
           exercises: [
-            { name: 'Sentadilla Hack o Sentadilla con Talones Elevados', sets: '3x8-10', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Maximiza la dorsiflexión y el momento flexor de rodilla para el cuádriceps.' },
-            { name: 'Peso Muerto Rumano (RDL) con Barra', sets: '3x8-10', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Carga los isquiosurales en posición alargada con bisagra de cadera pura.' },
-            { name: 'Curl Femoral Sentado', sets: '3x10-12', rir: 'RIR 0-1', rest: '2 min', tempo: '2-1-1-1', biomech: 'Flexión de cadera previa que pre-estira el bíceps femoral, superior al curl tumbado.' },
-            { name: 'Elevación de Talones de Pie (Pausa abajo)', sets: '4x12-15', rir: 'RIR 0', rest: '90 s', tempo: '2-2-1-0', biomech: 'Elimina el rebote del tendón de Aquiles para aislar el gastrocnemio.' }
-          ]
-        },
-        {
-          day: 'Día 3: Torso B (Tracción Horizontal & Estabilidad Escapular)',
-          exercises: [
-            { name: 'Remo en Máquina con Apoyo al Pecho', sets: '3x8-10', rir: 'RIR 1', rest: '2.5 min', tempo: '2-1-1-1', biomech: 'Elimina la fatiga lumbar del erector espinal permitiendo llevar trapecio y romboides al fallo.' },
-            { name: 'Press Plano en Máquina Convergente', sets: '3x10-12', rir: 'RIR 1', rest: '2 min', tempo: '3-0-1-0', biomech: 'Convergencia hacia la línea media que respeta la función aductora del pectoral.' },
-            { name: 'Curl Predicador Unilateral con Mancuerna', sets: '3x10-12', rir: 'RIR 0-1', rest: '90 s', tempo: '3-1-1-0', biomech: 'Pico de torque máximo en el inicio de la flexión de codo con hombro en flexión.' },
-            { name: 'Face Pull en Polea Alta con Rotación Externa', sets: '3x15', rir: 'RIR 2', rest: '90 s', tempo: '2-1-1-1', biomech: 'Fortalece infraespinoso, redondo menor y deltoides posterior.' }
+            { name: 'Sentadilla Hack o con Talones Elevados', sets: '3x8-10', rir: 'RIR 1-2', biomech: 'Maximiza la dorsiflexión y el momento flexor de rodilla para el cuádriceps.' },
+            { name: 'Peso Muerto Rumano (RDL) con Barra', sets: '3x8-10', rir: 'RIR 1-2', biomech: 'Carga los isquiosurales en posición alargada con bisagra pura de cadera.' },
+            { name: 'Curl Femoral Sentado', sets: '3x10-12', rir: 'RIR 0-1', biomech: 'Pre-estira el bíceps femoral desde la cadera flexionada.' },
+            { name: 'Elevación de Talones de Pie (Pausa 2s abajo)', sets: '4x12-15', rir: 'RIR 0', biomech: 'Anula el rebote elástico del tendón de Aquiles para aislar el gastrocnemio.' }
           ]
         }
       ]
     },
     fuerza: {
-      focus: 'Especificidad Neuromuscular + Tasa de Desarrollo de Fuerza (RFD)',
-      rationale: 'Optimiza la coordinación intramuscular y la rigidez tendinosa mediante cargas del 82%-92% del 1RM con descanso completo para resíntesis de fosfocreatina (ATP-PCr).',
-      days: [
+      title: 'Fuerza Máxima // Tasa de Desarrollo de Fuerza (RFD)',
+      summary: 'Optimiza la coordinación intramuscular y sincronización neural con cargas altas (82%-92% 1RM) y descansos completos.',
+      blocks: [
         {
-          day: 'Día 1: Fuerza Neural Sentadilla & Empuje Vertical',
+          day: 'Sesión A: Sentadilla & Empuje Vertical Neural',
           exercises: [
-            { name: 'Sentadilla Trasera Barra Alta/Baja (Competición)', sets: '4x4-5', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Fase concéntrica explosiva (X) para maximizar reclutamiento sincrónico.' },
-            { name: 'Press Militar Estricto de Pie con Barra', sets: '4x5-6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-0-X-0', biomech: 'Transmisión de fuerza a través de cadena cinética cerrada y anti-extensión del core.' },
-            { name: 'Sentadilla Frontal con Pausa (2s)', sets: '3x5', rir: 'RIR 2', rest: '3 min', tempo: '3-2-X-0', biomech: 'Disipa energía elástica en el punto de estancamiento (sticking point).' }
+            { name: 'Sentadilla Trasera Competición', sets: '4x4-5', rir: 'RIR 2', biomech: 'Fase concéntrica explosiva para maximizar reclutamiento sincrónico.' },
+            { name: 'Press Militar Estricto de Pie con Barra', sets: '4x5-6', rir: 'RIR 1-2', biomech: 'Transferencia de fuerza en cadena cinética cerrada y anti-extensión del core.' },
+            { name: 'Sentadilla Frontal con Pausa (2s)', sets: '3x5', rir: 'RIR 2', biomech: 'Disipa energía elástica en el punto de estancamiento.' }
           ]
         },
         {
-          day: 'Día 2: Fuerza Neural Press Banca & Tracción Pesada',
+          day: 'Sesión B: Press Banca & Tracción Pesada',
           exercises: [
-            { name: 'Press de Banca Plano con Pausa Táctil (1s)', sets: '4x4-5', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Mejora la estabilidad escapular y potencia de salida desde el pecho.' },
-            { name: 'Dominadas Lastradas Pronas/Neutras', sets: '4x5-6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-0-X-1', biomech: 'Sobrecarga vertical pura para dorsal ancho y flexores de codo.' },
-            { name: 'Remo Pendlay Estricto desde el Suelo', sets: '3x6', rir: 'RIR 2', rest: '2.5 min', tempo: '1-0-X-0', biomech: 'Desarrolla aceleración concéntrica desde posición muerta.' }
-          ]
-        },
-        {
-          day: 'Día 3: Fuerza Neural Peso Muerto & Potencia',
-          exercises: [
-            { name: 'Peso Muerto Convencional / Sumo', sets: '4x3-4', rir: 'RIR 2', rest: '4.5 min', tempo: '2-1-X-0', biomech: 'Generación máxima de torque extensor de cadera y rigidez torácica.' },
-            { name: 'Press Banca Agarre Cerrado', sets: '3x6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-1-X-0', biomech: 'Refuerza el bloqueo final (lockout) mediante tríceps y deltoides anterior.' },
-            { name: 'Hip Thrust Pesado con Barra', sets: '3x6-8', rir: 'RIR 1', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Máximo momento de fuerza en extensión terminal de cadera.' }
+            { name: 'Press de Banca Plano con Pausa Táctil (1s)', sets: '4x4-5', rir: 'RIR 2', biomech: 'Estabilidad escapular y potencia de salida desde el pecho.' },
+            { name: 'Peso Muerto Convencional / Sumo', sets: '4x3-4', rir: 'RIR 2', biomech: 'Torque máximo extensor de cadera y rigidez torácica.' },
+            { name: 'Dominadas Lastradas Neutras', sets: '4x5-6', rir: 'RIR 1', biomech: 'Sobrecarga vertical pura para dorsal y flexores de codo.' }
           ]
         }
       ]
     },
     recomposicion: {
-      focus: 'Gasto Energético Alto + Preservación de Masa Magra',
-      rationale: 'Combina bloques de fuerza básica para retener masa muscular en déficit calórico moderado con superseries antagonistas que elevan el EPOC sin comprometer la técnica.',
-      days: [
+      title: 'Recomposición Corporal // Densidad Metabólica',
+      summary: 'Combina tensión mecánica pesada para retener masa magra con superseries antagonistas que elevan el gasto calórico.',
+      blocks: [
         {
-          day: 'Día 1: Full Body Metabólico A (Antagonistas)',
+          day: 'Sesión Full Body Antagonista',
           exercises: [
-            { name: 'Superserie: Prensa Inclinada + Curl Femoral', sets: '3x10+12', rir: 'RIR 1', rest: '2 min', tempo: '3-0-1-0', biomech: 'Inhibición recíproca que mejora la recuperación entre agonista y antagonista.' },
-            { name: 'Superserie: Press Banca Mancuernas + Remo Polea Baja', sets: '3x10+12', rir: 'RIR 1', rest: '2 min', tempo: '2-1-1-0', biomech: 'Equilibrio exacto 1:1 entre empuje horizontal y tracción.' },
-            { name: 'Farmer Walk (Paseo del Granjero Pesado)', sets: '4x35m', rir: 'RIR 1', rest: '90 s', tempo: 'Controlado', biomech: 'Estabilidad lateral de cadera (glúteo medio), trapecio y agarre.' }
-          ]
-        },
-        {
-          day: 'Día 2: Full Body Metabólico B (Cadena Posterior & Core)',
-          exercises: [
-            { name: 'Peso Muerto con Barra Hexagonal / Mancuernas', sets: '3x8-10', rir: 'RIR 1-2', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Centro de masa alineado que reduce el cizallamiento lumbar.' },
-            { name: 'Jalón Prono + Fondos Asistidos/Paralelas', sets: '3x10+10', rir: 'RIR 1', rest: '2 min', tempo: '2-1-1-0', biomech: 'Trabajo vertical completo con alta demanda metabólica.' },
-            { name: 'Pallof Press en Polea + Crunch Declinado', sets: '3x12/lado', rir: 'RIR 1', rest: '60 s', tempo: '2-2-1-0', biomech: 'Anti-rotación del oblicuo interno/externo y flexión espinal.' }
+            { name: 'Superserie: Prensa Inclinada + Curl Femoral', sets: '3x10+12', rir: 'RIR 1', biomech: 'Inhibición recíproca que acelera la recuperación entre series.' },
+            { name: 'Superserie: Press Banca Mancuernas + Remo Polea', sets: '3x10+12', rir: 'RIR 1', biomech: 'Equilibrio 1:1 entre empuje horizontal y tracción escapular.' },
+            { name: 'Paseo del Granjero Pesado (Farmer Walk)', sets: '4x35m', rir: 'RIR 1', biomech: 'Estabilidad lateral de cadera, trapecio y fuerza de agarre.' }
           ]
         }
       ]
@@ -204,60 +181,50 @@ const BIOMECHANICAL_ROUTINES = {
   },
   casa: {
     hipertrofia: {
-      focus: 'Manipulación de Palancas + Tiempo Bajo Tensión (TUT)',
-      rationale: 'Al no contar con cargas externas masivas, se alargan los brazos de momento y se usan ejercicios unilaterales y déficits para alcanzar el fallo mecánico entre 8 y 18 repeticiones.',
-      days: [
+      title: 'Hipertrofia en Casa // Palancas Largas & Unilateral',
+      summary: 'Alarga los brazos de momento y utiliza carga unilateral para alcanzar estímulo mecánico efectivo sin máquinas.',
+      blocks: [
         {
-          day: 'Día 1: Empuje & Pierna Anterior (Palancas Largas)',
+          day: 'Sesión A: Empuje & Cuádriceps Unilateral',
           exercises: [
-            { name: 'Sentadilla Búlgara con Elevación de Talón', sets: '4x10-14/lado', rir: 'RIR 0-1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Duplica la carga relativa sobre un solo miembro inferior sin necesidad de barra.' },
-            { name: 'Flexiones en Déficit (manos sobre libros/soportes)', sets: '4x12-18', rir: 'RIR 0-1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Aumenta el rango de abducción horizontal para estirar el pectoral mayor.' },
-            { name: 'Flexiones en Pica (Pike Push-Ups elevadas)', sets: '3x8-12', rir: 'RIR 1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Simula el ángulo de un press militar para deltoides anterior y medio.' },
-            { name: 'Extensión de Tríceps en Suelo / Mesa (Bodyweight Skullcrusher)', sets: '3x12-15', rir: 'RIR 0', rest: '90 s', tempo: '3-1-1-0', biomech: 'Aislamiento puro de extensión de codo con peso corporal.' }
+            { name: 'Sentadilla Búlgara con Elevación de Talón', sets: '4x10-14/lado', rir: 'RIR 0-1', biomech: 'Duplica la carga relativa sobre un solo miembro inferior.' },
+            { name: 'Flexiones en Déficit (manos elevadas en soportes)', sets: '4x12-18', rir: 'RIR 0-1', biomech: 'Aumenta el rango de abducción horizontal del pectoral mayor.' },
+            { name: 'Flexiones en Pica (Pike Push-Ups)', sets: '3x8-12', rir: 'RIR 1', biomech: 'Simula el vector vertical del press militar para deltoides.' }
           ]
         },
         {
-          day: 'Día 2: Tracción & Cadena Posterior Unilateral',
+          day: 'Sesión B: Tracción & Cadena Posterior en Casa',
           exercises: [
-            { name: 'Remo Invertido Bajo Mesa / Barra Baja (pies elevados)', sets: '4x10-15', rir: 'RIR 0-1', rest: '2 min', tempo: '2-1-1-1', biomech: 'Retracción escapular completa bajo vector horizontal.' },
-            { name: 'Curl Nórdico Excéntrico / Deslizamiento Femoral en Suelo', sets: '4x8-12', rir: 'RIR 1', rest: '2 min', tempo: '4-0-1-0', biomech: 'Sobrecarga excéntrica máxima en isquiosurales, clave para prevenir desgarros.' },
-            { name: 'Peso Muerto Unilateral (B-Stance RDL con mochila/mancuerna)', sets: '3x12/lado', rir: 'RIR 1', rest: '90 s', tempo: '3-1-1-0', biomech: 'Estabilidad pélvica anti-rotacional y estiramiento de cadena posterior.' },
-            { name: 'Elevación de Talón Unilateral en Escalón', sets: '4x15-20/lado', rir: 'RIR 0', rest: '60 s', tempo: '2-2-1-0', biomech: 'Déficit plantar completo para hipertrofia de tríceps sural.' }
+            { name: 'Remo Invertido Bajo Mesa / Barra Baja', sets: '4x10-15', rir: 'RIR 0-1', biomech: 'Retracción escapular completa bajo vector horizontal.' },
+            { name: 'Curl Nórdico Excéntrico / Deslizamiento Femoral', sets: '4x8-12', rir: 'RIR 1', biomech: 'Sobrecarga excéntrica máxima en isquiosurales.' },
+            { name: 'Elevación de Talón Unilateral en Escalón', sets: '4x15-20/lado', rir: 'RIR 0', biomech: 'Déficit plantar completo para tríceps sural.' }
           ]
         }
       ]
     },
     fuerza: {
-      focus: 'Progresiones Gimnásticas + Isometrías Máximas',
-      rationale: 'Incrementa la tensión neural mediante progresiones unilaterales avanzadas y contracciones isométricas de máxima intención (MVIC).',
-      days: [
+      title: 'Fuerza Calisténica // Progresiones Gimnásticas',
+      summary: 'Incrementa la demanda neural mediante palancas asimétricas e isometrías de máxima contracción voluntaria.',
+      blocks: [
         {
-          day: 'Día 1: Potencia Unilateral & Empuje Avanzado',
+          day: 'Sesión Potencia & Control Unilateral',
           exercises: [
-            { name: 'Pistol Squat Asistida o Sentadilla Camarón (Shrimp Squat)', sets: '4x5-6/lado', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-X-0', biomech: 'Demanda máxima de torque extensor de rodilla y estabilidad de tobillo.' },
-            { name: 'Flexiones Arqueras o Pseudo-Planche Push-Ups', sets: '4x6-8', rir: 'RIR 1', rest: '3 min', tempo: '2-1-X-0', biomech: 'Desplaza el centro de gravedad hacia adelante aumentando la carga en deltoides y pecho.' },
-            { name: 'Sentadilla Isométrica contra Pared (Wall Sit Unilateral)', sets: '3x35s/lado', rir: 'RIR 1', rest: '2 min', tempo: 'Isométrico', biomech: 'Reclutamiento neural sostenido sin impacto articular.' }
-          ]
-        },
-        {
-          day: 'Día 2: Tracción Unilateral & Bisagra Explosiva',
-          exercises: [
-            { name: 'Remo Arquero Unilateral / Dominadas en Marco o Barra', sets: '4x6-8', rir: 'RIR 1', rest: '3 min', tempo: '2-1-X-1', biomech: 'Sobrecarga asimétrica de dorsal ancho y bíceps braquial.' },
-            { name: 'Puente Glúteo Unilateral Explosivo con Pausa Alta', sets: '4x8/lado', rir: 'RIR 1', rest: '2 min', tempo: '2-2-X-0', biomech: 'Potencia de extensión de cadera en ángulo de máxima activación glútea.' },
-            { name: 'Plancha RKC (Contracción Máxima Total)', sets: '3x30s', rir: 'RIR 1', rest: '90 s', tempo: 'Isométrico', biomech: 'Co-contracción simultánea de recto abdominal, glúteos y dorsales.' }
+            { name: 'Pistol Squat Asistida o Sentadilla Camarón', sets: '4x5-6/lado', rir: 'RIR 1-2', biomech: 'Demanda máxima de torque extensor de rodilla y movilidad de tobillo.' },
+            { name: 'Flexiones Arqueras / Pseudo-Planche', sets: '4x6-8', rir: 'RIR 1', biomech: 'Desplaza el centro de masa aumentando la carga en hombros y pecho.' },
+            { name: 'Plancha RKC (Contracción Máxima Total)', sets: '3x30s', rir: 'RIR 1', biomech: 'Co-contracción simultánea de abdomen, glúteos y dorsales.' }
           ]
         }
       ]
     },
     recomposicion: {
-      focus: 'Acondicionamiento Metabólico + Densidad Muscular en Casa',
-      rationale: 'Maximiza la oxidación lipídica y la capacidad cardiovascular preservando tejido contráctil mediante circuitos biomecánicos de cuerpo completo.',
-      days: [
+      title: 'Acondicionamiento Bio-Metabólico en Casa',
+      summary: 'Maximiza la oxidación lipídica y capacidad cardiovascular preservando tejido muscular activo.',
+      blocks: [
         {
-          day: 'Día 1: Circuito Bio-Metabólico Total',
+          day: 'Circuito Metabólico de Cuerpo Completo',
           exercises: [
-            { name: 'Zancadas Reversas Alternas + Flexiones Explosivas', sets: '4x12/lado + 12', rir: 'RIR 1', rest: '90 s', tempo: '2-0-1-0', biomech: 'Transición rápida tren inferior-superior que dispara el gasto cardíaco.' },
-            { name: 'Remo Invertido + Mountain Climbers Controlados', sets: '4x12 + 30s', rir: 'RIR 1', rest: '90 s', tempo: '2-0-1-0', biomech: 'Tracción postural combinada con flexión dinámica de cadera.' }
+            { name: 'Zancadas Reversas Alternas + Flexiones Explosivas', sets: '4x12/lado + 12', rir: 'RIR 1', biomech: 'Transición tren inferior-superior que eleva el gasto cardíaco.' },
+            { name: 'Remo Invertido + Mountain Climbers Controlados', sets: '4x12 + 30s', rir: 'RIR 1', biomech: 'Tracción postural combinada con flexión dinámica de cadera.' }
           ]
         }
       ]
@@ -265,58 +232,57 @@ const BIOMECHANICAL_ROUTINES = {
   },
   hibrido: {
     hipertrofia: {
-      focus: 'Cargas Pesadas en Gimnasio + Volumen de Detalle en Casa',
-      rationale: 'Aprovecha el equipamiento pesado del gimnasio para los movimientos compuestos principales y utiliza días en casa para acumular volumen metabólico de recuperación rápida.',
-      days: [
+      title: 'Sistema Híbrido // Cargas Pesadas Gym + Volumen Casa',
+      summary: 'Usa el gimnasio para los compuestos pesados y días en casa para acumular volumen metabólico de rápida recuperación.',
+      blocks: [
         {
-          day: 'Día 1 (GIMNASIO): Compuestos Pesados Torso/Pierna',
+          day: 'Día GIMNASIO: Compuestos Pesados',
           exercises: [
-            { name: 'Sentadilla Trasera o Prensa Pesada', sets: '3x6-8', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Carga axial/mecánica imposible de replicar fácilmente en casa.' },
-            { name: 'Press de Banca Inclinado con Barra', sets: '3x6-8', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Sobrecarga progresiva lineal de alta precisión.' },
-            { name: 'Jalón al Pecho / Dominadas Lastradas', sets: '3x8-10', rir: 'RIR 1', rest: '2.5 min', tempo: '2-1-1-1', biomech: 'Tracción vertical con resistencia estable.' }
+            { name: 'Sentadilla Trasera o Prensa Pesada', sets: '3x6-8', rir: 'RIR 1-2', biomech: 'Carga axial/mecánica de alta precisión.' },
+            { name: 'Press Banca Inclinado + Jalón al Pecho', sets: '3x8-10 c/u', rir: 'RIR 1', biomech: 'Empuje y tracción vertical equilibrados.' }
           ]
         },
         {
-          day: 'Día 2 (CASA): Bomba Metabólica, Hombros, Brazos & Core',
+          day: 'Día CASA: Detalle Estético & Bomba Metabólica',
           exercises: [
-            { name: 'Elevaciones Laterales con Banda/Mancuerna + Pike Push-Ups', sets: '4x15 + 10', rir: 'RIR 0', rest: '90 s', tempo: '2-0-1-1', biomech: 'Acumulación de volumen efectivo en deltoides sin fatiga sistémica.' },
-            { name: 'Sentadilla Búlgara + Flexiones en Déficit', sets: '3x12/lado + 15', rir: 'RIR 1', rest: '2 min', tempo: '3-0-1-0', biomech: 'Estímulo unilateral de alta frecuencia semanal.' }
+            { name: 'Sentadilla Búlgara + Flexiones en Déficit', sets: '3x12/lado + 15', rir: 'RIR 1', biomech: 'Estímulo unilateral de alta frecuencia semanal.' },
+            { name: 'Pike Push-Ups + Elevaciones Laterales Banda/Mancuerna', sets: '4x12 + 15', rir: 'RIR 0', biomech: 'Volumen efectivo para deltoides sin fatiga sistémica.' }
           ]
         }
       ]
     },
     fuerza: {
-      focus: 'Días Primarios en Gym + Potencia/Movilidad en Casa',
-      rationale: 'Concentra el 100% de los levantamientos con barra en el gimnasio y usa las sesiones en casa para potencia pliométrica, estabilidad de core y prevención de lesiones.',
-      days: [
+      title: 'Sistema Híbrido Fuerza // SBD Gym + Pliometría Casa',
+      summary: 'Concentra el trabajo pesado con barra en el gimnasio y la potencia reactiva en casa.',
+      blocks: [
         {
-          day: 'Día 1 (GIMNASIO): Los 3 Grandes (SBD Neural)',
+          day: 'Día GIMNASIO: Los 3 Grandes (SBD)',
           exercises: [
-            { name: 'Sentadilla + Press de Banca + Peso Muerto (Esquema Top Set)', sets: '3x4 cada uno', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Sinergia neuromuscular de alta intensidad en una sola sesión.' }
+            { name: 'Sentadilla + Press Banca + Peso Muerto (Top Sets)', sets: '3x4 c/u', rir: 'RIR 2', biomech: 'Sinergia neuromuscular máxima en una sesión.' }
           ]
         },
         {
-          day: 'Día 2 (CASA): Potencia Reactiva & Estabilidad Escapular',
+          day: 'Día CASA: Potencia Explosiva & Core',
           exercises: [
-            { name: 'Saltos al Cajón / Squat Jumps + Flexiones Pliométricas', sets: '4x6 + 6', rir: 'RIR 2', rest: '2 min', tempo: 'Explosivo', biomech: 'Mejora la curva fuerza-velocidad y el ciclo estiramiento-acortamiento.' }
+            { name: 'Squat Jumps + Flexiones Pliométricas', sets: '4x6 + 6', rir: 'RIR 2', biomech: 'Optimiza el ciclo estiramiento-acortamiento (CEA).' }
           ]
         }
       ]
     },
     recomposicion: {
-      focus: 'Fuerza en Gym + Cardio/Circuitos en Casa',
-      rationale: 'Mantiene la fuerza máxima en sala de pesas mientras maximiza el gasto calórico semanal desde casa sin traslados extra.',
-      days: [
+      title: 'Sistema Híbrido Recomposición // Tensión + HIIT',
+      summary: 'Preserva fuerza en sala de pesas y dispara el gasto energético semanal desde casa.',
+      blocks: [
         {
-          day: 'Día 1 (GIMNASIO): Full Body Tensión Mecánica',
+          day: 'Día GIMNASIO: Full Body Tensión Mecánica',
           exercises: [
-            { name: 'Peso Muerto Rumano + Press Plano + Remo con Barra', sets: '3x8 cada uno', rir: 'RIR 1-2', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Preserva masa muscular en los principales grupos motores.' }
+            { name: 'Peso Muerto Rumano + Press Plano + Remo Barra', sets: '3x8 c/u', rir: 'RIR 1-2', biomech: 'Mantiene masa muscular en déficit calórico.' }
           ]
         },
         {
-          day: 'Día 2 (CASA): Acondicionamiento HIIT & Core',
+          day: 'Día CASA: Circuito HIIT & Core',
           exercises: [
-            { name: 'Burpees Técnicos + Zancadas + Plancha Dinámica', sets: '5 rondas x 40s', rir: 'RIR 1', rest: '40 s', tempo: 'Fluido', biomech: 'Eleva el VO2 y la densidad energética semanal.' }
+            { name: 'Burpees Técnicos + Zancadas + Plancha Dinámica', sets: '5 rondas x 40s', rir: 'RIR 1', biomech: 'Eleva el consumo post-ejercicio (EPOC).' }
           ]
         }
       ]
@@ -325,443 +291,322 @@ const BIOMECHANICAL_ROUTINES = {
 };
 
 // ============================================================================
-// FUNCIONES CIENTÍFICAS DE CÁLCULO Y EVALUACIÓN
+// FUNCIONES DE CÁLCULO CIENTÍFICO Y PROGRESIÓN
 // ============================================================================
 
-function getCompetitiveRankInfo(totalLP) {
-  const clampedLP = Math.max(0, Math.min(8999, Math.round(totalLP)));
-  const totalTierIndex = Math.floor(clampedLP / 100); // 0 a 89
-  const rankIndex = Math.min(14, Math.floor(totalTierIndex / 6)); // 0 a 14
-  const division = 6 - (totalTierIndex % 6); // 6 (más baja) a 1 (más alta)
-  const divisionLP = clampedLP % 100;
+function getRankProgress(totalLP) {
+  const safeLP = Math.max(0, Math.min(8999, Math.round(totalLP)));
+  const globalDivIndex = Math.floor(safeLP / 100); // 0 a 89
+  const rankIndex = Math.min(14, Math.floor(globalDivIndex / 6)); // 0 a 14
+  const division = 6 - (globalDivIndex % 6); // 6 a 1
+  const currentDivLP = safeLP % 100;
   const rankObj = COMPETITIVE_RANKS[rankIndex];
 
   return {
-    totalLP: clampedLP,
-    totalTierIndex,
+    totalLP: safeLP,
+    globalDivIndex,
     rankIndex,
     rank: rankObj,
     division,
-    divisionLP,
-    fullTitle: `${rankObj.name} ${division}`,
-    isMaxRank: rankIndex === 14 && division === 1
+    currentDivLP,
+    fullName: `${rankObj.name} ${division}`,
+    isMax: rankIndex === 14 && division === 1
   };
 }
 
-function calculateStrengthAnalysis(bodyWeight, lifts) {
+function computeStrengthProfile(bodyWeight, lifts) {
   const bw = Math.max(35, Number(bodyWeight) || 75);
 
-  const calc1RM = (weight, reps) => {
+  // Promedio científico de fórmulas Epley y Brzycki para 1RM
+  const estimate1RM = (weight, reps) => {
     const w = Math.max(0, Number(weight) || 0);
     const r = Math.max(1, Math.min(20, Number(reps) || 1));
     if (w === 0) return 0;
     if (r === 1) return w;
-    if (r <= 10) {
-      return Math.round(w * (36 / (37 - r)));
-    }
-    return Math.round(w * (1 + r / 30));
+    const epley = w * (1 + r / 30);
+    const brzycki = r < 37 ? w * (36 / (37 - r)) : epley;
+    return Math.round((epley + brzycki) / 2);
   };
 
-  const squat1RM = calc1RM(lifts.squat.weight, lifts.squat.reps);
-  const bench1RM = calc1RM(lifts.bench.weight, lifts.bench.reps);
-  const deadlift1RM = calc1RM(lifts.deadlift.weight, lifts.deadlift.reps);
-  const ohp1RM = calc1RM(lifts.ohp.weight, lifts.ohp.reps);
+  const squat1RM = estimate1RM(lifts.squat.weight, lifts.squat.reps);
+  const bench1RM = estimate1RM(lifts.bench.weight, lifts.bench.reps);
+  const deadlift1RM = estimate1RM(lifts.deadlift.weight, lifts.deadlift.reps);
+  // Para dominadas lastradas: peso corporal + lastre añadido
+  const pullupTotalLoad = bw + Math.max(0, Number(lifts.pullup.weight) || 0);
+  const pullup1RM = estimate1RM(pullupTotalLoad, lifts.pullup.reps);
+  const ohp1RM = estimate1RM(lifts.ohp.weight, lifts.ohp.reps);
 
   const sbdTotal = squat1RM + bench1RM + deadlift1RM;
-  const grandTotal = sbdTotal + ohp1RM;
+  const fiveLiftsTotal = sbdTotal + pullup1RM + ohp1RM;
 
-  const dotsDenominator =
+  // Coeficiente científico DOTS
+  const dotsDenom =
     -307.75076 +
     24.0900756 * bw -
     0.1918759221 * Math.pow(bw, 2) +
     0.0007391293 * Math.pow(bw, 3) -
     0.000001093 * Math.pow(bw, 4);
-  const dotsScore = dotsDenominator > 0 ? Math.round((sbdTotal * 500) / dotsDenominator) : 0;
+  const dotsScore = dotsDenom > 0 ? Math.round((sbdTotal * 500) / dotsDenom) : 0;
 
   const relativeRatio = Number((sbdTotal / bw).toFixed(2));
 
-  const getAbsoluteGradeIndex = (total, dots) => {
-    const composite = total * 0.65 + dots * 0.55;
-    if (composite < 160) return 0;
-    if (composite < 230) return 1;
-    if (composite < 300) return 2;
-    if (composite < 375) return 3;
-    if (composite < 450) return 4;
-    if (composite < 530) return 5;
-    if (composite < 615) return 6;
-    if (composite < 700) return 7;
-    if (composite < 790) return 8;
-    return 9;
-  };
-
-  const getRelativeGradeIndex = (ratio) => {
-    if (ratio < 1.8) return 0;
-    if (ratio < 2.5) return 1;
-    if (ratio < 3.2) return 2;
-    if (ratio < 3.9) return 3;
-    if (ratio < 4.6) return 4;
-    if (ratio < 5.3) return 5;
-    if (ratio < 6.0) return 6;
-    if (ratio < 6.7) return 7;
-    if (ratio < 7.4) return 8;
-    return 9;
-  };
-
-  const gradeLiftRatio = (ratio, thresholds) => {
+  const getGradeByThresholds = (val, thresholds) => {
     for (let i = thresholds.length - 1; i >= 0; i--) {
-      if (ratio >= thresholds[i]) return SCIENTIFIC_GRADES[i];
+      if (val >= thresholds[i]) return SCIENTIFIC_GRADES[i];
     }
     return SCIENTIFIC_GRADES[0];
   };
 
-  const squatRatio = Number((squat1RM / bw).toFixed(2));
-  const benchRatio = Number((bench1RM / bw).toFixed(2));
-  const deadliftRatio = Number((deadlift1RM / bw).toFixed(2));
-  const ohpRatio = Number((ohp1RM / bw).toFixed(2));
+  const absComposite = sbdTotal * 0.65 + dotsScore * 0.55;
+  const absoluteGrade = getGradeByThresholds(absComposite, [0, 170, 240, 310, 385, 460, 540, 625, 710, 800]);
+  const relativeGrade = getGradeByThresholds(relativeRatio, [0, 1.9, 2.6, 3.3, 4.0, 4.7, 5.4, 6.1, 6.8, 7.5]);
 
-  const exercises = [
+  const rows = [
     {
       key: 'squat',
       name: 'Sentadilla Trasera',
       oneRM: squat1RM,
-      ratio: squatRatio,
-      targetNext: 2.0,
-      grade: gradeLiftRatio(squatRatio, [0, 0.75, 1.0, 1.25, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0]),
-      biomech: 'Evalúa torque extensor de rodilla y cadera bajo carga axial. Ratio ≥ 1.75x BW indica alta eficiencia neural.'
+      ratio: Number((squat1RM / bw).toFixed(2)),
+      grade: getGradeByThresholds(squat1RM / bw, [0, 0.75, 1.0, 1.25, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0])
     },
     {
       key: 'bench',
       name: 'Press de Banca',
       oneRM: bench1RM,
-      ratio: benchRatio,
-      targetNext: 1.5,
-      grade: gradeLiftRatio(benchRatio, [0, 0.55, 0.75, 0.95, 1.15, 1.35, 1.55, 1.75, 1.95, 2.15]),
-      biomech: 'Mide potencia de empuje horizontal (pectoral mayor, deltoides anterior, tríceps) y estabilidad escapular.'
+      ratio: Number((bench1RM / bw).toFixed(2)),
+      grade: getGradeByThresholds(bench1RM / bw, [0, 0.55, 0.75, 0.95, 1.15, 1.35, 1.55, 1.75, 1.95, 2.15])
     },
     {
       key: 'deadlift',
       name: 'Peso Muerto',
       oneRM: deadlift1RM,
-      ratio: deadliftRatio,
-      targetNext: 2.5,
-      grade: gradeLiftRatio(deadliftRatio, [0, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3]),
-      biomech: 'Indicador supremo de cadena posterior (glúteo mayor, isquiosurales, erectores) y fuerza de agarre.'
+      ratio: Number((deadlift1RM / bw).toFixed(2)),
+      grade: getGradeByThresholds(deadlift1RM / bw, [0, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3])
+    },
+    {
+      key: 'pullup',
+      name: 'Dominadas Lastradas (Total)',
+      oneRM: pullup1RM,
+      ratio: Number((pullup1RM / bw).toFixed(2)),
+      grade: getGradeByThresholds(pullup1RM / bw, [0, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2.0, 2.15])
     },
     {
       key: 'ohp',
       name: 'Press Militar Estricto',
       oneRM: ohp1RM,
-      ratio: ohpRatio,
-      targetNext: 1.0,
-      grade: gradeLiftRatio(ohpRatio, [0, 0.35, 0.5, 0.65, 0.78, 0.9, 1.02, 1.15, 1.28, 1.4]),
-      biomech: 'Evalúa estabilidad del manguito rotador, deltoides y rigidez del core sin impulso de piernas.'
+      ratio: Number((ohp1RM / bw).toFixed(2)),
+      grade: getGradeByThresholds(ohp1RM / bw, [0, 0.35, 0.5, 0.65, 0.78, 0.9, 1.02, 1.15, 1.28, 1.4])
     }
   ];
 
   return {
     sbdTotal,
-    grandTotal,
+    fiveLiftsTotal,
     dotsScore,
     relativeRatio,
-    absoluteGrade: SCIENTIFIC_GRADES[getAbsoluteGradeIndex(sbdTotal, dotsScore)],
-    relativeGrade: SCIENTIFIC_GRADES[getRelativeGradeIndex(relativeRatio)],
-    exercises
+    absoluteGrade,
+    relativeGrade,
+    rows
   };
 }
 
-function analyzeCustomRoutine(routineText, progressStatus) {
-  const text = (routineText || '').toLowerCase();
+function auditUserRoutine(text, feeling) {
+  const lower = (text || '').toLowerCase();
+  const pushCount = (lower.match(/banca|press|flexion|push|fondos|aperturas|lateral|tricep/g) || []).length;
+  const pullCount = (lower.match(/remo|jalon|dominada|pull|curl|bicep|face|peso muerto|deadlift/g) || []).length;
+  const legCount = (lower.match(/sentadilla|squat|prensa|zancada|bulgara|femoral|cuadricep|gemelo|hip thrust/g) || []).length;
 
-  const pushHits = (text.match(/banca|press|flexion|push|fondos|aperturas|elevacion|lateral|tricep|extension/g) || []).length;
-  const pullHits = (text.match(/remo|jalon|dominada|pull|curl|bicep|face|peso muerto|deadlift/g) || []).length;
-  const legHits = (text.match(/sentadilla|squat|prensa|zancada|bulgara|femoral|cuadricep|gemelo|talon|hip thrust|gluteo/g) || []).length;
-  const coreHits = (text.match(/plancha|plank|crunch|abdom|pallof|rueda/g) || []).length;
+  const pushSets = Math.max(4, pushCount * 4);
+  const pullSets = Math.max(3, pullCount * 4);
+  const legSets = Math.max(4, legCount * 4);
+  const ratio = pullSets > 0 ? Number((pushSets / pullSets).toFixed(2)) : 2.0;
 
-  const estPushSets = Math.max(4, pushHits * 4);
-  const estPullSets = Math.max(3, pullHits * 4);
-  const estLegSets = Math.max(4, legHits * 4);
-  const estCoreSets = Math.max(2, coreHits * 3);
+  let score = 86;
+  const alerts = [];
+  const tips = [];
 
-  const pushPullRatio = estPullSets > 0 ? Number((estPushSets / estPullSets).toFixed(2)) : 2.0;
-
-  const findings = [];
-  const recommendations = [];
-
-  if (pushPullRatio > 1.35) {
-    findings.push({
-      type: 'warning',
-      title: `Desbalance Empuje / Tracción (${pushPullRatio}:1)`,
-      detail: 'Exceso de volumen de empuje anterior respecto a tracción posterior. Riesgo de antepulsión de hombros y pinzamiento subacromial.'
+  if (ratio > 1.35) {
+    score -= 14;
+    alerts.push({
+      level: 'warn',
+      title: `Desbalance Empuje / Tracción (${ratio}:1)`,
+      detail: 'Predominio excesivo de empuje anterior. Riesgo de rotación interna de hombros.'
     });
-    recommendations.push('Añadir 4-6 series semanales de tracción horizontal (remo con apoyo) y rotación externa (Face Pulls).');
+    tips.push('Suma 4-6 series semanales de remo horizontal y Face Pulls para equilibrar la cintura escapular.');
   } else {
-    findings.push({
-      type: 'good',
-      title: `Equilibrio Empuje / Tracción Óptimo (${pushPullRatio}:1)`,
-      detail: 'Buena proporción biomecánica entre cadena anterior y cintura escapular.'
+    alerts.push({
+      level: 'ok',
+      title: `Balance Empuje / Tracción Saludable (${ratio}:1)`,
+      detail: 'Proporción biomecánica equilibrada entre cadena anterior y posterior.'
     });
   }
 
-  if (estLegSets < 10) {
-    findings.push({
-      type: 'warning',
-      title: 'Sub-volumen en Tren Inferior (< 10 series efectivas/sem)',
-      detail: 'El volumen detectado para cuádriceps e isquiosurales está por debajo del Volumen Mínimo Adaptativo (MAV).'
+  if (legSets < 10) {
+    score -= 12;
+    alerts.push({
+      level: 'warn',
+      title: 'Volumen Bajo en Tren Inferior (< 10 series/sem)',
+      detail: 'Por debajo del Volumen Mínimo Adaptativo (MAV) para cuádriceps e isquiosurales.'
     });
-    recommendations.push('Incluir al menos 1 patrón de dominancia de rodilla (Sentadilla/Hack) y 1 bisagra de cadera (RDL/Curl Femoral) 2 veces por semana.');
-  } else {
-    findings.push({
-      type: 'good',
-      title: 'Estímulo de Tren Inferior Adecuado',
-      detail: 'Distribución correcta entre cadena anterior y posterior.'
-    });
+    tips.push('Incluye al menos un patrón de rodilla (Sentadilla/Prensa) y uno de cadera (RDL/Curl Femoral) 2x/semana.');
   }
 
-  let cnsFatigue = 'Moderada (Óptima)';
-  if (progressStatus === 'estancado') {
-    cnsFatigue = 'Alta (Posible saturación de MRV)';
-    findings.push({
-      type: 'alert',
-      title: 'Diagnóstico de Estancamiento (> 3 semanas)',
-      detail: 'La acumulación de fatiga periférica y del SNC está enmascarando tus adaptaciones de fuerza.'
+  let cnsStatus = 'Óptima';
+  if (feeling === 'estancado') {
+    score -= 15;
+    cnsStatus = 'Saturación de Fatiga (MRV)';
+    alerts.push({
+      level: 'danger',
+      title: 'Meseta de Progresión Detectada',
+      detail: 'La fatiga acumulada en el Sistema Nervioso Central está ocultando tus ganancias de fuerza.'
     });
-    recommendations.push('Aplicar una semana de descarga (Deload): reducir series al 50% manteniendo la carga, o trabajar a RIR 2-3 durante 2 semanas.');
-  } else if (progressStatus === 'fatiga') {
-    cnsFatigue = 'Crítica (Sobrecarga Articular/Neural)';
-    findings.push({
-      type: 'alert',
-      title: 'Alerta de Fatiga Sistémica / Dolor Articular',
-      detail: 'Frecuencia excesiva cerca del fallo absoluto (RIR 0) en movimientos multiarticulares pesados.'
+    tips.push('Ejecuta una semana de descarga (Deload): reduce las series al 50% manteniendo el peso y trabaja a RIR 3.');
+  } else if (feeling === 'fatiga') {
+    score -= 20;
+    cnsStatus = 'Sobrecarga Articular / SNC Alto';
+    alerts.push({
+      level: 'danger',
+      title: 'Riesgo de Sobreentrenamiento',
+      detail: 'Demasiadas series cerca del fallo absoluto (RIR 0) en ejercicios compuestos pesados.'
     });
-    recommendations.push('Sustituir variantes con barra libre fatigantes por máquinas convergentes o poleas durante 2 semanas y priorizar 8h de sueño.');
+    tips.push('Cambia variantes con barra libre por máquinas convergentes o poleas durante 2 semanas y prioriza 8h de sueño.');
   } else {
-    recommendations.push('Mantener sobrecarga progresiva doble: cuando completes el rango máximo de repeticiones con RIR 1, sube +2.5 kg.');
+    tips.push('Aplica sobrecarga progresiva doble: sube +2.5 kg cuando completes el tope de repeticiones con RIR 1.');
   }
 
   return {
-    volumeByGroup: [
-      { label: 'Empuje (Pecho/Hombro/Tríceps)', sets: estPushSets, target: '12-18 series', color: '#00F0FF' },
-      { label: 'Tracción (Espalda/Bíceps)', sets: estPullSets, target: '14-20 series', color: '#A855F7' },
-      { label: 'Tren Inferior (Cuádriceps/Femoral)', sets: estLegSets, target: '12-18 series', color: '#10B981' },
-      { label: 'Core & Estabilidad', sets: estCoreSets, target: '6-10 series', color: '#F59E0B' }
-    ],
-    pushPullRatio,
-    cnsFatigue,
-    findings,
-    recommendations
+    score: Math.max(40, Math.min(99, score)),
+    pushSets,
+    pullSets,
+    legSets,
+    ratio,
+    cnsStatus,
+    alerts,
+    tips
   };
 }
 
-function calculateSleepMetrics(sleepHoursArray) {
-  const totalHours = Number(sleepHoursArray.reduce((acc, val) => acc + Number(val || 0), 0).toFixed(1));
-  const avgHours = Number((totalHours / 7).toFixed(1));
-  const minRecommended = 49;
-  const maxRecommended = 63;
+function analyzeSleepWeek(hoursArray) {
+  const total = Number(hoursArray.reduce((sum, h) => sum + Number(h || 0), 0).toFixed(1));
+  const avg = Number((total / 7).toFixed(1));
 
-  let status = 'optimal';
-  let recoveryScore = 95;
-  let proteinSynthesis = '100% (Óptima)';
-  let cnsReadiness = 'Alto Rendimiento';
-  let failureRisk = 'Bajo (8%)';
-  let advisory = 'Tu arquitectura del sueño (fases REM y sueño profundo N3) optimiza la secreción de GH y testosterona endógena. Estás listo para retos pesados.';
-
-  if (totalHours < 42) {
-    status = 'critical';
-    recoveryScore = Math.max(25, Math.round((totalHours / 49) * 75));
-    proteinSynthesis = '68% (-32% degradación acelerada)';
-    cnsReadiness = 'Déficit Neural Severo';
-    failureRisk = 'Alto (64%)';
-    advisory = 'ALERTA FISIOLÓGICA: Déficit severo de sueño (< 6h/noche). Aumenta el cortisol y cae la síntesis proteica miofibrilar. Reduce cargas un 15-20% hoy o usa un Desafío de Contingencia.';
-  } else if (totalHours < minRecommended) {
-    status = 'warning';
-    recoveryScore = Math.round((totalHours / 49) * 88);
-    proteinSynthesis = '84% (Subóptima)';
-    cnsReadiness = 'Recuperación Parcial';
-    failureRisk = 'Moderado (35%)';
-    advisory = 'Deuda de sueño leve acumulada (< 49h semanales). Evita llegar al fallo muscular absoluto (RIR 0) en ejercicios compuestos hoy.';
-  } else if (totalHours > maxRecommended) {
-    status = 'excess';
-    recoveryScore = 90;
-    proteinSynthesis = '96% (Alta)';
-    cnsReadiness = 'Completamente Recuperado';
-    failureRisk = 'Bajo (12%)';
-    advisory = 'Superávit de descanso (> 63h). Asegura activación neuromuscular dinámica (calentamiento prolongado) antes de levantar pesado.';
+  if (total < 42) {
+    return {
+      total,
+      avg,
+      status: 'critical',
+      energyPct: Math.max(25, Math.round((total / 49) * 70)),
+      label: 'DÉFICIT CRÍTICO DE SUEÑO',
+      impact: 'Caída del 30% en síntesis proteica y alerta alta de fatiga del SNC. Reduce cargas 15% hoy o usa un Desafío en Casa.'
+    };
   }
-
+  if (total < 49) {
+    return {
+      total,
+      avg,
+      status: 'warning',
+      energyPct: Math.round((total / 49) * 88),
+      label: 'DEUDA LEVE DE DESCANSO',
+      impact: 'Recuperación parcial (< 49h/sem). Evita llegar al fallo muscular absoluto en ejercicios multiarticulares.'
+    };
+  }
+  if (total > 63) {
+    return {
+      total,
+      avg,
+      status: 'high',
+      energyPct: 94,
+      label: 'SUPERÁVIT DE RECUPERACIÓN',
+      impact: 'Descanso máximo (> 63h). Realiza una activación dinámica prolongada antes de levantar pesado.'
+    };
+  }
   return {
-    totalHours,
-    avgHours,
-    minRecommended,
-    maxRecommended,
-    status,
-    recoveryScore,
-    proteinSynthesis,
-    cnsReadiness,
-    failureRisk,
-    advisory
+    total,
+    avg,
+    status: 'optimal',
+    energyPct: 100,
+    label: 'ZONA ANABÓLICA ÓPTIMA (49–63h)',
+    impact: 'Secreción óptima de hormona de crecimiento y resíntesis de glucógeno. Estás al 100% para romper récords.'
   };
 }
 
 // ============================================================================
-// COMPONENTES VISUALES: EMBLEMA DE RANGO Y AVATAR 2D ESTILO ANIME
+// COMPONENTE: AVATAR 2D ESTILO ANIME (CEL-SHADING EXPRESIVO + AURA DE KI)
 // ============================================================================
 
-function RankEmblemSVG({ rankIndex, color, size = 76 }) {
-  const tierLevel = Math.floor(rankIndex / 3);
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" className="drop-shadow-[0_0_16px_rgba(0,0,0,0.9)] select-none shrink-0">
-      <defs>
-        <radialGradient id={`rankGlow-${rankIndex}`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={color} stopOpacity="0.6" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="50" cy="50" r="47" fill={`url(#rankGlow-${rankIndex})`} />
-      <polygon
-        points="50,6 88,28 88,72 50,94 12,72 12,28"
-        fill="rgba(7, 11, 22, 0.94)"
-        stroke={color}
-        strokeWidth="2.8"
-      />
-      {tierLevel >= 2 && (
-        <>
-          <path d="M12,35 L1,20 L12,50 Z" fill={color} opacity="0.9" />
-          <path d="M88,35 L99,20 L88,50 Z" fill={color} opacity="0.9" />
-        </>
-      )}
-      {tierLevel >= 3 && (
-        <>
-          <path d="M12,55 L0,67 L12,72 Z" fill={color} opacity="0.7" />
-          <path d="M88,55 L100,67 L88,72 Z" fill={color} opacity="0.7" />
-        </>
-      )}
-      <polygon
-        points="50,18 76,34 76,66 50,82 24,66 24,34"
-        fill="none"
-        stroke={color}
-        strokeWidth="1.6"
-        strokeDasharray={tierLevel >= 1 ? 'none' : '4 3'}
-        opacity="0.85"
-      />
-      <polygon
-        points="50,26 66,50 50,74 34,50"
-        fill={color}
-        opacity="0.3"
-        stroke={color}
-        strokeWidth="2.2"
-      />
-      {tierLevel >= 4 && (
-        <polygon points="35,12 42,2 50,10 58,2 65,12" fill={color} />
-      )}
-      <circle cx="50" cy="50" r="5" fill="#FFFFFF" />
-    </svg>
-  );
-}
-
-/**
- * AVATAR 2D ESTILO ANIME (CEL-SHADING + OJOS EXPRESIVOS + AURAS EVOLUTIVAS)
- */
-function AnimeAvatar2D({ avatar, rankColor, rankTitle, rankIndex, physicalGrade, compact = false }) {
-  // Paletas Cel-Shading de piel (Tono Base + Sombra Dura Anime)
-  const skinPalettes = {
-    claro: { base: '#FFE0C8', shadow: '#E2B394', highlight: '#FFF3E8' },
-    trigueno: { base: '#E9B48B', shadow: '#C3885E', highlight: '#F8D2B4' },
-    bronceado: { base: '#C88459', shadow: '#9A5B36', highlight: '#DF9F77' },
-    moreno: { base: '#965A38', shadow: '#6B3A20', highlight: '#B37552' },
-    oscuro: { base: '#633B26', shadow: '#412314', highlight: '#7D4E36' },
-    cyber: { base: '#CBD5E1', shadow: '#64748B', highlight: '#F8FAFC' }
+function AnimeWarrior2D({ avatar, rankColor, rankTitle, rankIndex, physicalGrade, compact = false }) {
+  const skinTones = {
+    claro: { base: '#FFE2CC', shadow: '#E0AF8E' },
+    trigueno: { base: '#EBB68D', shadow: '#C2865B' },
+    bronceado: { base: '#CA865A', shadow: '#995933' },
+    moreno: { base: '#965A38', shadow: '#69381D' },
+    oscuro: { base: '#633B26', shadow: '#3E2012' },
+    celestial: { base: '#DCE7F7', shadow: '#8FA7CC' }
   };
 
-  // Paletas de cabello anime (Base + Sombra + Brillo Zigzag Anime)
-  const hairPalettes = {
-    negro: { base: '#151926', shadow: '#090B12', shine: '#3B486B' },
-    blanco: { base: '#F1F5F9', shadow: '#94A3B8', shine: '#FFFFFF' },
-    carmesi: { base: '#DC2626', shadow: '#7F1D1D', shine: '#FCA5A5' },
-    azul: { base: '#0284C7', shadow: '#0C4A6E', shine: '#7DD3FC' },
-    dorado: { base: '#F59E0B', shadow: '#92400E', shine: '#FEF08A' },
-    violeta: { base: '#7C3AED', shadow: '#4C1D95', shine: '#DDD6FE' }
+  const hairTones = {
+    azabache: { base: '#161B2B', shine: '#4F6399' },
+    platino: { base: '#F8FAFC', shine: '#FFFFFF' },
+    fuego: { base: '#EF4444', shine: '#FCA5A5' },
+    relampago: { base: '#0EA5E9', shine: '#BAE6FD' },
+    dorado: { base: '#F59E0B', shine: '#FEF08A' },
+    amatista: { base: '#9333EA', shine: '#E9D5FF' }
   };
 
-  // Proporciones anatómicas anime
-  const buildConfigs = {
-    atletico: { shoulder: 44, waist: 21, arm: 11, trap: 18 },
-    mesomorfo: { shoulder: 51, waist: 23, arm: 14, trap: 22 },
-    powerlifter: { shoulder: 57, waist: 29, arm: 16, trap: 26 },
-    titan: { shoulder: 62, waist: 24, arm: 18, trap: 30 }
+  const biotypes = {
+    atletico: { sh: 44, wa: 21, arm: 11, trap: 18, label: 'Atlético / Calisténico' },
+    mesomorfo: { sh: 51, wa: 23, arm: 14, trap: 22, label: 'Mesomorfo / Estético' },
+    powerlifter: { sh: 57, wa: 29, arm: 16, trap: 26, label: 'Powerlifter / Fuerza Bruta' },
+    titan: { sh: 62, wa: 24, arm: 18, trap: 30, label: 'Titán / Hipertrofia Élite' }
   };
 
-  const auraColors = {
+  const auraPalette = {
     rango: rankColor,
-    cian: '#00F0FF',
-    violeta: '#A855F7',
-    carmesi: '#EF4444',
-    dorado: '#FACC15'
+    dorado: '#FACC15',
+    cian: '#00F5FF',
+    magenta: '#F43F5E',
+    esmeralda: '#10B981',
+    violeta: '#C084FC'
   };
 
-  const stageBackgrounds = {
-    monarca: 'from-[#060918] via-[#130B2E] to-[#050711]',
-    ciber_dojo: 'from-[#041019] via-[#082436] to-[#050711]',
-    eclipse: 'from-[#14050B] via-[#260917] to-[#050711]',
-    santuario: 'from-[#140F05] via-[#291E09] to-[#050711]'
-  };
+  const skin = skinTones[avatar.skin] || skinTones.trigueno;
+  const hair = hairTones[avatar.hairColor] || hairTones.azabache;
+  const bio = biotypes[avatar.build] || biotypes.mesomorfo;
+  const auraHex = auraPalette[avatar.aura] || rankColor;
+  const isFem = avatar.gender === 'femenino';
 
-  const skin = skinPalettes[avatar.skin] || skinPalettes.trigueno;
-  const hairCol = hairPalettes[avatar.hairColor] || hairPalettes.negro;
-  const dims = buildConfigs[avatar.build] || buildConfigs.mesomorfo;
-  const activeAura = auraColors[avatar.aura] || rankColor;
-  const isFemale = avatar.gender === 'femenino';
-
-  const shW = isFemale ? dims.shoulder - 8 : dims.shoulder;
-  const waW = isFemale ? dims.waist - 4 : dims.waist;
-  const armW = isFemale ? dims.arm - 2.5 : dims.arm;
-  const trapW = isFemale ? dims.trap - 4 : dims.trap;
-
-  // Intensidad de aura según rango (0 a 14)
-  const highRankEffects = rankIndex >= 6; // Plata en adelante: chispas y rayos
+  const shW = isFem ? bio.sh - 8 : bio.sh;
+  const waW = isFem ? bio.wa - 4 : bio.wa;
+  const armW = isFem ? bio.arm - 2.5 : bio.arm;
+  const trapW = isFem ? bio.trap - 4 : bio.trap;
+  const hasLightning = rankIndex >= 6 || ['S', 'SS', 'SSS', 'EX'].includes(physicalGrade);
 
   if (compact) {
-    // Retrato Anime Compacto para la Barra Superior HUD
     return (
       <div
-        className="relative w-12 h-12 rounded-xl overflow-hidden border-2 shrink-0 bg-[#070B18] shadow-lg"
-        style={{ borderColor: activeAura, boxShadow: `0 0 14px ${activeAura}66` }}
+        className="relative w-12 h-12 rounded-2xl overflow-hidden border-2 shrink-0 bg-[#120D2B] shadow-lg"
+        style={{ borderColor: auraHex, boxShadow: `0 0 15px ${auraHex}88` }}
       >
         <div
-          className="absolute inset-0 opacity-35 animate-pulse"
-          style={{ background: `radial-gradient(circle, ${activeAura} 0%, transparent 72%)` }}
+          className="absolute inset-0 opacity-45 animate-pulse"
+          style={{ background: `radial-gradient(circle, ${auraHex} 0%, transparent 72%)` }}
         />
-        <svg viewBox="75 28 130 130" className="w-full h-full relative z-10">
-          {/* Cabello trasero */}
-          {avatar.hair === 'wild' && (
-            <path d="M98,65 L86,135 L112,125 L140,140 L168,125 L194,135 L182,65 Z" fill={hairCol.shadow} stroke="#090D16" strokeWidth="2.5" />
+        <svg viewBox="75 26 130 130" className="w-full h-full relative z-10">
+          {avatar.hair === 'salvaje' && (
+            <path d="M96,65 L84,138 L112,126 L140,142 L168,126 L196,138 L184,65 Z" fill={hair.base} stroke="#090B14" strokeWidth="2.5" />
           )}
-          {/* Cuello y hombros */}
-          <path d={`M${140 - shW},148 L${140 - trapW},116 L160,116 L${140 + shW},148 Z`} fill={skin.base} stroke="#090D16" strokeWidth="2.5" />
-          <rect x="128" y="96" width="24" height="24" fill={skin.base} stroke="#090D16" strokeWidth="2.5" />
-          <polygon points="128,98 152,98 152,108 128,104" fill={skin.shadow} />
-          {/* Rostro Anime */}
-          <path
-            d="M114,62 L116,86 L128,102 L140,108 L152,102 L164,86 L166,62 Z"
-            fill={skin.base}
-            stroke="#090D16"
-            strokeWidth="2.5"
-          />
-          {/* Ojos Anime Brillantes */}
-          <polygon points="119,77 133,79 131,85 120,84" fill="#FFFFFF" stroke="#090D16" strokeWidth="1.6" />
-          <circle cx="126.5" cy="81.5" r="3.2" fill={activeAura} />
-          <circle cx="125.5" cy="80.3" r="1.2" fill="#FFFFFF" />
-
-          <polygon points="161,77 147,79 149,85 160,84" fill="#FFFFFF" stroke="#090D16" strokeWidth="1.6" />
-          <circle cx="153.5" cy="81.5" r="3.2" fill={activeAura} />
-          <circle cx="152.5" cy="80.3" r="1.2" fill="#FFFFFF" />
-
-          {/* Flequillo Anime */}
-          <path
-            d="M110,68 L106,46 L122,34 L140,28 L158,34 L174,46 L170,68 L158,54 L148,72 L140,56 L132,73 L122,54 Z"
-            fill={hairCol.base}
-            stroke="#090D16"
-            strokeWidth="2.5"
-          />
+          <path d={`M${140 - shW},150 L${140 - trapW},116 L160,116 L${140 + shW},150 Z`} fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
+          <rect x="128" y="96" width="24" height="24" fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
+          <path d="M114,60 L116,86 L128,103 L140,109 L152,103 L164,86 L166,60 Z" fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
+          {/* Ojos Anime */}
+          <polygon points="119,76 133,78 131,85 120,84" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
+          <circle cx="126.5" cy="81" r="3.4" fill={auraHex} />
+          <circle cx="125.3" cy="79.8" r="1.3" fill="#FFFFFF" />
+          <polygon points="161,76 147,78 149,85 160,84" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
+          <circle cx="153.5" cy="81" r="3.4" fill={auraHex} />
+          <circle cx="152.3" cy="79.8" r="1.3" fill="#FFFFFF" />
+          {/* Flequillo */}
+          <path d="M110,68 L104,44 L122,30 L140,22 L158,30 L176,44 L170,68 L158,52 L148,72 L140,54 L132,73 L122,52 Z" fill={hair.base} stroke="#090B14" strokeWidth="2.5" />
         </svg>
       </div>
     );
@@ -769,603 +614,460 @@ function AnimeAvatar2D({ avatar, rankColor, rankTitle, rankIndex, physicalGrade,
 
   return (
     <div
-      className={`relative w-full h-[350px] rounded-2xl border-2 bg-gradient-to-b ${stageBackgrounds[avatar.bg] || stageBackgrounds.monarca} overflow-hidden flex items-center justify-center shadow-2xl select-none`}
-      style={{ borderColor: `${activeAura}88`, boxShadow: `0 0 35px ${activeAura}28` }}
+      className="relative w-full h-[365px] rounded-2xl border-2 bg-gradient-to-b from-[#17113B] via-[#1D154A] to-[#0E0B24] overflow-hidden flex items-center justify-center shadow-2xl select-none"
+      style={{ borderColor: auraHex, boxShadow: `0 0 36px ${auraHex}44` }}
     >
-      {/* Cuadrícula Cibernética Perspectiva */}
-      <div
-        className="absolute inset-0 opacity-20 hud-grid-bg"
-        style={{
-          backgroundImage: `linear-gradient(to right, ${activeAura}44 1px, transparent 1px), linear-gradient(to bottom, ${activeAura}44 1px, transparent 1px)`,
-          backgroundSize: '28px 28px'
-        }}
-      />
-
-      {/* Resplandor Ambiental de Aura */}
-      <div
-        className="absolute w-64 h-64 rounded-full blur-3xl anime-aura-pulse"
-        style={{ backgroundColor: activeAura, opacity: 0.32 }}
-      />
-
-      {/* Chispas de Energía Ascendentes (Partículas Anime) */}
+      {/* Estrellas y partículas brillantes anime */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[18, 32, 48, 65, 80].map((leftPct, i) => (
+        {[12, 24, 38, 52, 68, 82, 91].map((leftPct, i) => (
           <span
             key={i}
-            className="absolute bottom-8 w-1.5 h-3 rounded-full anime-ki-spark"
+            className="absolute bottom-6 w-2 h-2 rounded-full animate-ki-rise"
             style={{
               left: `${leftPct}%`,
-              backgroundColor: activeAura,
-              boxShadow: `0 0 8px ${activeAura}`,
-              animationDelay: `${i * 0.45}s`
+              backgroundColor: i % 2 === 0 ? auraHex : '#FFFFFF',
+              boxShadow: `0 0 10px ${auraHex}`,
+              animationDelay: `${i * 0.38}s`
             }}
           />
         ))}
       </div>
 
-      {/* Etiquetas HUD Superiores */}
-      <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-20 text-[10px] font-mono tracking-wider uppercase">
-        <span className="px-2.5 py-1 rounded-md bg-black/75 border border-slate-700/90 text-cyan-200 backdrop-blur-sm">
-          AVATAR 2D // {avatar.build.toUpperCase()}
+      {/* Aura Radial Vibrante */}
+      <div
+        className="absolute w-72 h-72 rounded-full blur-3xl animate-aura-breathe"
+        style={{ backgroundColor: auraHex, opacity: 0.42 }}
+      />
+
+      {/* Insignias superiores */}
+      <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-20 gap-2">
+        <span className="px-2.5 py-1 rounded-xl bg-black/65 border border-white/20 text-[10px] font-mono font-bold text-cyan-200 backdrop-blur-md">
+          BIOTIPO: {bio.label.toUpperCase()}
         </span>
         <span
-          className="px-2.5 py-1 rounded-md bg-black/80 border font-bold backdrop-blur-sm"
-          style={{ borderColor: activeAura, color: activeAura }}
+          className="px-3 py-1 rounded-xl bg-black/75 border text-[11px] font-mono font-black backdrop-blur-md shadow-md"
+          style={{ borderColor: auraHex, color: auraHex }}
         >
           FÍSICO {physicalGrade} • {rankTitle}
         </span>
       </div>
 
-      {/* ====================================================================
-          ILUSTRACIÓN SVG 2D ESTILO ANIME (CEL-SHADING + TINTA + AURA)
-         ==================================================================== */}
-      <svg viewBox="0 0 280 340" className="w-72 h-[335px] relative z-10 overflow-visible">
+      {/* ILUSTRACIÓN SVG ANIME 2D DE CUERPO COMPLETO */}
+      <svg viewBox="0 0 280 345" className="w-72 h-[340px] relative z-10 overflow-visible">
         <defs>
-          <radialGradient id="animeFloorAura" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={activeAura} stopOpacity="0.55" />
-            <stop offset="70%" stopColor={activeAura} stopOpacity="0.15" />
-            <stop offset="100%" stopColor={activeAura} stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="kiFlameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor={activeAura} stopOpacity="0.65" />
-            <stop offset="60%" stopColor={activeAura} stopOpacity="0.2" />
+          <linearGradient id="animeKiFlame" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor={auraHex} stopOpacity="0.85" />
+            <stop offset="55%" stopColor={auraHex} stopOpacity="0.3" />
             <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </linearGradient>
+          <radialGradient id="animeFloorRing" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={auraHex} stopOpacity="0.7" />
+            <stop offset="100%" stopColor={auraHex} stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        {/* 1. CÍRCULO MÁGICO / CIBERNÉTICO EN EL SUELO */}
-        <g transform="translate(140, 304)">
-          <ellipse cx="0" cy="0" rx="88" ry="18" fill="url(#animeFloorAura)" />
+        {/* Círculo de Energía en el Suelo */}
+        <g transform="translate(140, 312)">
+          <ellipse cx="0" cy="0" rx="92" ry="18" fill="url(#animeFloorRing)" />
           <ellipse
             cx="0"
             cy="0"
-            rx="78"
+            rx="80"
             ry="15"
             fill="none"
-            stroke={activeAura}
-            strokeWidth="1.8"
-            strokeDasharray="12 6"
-            className="anime-ring-spin"
-          />
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="56"
-            ry="10"
-            fill="none"
-            stroke="#FFFFFF"
-            strokeWidth="1"
-            opacity="0.65"
+            stroke={auraHex}
+            strokeWidth="2.2"
+            strokeDasharray="14 6"
+            className="animate-ring-rotate"
           />
         </g>
 
-        {/* 2. LLAMAS DE KI / AURA ANIME DETRÁS DEL CUERPO */}
-        <g className="anime-aura-pulse">
+        {/* Llamas de Ki Estilo Shonen detrás del Guerrero */}
+        <g className="animate-aura-breathe">
           <path
-            d="M84,295 Q68,225 82,165 Q65,125 90,82 Q105,36 140,22 Q175,36 190,82 Q215,125 198,165 Q212,225 196,295 Z"
-            fill="url(#kiFlameGrad)"
+            d="M80,305 Q60,230 80,168 Q62,122 88,78 Q105,32 140,16 Q175,32 192,78 Q218,122 200,168 Q220,230 200,305 Z"
+            fill="url(#animeKiFlame)"
           />
-          {/* Picos de energía laterales */}
-          <polygon points="82,190 62,155 86,162" fill={activeAura} opacity="0.45" />
-          <polygon points="198,190 218,155 194,162" fill={activeAura} opacity="0.45" />
-          <polygon points="94,115 74,78 102,94" fill={activeAura} opacity="0.5" />
-          <polygon points="186,115 206,78 178,94" fill={activeAura} opacity="0.5" />
+          <polygon points="80,198 54,154 84,166" fill={auraHex} opacity="0.6" />
+          <polygon points="200,198 226,154 196,166" fill={auraHex} opacity="0.6" />
+          <polygon points="92,118 68,74 100,92" fill={auraHex} opacity="0.65" />
+          <polygon points="188,118 212,74 180,92" fill={auraHex} opacity="0.65" />
         </g>
 
-        {/* Rayos eléctricos anime para rangos altos */}
-        {highRankEffects && (
-          <g stroke={activeAura} strokeWidth="1.8" fill="none" opacity="0.85">
-            <polyline points="72,135 84,122 76,112 92,96" />
-            <polyline points="208,135 196,122 204,112 188,96" />
-            <polyline points="82,240 94,225 86,215 98,200" />
-            <polyline points="198,240 186,225 194,215 182,200" />
+        {/* Rayos eléctricos para rangos elevados */}
+        {hasLightning && (
+          <g stroke="#FFFFFF" strokeWidth="1.8" fill="none" opacity="0.9">
+            <polyline points="68,140 82,124 72,112 90,94" stroke={auraHex} strokeWidth="2.4" />
+            <polyline points="212,140 198,124 208,112 190,94" stroke={auraHex} strokeWidth="2.4" />
+            <polyline points="78,245 92,228 82,216 96,198" />
+            <polyline points="202,245 188,228 198,216 184,198" />
           </g>
         )}
 
-        {/* 3. GRUPO DEL PERSONAJE ANIME (CON RESPIRACIÓN DE COMBATE) */}
-        <g className="anime-hero-float">
-          {/* Cabello Trasero (para estilos largos o coleta) */}
-          {avatar.hair === 'wild' && (
+        {/* PERSONAJE ANIME (ANIMACIÓN DE RESPIRACIÓN HEROICA) */}
+        <g className="animate-hero-breath">
+          {/* Cabello trasero */}
+          {avatar.hair === 'salvaje' && (
             <path
-              d="M102,68 L84,155 L108,144 L124,162 L140,148 L156,162 L172,144 L196,155 L178,68 Z"
-              fill={hairCol.shadow}
-              stroke="#090D16"
-              strokeWidth="2.4"
+              d="M100,66 L80,160 L108,146 L124,166 L140,150 L156,166 L172,146 L200,160 L180,66 Z"
+              fill={hair.base}
+              stroke="#090B14"
+              strokeWidth="2.5"
               strokeLinejoin="round"
             />
           )}
-          {avatar.hair === 'samurai' && (
-            <g>
-              <path
-                d="M132,30 L122,12 L140,22 L158,12 L148,30 Z"
-                fill={hairCol.base}
-                stroke="#090D16"
-                strokeWidth="2.2"
-              />
-              <path
-                d="M135,28 Q168,38 174,82 Q160,64 144,34 Z"
-                fill={hairCol.base}
-                stroke="#090D16"
-                strokeWidth="2.2"
-              />
-            </g>
+          {avatar.hair === 'coleta' && (
+            <path
+              d="M136,28 Q174,36 182,88 Q164,68 144,34 Z"
+              fill={hair.base}
+              stroke="#090B14"
+              strokeWidth="2.4"
+            />
           )}
 
-          {/* PIERNAS Y BOTAS DE COMBATE ANIME */}
-          <g stroke="#090D16" strokeWidth="2.4" strokeLinejoin="round">
-            {/* Pantalón Jogger Táctico */}
+          {/* Piernas & Calzado Deportivo */}
+          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
             <path
-              d={`M${140 - waW},184 L${140 - waW - 7},276 L112,276 L138,206 L142,206 L168,276 L${140 + waW + 7},276 L${140 + waW},184 Z`}
-              fill="#111827"
+              d={`M${140 - waW},186 L${140 - waW - 8},282 L111,282 L138,208 L142,208 L169,282 L${140 + waW + 8},282 L${140 + waW},186 Z`}
+              fill="#15192B"
             />
-            {/* Sombra Cel-Shading en entrepierna y pliegues */}
-            <polygon
-              points={`138,206 142,206 154,276 146,276 140,220 134,276 126,276`}
-              fill="#070A12"
-              stroke="none"
-            />
-            {/* Franjas Neón en pantalones */}
-            <line x1={140 - waW - 2} y1="194" x2={140 - waW - 6} y2="270" stroke={activeAura} strokeWidth="2" />
-            <line x1={140 + waW + 2} y1="194" x2={140 + waW + 6} y2="270" stroke={activeAura} strokeWidth="2" />
-
-            {/* Botas Futuristas */}
-            <path d={`M${140 - waW - 8},276 L111,276 L108,302 L${140 - waW - 11},302 Z`} fill="#1E293B" />
-            <path d={`M169,276 L${140 + waW + 8},276 L${140 + waW + 11},302 L172,302 Z`} fill="#1E293B" />
-            <line x1={140 - waW - 9} y1="292" x2="110" y2="292" stroke={activeAura} strokeWidth="2" />
-            <line x1="170" y1="292" x2={140 + waW + 9} y2="292" stroke={activeAura} strokeWidth="2" />
+            <line x1={140 - waW - 2} y1="196" x2={140 - waW - 7} y2="276" stroke={auraHex} strokeWidth="2.4" />
+            <line x1={140 + waW + 2} y1="196" x2={140 + waW + 7} y2="276" stroke={auraHex} strokeWidth="2.4" />
+            {/* Zapatillas de Entrenamiento */}
+            <path d={`M${140 - waW - 9},282 L110,282 L106,308 L${140 - waW - 12},308 Z`} fill="#F8FAFC" />
+            <path d={`M170,282 L${140 + waW + 9},282 L${140 + waW + 12},308 L174,308 Z`} fill="#F8FAFC" />
+            <line x1={140 - waW - 10} y1="298" x2="108" y2="298" stroke={auraHex} strokeWidth="3" />
+            <line x1="172" y1="298" x2={140 + waW + 10} y2="298" stroke={auraHex} strokeWidth="3" />
           </g>
 
-          {/* BRAZOS ANIME CON DEFINICIÓN CEL-SHADING */}
-          <g stroke="#090D16" strokeWidth="2.4" strokeLinejoin="round">
-            {/* Brazo Izquierdo */}
+          {/* Brazos Cel-Shaded */}
+          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
             <path
-              d={`M${140 - shW + 2},114 L${140 - shW - armW},146 L${140 - shW - armW + 3},194 L${140 - shW + 4},194 L${140 - shW + 5},150 Z`}
+              d={`M${140 - shW + 2},114 L${140 - shW - armW},148 L${140 - shW - armW + 3},196 L${140 - shW + 4},196 L${140 - shW + 5},152 Z`}
               fill={skin.base}
             />
-            {/* Sombra interior brazo izquierdo */}
             <polygon
-              points={`${140 - shW + 1},135 ${140 - shW + 4},150 ${140 - shW + 3},192 ${140 - shW - 2},192`}
+              points={`${140 - shW + 1},136 ${140 - shW + 4},152 ${140 - shW + 3},194 ${140 - shW - 2},194`}
               fill={skin.shadow}
               stroke="none"
             />
-            {/* Brazo Derecho */}
             <path
-              d={`M${140 + shW - 2},114 L${140 + shW + armW},146 L${140 + shW + armW - 3},194 L${140 + shW - 4},194 L${140 + shW - 5},150 Z`}
+              d={`M${140 + shW - 2},114 L${140 + shW + armW},148 L${140 + shW + armW - 3},196 L${140 + shW - 4},196 L${140 + shW - 5},152 Z`}
               fill={skin.base}
             />
-            {/* Sombra interior brazo derecho */}
             <polygon
-              points={`${140 + shW - 1},135 ${140 + shW - 4},150 ${140 + shW - 3},192 ${140 + shW + 2},192`}
+              points={`${140 + shW - 1},136 ${140 + shW - 4},152 ${140 + shW - 3},194 ${140 + shW + 2},194`}
               fill={skin.shadow}
               stroke="none"
             />
 
-            {/* Accesorio: Vendas de Combate en Antebrazos y Puños */}
-            {avatar.accessory === 'vendas' && (
+            {/* Accesorio: Muñequeras de Fuerza */}
+            {avatar.accessory === 'munequeras' && (
               <>
-                <rect x={140 - shW - armW + 1} y="166" width={armW + 2} height="28" rx="3" fill="#E2E8F0" />
-                <line x1={140 - shW - armW + 1} y1="174" x2={140 - shW + 3} y2="178" stroke="#64748B" strokeWidth="1.5" />
-                <line x1={140 - shW - armW + 1} y1="184" x2={140 - shW + 3} y2="188" stroke="#64748B" strokeWidth="1.5" />
-
-                <rect x={140 + shW - 3} y="166" width={armW + 2} height="28" rx="3" fill="#E2E8F0" />
-                <line x1={140 + shW - 3} y1="174" x2={140 + shW + armW - 1} y2="178" stroke="#64748B" strokeWidth="1.5" />
-                <line x1={140 + shW - 3} y1="184" x2={140 + shW + armW - 1} y2="188" stroke="#64748B" strokeWidth="1.5" />
+                <rect x={140 - shW - armW + 1} y="172" width={armW + 2} height="22" rx="3" fill={auraHex} />
+                <rect x={140 + shW - 3} y="172" width={armW + 2} height="22" rx="3" fill={auraHex} />
               </>
             )}
           </g>
 
-          {/* TORSO Y MUSCULATURA ANIME */}
-          <g stroke="#090D16" strokeWidth="2.4" strokeLinejoin="round">
-            {/* Trapecios y Torso Base */}
+          {/* Torso & Indumentaria */}
+          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
             <polygon
-              points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},186 ${140 - waW},186 ${140 - shW},116`}
+              points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},188 ${140 - waW},188 ${140 - shW},116`}
               fill={skin.base}
             />
-
-            {/* Sombra lateral Cel-Shading del Torso */}
             <polygon
-              points={`${140 + shW - 8},116 ${140 + shW},116 ${140 + waW},186 ${140 + waW - 7},186`}
+              points={`${140 + shW - 8},116 ${140 + shW},116 ${140 + waW},188 ${140 + waW - 7},188`}
               fill={skin.shadow}
               stroke="none"
             />
 
-            {/* Líneas de Clavícula, Pectorales y Abdominales Anime */}
-            <g fill="none" stroke="#090D16" strokeWidth="1.6" strokeLinecap="round" opacity="0.75">
-              {/* Clavículas */}
-              <path d={`M132,112 L${140 - shW * 0.55},116`} />
-              <path d={`M148,112 L${140 + shW * 0.55},116`} />
-              {/* Pectorales */}
-              <path d={`M${140 - shW * 0.6},134 Q140,140 140,124`} />
-              <path d={`M${140 + shW * 0.6},134 Q140,140 140,124`} />
-              {/* Línea Alba y Six-Pack */}
+            {/* Definición muscular anime */}
+            <g fill="none" stroke="#090B14" strokeWidth="1.6" strokeLinecap="round" opacity="0.7">
+              <path d={`M${140 - shW * 0.58},134 Q140,140 140,124`} />
+              <path d={`M${140 + shW * 0.58},134 Q140,140 140,124`} />
               <line x1="140" y1="138" x2="140" y2="180" />
-              <path d="M131,148 L138,148 M142,148 L149,148" />
-              <path d="M131,159 L138,159 M142,159 L149,159" />
-              <path d="M132,170 L138,170 M142,170 L148,170" />
+              <path d="M131,149 L138,149 M142,149 L149,149" />
+              <path d="M131,160 L138,160 M142,160 L149,160" />
             </g>
 
-            {/* ATUENDOS ANIME (5 ESTILOS) */}
-            {avatar.outfit === 'cazador' && (
+            {/* 4 Conjuntos Deportivos / Anime */}
+            {avatar.outfit === 'neogym' && (
               <g>
-                {/* Chaqueta Táctica de Cazador Abierta */}
                 <polygon
-                  points={`${140 - trapW - 2},102 128,104 132,186 ${140 - waW - 2},186 ${140 - shW - 2},116`}
-                  fill="#111827"
-                />
-                <polygon
-                  points={`${140 + trapW + 2},102 152,104 148,186 ${140 + waW + 2},186 ${140 + shW + 2},116`}
-                  fill="#111827"
-                />
-                {/* Solapas con borde luminoso */}
-                <line x1="128" y1="104" x2="132" y2="186" stroke={activeAura} strokeWidth="2" />
-                <line x1="152" y1="104" x2="148" y2="186" stroke={activeAura} strokeWidth="2" />
-                {/* Cinturón de Cazador */}
-                <rect x={140 - waW - 2} y="177" width={(waW + 2) * 2} height="9" fill="#090D16" />
-                <rect x="135" y="176" width="10" height="11" fill={activeAura} stroke="none" />
-              </g>
-            )}
-
-            {avatar.outfit === 'gi' && (
-              <g>
-                {/* Gi de Artes Marciales Cruzado */}
-                <polygon
-                  points={`${140 - trapW},103 ${140 + trapW},103 ${140 + shW * 0.78},114 ${140 + waW + 1},186 ${140 - waW - 1},186 ${140 - shW * 0.78},114`}
-                  fill="#1E293B"
-                />
-                {/* Solapa cruzada en V */}
-                <polyline points={`${140 - trapW + 4},104 140,146 ${140 + trapW - 4},104`} fill="none" stroke={activeAura} strokeWidth="3" />
-                {/* Cinta / Obi de Maestro */}
-                <rect x={140 - waW - 2} y="173" width={(waW + 2) * 2} height="11" fill={activeAura} />
-                <polygon points="136,184 126,204 134,206 140,186" fill={activeAura} />
-                <polygon points="144,184 154,204 146,206 140,186" fill={activeAura} />
-              </g>
-            )}
-
-            {avatar.outfit === 'cyber' && (
-              <g>
-                {/* Traje de Compresión Cibernético */}
-                <polygon
-                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},186 ${140 - waW},186 ${140 - shW},116`}
-                  fill="#0B1120"
-                />
-                {/* Circuitos de energía pectoral y abdominal */}
-                <polyline points={`${140 - shW + 6},122 132,134 148,134 ${140 + shW - 6},122`} fill="none" stroke={activeAura} strokeWidth="2" />
-                <line x1="140" y1="134" x2="140" y2="180" stroke={activeAura} strokeWidth="2" />
-                <circle cx="140" cy="134" r="3.5" fill={activeAura} stroke="none" />
-              </g>
-            )}
-
-            {avatar.outfit === 'gym' && (
-              <g>
-                {/* Musculosa Stringer Gym */}
-                <polygon
-                  points={`126,104 154,104 148,130 ${140 + waW + 1},186 ${140 - waW - 1},186 132,130`}
+                  points={`125,104 155,104 149,130 ${140 + waW + 1},188 ${140 - waW - 1},188 131,130`}
                   fill="#18181B"
                 />
-                <text x="140" y="152" textAnchor="middle" fill={activeAura} fontSize="11" fontWeight="900" fontFamily="monospace" stroke="none">
+                <polygon
+                  points={`${140 - waW - 1},156 128,164 128,188 ${140 - waW - 1},188`}
+                  fill="#EF4444"
+                  stroke="none"
+                />
+                <polygon
+                  points={`${140 + waW + 1},156 152,164 152,188 ${140 + waW + 1},188`}
+                  fill="#EF4444"
+                  stroke="none"
+                />
+                <text x="140" y="152" textAnchor="middle" fill={auraHex} fontSize="12" fontWeight="900" fontFamily="monospace" stroke="none">
                   EX
                 </text>
               </g>
             )}
 
-            {avatar.outfit === 'armadura' && (
+            {avatar.outfit === 'gi' && (
               <g>
-                {/* Peto y Hombreras de Titán */}
                 <polygon
-                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW * 0.85},122 ${140 + waW},186 ${140 - waW},186 ${140 - shW * 0.85},122`}
+                  points={`${140 - trapW},103 ${140 + trapW},103 ${140 + shW * 0.78},114 ${140 + waW + 1},188 ${140 - waW - 1},188 ${140 - shW * 0.78},114`}
                   fill="#1E293B"
                 />
-                {/* Hombreras angulares */}
-                <polygon points={`${140 - shW - 8},124 ${140 - shW + 6},106 ${140 - trapW + 2},122`} fill="#0F172A" stroke={activeAura} strokeWidth="2" />
-                <polygon points={`${140 + shW + 8},124 ${140 + shW - 6},106 ${140 + trapW - 2},122`} fill="#0F172A" stroke={activeAura} strokeWidth="2" />
-                {/* Núcleo pectoral */}
-                <polygon points="140,122 150,134 140,146 130,134" fill={activeAura} />
+                <polyline points={`${140 - trapW + 4},104 140,148 ${140 + trapW - 4},104`} fill="none" stroke={auraHex} strokeWidth="3.2" />
+                <rect x={140 - waW - 2} y="175" width={(waW + 2) * 2} height="11" fill={auraHex} />
+              </g>
+            )}
+
+            {avatar.outfit === 'cyber' && (
+              <g>
+                <polygon
+                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},188 ${140 - waW},188 ${140 - shW},116`}
+                  fill="#0F172A"
+                />
+                <polyline points={`${140 - shW + 6},122 132,135 148,135 ${140 + shW - 6},122`} fill="none" stroke={auraHex} strokeWidth="2.4" />
+                <circle cx="140" cy="135" r="4.5" fill={auraHex} stroke="none" />
+              </g>
+            )}
+
+            {avatar.outfit === 'titan' && (
+              <g>
+                <polygon
+                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW * 0.85},122 ${140 + waW},188 ${140 - waW},188 ${140 - shW * 0.85},122`}
+                  fill="#1E1B4B"
+                />
+                <polygon points={`${140 - shW - 8},125 ${140 - shW + 6},106 ${140 - trapW + 2},122`} fill="#090D16" stroke={auraHex} strokeWidth="2.2" />
+                <polygon points={`${140 + shW + 8},125 ${140 + shW - 6},106 ${140 + trapW - 2},122`} fill="#090D16" stroke={auraHex} strokeWidth="2.2" />
+                <polygon points="140,122 151,135 140,148 129,135" fill={auraHex} />
+              </g>
+            )}
+
+            {/* Accesorio: Cinturón de Poder */}
+            {avatar.accessory === 'cinturon' && (
+              <g>
+                <rect x={140 - waW - 2} y="176" width={(waW + 2) * 2} height="12" rx="2" fill="#090B14" />
+                <rect x="133" y="174" width="14" height="16" rx="3" fill={auraHex} />
               </g>
             )}
           </g>
 
-          {/* Accesorio: Bufanda de Cazador Sombrío */}
-          {avatar.accessory === 'bufanda' && (
-            <g stroke="#090D16" strokeWidth="2.2" strokeLinejoin="round">
-              <path d="M122,98 Q140,108 158,98 L162,114 Q140,122 118,114 Z" fill="#1E1B4B" />
-              <path d="M148,110 L176,158 L162,164 L142,114 Z" fill="#1E1B4B" />
-            </g>
-          )}
-
-          {/* CUELLO Y CABEZA ANIME */}
-          <g stroke="#090D16" strokeWidth="2.4" strokeLinejoin="round">
-            {/* Cuello */}
+          {/* Cuello y Cabeza Anime */}
+          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
             <rect x="130" y="86" width="20" height="22" fill={skin.base} />
-            {/* Sombra bajo la barbilla */}
             <polygon points="130,88 150,88 150,98 130,94" fill={skin.shadow} stroke="none" />
-
-            {/* Orejas */}
-            <ellipse cx="115" cy="70" rx="4" ry="7" fill={skin.base} />
-            <ellipse cx="165" cy="70" rx="4" ry="7" fill={skin.base} />
-
-            {/* Mandíbula y Rostro Anime Estilizado */}
-            <path
-              d="M116,52 L117,74 L128,89 L140,95 L152,89 L163,74 L164,52 Z"
-              fill={skin.base}
-            />
-            {/* Sombra lateral derecha del rostro (Cel-Shading) */}
-            <polygon
-              points="158,54 163,54 162,74 151,89 140,94 149,86 157,72"
-              fill={skin.shadow}
-              stroke="none"
-            />
+            <path d="M115,50 L116,74 L128,90 L140,96 L152,90 L164,74 L165,50 Z" fill={skin.base} />
+            <polygon points="158,52 164,52 163,74 151,90 140,95 150,86 157,72" fill={skin.shadow} stroke="none" />
           </g>
 
-          {/* RASGOS FACIALES ANIME (CEJAS, OJOS BRILLANTES, CICATRIZ, BOCA) */}
+          {/* Rasgos Faciales Expresivos Anime */}
           <g>
-            {/* Cejas inclinadas de determinación */}
-            <polyline points="120,62 134,66" stroke="#090D16" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-            <polyline points="160,62 146,66" stroke="#090D16" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            <polyline points="119,61 134,65" stroke="#090B14" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+            <polyline points="161,61 146,65" stroke="#090B14" strokeWidth="2.6" strokeLinecap="round" fill="none" />
 
-            {/* Ojo Izquierdo Anime */}
-            <polygon points="120,67 134,69 132,75 121,74" fill="#FFFFFF" stroke="#090D16" strokeWidth="1.6" />
-            <circle cx="127.5" cy="71.2" r="3.1" fill={activeAura} />
-            <circle cx="127.5" cy="71.2" r="1.4" fill="#090D16" />
-            <circle cx="126.3" cy="70.1" r="1.1" fill="#FFFFFF" />
+            {/* Ojo Izquierdo */}
+            <polygon points="119,66 134,68 132,75 120,74" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
+            <circle cx="127" cy="71" r="3.4" fill={auraHex} />
+            <circle cx="127" cy="71" r="1.5" fill="#090B14" />
+            <circle cx="125.6" cy="69.8" r="1.2" fill="#FFFFFF" />
 
-            {/* Ojo Derecho Anime */}
-            <polygon points="160,67 146,69 148,75 159,74" fill="#FFFFFF" stroke="#090D16" strokeWidth="1.6" />
-            <circle cx="152.5" cy="71.2" r="3.1" fill={activeAura} />
-            <circle cx="152.5" cy="71.2" r="1.4" fill="#090D16" />
-            <circle cx="151.3" cy="70.1" r="1.1" fill="#FFFFFF" />
+            {/* Ojo Derecho */}
+            <polygon points="161,66 146,68 148,75 160,74" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
+            <circle cx="153" cy="71" r="3.4" fill={auraHex} />
+            <circle cx="153" cy="71" r="1.5" fill="#090B14" />
+            <circle cx="151.6" cy="69.8" r="1.2" fill="#FFFFFF" />
 
-            {/* Cicatriz de Combate Opcional */}
-            {avatar.scar && (
-              <g stroke="#991B1B" strokeWidth="1.6" strokeLinecap="round">
-                <line x1="150" y1="77" x2="158" y2="82" />
-                <line x1="153" y1="76" x2="151" y2="80" />
-                <line x1="156" y1="78" x2="154" y2="82" />
-              </g>
-            )}
-
-            {/* Nariz Anime (sombra triangular mínima) */}
-            <polygon points="140,73 138,79 141,79" fill={skin.shadow} />
-
-            {/* Boca / Media sonrisa confiada */}
-            <path d="M134,85 Q140,87 146,84" stroke="#090D16" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+            {/* Sonrisa Confiada Anime */}
+            <path d="M133,85 Q140,89 147,84" stroke="#090B14" strokeWidth="2" fill="none" strokeLinecap="round" />
           </g>
 
-          {/* 5 PEINADOS ANIME DELANTEROS + BRILLO ZIGZAG */}
-          <g stroke="#090D16" strokeWidth="2.4" strokeLinejoin="round">
-            {avatar.hair === 'spiky' && (
+          {/* 4 Peinados Shonen Originales */}
+          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
+            {avatar.hair === 'shonen' && (
               <g>
                 <path
-                  d="M113,60 L102,42 L117,38 L114,20 L131,29 L140,12 L149,29 L166,20 L163,38 L178,42 L167,60 L156,47 L149,64 L140,49 L131,64 L124,47 Z"
-                  fill={hairCol.base}
+                  d="M111,60 L99,40 L116,36 L112,16 L130,27 L140,8 L150,27 L168,16 L164,36 L181,40 L169,60 L157,46 L149,65 L140,48 L131,65 L123,46 Z"
+                  fill={hair.base}
                 />
-                {/* Brillo estilo anime */}
-                <polyline points="122,38 130,34 136,39 144,33 150,39 158,35" fill="none" stroke={hairCol.shine} strokeWidth="2" />
+                <polyline points="120,37 129,32 136,38 144,32 151,38 160,33" fill="none" stroke={hair.shine} strokeWidth="2.2" />
               </g>
             )}
 
-            {avatar.hair === 'hunter' && (
+            {avatar.hair === 'cazador' && (
               <g>
                 <path
-                  d="M112,64 L108,42 L123,28 L140,24 L157,28 L172,42 L168,64 L158,49 L151,68 L143,51 L136,69 L128,50 L120,66 Z"
-                  fill={hairCol.base}
+                  d="M111,64 L106,40 L122,26 L140,21 L158,26 L174,40 L169,64 L158,48 L151,69 L143,50 L136,70 L128,49 L120,66 Z"
+                  fill={hair.base}
                 />
-                <polyline points="121,41 131,37 140,42 149,37 159,41" fill="none" stroke={hairCol.shine} strokeWidth="2" />
+                <polyline points="120,40 130,35 140,41 150,35 160,40" fill="none" stroke={hair.shine} strokeWidth="2.2" />
               </g>
             )}
 
-            {avatar.hair === 'samurai' && (
+            {avatar.hair === 'coleta' && (
               <g>
                 <path
-                  d="M114,58 Q116,32 140,30 Q164,32 166,58 L156,46 L146,62 L140,46 L134,62 L124,46 Z"
-                  fill={hairCol.base}
+                  d="M113,58 Q115,30 140,28 Q165,30 167,58 L156,45 L146,62 L140,45 L134,62 L124,45 Z"
+                  fill={hair.base}
                 />
-                <path d="M124,40 Q140,36 156,40" fill="none" stroke={hairCol.shine} strokeWidth="2" />
+                <path d="M123,39 Q140,35 157,39" fill="none" stroke={hair.shine} strokeWidth="2.2" />
               </g>
             )}
 
-            {avatar.hair === 'undercut' && (
+            {avatar.hair === 'salvaje' && (
               <g>
                 <path
-                  d="M115,56 L116,36 L132,22 L156,22 L168,36 L165,56 L154,44 L138,48 L124,44 Z"
-                  fill={hairCol.base}
+                  d="M104,68 L102,38 L121,22 L140,14 L159,22 L178,38 L176,68 L161,49 L152,70 L140,50 L128,70 L119,49 Z"
+                  fill={hair.base}
                 />
-                <polyline points="126,33 138,30 152,33" fill="none" stroke={hairCol.shine} strokeWidth="2" />
-              </g>
-            )}
-
-            {avatar.hair === 'wild' && (
-              <g>
-                <path
-                  d="M106,68 L104,40 L122,24 L140,18 L158,24 L176,40 L174,68 L161,50 L152,69 L140,51 L128,69 L119,50 Z"
-                  fill={hairCol.base}
-                />
-                <polyline points="120,38 132,33 140,39 148,33 160,38" fill="none" stroke={hairCol.shine} strokeWidth="2" />
+                <polyline points="118,37 131,32 140,38 149,32 162,37" fill="none" stroke={hair.shine} strokeWidth="2.2" />
               </g>
             )}
           </g>
 
-          {/* ACCESORIOS DE CABEZA (VISOR SCOUTER / AURICULARES NEON) */}
-          {avatar.accessory === 'visor' && (
+          {/* Accesorios de Cabeza */}
+          {avatar.accessory === 'banda' && (
             <g>
-              <rect
-                x="144"
-                y="65"
-                width="22"
-                height="12"
-                rx="2"
-                fill={activeAura}
-                fillOpacity="0.35"
-                stroke={activeAura}
-                strokeWidth="1.8"
-              />
-              <line x1="147" y1="71" x2="163" y2="71" stroke="#FFFFFF" strokeWidth="1.2" />
-              <rect x="164" y="66" width="5" height="10" rx="1.5" fill="#0F172A" stroke={activeAura} strokeWidth="1.4" />
+              <rect x="114" y="52" width="52" height="7" rx="2" fill={auraHex} stroke="#090B14" strokeWidth="1.8" />
+              <rect x="133" y="51" width="14" height="9" rx="1.5" fill="#E2E8F0" stroke="#090B14" strokeWidth="1.5" />
             </g>
           )}
 
           {avatar.accessory === 'auriculares' && (
             <g>
-              <path d="M111,64 Q111,22 140,22 Q169,22 169,64" fill="none" stroke="#1E293B" strokeWidth="4.5" />
-              <rect x="107" y="58" width="8" height="18" rx="3" fill="#0F172A" stroke={activeAura} strokeWidth="2" />
-              <rect x="165" y="58" width="8" height="18" rx="3" fill="#0F172A" stroke={activeAura} strokeWidth="2" />
+              <path d="M110,64 Q110,20 140,20 Q170,20 170,64" fill="none" stroke="#1E293B" strokeWidth="4.8" />
+              <rect x="106" y="57" width="8" height="19" rx="3" fill="#0F172A" stroke={auraHex} strokeWidth="2.2" />
+              <rect x="166" y="57" width="8" height="19" rx="3" fill="#0F172A" stroke={auraHex} strokeWidth="2.2" />
             </g>
           )}
         </g>
       </svg>
-
-      {/* Pie HUD de Tarjeta Anime */}
-      <div className="absolute bottom-2.5 left-3 right-3 flex justify-between items-center z-20 text-[10px] font-mono text-slate-300 bg-black/70 px-3 py-1 rounded-lg border border-slate-800/90 backdrop-blur-sm">
-        <span>ESTILO: ANIME 2D CEL-SHADED</span>
-        <span style={{ color: activeAura }} className="font-bold">
-          AURA: {avatar.aura.toUpperCase()}
-        </span>
-      </div>
     </div>
   );
 }
 
-/**
- * Procesador Canvas con Filtro Automático de Privacidad Facial
- */
-function PrivacyPhotoVaultCard({ sideLabel, imageDataUrl, onUploadImage, onGenerateSample }) {
+// ============================================================================
+// COMPONENTE: BÓVEDA PRIVADA DE FOTOS (FRENTE Y ESPALDA SIN ROSTRO)
+// ============================================================================
+
+function SecureBodyPhotoCard({ title, photoUrl, onPhotoProcessed, onSimulatePhoto }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const width = 280;
-    const height = 340;
-    canvas.width = width;
-    canvas.height = height;
+    const w = 260;
+    const h = 320;
+    canvas.width = w;
+    canvas.height = h;
 
-    if (!imageDataUrl) {
-      ctx.fillStyle = '#060A14';
-      ctx.fillRect(0, 0, width, height);
-      ctx.strokeStyle = '#1E293B';
+    if (!photoUrl) {
+      ctx.fillStyle = '#0D0A22';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(0, 245, 255, 0.16)';
       ctx.lineWidth = 1;
-      for (let x = 0; x < width; x += 20) {
+      for (let x = 0; x < w; x += 20) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
+        ctx.lineTo(x, h);
         ctx.stroke();
       }
-      for (let y = 0; y < height; y += 20) {
+      for (let y = 0; y < h; y += 20) {
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
+        ctx.lineTo(w, y);
         ctx.stroke();
       }
-      ctx.fillStyle = '#64748B';
-      ctx.font = '12px monospace';
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = 'bold 11px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(`SIN CAPTURA ${sideLabel.toUpperCase()}`, width / 2, height / 2 - 10);
-      ctx.fillStyle = '#00F0FF';
+      ctx.fillText(`VISTA ${title.toUpperCase()}`, w / 2, h / 2 - 8);
+      ctx.fillStyle = '#00F5FF';
       ctx.font = '10px monospace';
-      ctx.fillText('FILTRO FACIAL AUTOMÁTICO ACTIVO', width / 2, height / 2 + 12);
+      ctx.fillText('CENSURA FACIAL AUTOMÁTICA', w / 2, h / 2 + 12);
       return;
     }
 
     const img = new Image();
     img.onload = () => {
-      ctx.clearRect(0, 0, width, height);
-      const scale = Math.max(width / img.width, height / img.height);
-      const drawW = img.width * scale;
-      const drawH = img.height * scale;
-      const offsetX = (width - drawW) / 2;
-      const offsetY = (height - drawH) / 2;
-      ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+      ctx.clearRect(0, 0, w, h);
+      const scale = Math.max(w / img.width, h / img.height);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
 
-      const headHeight = Math.round(height * 0.24);
-      const pixelSize = 14;
-      for (let py = 0; py < headHeight; py += pixelSize) {
-        for (let px = 0; px < width; px += pixelSize) {
-          const sample = ctx.getImageData(Math.min(width - 1, px + 4), Math.min(height - 1, py + 4), 1, 1).data;
-          ctx.fillStyle = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
-          ctx.fillRect(px, py, pixelSize, pixelSize);
+      // Pixelado y barra de privacidad automática en el 24% superior (zona del rostro)
+      const faceH = Math.round(h * 0.24);
+      const block = 12;
+      for (let py = 0; py < faceH; py += block) {
+        for (let px = 0; px < w; px += block) {
+          const p = ctx.getImageData(Math.min(w - 1, px + 3), Math.min(h - 1, py + 3), 1, 1).data;
+          ctx.fillStyle = `rgb(${p[0]},${p[1]},${p[2]})`;
+          ctx.fillRect(px, py, block, block);
         }
       }
 
-      ctx.fillStyle = 'rgba(4, 7, 15, 0.9)';
-      ctx.fillRect(0, 0, width, headHeight);
-      ctx.strokeStyle = '#00F0FF';
+      ctx.fillStyle = 'rgba(12, 9, 32, 0.9)';
+      ctx.fillRect(0, 0, w, faceH);
+      ctx.strokeStyle = '#00F5FF';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(0, headHeight);
-      ctx.lineTo(width, headHeight);
+      ctx.moveTo(0, faceH);
+      ctx.lineTo(w, faceH);
       ctx.stroke();
 
-      ctx.fillStyle = '#00F0FF';
-      ctx.font = 'bold 11px monospace';
+      ctx.fillStyle = '#00F5FF';
+      ctx.font = 'bold 10px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('ROSTRO REDACTADO // ZERO-FACE ID', width / 2, headHeight / 2 - 4);
-      ctx.fillStyle = '#10B981';
+      ctx.fillText('ROSTRO CENSURADO // ZERO-FACE', w / 2, faceH / 2 - 3);
+      ctx.fillStyle = '#34D399';
       ctx.font = '9px monospace';
-      ctx.fillText('METADATOS EXIF ELIMINADOS • AES-256', width / 2, headHeight / 2 + 12);
+      ctx.fillText('CIFRADO LOCAL AES-256', w / 2, faceH / 2 + 11);
     };
-    img.src = imageDataUrl;
-  }, [imageDataUrl, sideLabel]);
+    img.src = photoUrl;
+  }, [photoUrl, title]);
 
-  const handleFileChange = (e) => {
+  const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      if (ev.target?.result) {
-        onUploadImage(ev.target.result);
-      }
+      if (ev.target?.result) onPhotoProcessed(ev.target.result);
     };
     reader.readAsDataURL(file);
   };
 
   return (
-    <div className="bg-slate-950/90 border border-cyan-500/25 rounded-2xl p-4 flex flex-col items-center shadow-lg">
-      <div className="w-full flex justify-between items-center mb-3">
-        <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
-          {sideLabel}
-        </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/90 border border-emerald-500/40 text-emerald-300">
-          <EyeOff className="w-3 h-3" /> Privacidad Activa
+    <div className="rounded-2xl border border-cyan-400/35 bg-[#120D2D]/90 p-4 flex flex-col items-center shadow-lg">
+      <div className="w-full flex items-center justify-between mb-2.5">
+        <span className="text-xs font-mono font-black text-cyan-300 uppercase">{title}</span>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-[10px] font-mono text-emerald-200">
+          <EyeOff className="w-3 h-3" /> Rostro Censurado & Cifrado Local
         </span>
       </div>
 
-      <div className="relative rounded-xl overflow-hidden border border-slate-700/80 shadow-inner mb-3">
+      <div className="rounded-xl overflow-hidden border-2 border-purple-500/40 mb-3 shadow-inner">
         <canvas ref={canvasRef} className="block max-w-full h-auto" />
       </div>
 
       <div className="w-full grid grid-cols-2 gap-2">
-        <label className="cursor-pointer flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/50 text-cyan-300 text-xs font-bold transition">
+        <label className="cursor-pointer py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md transition">
           <Upload className="w-3.5 h-3.5" />
           Subir Foto
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
         </label>
         <button
           type="button"
-          onClick={onGenerateSample}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-bold transition"
+          onClick={onSimulatePhoto}
+          className="py-2.5 px-3 rounded-xl bg-purple-600/35 hover:bg-purple-600/50 border border-purple-400/50 text-purple-100 text-xs font-bold flex items-center justify-center gap-1.5 transition"
         >
-          <Scan className="w-3.5 h-3.5 text-purple-400" />
-          Escáner Demo
+          <Scan className="w-3.5 h-3.5 text-amber-300" />
+          Demo Scan
         </button>
       </div>
     </div>
@@ -1373,962 +1075,985 @@ function PrivacyPhotoVaultCard({ sideLabel, imageDataUrl, onUploadImage, onGener
 }
 
 // ============================================================================
-// APLICACIÓN PRINCIPAL: PROTOCOLO EX // SYSTEM FITNESS
+// APLICACIÓN PRINCIPAL: ¡PROTOCOLO EX! // ANIME FITNESS SYSTEM
 // ============================================================================
 
 export default function App() {
-  // Cargar estado guardado de localStorage si existe
-  const loadSavedState = () => {
+  const savedData = useMemo(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      return raw ? JSON.parse(raw) : null;
     } catch {
-      // Ignorar errores de almacenamiento
+      return null;
     }
-    return null;
-  };
+  }, []);
 
-  const saved = useMemo(() => loadSavedState(), []);
+  // Navegación entre los 6 módulos
+  const [activeTab, setActiveTab] = useState('anime_cam');
 
-  // Navegación principal (6 módulos)
-  const [activeTab, setActiveTab] = useState('comando');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Celebración (Confeti + Banner Gigante) y Notificaciones
+  const [celebration, setCelebration] = useState(null);
+  const [rankUpBanner, setRankUpBanner] = useState(null);
+  const [toastMsg, setToastMsg] = useState(null);
 
-  // Notificaciones HUD y Banner de Ascenso/Descenso
-  const [toast, setToast] = useState(null);
-  const [rankBanner, setRankBanner] = useState(null);
-
-  // MÓDULO 1: RANGOS Y RETOS DIARIOS
-  const [totalLP, setTotalLP] = useState(saved?.totalLP ?? 2845);
-  const [streak, setStreak] = useState(saved?.streak ?? 6);
-  const [dailyChallenges, setDailyChallenges] = useState(
-    saved?.dailyChallenges ?? [
-      {
-        id: 'ch-1',
-        title: 'Gimnasio: Sentadilla 130kg 4x6 + Press Banca 90kg 4x8',
-        category: 'Gimnasio',
-        lpReward: 40,
-        status: 'active',
-        contingencyNote: ''
-      },
-      {
-        id: 'ch-2',
-        title: 'Salir a correr 5 km ritmo umbral (4:45/km)',
-        category: 'Cardio Exterior',
-        lpReward: 35,
-        status: 'active',
-        contingencyNote: ''
-      }
-    ]
-  );
-
-  const [nextWeekPending, setNextWeekPending] = useState(
-    saved?.nextWeekPending ?? [
-      {
-        id: 'fail-prev-1',
-        title: 'Peso Muerto 165kg 3x5 (Fallo por fatiga acumulada)',
-        category: 'Gimnasio',
-        lpReward: 45,
-        failedDate: 'Semana Anterior'
-      }
-    ]
-  );
-
-  const [newChallengeTitle, setNewChallengeTitle] = useState('');
-  const [newChallengeCategory, setNewChallengeCategory] = useState('Gimnasio');
-  const [contingencyTarget, setContingencyTarget] = useState(null);
-  const [selectedPresetId, setSelectedPresetId] = useState('lluvia');
-  const [customJustificationNote, setCustomJustificationNote] = useState('');
-
-  // MÓDULO 2: FUERZA ABSOLUTA Y RELATIVA
-  const [bodyWeight, setBodyWeight] = useState(saved?.bodyWeight ?? 78);
-  const [lifts, setLifts] = useState(
-    saved?.lifts ?? {
-      squat: { weight: 135, reps: 5 },
-      bench: { weight: 95, reps: 6 },
-      deadlift: { weight: 165, reps: 4 },
-      ohp: { weight: 62.5, reps: 5 }
-    }
-  );
-
-  // MÓDULO 3: EVALUACIÓN FÍSICA TRIMESTRAL Y BÓVEDA
-  const [daysUntilRenewal, setDaysUntilRenewal] = useState(saved?.daysUntilRenewal ?? 64);
-  const [frontPhoto, setFrontPhoto] = useState(null);
-  const [backPhoto, setBackPhoto] = useState(null);
-  const [visualSymmetryScore, setVisualSymmetryScore] = useState(saved?.visualSymmetryScore ?? 72);
-  const [quarterlyHistory, setQuarterlyHistory] = useState(
-    saved?.quarterlyHistory ?? [
-      { quarter: 'Q1', label: 'Trimestre 1 (Base)', grade: 'D', bodyfat: '18.5%', note: 'Inicio de recomposición y control motor.' },
-      { quarter: 'Q2', label: 'Trimestre 2 (Progreso)', grade: 'C', bodyfat: '15.8%', note: 'Aumento de densidad dorsal y hombro lateral.' },
-      { quarter: 'Q3', label: 'Trimestre 3 (Actual)', grade: 'B', bodyfat: '13.4%', note: 'V-taper marcado y separación abdominal.' },
-      { quarter: 'Q4', label: 'Trimestre 4 (Proyección)', grade: 'A', bodyfat: '11.5%', note: 'Pendiente de renovación trimestral.' }
-    ]
-  );
-  const [showAnnualRecap, setShowAnnualRecap] = useState(false);
-
-  // MÓDULO 4: RUTINAS CIENTÍFICAS Y ESCÁNER
-  const [routineEnv, setRoutineEnv] = useState(saved?.routineEnv ?? 'gimnasio');
-  const [routineGoal, setRoutineGoal] = useState(saved?.routineGoal ?? 'hipertrofia');
-  const [routineDaysPerWeek, setRoutineDaysPerWeek] = useState(saved?.routineDaysPerWeek ?? 4);
-  const [customRoutineText, setCustomRoutineText] = useState(
-    saved?.customRoutineText ??
-      'Lunes: Press banca 4x8, Press inclinado mancuernas 4x10, Aperturas 3x12, Elevaciones laterales 4x15, Extensión tríceps 3x12.\nMiércoles: Jalón al pecho 4x10, Remo barra 3x8, Curl bíceps 4x12.\nViernes: Sentadilla 3x8, Curl femoral 3x12, Plancha 3x45s.'
-  );
-  const [customProgressStatus, setCustomProgressStatus] = useState(saved?.customProgressStatus ?? 'estancado');
-  const [uploadedFileName, setUploadedFileName] = useState('');
-
-  // MÓDULO 5: SUEÑO Y RECUPERACIÓN SEMANAL
-  const [sleepDays, setSleepDays] = useState(saved?.sleepDays ?? [7.5, 7.0, 6.5, 8.0, 7.5, 8.5, 7.0]);
-  const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
-  // MÓDULO 6: AVATAR 2D ANIME Y COSMÉTICOS
-  const [playerName, setPlayerName] = useState(saved?.playerName ?? 'HUNTER_01');
+  // Estado del Operador y Avatar 2D Anime
+  const [operatorName, setOperatorName] = useState(savedData?.operatorName ?? 'HUNTER_01');
   const [avatar, setAvatar] = useState(
-    saved?.avatar ?? {
+    savedData?.avatar ?? {
       gender: 'masculino',
       build: 'mesomorfo',
       skin: 'trigueno',
-      hair: 'hunter',
-      hairColor: 'negro',
-      scar: false,
-      outfit: 'cazador',
-      accessory: 'visor',
-      aura: 'rango',
-      bg: 'monarca'
+      hair: 'shonen',
+      hairColor: 'azabache',
+      outfit: 'neogym',
+      accessory: 'banda',
+      aura: 'rango'
     }
   );
 
-  // Guardado automático en localStorage
+  // Módulo 1: Cámara de Transformación Anime 2D
+  const [camPreviewUrl, setCamPreviewUrl] = useState(null);
+  const [isScanningAnime, setIsScanningAnime] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanResult, setScanResult] = useState(
+    savedData?.scanResult ?? {
+      biotypeLabel: 'Mesomorfo / Estético',
+      symmetry: '93.4%',
+      syncStatus: 'Guerrero 2D Sincronizado'
+    }
+  );
+
+  // Módulo 2: Rangos (15 x 6 divisiones), Racha y Retos Diarios
+  const [totalLP, setTotalLP] = useState(savedData?.totalLP ?? 4255); // Oro 6 por defecto para lucir vibrante
+  const [streakDays, setStreakDays] = useState(savedData?.streakDays ?? 7);
+  const [challenges, setChallenges] = useState(
+    savedData?.challenges ?? [
+      {
+        id: 'c-1',
+        title: 'Gym: Press Banca 4x8 con 80kg + Sentadilla 4x6 con 115kg',
+        env: 'Gimnasio',
+        lp: 45,
+        status: 'active',
+        contingencyInfo: ''
+      },
+      {
+        id: 'c-2',
+        title: 'Salir a correr 5 km ritmo constante',
+        env: 'Exterior',
+        lp: 35,
+        status: 'active',
+        contingencyInfo: ''
+      }
+    ]
+  );
+  const [nextWeekQueue, setNextWeekQueue] = useState(
+    savedData?.nextWeekQueue ?? [
+      {
+        id: 'nw-1',
+        title: 'Peso Muerto 150kg 3x5 (Reto fallido semana previa)',
+        env: 'Gimnasio',
+        lp: 50
+      }
+    ]
+  );
+  const [newTitle, setNewTitle] = useState('');
+  const [newEnv, setNewEnv] = useState('Gimnasio');
+  const [modalChallenge, setModalChallenge] = useState(null);
+  const [selectedContingencyId, setSelectedContingencyId] = useState('lluvia');
+  const [customReasonText, setCustomReasonText] = useState('');
+
+  // Módulo 3: Fuerza Absoluta y Relativa (F a EX)
+  const [bodyWeight, setBodyWeight] = useState(savedData?.bodyWeight ?? 76);
+  const [lifts, setLifts] = useState(
+    savedData?.lifts ?? {
+      squat: { weight: 130, reps: 5 },
+      bench: { weight: 92.5, reps: 6 },
+      deadlift: { weight: 160, reps: 4 },
+      pullup: { weight: 20, reps: 6 },
+      ohp: { weight: 60, reps: 5 }
+    }
+  );
+
+  // Módulo 4: Evaluación Física Trimestral (F a EX) & Bóveda Privada
+  const [daysToRenewal, setDaysToRenewal] = useState(savedData?.daysToRenewal ?? 68);
+  const [frontVaultPhoto, setFrontVaultPhoto] = useState(null);
+  const [backVaultPhoto, setBackVaultPhoto] = useState(null);
+  const [physiqueScore, setPhysiqueScore] = useState(savedData?.physiqueScore ?? 74);
+  const [quarters, setQuarters] = useState(
+    savedData?.quarters ?? [
+      { id: 'Q1', title: 'Q1 // Inicio', grade: 'D', bf: '18.2%', note: 'Base técnica y adaptación metabólica.' },
+      { id: 'Q2', title: 'Q2 // Evolución', grade: 'C', bf: '15.4%', note: 'Aumento de amplitud dorsal y hombros.' },
+      { id: 'Q3', title: 'Q3 // Actual', grade: 'B', bf: '13.1%', note: 'Definición abdominal y densidad muscular.' },
+      { id: 'Q4', title: 'Q4 // Meta Anual', grade: 'A', bf: '11.2%', note: 'Objetivo trimestral en curso.' }
+    ]
+  );
+
+  // Módulo 5: Rutinas Científicas y Escáner de Rutina Propia
+  const [routineEnv, setRoutineEnv] = useState(savedData?.routineEnv ?? 'gimnasio');
+  const [routineGoal, setRoutineGoal] = useState(savedData?.routineGoal ?? 'hipertrofia');
+  const [routineDays, setRoutineDays] = useState(savedData?.routineDays ?? 4);
+  const [userRoutineText, setUserRoutineText] = useState(
+    savedData?.userRoutineText ??
+      'Lunes: Press Banca 4x8, Press Inclinado 4x10, Aperturas 3x12, Elevaciones Laterales 4x15, Tríceps Polea 3x12.\nMiércoles: Jalón al Pecho 4x10, Remo Barra 3x8, Curl Bíceps 4x12.\nViernes: Sentadilla 3x8, Curl Femoral 3x12.'
+  );
+  const [userRoutineFeeling, setUserRoutineFeeling] = useState(savedData?.userRoutineFeeling ?? 'estancado');
+  const [routineDiagnosis, setRoutineDiagnosis] = useState(null);
+  const [routineFileName, setRoutineFileName] = useState('');
+
+  // Módulo 6: Contador de Sueño Semanal (49-63h)
+  const [sleepHours, setSleepHours] = useState(savedData?.sleepHours ?? [7.5, 7.5, 7.0, 8.0, 7.5, 8.5, 7.5]);
+  const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  // Guardar estado en localStorage
   useEffect(() => {
     try {
-      const payload = {
-        totalLP,
-        streak,
-        dailyChallenges,
-        nextWeekPending,
-        bodyWeight,
-        lifts,
-        daysUntilRenewal,
-        visualSymmetryScore,
-        quarterlyHistory,
-        routineEnv,
-        routineGoal,
-        routineDaysPerWeek,
-        customRoutineText,
-        customProgressStatus,
-        sleepDays,
-        playerName,
-        avatar
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          operatorName,
+          avatar,
+          scanResult,
+          totalLP,
+          streakDays,
+          challenges,
+          nextWeekQueue,
+          bodyWeight,
+          lifts,
+          daysToRenewal,
+          physiqueScore,
+          quarters,
+          routineEnv,
+          routineGoal,
+          routineDays,
+          userRoutineText,
+          userRoutineFeeling,
+          sleepHours
+        })
+      );
     } catch {
-      // Ignorar si el navegador bloquea storage
+      // Ignorar si localStorage no está disponible
     }
   }, [
+    operatorName,
+    avatar,
+    scanResult,
     totalLP,
-    streak,
-    dailyChallenges,
-    nextWeekPending,
+    streakDays,
+    challenges,
+    nextWeekQueue,
     bodyWeight,
     lifts,
-    daysUntilRenewal,
-    visualSymmetryScore,
-    quarterlyHistory,
+    daysToRenewal,
+    physiqueScore,
+    quarters,
     routineEnv,
     routineGoal,
-    routineDaysPerWeek,
-    customRoutineText,
-    customProgressStatus,
-    sleepDays,
-    playerName,
-    avatar
+    routineDays,
+    userRoutineText,
+    userRoutineFeeling,
+    sleepHours
   ]);
 
   // Cálculos derivados
-  const rankInfo = useMemo(() => getCompetitiveRankInfo(totalLP), [totalLP]);
-  const strengthMetrics = useMemo(() => calculateStrengthAnalysis(bodyWeight, lifts), [bodyWeight, lifts]);
-  const sleepMetrics = useMemo(() => calculateSleepMetrics(sleepDays), [sleepDays]);
-  const routineAudit = useMemo(
-    () => analyzeCustomRoutine(customRoutineText, customProgressStatus),
-    [customRoutineText, customProgressStatus]
-  );
-
-  const currentPhysicalGrade = useMemo(() => {
-    const q3 = quarterlyHistory.find((q) => q.quarter === 'Q3');
+  const rankInfo = useMemo(() => getRankProgress(totalLP), [totalLP]);
+  const strengthInfo = useMemo(() => computeStrengthProfile(bodyWeight, lifts), [bodyWeight, lifts]);
+  const sleepInfo = useMemo(() => analyzeSleepWeek(sleepHours), [sleepHours]);
+  const currentPhysiqueGrade = useMemo(() => {
+    const q3 = quarters.find((q) => q.id === 'Q3');
     return SCIENTIFIC_GRADES.find((g) => g.grade === (q3?.grade || 'B')) || SCIENTIFIC_GRADES[4];
-  }, [quarterlyHistory]);
+  }, [quarters]);
 
-  const triggerToast = (message, type = 'info') => {
-    setToast({ message, type, id: Date.now() });
+  const showToast = (text) => {
+    setToastMsg({ text, id: Date.now() });
     setTimeout(() => {
-      setToast((prev) => (prev && Date.now() - prev.id >= 3600 ? null : prev));
-    }, 3800);
+      setToastMsg((prev) => (prev && Date.now() - prev.id >= 3400 ? null : prev));
+    }, 3600);
   };
 
-  const modifyLP = (delta, reason = '') => {
-    const prevInfo = getCompetitiveRankInfo(totalLP);
+  // Actualizar LP y detectar ascenso/descenso de división
+  const updateLeaguePoints = (delta, triggerCelebrate = false, missionTitle = '') => {
+    const before = getRankProgress(totalLP);
     const nextLP = Math.max(0, Math.min(8999, totalLP + delta));
-    const nextInfo = getCompetitiveRankInfo(nextLP);
-
+    const after = getRankProgress(nextLP);
     setTotalLP(nextLP);
 
-    if (nextInfo.totalTierIndex > prevInfo.totalTierIndex) {
-      setRankBanner({
-        type: 'promotion',
-        from: prevInfo.fullTitle,
-        to: nextInfo.fullTitle,
-        color: nextInfo.rank.color
+    if (triggerCelebrate) {
+      setCelebration({
+        title: '¡MISIÓN CUMPLIDA!',
+        subtitle: missionTitle,
+        lp: delta,
+        newStreak: streakDays + 1
       });
-    } else if (nextInfo.totalTierIndex < prevInfo.totalTierIndex) {
-      setRankBanner({
-        type: 'demotion',
-        from: prevInfo.fullTitle,
-        to: nextInfo.fullTitle,
-        color: '#EF4444'
+      setTimeout(() => setCelebration(null), 3200);
+    }
+
+    if (after.globalDivIndex > before.globalDivIndex) {
+      setRankUpBanner({
+        type: 'up',
+        from: before.fullName,
+        to: after.fullName,
+        color: after.rank.color
       });
-    } else if (reason) {
-      triggerToast(`${reason} (${delta >= 0 ? `+${delta}` : delta} LP)`, delta >= 0 ? 'success' : 'warning');
+    } else if (after.globalDivIndex < before.globalDivIndex) {
+      setRankUpBanner({
+        type: 'down',
+        from: before.fullName,
+        to: after.fullName,
+        color: '#F43F5E'
+      });
     }
   };
 
+  // Procesar foto de cuerpo completo en la Cámara de Transformación Anime 2D
+  const runAnimeTransformationScan = (sourceImageUrl, detectedBuildOverride = null) => {
+    setCamPreviewUrl(sourceImageUrl);
+    setIsScanningAnime(true);
+    setScanProgress(8);
+
+    const interval = setInterval(() => {
+      setScanProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsScanningAnime(false);
+
+          const buildOrder = ['atletico', 'mesomorfo', 'titan', 'powerlifter'];
+          const buildLabels = {
+            atletico: 'Atlético / Calisténico',
+            mesomorfo: 'Mesomorfo / Estético',
+            titan: 'Titán / Hipertrofia Élite',
+            powerlifter: 'Powerlifter / Fuerza Bruta'
+          };
+          const nextBuild =
+            detectedBuildOverride ||
+            buildOrder[(buildOrder.indexOf(avatar.build) + 1) % buildOrder.length];
+
+          setAvatar((a) => ({ ...a, build: nextBuild }));
+          setScanResult({
+            biotypeLabel: buildLabels[nextBuild],
+            symmetry: `${(91 + Math.random() * 7).toFixed(1)}%`,
+            syncStatus: '¡Avatar Anime 2D Actualizado!'
+          });
+          showToast(`¡Transformación Anime completada! Biotipo: ${buildLabels[nextBuild]}`);
+          return 100;
+        }
+        return prev + 18;
+      });
+    }, 240);
+  };
+
+  const handleFullBodyUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        // Redactar rostro automáticamente antes de mostrar preview
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = 260;
+          c.height = 320;
+          const ctx = c.getContext('2d');
+          const sc = Math.max(260 / img.width, 320 / img.height);
+          ctx.drawImage(img, (260 - img.width * sc) / 2, (320 - img.height * sc) / 2, img.width * sc, img.height * sc);
+          // Censura facial superior
+          ctx.fillStyle = 'rgba(15, 12, 41, 0.92)';
+          ctx.fillRect(0, 0, 260, 72);
+          ctx.fillStyle = '#00F5FF';
+          ctx.font = 'bold 10px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('ROSTRO PROTEGIDO // ESCÁNER ANIME', 130, 40);
+          runAnimeTransformationScan(c.toDataURL('image/png'));
+        };
+        img.src = String(ev.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSimulateFullBodyScan = () => {
+    const c = document.createElement('canvas');
+    c.width = 260;
+    c.height = 320;
+    const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 260, 320);
+    g.addColorStop(0, '#130F38');
+    g.addColorStop(1, '#2B1659');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 260, 320);
+
+    // Silueta atlética de escaneo
+    ctx.fillStyle = 'rgba(0, 245, 255, 0.28)';
+    ctx.strokeStyle = '#00F5FF';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(74, 96);
+    ctx.lineTo(186, 96);
+    ctx.lineTo(164, 212);
+    ctx.lineTo(96, 212);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(15, 12, 41, 0.92)';
+    ctx.fillRect(0, 0, 260, 68);
+    ctx.fillStyle = '#00F5FF';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('SILUETA CORPORAL DETECTADA', 130, 38);
+
+    runAnimeTransformationScan(c.toDataURL('image/png'));
+  };
+
+  // Acciones de Retos Diarios
   const handleAddChallenge = (e) => {
     e.preventDefault();
-    if (!newChallengeTitle.trim()) return;
-    const item = {
-      id: `ch-${Date.now()}`,
-      title: newChallengeTitle.trim(),
-      category: newChallengeCategory,
-      lpReward: 35,
-      status: 'active',
-      contingencyNote: ''
-    };
-    setDailyChallenges((prev) => [item, ...prev]);
-    setNewChallengeTitle('');
-    triggerToast('Nuevo reto diario registrado en el Sistema.', 'info');
-  };
-
-  const handleCompleteChallenge = (challenge) => {
-    if (challenge.status === 'completed') return;
-    setDailyChallenges((prev) =>
-      prev.map((c) => (c.id === challenge.id ? { ...c, status: 'completed' } : c))
-    );
-    setStreak((s) => s + 1);
-    modifyLP(challenge.lpReward, `Misión cumplida: ${challenge.title}`);
-  };
-
-  const handleFailChallenge = (challenge) => {
-    setDailyChallenges((prev) => prev.filter((c) => c.id !== challenge.id));
-    setNextWeekPending((prev) => [
+    if (!newTitle.trim()) return;
+    setChallenges((prev) => [
       {
-        id: `fail-${Date.now()}`,
-        title: challenge.title,
-        category: challenge.category,
-        lpReward: challenge.lpReward,
-        failedDate: 'Hoy (Mover a Próxima Semana)'
+        id: `ch-${Date.now()}`,
+        title: newTitle.trim(),
+        env: newEnv,
+        lp: 40,
+        status: 'active',
+        contingencyInfo: ''
       },
       ...prev
     ]);
-    setStreak(0);
-    modifyLP(-20, 'Misión fallida. Enviada a cola de revancha semanal.');
+    setNewTitle('');
+    showToast('¡Nuevo reto diario declarado! ¡A por todas!');
   };
 
-  const handleConfirmContingency = () => {
-    if (!contingencyTarget) return;
-    const preset = CONTINGENCY_PRESETS.find((p) => p.id === selectedPresetId) || CONTINGENCY_PRESETS[0];
+  const handleCompleteChallenge = (ch) => {
+    if (ch.status === 'completed') return;
+    setChallenges((prev) => prev.map((item) => (item.id === ch.id ? { ...item, status: 'completed' } : item)));
+    setStreakDays((s) => s + 1);
+    updateLeaguePoints(ch.lp, true, ch.title);
+  };
 
-    setDailyChallenges((prev) =>
-      prev.map((c) =>
-        c.id === contingencyTarget.id
+  const handleFailChallenge = (ch) => {
+    setChallenges((prev) => prev.filter((item) => item.id !== ch.id));
+    setNextWeekQueue((prev) => [
+      {
+        id: `nw-${Date.now()}`,
+        title: ch.title,
+        env: ch.env,
+        lp: ch.lp + 10
+      },
+      ...prev
+    ]);
+    setStreakDays(0);
+    updateLeaguePoints(-20, false);
+    showToast('Reto movido a la Cola para Retomar la Próxima Semana (-20 LP).');
+  };
+
+  const handleApplyContingency = () => {
+    if (!modalChallenge) return;
+    const opt = CONTINGENCY_OPTIONS.find((o) => o.id === selectedContingencyId) || CONTINGENCY_OPTIONS[0];
+    setChallenges((prev) =>
+      prev.map((item) =>
+        item.id === modalChallenge.id
           ? {
-              ...c,
-              title: `${preset.title}`,
-              category: 'Contingencia Casa',
-              lpReward: preset.lpBonus,
+              ...item,
+              title: opt.title,
+              env: 'Contingencia Casa',
+              lp: opt.lp,
               status: 'contingency',
-              contingencyNote: `${preset.detail}${customJustificationNote ? ` | Nota: ${customJustificationNote}` : ''}`
+              contingencyInfo: `${opt.plan}${customReasonText ? ` (Motivo: ${customReasonText})` : ''}`
             }
-          : c
+          : item
       )
     );
-
-    setContingencyTarget(null);
-    setCustomJustificationNote('');
-    triggerToast('Desafío de Contingencia en Casa activado. ¡Racha protegida!', 'success');
+    setModalChallenge(null);
+    setCustomReasonText('');
+    showToast('¡Desafío Equivalente en Casa activado! Tu racha sigue a salvo.');
   };
 
-  const handleRetakePendingChallenge = (pendingItem) => {
-    setNextWeekPending((prev) => prev.filter((p) => p.id !== pendingItem.id));
-    setDailyChallenges((prev) => [
+  const handleRetakeFromQueue = (item) => {
+    setNextWeekQueue((prev) => prev.filter((x) => x.id !== item.id));
+    setChallenges((prev) => [
       {
         id: `retake-${Date.now()}`,
-        title: `[REVANCHA] ${pendingItem.title}`,
-        category: pendingItem.category,
-        lpReward: pendingItem.lpReward + 10,
+        title: `[REVANCHA] ${item.title}`,
+        env: item.env,
+        lp: item.lp,
         status: 'active',
-        contingencyNote: ''
+        contingencyInfo: ''
       },
       ...prev
     ]);
-    triggerToast('Misión retomada para la nueva semana (+10 LP bonus).', 'info');
+    showToast('¡Reto retomado para esta semana con bonus de LP!');
   };
 
-  const generateSyntheticScan = (side) => {
+  // Generar foto demo para Bóveda Física
+  const generateVaultDemoPhoto = (side) => {
     const c = document.createElement('canvas');
-    c.width = 280;
-    c.height = 340;
+    c.width = 260;
+    c.height = 320;
     const ctx = c.getContext('2d');
-
-    ctx.fillStyle = '#0B1324';
-    ctx.fillRect(0, 0, 280, 340);
-
-    ctx.fillStyle = '#1E293B';
-    ctx.beginPath();
-    ctx.arc(140, 48, 24, 0, Math.PI * 2);
-    ctx.fill();
-
-    const grad = ctx.createLinearGradient(80, 85, 200, 220);
-    grad.addColorStop(0, '#00F0FF');
-    grad.addColorStop(1, '#A855F7');
+    ctx.fillStyle = '#140E33';
+    ctx.fillRect(0, 0, 260, 320);
+    const grad = ctx.createLinearGradient(70, 85, 190, 215);
+    grad.addColorStop(0, '#00F5FF');
+    grad.addColorStop(1, '#F43F5E');
     ctx.fillStyle = grad;
     ctx.globalAlpha = 0.35;
     ctx.beginPath();
-    ctx.moveTo(82, 92);
-    ctx.lineTo(198, 92);
-    ctx.lineTo(172, 210);
-    ctx.lineTo(108, 210);
+    ctx.moveTo(76, 92);
+    ctx.lineTo(184, 92);
+    ctx.lineTo(160, 206);
+    ctx.lineTo(100, 206);
     ctx.closePath();
     ctx.fill();
-
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#00F0FF';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#00F5FF';
     ctx.stroke();
-
-    ctx.fillStyle = '#E2E8F0';
-    ctx.font = '11px monospace';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`SCAN BIOMÉTRICO ${side.toUpperCase()}`, 140, 150);
-    ctx.fillStyle = '#10B981';
-    ctx.fillText('SIMETRÍA: 94.2% | DENSIDAD: ALTA', 140, 172);
+    ctx.fillText(`CAPTURA ${side.toUpperCase()} VERIFICADA`, 130, 152);
 
     const url = c.toDataURL('image/png');
-    if (side === 'Frente') setFrontPhoto(url);
-    else setBackPhoto(url);
-    triggerToast(`Escáner ${side} procesado con filtro facial automático.`, 'success');
+    if (side === 'Frente') setFrontVaultPhoto(url);
+    else setBackVaultPhoto(url);
+    showToast(`Foto de ${side} procesada con censura facial automática.`);
   };
 
-  const sendRoutineDayToChallenges = (dayObj) => {
-    const summary = dayObj.exercises.map((ex) => `${ex.name} (${ex.sets})`).join(' + ');
-    setDailyChallenges((prev) => [
-      {
-        id: `rut-${Date.now()}`,
-        title: `${dayObj.day}: ${summary}`,
-        category: routineEnv === 'casa' ? 'Casa' : 'Gimnasio',
-        lpReward: 45,
-        status: 'active',
-        contingencyNote: ''
-      },
-      ...prev
-    ]);
-    setActiveTab('comando');
-    triggerToast('Sesión enviada a tus Retos Diarios Declarados.', 'success');
-  };
+  const activeRoutinePlan =
+    BIOMECHANICAL_ROUTINES[routineEnv]?.[routineGoal] || BIOMECHANICAL_ROUTINES.gimnasio.hipertrofia;
 
-  const handleResetDemo = () => {
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Ignorar
-    }
-    setTotalLP(2845);
-    setStreak(6);
-    setPlayerName('HUNTER_01');
-    setAvatar({
-      gender: 'masculino',
-      build: 'mesomorfo',
-      skin: 'trigueno',
-      hair: 'hunter',
-      hairColor: 'negro',
-      scar: false,
-      outfit: 'cazador',
-      accessory: 'visor',
-      aura: 'rango',
-      bg: 'monarca'
-    });
-    triggerToast('Datos restablecidos a valores iniciales.', 'info');
-  };
-
-  const navItems = [
-    { id: 'comando', label: 'Comando & Retos', icon: Shield, badge: rankInfo.fullTitle },
-    { id: 'fuerza', label: 'Fuerza Científica', icon: Dumbbell, badge: `${strengthMetrics.relativeGrade.grade}/${strengthMetrics.absoluteGrade.grade}` },
-    { id: 'fisico', label: 'Evaluación & Bóveda', icon: Lock, badge: `Físico ${currentPhysicalGrade.grade}` },
-    { id: 'rutinas', label: 'Rutinas & Escáner', icon: Cpu, badge: 'Biomecánica' },
-    { id: 'sueno', label: 'Sueño & Recuperación', icon: Moon, badge: `${sleepMetrics.totalHours}h` },
-    { id: 'avatar', label: 'Avatar 2D Anime', icon: User, badge: 'Estudio' }
+  const tabs = [
+    { id: 'anime_cam', label: 'Avatar Anime 2D', icon: Camera, tag: 'Estudio' },
+    { id: 'retos', label: 'Retos & Rangos', icon: Trophy, tag: rankInfo.fullName },
+    { id: 'fuerza', label: 'Fuerza F→EX', icon: Dumbbell, tag: `${strengthInfo.relativeGrade.grade}/${strengthInfo.absoluteGrade.grade}` },
+    { id: 'fisico', label: 'Físico & Bóveda', icon: Lock, tag: `Grado ${currentPhysiqueGrade.grade}` },
+    { id: 'rutinas', label: 'Rutinas & Escáner', icon: Cpu, tag: 'Ciencia' },
+    { id: 'sueno', label: 'Sueño Semanal', icon: Moon, tag: `${sleepInfo.total}h` }
   ];
 
-  const activeRoutine = BIOMECHANICAL_ROUTINES[routineEnv]?.[routineGoal] || BIOMECHANICAL_ROUTINES.gimnasio.hipertrofia;
-
   return (
-    <div className="min-h-screen bg-[#04060D] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden relative">
-      {/* ====================================================================
-          ESTILOS CSS EMBEBIDOS PARA ANIMACIONES ANIME & SYSTEM HUD
-         ==================================================================== */}
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a103c] to-[#24243e] text-white font-sans selection:bg-cyan-400/30 selection:text-cyan-100 overflow-x-hidden pb-12">
+      {/* Animaciones CSS personalizadas */}
       <style>{`
-        @keyframes gridScroll {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 28px; }
+        @keyframes auraBreathe {
+          0%, 100% { transform: scale(1); opacity: 0.85; }
+          50% { transform: scale(1.05); opacity: 1; }
         }
-        @keyframes auraPulse {
-          0%, 100% { transform: scale(1); opacity: 0.82; }
-          50% { transform: scale(1.045); opacity: 1; }
-        }
-        @keyframes heroFloat {
+        @keyframes heroBreath {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
+          50% { transform: translateY(-5px); }
         }
-        @keyframes kiSpark {
+        @keyframes kiRise {
           0% { transform: translateY(0) scale(0.8); opacity: 0; }
-          30% { opacity: 1; }
-          100% { transform: translateY(-230px) scale(0.2); opacity: 0; }
+          25% { opacity: 1; }
+          100% { transform: translateY(-250px) scale(0.2); opacity: 0; }
         }
-        @keyframes ringSpin {
+        @keyframes ringRotate {
           0% { stroke-dashoffset: 0; }
-          100% { stroke-dashoffset: 180; }
+          100% { stroke-dashoffset: 200; }
         }
-        @keyframes shimmerSweep {
-          0% { transform: translateX(-120%); }
-          100% { transform: translateX(220%); }
+        @keyframes laserSweep {
+          0%, 100% { top: 8%; }
+          50% { top: 88%; }
         }
-        .hud-grid-bg {
-          animation: gridScroll 3s linear infinite;
+        @keyframes confettiFall {
+          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
-        .anime-aura-pulse {
-          animation: auraPulse 2.8s ease-in-out infinite;
-          transform-origin: center;
-        }
-        .anime-hero-float {
-          animation: heroFloat 3.4s ease-in-out infinite;
-        }
-        .anime-ki-spark {
-          animation: kiSpark 2.4s ease-out infinite;
-        }
-        .anime-ring-spin {
-          animation: ringSpin 6s linear infinite;
-        }
-        .hud-shimmer::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 45%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-          animation: shimmerSweep 2.6s infinite;
-        }
+        .animate-aura-breathe { animation: auraBreathe 2.6s ease-in-out infinite; transform-origin: center; }
+        .animate-hero-breath { animation: heroBreath 3.2s ease-in-out infinite; }
+        .animate-ki-rise { animation: kiRise 2.3s ease-out infinite; }
+        .animate-ring-rotate { animation: ringRotate 5s linear infinite; }
+        .animate-laser { animation: laserSweep 1.2s ease-in-out infinite; }
+        .animate-confetti { animation: confettiFall 2.8s ease-out forwards; }
       `}</style>
 
-      {/* Luz Ambiental Dinámica vinculada al color del Rango */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-25 transition-colors duration-700"
-        style={{
-          background: `radial-gradient(circle at 50% 0%, ${rankInfo.rank.color}44 0%, transparent 62%)`
-        }}
-      />
-
       {/* ====================================================================
-          BARRA SUPERIOR HOLOGRÁFICA SYSTEM HUD
+          HEADER MOTIVADOR ANIME-GAMING (MOBILE-FIRST)
          ==================================================================== */}
-      <header className="sticky top-0 z-40 bg-[#060914]/90 backdrop-blur-xl border-b border-cyan-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.8)]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2.5">
-          {/* Izquierda: Menú Móvil + Retrato Avatar 2D Anime + Título */}
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-900/90 border border-cyan-500/30 text-cyan-400 active:scale-95 transition"
-              aria-label="Abrir menú"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+      <header className="sticky top-0 z-40 bg-[#0f0c29]/90 backdrop-blur-xl border-b border-purple-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.65)]">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 space-y-2.5">
+          {/* Fila 1: Avatar Miniatura + Título + Racha Encendida */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => setActiveTab('anime_cam')}
+                className="shrink-0 active:scale-95 transition"
+                title="Personalizar Guerrero 2D"
+              >
+                <AnimeWarrior2D
+                  avatar={avatar}
+                  rankColor={rankInfo.rank.color}
+                  rankTitle={rankInfo.fullName}
+                  rankIndex={rankInfo.rankIndex}
+                  physicalGrade={currentPhysiqueGrade.grade}
+                  compact
+                />
+              </button>
 
-            {/* Retrato Anime Interactivo en el Header */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('avatar')}
-              title="Abrir Estudio de Avatar 2D Anime"
-              className="group relative flex items-center gap-2.5 text-left"
-            >
-              <AnimeAvatar2D
-                avatar={avatar}
-                rankColor={rankInfo.rank.color}
-                rankTitle={rankInfo.fullTitle}
-                rankIndex={rankInfo.rankIndex}
-                physicalGrade={currentPhysicalGrade.grade}
-                compact
-              />
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-sm sm:text-base font-black tracking-wider uppercase bg-gradient-to-r from-cyan-300 via-white to-purple-400 bg-clip-text text-transparent">
-                    PROTOCOLO EX
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h1 className="text-base sm:text-xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent drop-shadow">
+                    ¡PROTOCOLO EX!
                   </h1>
-                  <span className="hidden sm:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 border border-cyan-400/40 text-cyan-300">
-                    SYSTEM HUD
+                  <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 text-[10px] font-black uppercase shadow">
+                    ANIME SYSTEM
                   </span>
                 </div>
-                <p className="text-[11px] font-mono text-slate-300 flex items-center gap-1.5">
-                  <span className="font-bold text-white">{playerName}</span>
-                  <span className="text-[9px] text-cyan-400 underline group-hover:text-cyan-300">Editar Avatar</span>
-                </p>
+
+                {/* Nombre editable del operador */}
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[10px] font-mono text-purple-300">OPERADOR:</span>
+                  <input
+                    type="text"
+                    maxLength={16}
+                    value={operatorName}
+                    onChange={(e) => setOperatorName(e.target.value.toUpperCase())}
+                    aria-label="Nombre del operador"
+                    className="bg-white/10 border border-purple-400/40 rounded-lg px-2 py-0.5 text-xs font-mono font-bold text-cyan-200 w-32 focus:outline-none focus:border-cyan-300"
+                  />
+                </div>
               </div>
-            </button>
+            </div>
+
+            {/* Racha Encendida */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-gradient-to-r from-orange-600/90 via-amber-500/90 to-yellow-500/90 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(245,158,11,0.55)] shrink-0">
+              <Flame className="w-4 h-4 fill-red-600 text-red-700 animate-bounce" />
+              <div className="leading-tight">
+                <span className="block text-[9px] uppercase tracking-wider">¡RACHA IMPARABLE!</span>
+                <span className="text-xs sm:text-sm font-mono">{streakDays} DÍAS</span>
+              </div>
+            </div>
           </div>
 
-          {/* Derecha: Chips Holográficos de Estado */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-end">
-            {/* Rango Competitivo */}
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl border bg-black/70 backdrop-blur-md shadow-md"
-              style={{ borderColor: rankInfo.rank.color, boxShadow: `0 0 12px ${rankInfo.rank.glow}` }}
+          {/* Fila 2: Chips de Rango Competitivo, Físico, Fuerza Relativa y Sueño */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] font-mono">
+            <button
+              type="button"
+              onClick={() => setActiveTab('retos')}
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border"
+              style={{ borderColor: rankInfo.rank.color }}
             >
-              <Trophy className="w-3.5 h-3.5" style={{ color: rankInfo.rank.color }} />
-              <span className="text-xs font-mono font-black tracking-wide" style={{ color: rankInfo.rank.color }}>
-                {rankInfo.fullTitle}
+              <span className="text-slate-300 flex items-center gap-1">
+                <Trophy className="w-3.5 h-3.5" style={{ color: rankInfo.rank.color }} />
+                RANGO
               </span>
-            </div>
+              <span className="font-black" style={{ color: rankInfo.rank.color }}>
+                {rankInfo.fullName}
+              </span>
+            </button>
 
-            {/* Rango Físico */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-purple-500/40 bg-purple-950/35 text-xs font-mono">
-              <span className="text-slate-400">FÍSICO:</span>
-              <span className="font-black text-purple-300">{currentPhysicalGrade.grade}</span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab('fisico')}
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border border-pink-400/50"
+            >
+              <span className="text-slate-300">FÍSICO</span>
+              <span className="font-black text-pink-300">GRADO {currentPhysiqueGrade.grade}</span>
+            </button>
 
-            {/* Rango Fuerza Relativa */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-cyan-500/40 bg-cyan-950/35 text-xs font-mono">
-              <span className="text-slate-400">FUERZA:</span>
-              <span className="font-black text-cyan-300">{strengthMetrics.relativeGrade.grade}</span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab('fuerza')}
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border border-cyan-400/50"
+            >
+              <span className="text-slate-300">FUERZA REL.</span>
+              <span className="font-black text-cyan-300">
+                {strengthInfo.relativeGrade.grade} ({strengthInfo.relativeRatio}x)
+              </span>
+            </button>
 
-            {/* Sueño Semanal */}
             <button
               type="button"
               onClick={() => setActiveTab('sueno')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition ${
-                sleepMetrics.status === 'critical'
-                  ? 'border-red-500 bg-red-950/60 text-red-300 animate-pulse'
-                  : sleepMetrics.status === 'warning'
-                  ? 'border-amber-500/70 bg-amber-950/50 text-amber-300'
-                  : 'border-emerald-500/50 bg-emerald-950/35 text-emerald-300'
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border ${
+                sleepInfo.status === 'critical'
+                  ? 'border-red-400 text-red-300 animate-pulse'
+                  : 'border-emerald-400/50 text-emerald-300'
               }`}
             >
-              <Moon className="w-3.5 h-3.5" />
-              <span>{sleepMetrics.totalHours}h</span>
+              <span className="text-slate-300 flex items-center gap-1">
+                <Moon className="w-3.5 h-3.5" />
+                SUEÑO
+              </span>
+              <span className="font-black">{sleepInfo.total}h / 49-63h</span>
             </button>
-
-            {/* Racha */}
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/50 text-amber-300 text-xs font-mono font-black">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
-              <span>{streak}d</span>
-            </div>
           </div>
-        </div>
 
-        {/* Barra de Navegación de los 6 Módulos */}
-        <nav className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:block border-t border-slate-800/80 bg-[#050812]/95`}>
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
+          {/* Fila 3: Navegación táctil de los 6 módulos */}
+          <nav className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-0.5">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.id;
               return (
                 <button
-                  key={item.id}
+                  key={tab.id}
                   type="button"
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center justify-between lg:justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                    isActive
-                      ? 'bg-gradient-to-r from-cyan-500/25 via-purple-500/20 to-cyan-500/25 border-cyan-400 text-white shadow-[0_0_18px_rgba(0,240,255,0.22)]'
-                      : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:text-slate-100 hover:border-slate-700'
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all border ${
+                    active
+                      ? 'bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 border-white/60 text-white shadow-[0_0_16px_rgba(168,85,247,0.6)] scale-[1.02]'
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-300' : 'text-slate-500'}`} />
-                    <span>{item.label}</span>
-                  </div>
-                  <span
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                      isActive ? 'bg-cyan-400/20 text-cyan-200 border border-cyan-400/40' : 'bg-slate-800/90 text-slate-400'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               );
             })}
-          </div>
-        </nav>
+          </nav>
+        </div>
       </header>
 
-      {/* ALERTA FISIOLÓGICA GLOBAL SI HAY DEUDA DE SUEÑO */}
-      {sleepMetrics.status !== 'optimal' && sleepMetrics.status !== 'excess' && (
-        <div className="relative z-30 bg-gradient-to-r from-red-950/90 via-amber-950/80 to-red-950/90 border-b border-amber-500/50 px-4 py-2">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2 text-amber-200">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>
-                <strong>MODIFICADOR DE SUEÑO ACTIVO ({sleepMetrics.totalHours}h / 49-63h rec.):</strong>{' '}
-                {sleepMetrics.advisory}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveTab('sueno')}
-              className="shrink-0 px-3 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/60 text-amber-200 font-mono text-[11px] font-bold"
-            >
-              Ajustar Sueño →
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* ====================================================================
-          CONTENIDO PRINCIPAL DE MÓDULOS
+          CONTENIDO PRINCIPAL DE LOS 6 MÓDULOS
          ==================================================================== */}
-      <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 py-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-5 space-y-6">
         {/* ==================================================================
-            MÓDULO 1: PANEL DE COMANDO, AVATAR ANIME & RETOS DIARIOS
+            MÓDULO 1: CÁMARA DE TRANSFORMACIÓN ANIME 2D & PERSONALIZADOR
            ================================================================== */}
-        {activeTab === 'comando' && (
+        {activeTab === 'anime_cam' && (
           <div className="space-y-6">
-            {/* Fila Superior: Tarjeta de Rango + Avatar 2D Anime en vivo */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Panel de Rango Competitivo Actual */}
-              <div
-                className={`lg:col-span-7 rounded-2xl border-2 p-5 sm:p-6 bg-gradient-to-br ${rankInfo.rank.badgeBg} relative overflow-hidden shadow-2xl flex flex-col justify-between`}
-                style={{ borderColor: rankInfo.rank.color, boxShadow: `0 0 32px ${rankInfo.rank.glow}` }}
-              >
-                {/* Esquinas HUD */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 relative z-10">
-                  <RankEmblemSVG rankIndex={rankInfo.rankIndex} color={rankInfo.rank.color} size={96} />
+            {/* Banner Superior de Cámara de Transformación Anime 2D */}
+            <div className="rounded-3xl border-2 border-cyan-400/50 bg-gradient-to-br from-[#191242] via-[#231659] to-[#120d2d] p-4 sm:p-6 shadow-[0_0_35px_rgba(0,245,255,0.2)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/50 text-cyan-200 text-[10px] font-mono font-black uppercase">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    MÓDULO ESTRELLA // IA DE SILUETA CORPORAL
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
+                    Cámara de Transformación Anime 2D 📸⚡
+                  </h2>
+                  <p className="text-xs text-purple-200">
+                    Sube una foto de cuerpo completo (rostro censurado automáticamente) o simula un escaneo para generar tu Guerrero Anime 2D personalizado.
+                  </p>
+                </div>
+              </div>
 
-                  <div className="flex-1 text-center sm:text-left w-full">
-                    <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/70 border border-slate-700 text-[11px] font-mono text-slate-300 mb-2">
-                      <Swords className="w-3 h-3 text-cyan-400" />
-                      <span>LIGA: {rankInfo.rank.tierGroup.toUpperCase()}</span>
-                      <span>•</span>
-                      <span>DIVISIÓN {rankInfo.division} DE 6</span>
-                    </div>
-
-                    <h2
-                      className="text-3xl sm:text-4xl font-black tracking-tight uppercase"
-                      style={{ color: rankInfo.rank.color, textShadow: `0 0 28px ${rankInfo.rank.glow}` }}
-                    >
-                      {rankInfo.fullTitle}
-                    </h2>
-
-                    <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                      Puntos de Liga: <strong className="font-mono text-white">{rankInfo.totalLP} LP</strong>{' '}
-                      <span className="text-slate-400">
-                        ({rankInfo.isMaxRank ? 'Cúspide del Sistema alcanzada' : `${100 - rankInfo.divisionLP} LP para siguiente división`})
-                      </span>
-                    </p>
-
-                    {/* Barra de progreso de división con efecto Shimmer */}
-                    <div className="mt-4">
-                      <div className="flex justify-between text-[11px] font-mono text-slate-300 mb-1">
-                        <span>PROGRESO DE DIVISIÓN</span>
-                        <span className="font-bold">{rankInfo.isMaxRank ? '100 / 100 LP (MAX)' : `${rankInfo.divisionLP} / 100 LP`}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                {/* Izquierda: Visor de Foto de Cuerpo Completo + Escáner Láser */}
+                <div className="lg:col-span-5 space-y-3">
+                  <div className="relative h-[300px] rounded-2xl border-2 border-dashed border-cyan-400/60 bg-[#0c0921] overflow-hidden flex flex-col items-center justify-center p-3">
+                    {camPreviewUrl ? (
+                      <img
+                        src={camPreviewUrl}
+                        alt="Escaneo corporal"
+                        className="h-full w-auto object-contain rounded-xl"
+                      />
+                    ) : (
+                      <div className="text-center space-y-2 px-4">
+                        <div className="w-14 h-14 mx-auto rounded-2xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center">
+                          <Camera className="w-7 h-7 text-cyan-300" />
+                        </div>
+                        <p className="text-xs font-bold text-cyan-200">
+                          Foto de Entrenamiento (Cuerpo Completo)
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          Tu rostro se pixelará y protegerá localmente antes del análisis de biotipo.
+                        </p>
                       </div>
-                      <div className="w-full h-3.5 rounded-full bg-black/80 border border-slate-700/90 overflow-hidden p-0.5">
+                    )}
+
+                    {/* Línea Láser Animada durante el escaneo */}
+                    {isScanningAnime && (
+                      <>
+                        <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_18px_#00F5FF] animate-laser z-20" />
+                        <div className="absolute inset-0 bg-cyan-500/15 backdrop-blur-[1px] flex flex-col items-center justify-center p-4 z-30">
+                          <span className="px-3 py-1.5 rounded-xl bg-black/85 border border-cyan-300 text-cyan-200 font-mono text-xs font-black animate-pulse mb-2">
+                            ¡Procesando tu foto a Anime 2D...! {scanProgress}%
+                          </span>
+                          <div className="w-4/5 h-3 rounded-full bg-black/80 border border-cyan-400/60 overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-cyan-400 via-pink-500 to-amber-400 transition-all duration-200"
+                              style={{ width: `${scanProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Botones de Acción de Cámara */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,245,255,0.4)] transition">
+                      <Upload className="w-4 h-4" />
+                      Subir Foto Cuerpo Completo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFullBodyUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={handleSimulateFullBodyScan}
+                      disabled={isScanningAnime}
+                      className="py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 hover:brightness-110 text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(249,115,22,0.45)] transition disabled:opacity-50"
+                    >
+                      <Scan className="w-4 h-4" />
+                      Simular Escaneo Corporal
+                    </button>
+                  </div>
+
+                  {/* Resultado del Escáner */}
+                  <div className="p-3 rounded-2xl bg-black/50 border border-purple-400/35 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-[10px] font-mono text-purple-300 block">RESULTADO BIOMÉTRICO</span>
+                      <strong className="text-amber-300">{scanResult.biotypeLabel}</strong>
+                    </div>
+                    <div className="text-right font-mono">
+                      <span className="text-[10px] text-emerald-300 block">{scanResult.syncStatus}</span>
+                      <span className="text-xs font-bold text-cyan-300">Simetría: {scanResult.symmetry}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Derecha: Guerrero 2D Anime Resultante + Barras RPG */}
+                <div className="lg:col-span-7 space-y-3">
+                  <AnimeWarrior2D
+                    avatar={avatar}
+                    rankColor={rankInfo.rank.color}
+                    rankTitle={rankInfo.fullName}
+                    rankIndex={rankInfo.rankIndex}
+                    physicalGrade={currentPhysiqueGrade.grade}
+                  />
+
+                  {/* Barras de Poder RPG debajo del Avatar */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-black/55 border border-white/15">
+                    <div>
+                      <div className="flex justify-between text-[11px] font-mono mb-1">
+                        <span className="text-amber-300 font-bold">FUERZA ABSOLUTA ({strengthInfo.absoluteGrade.grade})</span>
+                        <span>{strengthInfo.sbdTotal} kg</span>
+                      </div>
+                      <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
                         <div
-                          className="h-full rounded-full transition-all duration-500 relative overflow-hidden hud-shimmer"
-                          style={{
-                            width: `${rankInfo.isMaxRank ? 100 : rankInfo.divisionLP}%`,
-                            backgroundColor: rankInfo.rank.color,
-                            boxShadow: `0 0 14px ${rankInfo.rank.color}`
-                          }}
+                          className="h-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-300"
+                          style={{ width: `${Math.min(100, Math.round((strengthInfo.sbdTotal / 650) * 100))}%` }}
                         />
                       </div>
                     </div>
 
-                    {/* Simulador Rápido de LP */}
-                    <div className="mt-5 pt-4 border-t border-white/10">
-                      <p className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2">
-                        Simulador de Puntos de Rango (Prueba Rápida):
-                      </p>
-                      <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(35, 'Misión cumplida')}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/60 text-emerald-300 text-xs font-mono font-bold transition"
-                        >
-                          +35 LP
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(100, 'Ascenso de división')}
-                          className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/60 text-cyan-300 text-xs font-mono font-bold transition"
-                        >
-                          +100 LP (Subir Div.)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(-35, 'Penalización')}
-                          className="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/60 text-red-300 text-xs font-mono font-bold transition"
-                        >
-                          -35 LP
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(-100, 'Descenso de división')}
-                          className="px-3 py-1.5 rounded-xl bg-rose-900/40 hover:bg-rose-900/60 border border-rose-500/60 text-rose-300 text-xs font-mono font-bold transition"
-                        >
-                          -100 LP (Bajar Div.)
-                        </button>
+                    <div>
+                      <div className="flex justify-between text-[11px] font-mono mb-1">
+                        <span className="text-cyan-300 font-bold">ENERGÍA DE SUEÑO SEMANAL</span>
+                        <span>{sleepInfo.total}h / 63h</span>
+                      </div>
+                      <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
+                          style={{ width: `${sleepInfo.energyPct}%` }}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Jerarquía Compacta de 15 Rangos */}
-                <div className="mt-5 pt-4 border-t border-white/10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-bold">
-                      Escala de 15 Rangos (Toca para calibrar vista):
-                    </span>
-                    <span className="text-[10px] font-mono text-cyan-300">Tierra 6 → Challenger 1</span>
-                  </div>
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                    {COMPETITIVE_RANKS.map((r, idx) => {
-                      const isCurrent = idx === rankInfo.rankIndex;
-                      return (
-                        <button
-                          key={r.id}
-                          type="button"
-                          onClick={() => {
-                            setTotalLP(idx * 600 + 250);
-                            triggerToast(`Rango calibrado en ${r.name} 4`, 'info');
-                          }}
-                          className={`px-2 py-1 rounded-lg border text-left transition flex items-center justify-between ${
-                            isCurrent
-                              ? 'bg-black/85 shadow-md scale-[1.03]'
-                              : 'bg-black/45 border-slate-800/80 opacity-75 hover:opacity-100'
-                          }`}
-                          style={{ borderColor: isCurrent ? r.color : undefined }}
-                        >
-                          <span className="text-[10px] font-bold truncate" style={{ color: r.color }}>
-                            {idx + 1}.{r.name}
-                          </span>
-                          {isCurrent && (
-                            <span className="text-[9px] font-mono px-1 rounded bg-white/10 text-white">
-                              D{rankInfo.division}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Tarjeta Protagonista del Avatar 2D Anime en el Tablero Principal */}
-              <div className="lg:col-span-5 rounded-2xl border border-cyan-500/30 bg-[#080D1B]/90 backdrop-blur-xl p-4 flex flex-col justify-between shadow-2xl">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                    Operador: {playerName}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('avatar')}
-                    className="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-200 text-[11px] font-bold transition"
-                  >
-                    Personalizar Anime →
-                  </button>
-                </div>
-
-                <AnimeAvatar2D
-                  avatar={avatar}
-                  rankColor={rankInfo.rank.color}
-                  rankTitle={rankInfo.fullTitle}
-                  rankIndex={rankInfo.rankIndex}
-                  physicalGrade={currentPhysicalGrade.grade}
-                />
               </div>
             </div>
 
-            {/* Fila Inferior: Retos Diarios Declarados + Cola de Próxima Semana */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-8 space-y-4">
-                <div className="rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 shadow-xl">
-                  <div className="mb-4">
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      <Target className="w-5 h-5 text-cyan-400" />
-                      Misiones Diarias Declaradas al Sistema
-                    </h3>
-                    <p className="text-xs text-slate-400">
-                      Declara tus metas de entrenamiento hoy. Si surge un imprevisto (como lluvia), justifícalo para activar un desafío equivalente en casa.
-                    </p>
+            {/* Personalizador de Guerrero 2D */}
+            <div className="rounded-3xl border-2 border-purple-400/40 bg-[#140f33]/90 p-5 space-y-5 shadow-xl">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <h3 className="text-lg font-black text-white flex items-center gap-2">
+                    <Sliders className="w-5 h-5 text-pink-400" />
+                    Personalizador de Guerrero 2D (Cosméticos & Estilo Shonen)
+                  </h3>
+                  <p className="text-xs text-purple-200">
+                    Ajusta manualmente tu silueta, peinado anime, traje de combate, equipamiento y aura de energía.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Silueta */}
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-cyan-300 font-bold block">1. SILUETA DEL GUERRERO</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'masculino', label: 'Masculino' },
+                      { id: 'femenino', label: 'Femenino' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setAvatar((a) => ({ ...a, gender: item.id }))}
+                        className={`py-2.5 rounded-xl font-bold text-xs border transition ${
+                          avatar.gender === item.id
+                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-white text-white shadow'
+                            : 'bg-white/5 border-white/10 text-slate-300'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Formulario para Declarar Nuevo Reto */}
-                  <form onSubmit={handleAddChallenge} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 mb-5 p-3 rounded-xl bg-black/60 border border-slate-800">
-                    <input
-                      type="text"
-                      value={newChallengeTitle}
-                      onChange={(e) => setNewChallengeTitle(e.target.value)}
-                      placeholder="Ej. Gym: Sentadilla 140kg 4x6 + Press Banca 95kg 4x8..."
-                      className="sm:col-span-6 px-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                    />
-                    <select
-                      value={newChallengeCategory}
-                      onChange={(e) => setNewChallengeCategory(e.target.value)}
-                      className="sm:col-span-3 px-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
-                    >
-                      <option value="Gimnasio">Gimnasio</option>
-                      <option value="Cardio Exterior">Cardio Exterior</option>
-                      <option value="Casa">Casa</option>
-                      <option value="Movilidad">Movilidad</option>
-                    </select>
-                    <button
-                      type="submit"
-                      className="sm:col-span-3 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-xs transition shadow-[0_0_15px_rgba(0,240,255,0.35)]"
-                    >
-                      <Plus className="w-4 h-4" /> Declarar Reto
-                    </button>
-                  </form>
+                {/* Biotipo Físico */}
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-amber-300 font-bold block">2. BIOTIPO FÍSICO</span>
+                  <select
+                    value={avatar.build}
+                    onChange={(e) => setAvatar((a) => ({ ...a, build: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#1b1445] border border-purple-400/50 text-xs font-bold text-white focus:outline-none"
+                  >
+                    <option value="atletico">Atlético / Calisténico</option>
+                    <option value="mesomorfo">Mesomorfo / Estético</option>
+                    <option value="powerlifter">Powerlifter / Fuerza Bruta</option>
+                    <option value="titan">Titán / Hipertrofia Élite</option>
+                  </select>
+                </div>
 
-                  {/* Lista de Retos Declarados */}
-                  <div className="space-y-3">
-                    {dailyChallenges.length === 0 ? (
-                      <div className="text-center py-8 border border-dashed border-slate-800 rounded-xl text-xs text-slate-500">
-                        No hay misiones activas hoy. Declara tu próximo objetivo arriba.
-                      </div>
-                    ) : (
-                      dailyChallenges.map((ch) => (
-                        <div
-                          key={ch.id}
-                          className={`p-4 rounded-xl border transition ${
-                            ch.status === 'completed'
-                              ? 'bg-emerald-950/25 border-emerald-500/50'
-                              : ch.status === 'contingency'
-                              ? 'bg-purple-950/30 border-purple-500/60'
-                              : 'bg-slate-900/75 border-slate-800 hover:border-cyan-500/40'
-                          }`}
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-slate-800 text-cyan-300 border border-slate-700">
-                                  {ch.category}
-                                </span>
-                                <span className="text-[11px] font-mono font-bold text-amber-400">
-                                  +{ch.lpReward} LP
-                                </span>
-                                {ch.status === 'completed' && (
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
-                                    ✓ MISIÓN CUMPLIDA
-                                  </span>
-                                )}
-                                {ch.status === 'contingency' && (
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold">
-                                    ⚡ CONTINGENCIA EN CASA ACTIVA
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="text-sm font-bold text-white">{ch.title}</h4>
-                              {ch.contingencyNote && (
-                                <p className="text-xs text-purple-200/90 bg-purple-950/50 p-2.5 rounded-lg border border-purple-500/35 mt-1">
-                                  {ch.contingencyNote}
-                                </p>
-                              )}
-                            </div>
-
-                            {ch.status !== 'completed' && (
-                              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => handleCompleteChallenge(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/60 text-emerald-300 text-xs font-bold transition"
-                                >
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
-                                  Completado (+{ch.lpReward} LP)
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleFailChallenge(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-400/50 text-red-300 text-xs font-bold transition"
-                                >
-                                  <XCircle className="w-3.5 h-3.5" />
-                                  No logrado
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => setContingencyTarget(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 text-amber-300 text-xs font-bold transition"
-                                >
-                                  <CloudRain className="w-3.5 h-3.5" />
-                                  Justificar Imprevisto
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
+                {/* Tono de Piel */}
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-pink-300 font-bold block">3. TONO DE PIEL CEL-SHADED</span>
+                  <div className="flex items-center gap-2 flex-wrap pt-1">
+                    {[
+                      { id: 'claro', hex: '#FFE2CC' },
+                      { id: 'trigueno', hex: '#EBB68D' },
+                      { id: 'bronceado', hex: '#CA865A' },
+                      { id: 'moreno', hex: '#965A38' },
+                      { id: 'oscuro', hex: '#633B26' },
+                      { id: 'celestial', hex: '#DCE7F7' }
+                    ].map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setAvatar((a) => ({ ...a, skin: s.id }))}
+                        className={`w-8 h-8 rounded-full border-2 transition ${
+                          avatar.skin === s.id ? 'border-cyan-300 scale-110 shadow-[0_0_12px_#00F5FF]' : 'border-white/25'
+                        }`}
+                        style={{ backgroundColor: s.hex }}
+                        title={s.id}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Cola de Retos Fallidos (Retomar Próxima Semana) */}
-              <div className="lg:col-span-4">
-                <div className="rounded-2xl border border-red-500/30 bg-[#0D0812]/90 backdrop-blur-xl p-5 h-full shadow-xl">
-                  <div className="flex items-center gap-2 mb-2">
-                    <RefreshCw className="w-4 h-4 text-red-400" />
-                    <h3 className="text-sm font-bold text-red-300 uppercase tracking-wide">
-                      Retomar Próxima Semana
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-400 mb-4">
-                    Los retos marcados como <span className="text-red-400 font-semibold">FALLIDOS</span> quedan bloqueados aquí hasta el reinicio semanal para su revancha.
-                  </p>
+              {/* Peinado Shonen & Color de Cabello */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-3">
+                <span className="text-xs font-mono text-orange-300 font-black block">
+                  4. PEINADO ESTILO SHONEN & COLOR DE CABELLO
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: 'shonen', label: 'Erizado Shonen' },
+                    { id: 'cazador', label: 'Cazador Rebelde' },
+                    { id: 'coleta', label: 'Coleta Marcial' },
+                    { id: 'salvaje', label: 'Flama Salvaje' }
+                  ].map((h) => (
+                    <button
+                      key={h.id}
+                      type="button"
+                      onClick={() => setAvatar((a) => ({ ...a, hair: h.id }))}
+                      className={`py-2.5 px-3 rounded-xl font-bold text-xs border transition ${
+                        avatar.hair === h.id
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 border-white text-slate-950 font-black shadow'
+                          : 'bg-white/5 border-white/10 text-slate-200'
+                      }`}
+                    >
+                      {h.label}
+                    </button>
+                  ))}
+                </div>
 
-                  <div className="space-y-3">
-                    {nextWeekPending.length === 0 ? (
-                      <div className="p-6 rounded-xl border border-slate-800/80 text-center text-xs text-slate-500">
-                        Sin misiones fallidas pendientes. ¡Disciplina impecable!
-                      </div>
-                    ) : (
-                      nextWeekPending.map((item) => (
-                        <div
-                          key={item.id}
-                          className="p-3.5 rounded-xl bg-red-950/25 border border-red-500/40 space-y-2.5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 font-bold">
-                              FALLIDO • {item.failedDate}
-                            </span>
-                            <span className="text-[11px] font-mono text-amber-300 font-bold">
-                              +{item.lpReward + 10} LP
-                            </span>
-                          </div>
-                          <p className="text-xs font-semibold text-slate-200">{item.title}</p>
-                          <button
-                            type="button"
-                            onClick={() => handleRetakePendingChallenge(item)}
-                            className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 text-xs font-bold flex items-center justify-center gap-1.5 transition"
-                          >
-                            <RefreshCw className="w-3.5 h-3.5" />
-                            Simular Nueva Semana: Retomar
-                          </button>
-                        </div>
-                      ))
-                    )}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {[
+                    { id: 'azabache', label: 'Azabache', hex: '#161B2B' },
+                    { id: 'platino', label: 'Platino', hex: '#F8FAFC' },
+                    { id: 'fuego', label: 'Carmesí', hex: '#EF4444' },
+                    { id: 'relampago', label: 'Relámpago', hex: '#0EA5E9' },
+                    { id: 'dorado', label: 'Dorado Ki', hex: '#F59E0B' },
+                    { id: 'amatista', label: 'Amatista', hex: '#9333EA' }
+                  ].map((hc) => (
+                    <button
+                      key={hc.id}
+                      type="button"
+                      onClick={() => setAvatar((a) => ({ ...a, hairColor: hc.id }))}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${
+                        avatar.hairColor === hc.id
+                          ? 'bg-white/20 border-cyan-300 text-white'
+                          : 'bg-white/5 border-white/10 text-slate-300'
+                      }`}
+                    >
+                      <span className="w-3.5 h-3.5 rounded-full border border-white/40" style={{ backgroundColor: hc.hex }} />
+                      {hc.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Indumentaria, Equipamiento y Aura */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-pink-300 font-bold block">5. INDUMENTARIA TÉCNICA</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'neogym', label: 'Neo-Gym EX' },
+                      { id: 'gi', label: 'Gi Marcial' },
+                      { id: 'cyber', label: 'Traje Cyber' },
+                      { id: 'titan', label: 'Armadura Titán' }
+                    ].map((o) => (
+                      <button
+                        key={o.id}
+                        type="button"
+                        onClick={() => setAvatar((a) => ({ ...a, outfit: o.id }))}
+                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition ${
+                          avatar.outfit === o.id
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-600 border-white text-white'
+                            : 'bg-white/5 border-white/10 text-slate-300'
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
                   </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-emerald-300 font-bold block">6. EQUIPAMIENTO / ACCESORIO</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'banda', label: 'Banda Frontal' },
+                      { id: 'munequeras', label: 'Muñequeras' },
+                      { id: 'cinturon', label: 'Cinturón Poder' },
+                      { id: 'auriculares', label: 'Auriculares' }
+                    ].map((acc) => (
+                      <button
+                        key={acc.id}
+                        type="button"
+                        onClick={() => setAvatar((a) => ({ ...a, accessory: acc.id }))}
+                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition ${
+                          avatar.accessory === acc.id
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-white text-slate-950 font-black'
+                            : 'bg-white/5 border-white/10 text-slate-300'
+                        }`}
+                      >
+                        {acc.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
+                  <span className="text-[11px] font-mono text-amber-300 font-bold block">7. COLOR / ESTILO DE AURA KI</span>
+                  <select
+                    value={avatar.aura}
+                    onChange={(e) => setAvatar((a) => ({ ...a, aura: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#1b1445] border border-amber-400/50 text-xs font-bold text-amber-200 focus:outline-none"
+                  >
+                    <option value="rango">Dinámica por Rango ({rankInfo.rank.name})</option>
+                    <option value="dorado">Dorado Super Ki</option>
+                    <option value="cian">Cian Relámpago</option>
+                    <option value="magenta">Magenta Cósmico</option>
+                    <option value="esmeralda">Esmeralda Vital</option>
+                    <option value="violeta">Violeta Soberano</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -2336,26 +2061,274 @@ export default function App() {
         )}
 
         {/* ==================================================================
-            MÓDULO 2: FUERZA ABSOLUTA Y RELATIVA (CIENCIA BIOMECÁNICA F A EX)
+            MÓDULO 2: PANEL DE COMANDO, RANGOS (15 x 6 DIV) Y RETOS DIARIOS
+           ================================================================== */}
+        {activeTab === 'retos' && (
+          <div className="space-y-6">
+            {/* Tarjeta de Rango Competitivo Actual */}
+            <div
+              className="rounded-3xl border-2 bg-gradient-to-r from-[#17113b] via-[#26165c] to-[#17113b] p-5 sm:p-6 shadow-2xl"
+              style={{ borderColor: rankInfo.rank.color, boxShadow: `0 0 32px ${rankInfo.rank.glow}` }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/20 text-[11px] font-mono text-amber-300 mb-2">
+                    <Crown className="w-3.5 h-3.5" /> LIGA {rankInfo.rank.league.toUpperCase()} • DIVISIÓN {rankInfo.division} DE 6
+                  </span>
+                  <h2
+                    className="text-3xl sm:text-4xl font-black uppercase tracking-tight"
+                    style={{ color: rankInfo.rank.color, textShadow: `0 0 24px ${rankInfo.rank.glow}` }}
+                  >
+                    {rankInfo.fullName}
+                  </h2>
+                  <p className="text-xs text-purple-200 mt-1">
+                    Puntos de Liga Totales: <strong className="font-mono text-white">{rankInfo.totalLP} LP</strong> •{' '}
+                    {rankInfo.isMax ? '¡Cúspide Challenger 1 alcanzada!' : `Faltan ${100 - rankInfo.currentDivLP} LP para ascender`}
+                  </p>
+                </div>
+
+                {/* Botones rápidos de prueba LP */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateLeaguePoints(25, true, 'Entrenamiento Bonus')}
+                    className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-green-600 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition"
+                  >
+                    +25 LP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateLeaguePoints(100, true, '¡Salto de División!')}
+                    className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition"
+                  >
+                    +100 LP (Ascender)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateLeaguePoints(-20, false)}
+                    className="px-4 py-2.5 rounded-2xl bg-rose-600/30 hover:bg-rose-600/50 border border-rose-400 text-rose-200 font-black text-xs active:scale-95 transition"
+                  >
+                    -20 LP
+                  </button>
+                </div>
+              </div>
+
+              {/* Barra LP de División */}
+              <div className="mt-4">
+                <div className="flex justify-between text-xs font-mono mb-1">
+                  <span className="text-slate-300">PROGRESO DE DIVISIÓN</span>
+                  <span className="font-black text-amber-300">{rankInfo.isMax ? '100 / 100 LP' : `${rankInfo.currentDivLP} / 100 LP`}</span>
+                </div>
+                <div className="w-full h-4 rounded-full bg-black/70 border border-white/20 p-0.5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${rankInfo.isMax ? 100 : rankInfo.currentDivLP}%`,
+                      background: `linear-gradient(90deg, ${rankInfo.rank.secondary}, ${rankInfo.rank.color}, #FFFFFF)`
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Escala visual de los 15 rangos */}
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <span className="text-[10px] font-mono text-purple-300 uppercase block mb-2">
+                  Escalera Completa de 15 Rangos (Tierra 6 → Challenger 1):
+                </span>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                  {COMPETITIVE_RANKS.map((r, i) => {
+                    const current = i === rankInfo.rankIndex;
+                    return (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => {
+                          setTotalLP(i * 600 + 250);
+                          showToast(`Vista calibrada en ${r.name} 4`);
+                        }}
+                        className={`px-2 py-1.5 rounded-xl border text-left text-[10px] font-bold flex items-center justify-between transition ${
+                          current ? 'bg-black/80 scale-[1.03] shadow-lg' : 'bg-black/35 border-white/10 opacity-75 hover:opacity-100'
+                        }`}
+                        style={{ borderColor: current ? r.color : undefined, color: r.color }}
+                      >
+                        <span className="truncate">{i + 1}. {r.name}</span>
+                        {current && <span className="px-1 rounded bg-white/15 text-white font-mono">D{rankInfo.division}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Gestor de Retos Diarios + Cola Próxima Semana */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-8 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
+                <div>
+                  <h3 className="text-lg font-black text-white flex items-center gap-2">
+                    <Target className="w-5 h-5 text-amber-400" />
+                    Retos Diarios Declarados ¡A POR TODAS!
+                  </h3>
+                  <p className="text-xs text-purple-200">
+                    Declara tu misión de hoy. Si llueve o surge un imprevisto, justifícalo para convertirlo en un Desafío en Casa.
+                  </p>
+                </div>
+
+                {/* Crear Nuevo Reto */}
+                <form onSubmit={handleAddChallenge} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-3 rounded-2xl bg-black/45 border border-white/15">
+                  <input
+                    type="text"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="Ej. Gym: Press Banca 4x8 con 80kg..."
+                    className="sm:col-span-6 px-3.5 py-2.5 rounded-xl bg-white/10 border border-purple-400/40 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-300"
+                  />
+                  <select
+                    value={newEnv}
+                    onChange={(e) => setNewEnv(e.target.value)}
+                    className="sm:col-span-3 px-3 py-2.5 rounded-xl bg-[#1c154a] border border-purple-400/40 text-xs font-bold text-white"
+                  >
+                    <option value="Gimnasio">Gimnasio</option>
+                    <option value="Casa">Casa</option>
+                    <option value="Exterior">Cardio Exterior</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="sm:col-span-3 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition"
+                  >
+                    <Plus className="w-4 h-4" /> Declarar Reto
+                  </button>
+                </form>
+
+                {/* Lista de Retos Activos */}
+                <div className="space-y-3">
+                  {challenges.map((ch) => (
+                    <div
+                      key={ch.id}
+                      className={`p-4 rounded-2xl border-2 transition ${
+                        ch.status === 'completed'
+                          ? 'bg-emerald-950/40 border-emerald-400/70'
+                          : ch.status === 'contingency'
+                          ? 'bg-purple-950/50 border-cyan-400/70'
+                          : 'bg-black/45 border-purple-400/30'
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-cyan-200 text-[10px] font-mono font-bold">
+                          {ch.env}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[11px] font-mono font-black">
+                          +{ch.lp} LP
+                        </span>
+                        {ch.status === 'completed' && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[10px] font-black">
+                            ✓ ¡COMPLETADO!
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="text-sm font-bold text-white mb-2">{ch.title}</h4>
+
+                      {ch.contingencyInfo && (
+                        <p className="text-xs text-cyan-100 bg-cyan-950/60 border border-cyan-400/40 p-2.5 rounded-xl mb-3">
+                          {ch.contingencyInfo}
+                        </p>
+                      )}
+
+                      {ch.status !== 'completed' && (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleCompleteChallenge(ch)}
+                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-green-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            ¡Completado! (+{ch.lp} LP)
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleFailChallenge(ch)}
+                            className="px-3.5 py-2 rounded-xl bg-rose-600/25 hover:bg-rose-600/40 border border-rose-400/60 text-rose-200 font-bold text-xs flex items-center gap-1.5 transition"
+                          >
+                            <XCircle className="w-4 h-4" />
+                            Fallido
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setModalChallenge(ch)}
+                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/30 to-blue-600/30 hover:from-cyan-500/45 hover:to-blue-600/45 border border-cyan-300/60 text-cyan-100 font-bold text-xs flex items-center gap-1.5 transition"
+                          >
+                            <CloudRain className="w-4 h-4 text-cyan-300" />
+                            ¿Llueve? Justificar imprevisto
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cola para Retomar la Próxima Semana */}
+              <div className="lg:col-span-4 rounded-3xl border border-rose-400/40 bg-[#1a0d26]/90 p-5 space-y-3 shadow-xl">
+                <h3 className="text-sm font-black text-rose-300 uppercase flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4" />
+                  Cola para Retomar la Próxima Semana
+                </h3>
+                <p className="text-xs text-slate-300">
+                  Misiones fallidas pendientes de revancha semanal con recompensa extra.
+                </p>
+
+                {nextWeekQueue.length === 0 ? (
+                  <div className="p-6 rounded-2xl border border-dashed border-white/15 text-center text-xs text-slate-400">
+                    ¡Sin retos fallidos! Tu racha está impecable.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {nextWeekQueue.map((item) => (
+                      <div key={item.id} className="p-3.5 rounded-2xl bg-black/50 border border-rose-400/40 space-y-2">
+                        <span className="inline-block px-2 py-0.5 rounded bg-rose-500/25 text-rose-200 text-[10px] font-mono font-bold">
+                          REVANCHA SEMANAL • +{item.lp} LP
+                        </span>
+                        <p className="text-xs font-bold text-white">{item.title}</p>
+                        <button
+                          type="button"
+                          onClick={() => handleRetakeFromQueue(item)}
+                          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow transition"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                          Retomar en Nueva Semana
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==================================================================
+            MÓDULO 3: FUERZA ABSOLUTA Y RELATIVA (ESCALA CIENTÍFICA F A EX)
            ================================================================== */}
         {activeTab === 'fuerza' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-5 rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-4 shadow-xl">
+            <div className="lg:col-span-5 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Dumbbell className="w-5 h-5 text-cyan-400" />
-                  Laboratorio de Fuerza Biomecánica
+                <h2 className="text-lg font-black text-white flex items-center gap-2">
+                  <Dumbbell className="w-5 h-5 text-cyan-300" />
+                  Calculadora Científica de 1RM (F → EX)
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Cálculo de 1RM estimado (fórmula híbrida Brzycki/Epley) y coeficiente científico DOTS.
+                <p className="text-xs text-purple-200">
+                  Promedio científico Epley/Brzycki + Índice DOTS y Fuerza Relativa al peso corporal.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800">
-                <label className="flex justify-between text-xs font-mono text-slate-300 mb-2">
-                  <span>PESO CORPORAL DEL ATLETA</span>
-                  <span className="text-cyan-400 font-bold">{bodyWeight} kg</span>
-                </label>
+              <div className="p-3.5 rounded-2xl bg-black/50 border border-white/15">
+                <div className="flex justify-between text-xs font-mono mb-1.5">
+                  <span className="text-cyan-200 font-bold">PESO CORPORAL DEL ATLETA</span>
+                  <span className="text-amber-300 font-black">{bodyWeight} kg</span>
+                </div>
                 <input
                   type="range"
                   min="40"
@@ -2363,59 +2336,52 @@ export default function App() {
                   step="0.5"
                   value={bodyWeight}
                   onChange={(e) => setBodyWeight(Number(e.target.value))}
-                  className="w-full accent-cyan-400 cursor-pointer"
+                  className="w-full accent-amber-400 cursor-pointer"
                 />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {[
-                  { key: 'squat', label: 'Sentadilla Trasera (Squat)' },
-                  { key: 'bench', label: 'Press de Banca (Bench Press)' },
-                  { key: 'deadlift', label: 'Peso Muerto (Deadlift)' },
-                  { key: 'ohp', label: 'Press Militar Estricto (OHP)' }
-                ].map((item) => (
-                  <div key={item.key} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-bold text-slate-200">{item.label}</span>
-                      <span className="text-[11px] font-mono text-cyan-300">
-                        1RM Est.:{' '}
-                        <strong>
-                          {strengthMetrics.exercises.find((e) => e.key === item.key)?.oneRM} kg
-                        </strong>
-                      </span>
-                    </div>
+                  { key: 'squat', label: 'Sentadilla Trasera' },
+                  { key: 'bench', label: 'Press de Banca' },
+                  { key: 'deadlift', label: 'Peso Muerto' },
+                  { key: 'pullup', label: 'Dominadas Lastradas (Lastre añadido kg)' },
+                  { key: 'ohp', label: 'Press Militar Estricto' }
+                ].map((ex) => (
+                  <div key={ex.key} className="p-3 rounded-2xl bg-black/45 border border-white/10">
+                    <span className="text-xs font-bold text-white block mb-2">{ex.label}</span>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-[10px] font-mono text-slate-400 mb-1">PESO (KG)</label>
+                        <label className="text-[10px] font-mono text-purple-300 block mb-1">PESO (KG)</label>
                         <input
                           type="number"
                           min="0"
-                          max="500"
+                          max="450"
                           step="2.5"
-                          value={lifts[item.key].weight}
+                          value={lifts[ex.key].weight}
                           onChange={(e) =>
-                            setLifts((prev) => ({
-                              ...prev,
-                              [item.key]: { ...prev[item.key], weight: Number(e.target.value) }
+                            setLifts((p) => ({
+                              ...p,
+                              [ex.key]: { ...p[ex.key], weight: Number(e.target.value) }
                             }))
                           }
-                          className="w-full px-2.5 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono font-bold text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-mono text-slate-400 mb-1">REPETICIONES</label>
+                        <label className="text-[10px] font-mono text-purple-300 block mb-1">REPETICIONES</label>
                         <input
                           type="number"
                           min="1"
                           max="20"
-                          value={lifts[item.key].reps}
+                          value={lifts[ex.key].reps}
                           onChange={(e) =>
-                            setLifts((prev) => ({
-                              ...prev,
-                              [item.key]: { ...prev[item.key], reps: Number(e.target.value) }
+                            setLifts((p) => ({
+                              ...p,
+                              [ex.key]: { ...p[ex.key], reps: Number(e.target.value) }
                             }))
                           }
-                          className="w-full px-2.5 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono font-bold text-white"
                         />
                       </div>
                     </div>
@@ -2425,108 +2391,81 @@ export default function App() {
             </div>
 
             <div className="lg:col-span-7 space-y-5">
+              {/* Tarjetas de Fuerza Absoluta y Relativa */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-purple-500/50 bg-gradient-to-br from-purple-950/45 to-slate-950 p-5 shadow-xl">
+                <div className="rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-950/60 to-[#161038] p-5 shadow-xl">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-purple-300">
-                        CLASIFICACIÓN NEURAL TOTAL
-                      </span>
-                      <h3 className="text-base font-bold text-white">Fuerza Absoluta</h3>
+                      <span className="text-[10px] font-mono text-amber-300 uppercase">CARGA TOTAL MOVIDA</span>
+                      <h3 className="text-base font-black text-white">Fuerza Absoluta</h3>
                     </div>
-                    <div
-                      className={`px-3.5 py-1.5 rounded-xl border text-2xl font-black font-mono ${strengthMetrics.absoluteGrade.bg}`}
-                    >
-                      {strengthMetrics.absoluteGrade.grade}
-                    </div>
+                    <span className={`px-3.5 py-1.5 rounded-2xl border-2 text-2xl font-black font-mono ${strengthInfo.absoluteGrade.badge}`}>
+                      {strengthInfo.absoluteGrade.grade}
+                    </span>
                   </div>
-                  <p className="text-xs font-semibold text-purple-200 mb-2">
-                    {strengthMetrics.absoluteGrade.label}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-black/60 border border-slate-800 text-xs font-mono mb-2">
+                  <p className="text-xs font-bold text-amber-200 mb-2">{strengthInfo.absoluteGrade.label}</p>
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-black/50 text-xs font-mono">
                     <div>
-                      <span className="text-slate-400 block text-[10px]">TOTAL SBD</span>
-                      <span className="text-white font-bold">{strengthMetrics.sbdTotal} kg</span>
+                      <span className="text-[10px] text-slate-400 block">TOTAL SBD</span>
+                      <strong className="text-white">{strengthInfo.sbdTotal} kg</strong>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">ÍNDICE DOTS</span>
-                      <span className="text-purple-300 font-bold">{strengthMetrics.dotsScore} pts</span>
+                      <span className="text-[10px] text-slate-400 block">ÍNDICE DOTS</span>
+                      <strong className="text-amber-300">{strengthInfo.dotsScore} pts</strong>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-400">{strengthMetrics.absoluteGrade.desc}</p>
                 </div>
 
-                <div className="rounded-2xl border border-cyan-500/50 bg-gradient-to-br from-cyan-950/45 to-slate-950 p-5 shadow-xl">
+                <div className="rounded-3xl border-2 border-cyan-400/60 bg-gradient-to-br from-cyan-950/60 to-[#161038] p-5 shadow-xl">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-300">
-                        EFICIENCIA PESO / POTENCIA
-                      </span>
-                      <h3 className="text-base font-bold text-white">Fuerza Relativa</h3>
+                      <span className="text-[10px] font-mono text-cyan-300 uppercase">POTENCIA POR KG CORPORAL</span>
+                      <h3 className="text-base font-black text-white">Fuerza Relativa</h3>
                     </div>
-                    <div
-                      className={`px-3.5 py-1.5 rounded-xl border text-2xl font-black font-mono ${strengthMetrics.relativeGrade.bg}`}
-                    >
-                      {strengthMetrics.relativeGrade.grade}
-                    </div>
+                    <span className={`px-3.5 py-1.5 rounded-2xl border-2 text-2xl font-black font-mono ${strengthInfo.relativeGrade.badge}`}>
+                      {strengthInfo.relativeGrade.grade}
+                    </span>
                   </div>
-                  <p className="text-xs font-semibold text-cyan-200 mb-2">
-                    {strengthMetrics.relativeGrade.label}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-black/60 border border-slate-800 text-xs font-mono mb-2">
+                  <p className="text-xs font-bold text-cyan-200 mb-2">{strengthInfo.relativeGrade.label}</p>
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-black/50 text-xs font-mono">
                     <div>
-                      <span className="text-slate-400 block text-[10px]">RATIO TOTAL/BW</span>
-                      <span className="text-white font-bold">{strengthMetrics.relativeRatio}x BW</span>
+                      <span className="text-[10px] text-slate-400 block">RATIO SBD / BW</span>
+                      <strong className="text-white">{strengthInfo.relativeRatio}x BW</strong>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">TOTAL 4 LIFTS</span>
-                      <span className="text-cyan-300 font-bold">{strengthMetrics.grandTotal} kg</span>
+                      <span className="text-[10px] text-slate-400 block">5 LIFTS TOTAL</span>
+                      <strong className="text-cyan-300">{strengthInfo.fiveLiftsTotal} kg</strong>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-400">{strengthMetrics.relativeGrade.desc}</p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-4 shadow-xl">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                    Perfil Biomecánico por Patrón Motor
-                  </h3>
-                  <span className="text-[11px] font-mono text-slate-400">Escala: F → EX</span>
-                </div>
-
-                <div className="space-y-3.5">
-                  {strengthMetrics.exercises.map((ex) => {
-                    const pct = Math.min(100, Math.round((ex.ratio / (ex.targetNext * 1.4)) * 100));
-                    return (
-                      <div key={ex.key} className="p-3.5 rounded-xl bg-black/60 border border-slate-800">
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`px-2 py-0.5 rounded border text-xs font-black font-mono ${ex.grade.bg}`}
-                            >
-                              {ex.grade.grade}
-                            </span>
-                            <span className="text-xs font-bold text-white">{ex.name}</span>
-                          </div>
-                          <div className="text-xs font-mono">
-                            <span className="text-cyan-300 font-bold">{ex.oneRM} kg</span>
-                            <span className="text-slate-500 mx-1.5">|</span>
-                            <span className="text-amber-300 font-bold">{ex.ratio}x BW</span>
-                          </div>
+              {/* Tabla de Levantamientos Principales */}
+              <div className="rounded-3xl border border-purple-400/35 bg-[#130e30]/90 p-5 space-y-3 shadow-xl">
+                <h3 className="text-sm font-black text-white uppercase">
+                  Desglose de Levantamientos Principales (1RM Estimado & Ratio)
+                </h3>
+                <div className="space-y-2.5">
+                  {strengthInfo.rows.map((row) => (
+                    <div
+                      key={row.key}
+                      className="p-3 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-between gap-2"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className={`px-2.5 py-1 rounded-xl border text-xs font-black font-mono ${row.grade.badge}`}>
+                          {row.grade.grade}
+                        </span>
+                        <div>
+                          <span className="text-xs font-bold text-white block">{row.name}</span>
+                          <span className="text-[10px] font-mono text-purple-300">{row.grade.label}</span>
                         </div>
-
-                        <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden mb-2">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-
-                        <p className="text-[11px] text-slate-400 leading-relaxed">{ex.biomech}</p>
                       </div>
-                    );
-                  })}
+                      <div className="text-right font-mono text-xs">
+                        <strong className="text-cyan-300 block">{row.oneRM} kg 1RM</strong>
+                        <span className="text-amber-300 font-bold">{row.ratio}x peso corp.</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -2534,234 +2473,175 @@ export default function App() {
         )}
 
         {/* ==================================================================
-            MÓDULO 3: EVALUACIÓN FÍSICA TRIMESTRAL, BÓVEDA SEGURA Y RECAP ANUAL
+            MÓDULO 4: EVALUACIÓN FÍSICA TRIMESTRAL (F A EX) Y BÓVEDA PRIVADA
            ================================================================== */}
         {activeTab === 'fisico' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-5 rounded-2xl border border-cyan-500/40 bg-gradient-to-br from-slate-900 via-[#090E1C] to-purple-950/35 p-5 flex flex-col justify-between shadow-xl">
+              {/* Estado Trimestral y Contador 90 Días */}
+              <div className="lg:col-span-5 rounded-3xl border-2 border-pink-400/50 bg-gradient-to-br from-[#1d1247] to-[#120c2b] p-5 flex flex-col justify-between space-y-4 shadow-xl">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-400">
-                      AUDITORÍA MORFOLÓGICA TRIMESTRAL
-                    </span>
-                    <span className={`px-3 py-1 rounded-lg border text-sm font-black font-mono ${currentPhysicalGrade.bg}`}>
-                      RANGO FÍSICO: {currentPhysicalGrade.grade}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono text-pink-300 uppercase">EVALUACIÓN CADA 3 MESES</span>
+                    <span className={`px-3 py-1 rounded-xl border text-sm font-black font-mono ${currentPhysiqueGrade.badge}`}>
+                      FÍSICO {currentPhysiqueGrade.grade}
                     </span>
                   </div>
+                  <h2 className="text-xl font-black text-white">{currentPhysiqueGrade.label}</h2>
+                  <p className="text-xs text-purple-200 mt-1">{currentPhysiqueGrade.desc}</p>
 
-                  <h2 className="text-xl font-bold text-white mb-1">{currentPhysicalGrade.label}</h2>
-                  <p className="text-xs text-slate-400 mb-4">{currentPhysicalGrade.desc}</p>
-
-                  <div className="p-4 rounded-xl bg-black/70 border border-slate-800 mb-4">
-                    <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-amber-400" />
-                        RENOVACIÓN OBLIGATORIA (CICLO 90 DÍAS)
-                      </span>
-                      <span className="text-amber-300 font-bold">{daysUntilRenewal} DÍAS RESTANTES</span>
+                  <div className="mt-4 p-4 rounded-2xl bg-black/55 border border-white/15 space-y-2.5">
+                    <div className="flex justify-between text-xs font-mono">
+                      <span className="text-amber-300 font-bold">RENOVACIÓN TRIMESTRAL</span>
+                      <span className="text-white font-black">{daysToRenewal} DÍAS RESTANTES</span>
                     </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden mb-3">
+                    <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-500 transition-all"
-                        style={{ width: `${Math.round(((90 - daysUntilRenewal) / 90) * 100)}%` }}
+                        className="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-pink-500"
+                        style={{ width: `${Math.round(((90 - daysToRenewal) / 90) * 100)}%` }}
                       />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 gap-2 pt-1">
                       <button
                         type="button"
-                        onClick={() => setDaysUntilRenewal((d) => Math.max(0, d - 15))}
-                        className="flex-1 py-2 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200 transition"
+                        onClick={() => setDaysToRenewal((d) => Math.max(0, d - 15))}
+                        className="py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-mono font-bold"
                       >
-                        Avanzar 15 días
+                        Simular -15 días
                       </button>
                       <button
                         type="button"
                         onClick={() => {
-                          setDaysUntilRenewal(90);
-                          triggerToast('Ciclo trimestral renovado por 90 días.', 'success');
+                          setDaysToRenewal(90);
+                          showToast('¡Ciclo trimestral renovado por 90 días!');
                         }}
-                        className="flex-1 py-2 px-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-[11px] font-mono text-cyan-300 transition"
+                        className="py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[11px] font-mono font-bold"
                       >
-                        Renovar Hoy (90d)
+                        Renovar 90 días
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/40 flex items-start gap-3">
-                  <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="text-xs">
-                    <p className="font-bold text-emerald-300">
-                      Bóveda Privada Cifrada (AES-256 / Zero-Face ID)
-                    </p>
-                    <p className="text-slate-300/90 text-[11px] mt-0.5">
-                      Tus capturas de frente y espalda se procesan localmente en memoria con recorte/pixelado automático del rostro y eliminación de metadatos EXIF.
-                    </p>
+                {/* Calibrador de Grado Físico */}
+                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/15 space-y-2">
+                  <div className="flex justify-between text-xs font-mono">
+                    <span className="text-cyan-200">SIMETRÍA & DEFINICIÓN VISUAL</span>
+                    <span className="text-amber-300 font-black">
+                      {physiqueScore}% → Grado {SCIENTIFIC_GRADES[Math.min(9, Math.floor(physiqueScore / 10))].grade}
+                    </span>
                   </div>
+                  <input
+                    type="range"
+                    min="5"
+                    max="99"
+                    value={physiqueScore}
+                    onChange={(e) => setPhysiqueScore(Number(e.target.value))}
+                    className="w-full accent-pink-500 cursor-pointer"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const g = SCIENTIFIC_GRADES[Math.min(9, Math.floor(physiqueScore / 10))].grade;
+                      setQuarters((prev) => prev.map((q) => (q.id === 'Q3' ? { ...q, grade: g } : q)));
+                      setDaysToRenewal(90);
+                      showToast(`¡Grado Físico actualizado a ${g}!`);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-white font-black text-xs shadow-lg"
+                  >
+                    Guardar Evaluación Trimestral
+                  </button>
                 </div>
               </div>
 
-              <div className="lg:col-span-7 rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-4 shadow-xl">
+              {/* Bóveda Segura Frente y Espalda */}
+              <div className="lg:col-span-7 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Lock className="w-4 h-4 text-emerald-400" />
-                    Escáner Corporal Seguro (Frente & Espalda Sin Rostro)
+                    Bóveda Privada de Progreso (Frente y Espalda Sin Rostro)
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Sube tus fotos o usa el escáner demo; el sistema censura automáticamente el área facial.
+                  <p className="text-xs text-purple-200">
+                    Las fotos se procesan en tu dispositivo censurando automáticamente el área superior del rostro.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <PrivacyPhotoVaultCard
-                    sideLabel="Vista Frontal"
-                    imageDataUrl={frontPhoto}
-                    onUploadImage={(url) => {
-                      setFrontPhoto(url);
-                      triggerToast('Foto frontal cifrada y rostro redactado.', 'success');
+                  <SecureBodyPhotoCard
+                    title="Frente"
+                    photoUrl={frontVaultPhoto}
+                    onPhotoProcessed={(url) => {
+                      setFrontVaultPhoto(url);
+                      showToast('Foto Frontal censurada y cifrada localmente.');
                     }}
-                    onGenerateSample={() => generateSyntheticScan('Frente')}
+                    onSimulatePhoto={() => generateVaultDemoPhoto('Frente')}
                   />
-                  <PrivacyPhotoVaultCard
-                    sideLabel="Vista Dorsal (Espalda)"
-                    imageDataUrl={backPhoto}
-                    onUploadImage={(url) => {
-                      setBackPhoto(url);
-                      triggerToast('Foto dorsal cifrada y rostro redactado.', 'success');
+                  <SecureBodyPhotoCard
+                    title="Espalda"
+                    photoUrl={backVaultPhoto}
+                    onPhotoProcessed={(url) => {
+                      setBackVaultPhoto(url);
+                      showToast('Foto de Espalda censurada y cifrada localmente.');
                     }}
-                    onGenerateSample={() => generateSyntheticScan('Espalda')}
+                    onSimulatePhoto={() => generateVaultDemoPhoto('Espalda')}
                   />
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="w-full sm:w-2/3">
-                    <div className="flex justify-between text-xs font-mono mb-1">
-                      <span className="text-slate-400">ÍNDICE DE DEFINICIÓN & SIMETRÍA VISUAL</span>
-                      <span className="text-cyan-300 font-bold">
-                        {visualSymmetryScore}/100 → Rango {SCIENTIFIC_GRADES[Math.min(9, Math.floor(visualSymmetryScore / 10))].grade}
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="5"
-                      max="99"
-                      value={visualSymmetryScore}
-                      onChange={(e) => setVisualSymmetryScore(Number(e.target.value))}
-                      className="w-full accent-purple-500 cursor-pointer"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newGrade = SCIENTIFIC_GRADES[Math.min(9, Math.floor(visualSymmetryScore / 10))].grade;
-                      setQuarterlyHistory((prev) =>
-                        prev.map((q) => (q.quarter === 'Q3' ? { ...q, grade: newGrade } : q))
-                      );
-                      setDaysUntilRenewal(90);
-                      triggerToast(`Evaluación trimestral guardada. Nuevo Rango Físico: ${newGrade}`, 'success');
-                    }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-bold text-xs transition shrink-0"
-                  >
-                    Registrar Evaluación
-                  </button>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            {/* Recap Anual (Q1, Q2, Q3, Q4) */}
+            <div className="rounded-3xl border border-amber-400/40 bg-[#140f33]/90 p-5 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-amber-400" />
-                    Evolución Trimestral y Recap Anual (Q1 → Q4)
+                    Recap Anual de Transformación (Q1 → Q4)
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Comparativa histórica de los 4 trimestres del año para verificar tu transformación física real.
+                  <p className="text-xs text-purple-200">
+                    Línea de tiempo visual de tus 4 evaluaciones trimestrales del año.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowAnnualRecap(!showAnnualRecap)}
-                  className="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 text-amber-200 text-xs font-bold flex items-center gap-2 transition"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  {showAnnualRecap ? 'Ocultar Resumen Anual' : 'Desbloquear Recap Anual Comparativo'}
-                </button>
+                <span className="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-200 text-xs font-mono font-bold">
+                  EVOLUCIÓN ANUAL: D → {quarters[2].grade}
+                </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {quarterlyHistory.map((q, i) => {
-                  const gradeObj = SCIENTIFIC_GRADES.find((g) => g.grade === q.grade) || SCIENTIFIC_GRADES[2];
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {quarters.map((q) => {
+                  const gObj = SCIENTIFIC_GRADES.find((g) => g.grade === q.grade) || SCIENTIFIC_GRADES[2];
                   return (
-                    <div
-                      key={q.quarter}
-                      className="p-4 rounded-xl bg-black/60 border border-slate-800 relative overflow-hidden"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-mono font-bold text-slate-400">{q.label}</span>
-                        <span className={`px-2.5 py-0.5 rounded border text-sm font-black font-mono ${gradeObj.bg}`}>
+                    <div key={q.id} className="p-4 rounded-2xl bg-black/50 border border-white/15 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono font-bold text-cyan-200">{q.title}</span>
+                        <span className={`px-2.5 py-0.5 rounded-lg border text-sm font-black font-mono ${gObj.badge}`}>
                           {q.grade}
                         </span>
                       </div>
-                      <div className="text-xs font-mono text-cyan-300 mb-1">Grasa Est.: {q.bodyfat}</div>
-                      <p className="text-xs text-slate-400">{q.note}</p>
-                      {i < 3 && (
-                        <div className="mt-3 pt-2 border-t border-slate-800/80 text-[10px] font-mono text-emerald-400">
-                          ✓ VERIFICADO EN BÓVEDA
-                        </div>
-                      )}
+                      <span className="text-xs font-mono text-amber-300 block">Grasa Est.: {q.bf}</span>
+                      <p className="text-[11px] text-slate-300">{q.note}</p>
                     </div>
                   );
                 })}
               </div>
-
-              {showAnnualRecap && (
-                <div className="mt-5 p-5 rounded-xl bg-gradient-to-r from-cyan-950/60 via-purple-950/60 to-amber-950/50 border border-amber-400/60">
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300">
-                        INFORME ANUAL CONSOLIDADO // PROTOCOLO EX
-                      </span>
-                      <h4 className="text-lg font-black text-white mt-0.5">
-                        Progresión Anual: Rango D → Rango {quarterlyHistory[3].grade} (+4 Saltos de Grado)
-                      </h4>
-                      <p className="text-xs text-slate-300 mt-1">
-                        Reducción estimada de tejido adiposo del <strong>-7.0%</strong> con ganancia neta de masa libre de grasa y mejora sostenida en simetría dorsal y cintura escapular.
-                      </p>
-                    </div>
-                    <div className="flex gap-3 shrink-0 font-mono text-xs">
-                      <div className="p-3 rounded-lg bg-black/70 border border-slate-700 text-center">
-                        <span className="block text-slate-400 text-[10px]">INICIO Q1</span>
-                        <span className="text-lg font-black text-green-400">D</span>
-                      </div>
-                      <div className="flex items-center text-amber-400 font-bold">→</div>
-                      <div className="p-3 rounded-lg bg-black/70 border border-amber-400/60 text-center">
-                        <span className="block text-slate-400 text-[10px]">CIERRE Q4</span>
-                        <span className="text-lg font-black text-amber-300">{quarterlyHistory[3].grade}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}
 
         {/* ==================================================================
-            MÓDULO 4: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
+            MÓDULO 5: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
            ================================================================== */}
         {activeTab === 'rutinas' && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-5 shadow-xl">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Generador Biomecánico */}
+            <div className="rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-cyan-400" />
+                  <h2 className="text-lg font-black text-white flex items-center gap-2">
+                    <Cpu className="w-5 h-5 text-cyan-300" />
                     Generador de Rutinas Basadas en Biomecánica
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    Programación estructurada según perfil de resistencia, longitud muscular bajo carga y gestión de fatiga.
+                  <p className="text-xs text-purple-200">
+                    Elige entorno, días y objetivo para obtener una prescripción con fundamento científico.
                   </p>
                 </div>
 
@@ -2769,77 +2649,83 @@ export default function App() {
                   <select
                     value={routineEnv}
                     onChange={(e) => setRoutineEnv(e.target.value)}
-                    className="px-3 py-2.5 rounded-xl bg-black/70 border border-cyan-500/40 text-xs font-semibold text-cyan-200 focus:outline-none"
+                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-cyan-400/50 text-xs font-bold text-cyan-200"
                   >
-                    <option value="gimnasio">Entorno: Gimnasio</option>
-                    <option value="casa">Entorno: Casa</option>
-                    <option value="hibrido">Entorno: Híbrido (Casa + Gym)</option>
+                    <option value="gimnasio">Gimnasio</option>
+                    <option value="casa">Casa</option>
+                    <option value="hibrido">Híbrido (Casa + Gym)</option>
                   </select>
 
                   <select
                     value={routineGoal}
                     onChange={(e) => setRoutineGoal(e.target.value)}
-                    className="px-3 py-2.5 rounded-xl bg-black/70 border border-purple-500/40 text-xs font-semibold text-purple-200 focus:outline-none"
+                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-pink-400/50 text-xs font-bold text-pink-200"
                   >
-                    <option value="hipertrofia">Objetivo: Hipertrofia</option>
-                    <option value="fuerza">Objetivo: Fuerza Máxima</option>
-                    <option value="recomposicion">Objetivo: Recomposición</option>
+                    <option value="hipertrofia">Hipertrofia</option>
+                    <option value="fuerza">Fuerza Máxima</option>
+                    <option value="recomposicion">Recomposición</option>
                   </select>
 
                   <select
-                    value={routineDaysPerWeek}
-                    onChange={(e) => setRoutineDaysPerWeek(Number(e.target.value))}
-                    className="px-3 py-2.5 rounded-xl bg-black/70 border border-slate-700 text-xs font-semibold text-slate-200 focus:outline-none"
+                    value={routineDays}
+                    onChange={(e) => setRoutineDays(Number(e.target.value))}
+                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-amber-400/50 text-xs font-bold text-amber-200"
                   >
-                    <option value={3}>3 días / semana</option>
-                    <option value={4}>4 días / semana</option>
-                    <option value={5}>5 días / semana</option>
-                    <option value={6}>6 días / semana</option>
+                    <option value={3}>3 días/sem</option>
+                    <option value={4}>4 días/sem</option>
+                    <option value={5}>5 días/sem</option>
+                    <option value={6}>6 días/sem</option>
                   </select>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-950/50 to-purple-950/40 border border-cyan-500/35">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-mono font-bold text-cyan-300 uppercase">
-                    ENFOQUE: {activeRoutine.focus}
-                  </span>
-                  <span className="text-[11px] font-mono text-slate-400">
-                    Frecuencia: {routineDaysPerWeek} días/sem (Rotación Ondulante)
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{activeRoutine.rationale}</p>
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/60 to-purple-950/60 border border-cyan-400/40">
+                <span className="text-xs font-mono font-black text-amber-300 block mb-1">
+                  {activeRoutinePlan.title} ({routineDays} DÍAS/SEMANA)
+                </span>
+                <p className="text-xs text-slate-200">{activeRoutinePlan.summary}</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {activeRoutine.days.map((dayBlock, dIdx) => (
-                  <div key={dIdx} className="p-4 rounded-xl bg-black/60 border border-slate-800 flex flex-col justify-between">
+                {activeRoutinePlan.blocks.map((blk, i) => (
+                  <div key={i} className="p-4 rounded-2xl bg-black/50 border border-white/15 flex flex-col justify-between space-y-3">
                     <div>
-                      <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-800">
-                        <h3 className="text-sm font-bold text-white">{dayBlock.day}</h3>
+                      <div className="flex items-center justify-between gap-2 pb-2 mb-3 border-b border-white/10">
+                        <h3 className="text-sm font-black text-white">{blk.day}</h3>
                         <button
                           type="button"
-                          onClick={() => sendRoutineDayToChallenges(dayBlock)}
-                          className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 text-cyan-200 text-[11px] font-bold transition shrink-0"
+                          onClick={() => {
+                            const list = blk.exercises.map((e) => `${e.name} (${e.sets})`).join(' + ');
+                            setChallenges((prev) => [
+                              {
+                                id: `r-${Date.now()}`,
+                                title: `${blk.day}: ${list}`,
+                                env: routineEnv === 'casa' ? 'Casa' : 'Gimnasio',
+                                lp: 45,
+                                status: 'active',
+                                contingencyInfo: ''
+                              },
+                              ...prev
+                            ]);
+                            setActiveTab('retos');
+                            showToast('¡Rutina enviada a tus Retos de Hoy!');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-[11px] shrink-0 shadow"
                         >
-                          + Enviar a Retos
+                          Enviar Rutina a Retos de Hoy
                         </button>
                       </div>
 
-                      <div className="space-y-3">
-                        {dayBlock.exercises.map((ex, eIdx) => (
-                          <div key={eIdx} className="p-3 rounded-lg bg-slate-900/75 border border-slate-800/90">
-                            <div className="flex flex-wrap justify-between items-center gap-1 mb-1">
-                              <span className="text-xs font-bold text-slate-100">{ex.name}</span>
-                              <span className="text-[11px] font-mono text-emerald-300 font-bold">
+                      <div className="space-y-2.5">
+                        {blk.exercises.map((ex, idx) => (
+                          <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10">
+                            <div className="flex justify-between items-center gap-1 mb-1">
+                              <span className="text-xs font-bold text-white">{ex.name}</span>
+                              <span className="text-[11px] font-mono font-black text-emerald-300">
                                 {ex.sets} • {ex.rir}
                               </span>
                             </div>
-                            <div className="flex gap-3 text-[10px] font-mono text-slate-400 mb-1.5">
-                              <span>Descanso: {ex.rest}</span>
-                              <span>Tempo: {ex.tempo}</span>
-                            </div>
-                            <p className="text-[11px] text-cyan-200/85">
+                            <p className="text-[11px] text-cyan-200">
                               <strong>Biomecánica:</strong> {ex.biomech}
                             </p>
                           </div>
@@ -2851,133 +2737,133 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-purple-500/40 bg-[#080D1B]/90 backdrop-blur-xl p-5 shadow-xl">
-              <div className="mb-4">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-purple-400" />
-                  Escáner y Auditor Biomecánico de Rutina Propia
+            {/* Escáner / Auditor de Rutina Propia */}
+            <div className="rounded-3xl border border-pink-400/40 bg-[#140f33]/90 p-5 space-y-4 shadow-xl">
+              <div>
+                <h3 className="text-base font-black text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-pink-400" />
+                  Auditor / Escáner de Rutina Propia
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Pega tu planilla actual o sube un archivo/foto de tu rutina junto con tus resultados para detectar desbalances, volumen semanal y fatiga del SNC.
+                <p className="text-xs text-purple-200">
+                  Sube una foto/archivo de tu rutina o pega tus ejercicios para auditar volumen, balance empuje/tracción y fatiga del SNC.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 <div className="lg:col-span-5 space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <label className="cursor-pointer flex items-center gap-2 px-3 py-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-200 text-xs font-bold transition">
+                    <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-purple-600/40 hover:bg-purple-600/60 border border-purple-300/50 text-xs font-bold text-white flex items-center gap-1.5">
                       <Upload className="w-3.5 h-3.5" />
-                      Subir Archivo / Foto de Planilla
+                      Subir Foto / Archivo de Rutina
                       <input
                         type="file"
                         accept=".txt,.csv,.md,image/*"
                         onChange={(e) => {
                           const f = e.target.files?.[0];
                           if (!f) return;
-                          setUploadedFileName(f.name);
+                          setRoutineFileName(f.name);
                           if (f.type.startsWith('text/')) {
                             const r = new FileReader();
-                            r.onload = (ev) => setCustomRoutineText(String(ev.target?.result || ''));
+                            r.onload = (ev) => setUserRoutineText(String(ev.target?.result || ''));
                             r.readAsText(f);
                           } else {
-                            setCustomRoutineText(
-                              `[OCR PLANILLA: ${f.name}]\nDía 1: Press Banca 4x8, Press Inclinado 4x10, Aperturas 4x12, Tríceps Polea 4x15\nDía 2: Jalón Pecho 3x10, Curl Bíceps 4x12\nDía 3: Sentadilla 3x8, Prensa 3x10`
+                            setUserRoutineText(
+                              `[PLANILLA ESCANEADA: ${f.name}]\nDía 1: Press Banca 4x8, Press Inclinado 4x10, Aperturas 4x12, Tríceps 4x15\nDía 2: Jalón Pecho 3x10, Curl Bíceps 4x12\nDía 3: Sentadilla 3x8, Prensa 3x10`
                             );
                           }
-                          triggerToast(`Planilla "${f.name}" escaneada.`, 'success');
+                          showToast(`Archivo "${f.name}" cargado en el escáner.`);
                         }}
                         className="hidden"
                       />
                     </label>
-                    {uploadedFileName && (
-                      <span className="text-[11px] font-mono text-emerald-400 truncate max-w-[160px]">
-                        ✓ {uploadedFileName}
-                      </span>
-                    )}
+                    {routineFileName && <span className="text-[11px] font-mono text-emerald-300 truncate">{routineFileName}</span>}
                   </div>
 
                   <textarea
-                    rows={6}
-                    value={customRoutineText}
-                    onChange={(e) => setCustomRoutineText(e.target.value)}
-                    placeholder="Escribe o pega aquí los ejercicios, series y repeticiones de tu rutina actual..."
-                    className="w-full p-3 rounded-xl bg-black/70 border border-slate-700 text-xs font-mono text-slate-200 focus:outline-none focus:border-purple-400"
+                    rows={5}
+                    value={userRoutineText}
+                    onChange={(e) => setUserRoutineText(e.target.value)}
+                    className="w-full p-3 rounded-2xl bg-black/60 border border-white/15 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-400"
                   />
 
-                  <div>
-                    <label className="block text-[11px] font-mono text-slate-400 mb-1">
-                      ¿CUÁLES SON TUS RESULTADOS ACTUALES CON ESTA RUTINA?
-                    </label>
-                    <select
-                      value={customProgressStatus}
-                      onChange={(e) => setCustomProgressStatus(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-black/70 border border-slate-700 text-xs text-white focus:border-purple-400 focus:outline-none"
-                    >
-                      <option value="progresando">Progresando bien en cargas y medidas</option>
-                      <option value="estancado">Estancado sin subir pesos hace +3 semanas</option>
-                      <option value="fatiga">Fatiga extrema / Molestias articulares</option>
-                    </select>
-                  </div>
+                  <select
+                    value={userRoutineFeeling}
+                    onChange={(e) => setUserRoutineFeeling(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#1e1652] border border-white/20 text-xs font-bold text-white"
+                  >
+                    <option value="progresando">Resultados: Progresando bien</option>
+                    <option value="estancado">Resultados: Estancado (+3 semanas sin subir pesos)</option>
+                    <option value="fatiga">Resultados: Fatiga extrema / Molestias articulares</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRoutineDiagnosis(auditUserRoutine(userRoutineText, userRoutineFeeling));
+                      showToast('¡Auditoría biomecánica completada!');
+                    }}
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-white font-black text-xs shadow-lg active:scale-95 transition"
+                  >
+                    Analizar Biomecánica
+                  </button>
                 </div>
 
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="p-4 rounded-xl bg-black/60 border border-slate-800 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-mono font-bold text-slate-300">
-                        VOLUMEN SEMANAL ESTIMADO POR PATRÓN
-                      </span>
-                      <span className="text-[11px] font-mono text-purple-300">
-                        Fatiga SNC: {routineAudit.cnsFatigue}
-                      </span>
-                    </div>
-
-                    {routineAudit.volumeByGroup.map((grp) => (
-                      <div key={grp.label}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-slate-300">{grp.label}</span>
-                          <span className="font-mono text-slate-400">
-                            <strong className="text-white">{grp.sets} series</strong> (Óptimo: {grp.target})
+                <div className="lg:col-span-7">
+                  {(() => {
+                    const diag = routineDiagnosis || auditUserRoutine(userRoutineText, userRoutineFeeling);
+                    return (
+                      <div className="p-4 rounded-2xl bg-black/50 border border-white/15 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-mono font-bold text-cyan-300">
+                            PUNTAJE BIOMECÁNICO: <strong className="text-lg text-amber-300">{diag.score}/100</strong>
                           </span>
+                          <span className="text-xs font-mono text-pink-300">SNC: {diag.cnsStatus}</span>
                         </div>
-                        <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{
-                              width: `${Math.min(100, (grp.sets / 22) * 100)}%`,
-                              backgroundColor: grp.color
-                            }}
-                          />
+
+                        <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+                          <div className="p-2.5 rounded-xl bg-white/5">
+                            <span className="text-[10px] text-slate-400 block">EMPUJE</span>
+                            <strong className="text-cyan-300">{diag.pushSets} series</strong>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-white/5">
+                            <span className="text-[10px] text-slate-400 block">TRACCIÓN</span>
+                            <strong className="text-purple-300">{diag.pullSets} series</strong>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-white/5">
+                            <span className="text-[10px] text-slate-400 block">PIERNA</span>
+                            <strong className="text-emerald-300">{diag.legSets} series</strong>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          {diag.alerts.map((al, idx) => (
+                            <div
+                              key={idx}
+                              className={`p-3 rounded-xl border text-xs ${
+                                al.level === 'danger'
+                                  ? 'bg-rose-950/50 border-rose-400 text-rose-200'
+                                  : al.level === 'warn'
+                                  ? 'bg-amber-950/50 border-amber-400 text-amber-200'
+                                  : 'bg-emerald-950/40 border-emerald-400 text-emerald-200'
+                              }`}
+                            >
+                              <strong className="block">{al.title}</strong>
+                              <span className="text-[11px]">{al.detail}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-400/40 text-xs">
+                          <strong className="text-cyan-300 block mb-1">Sugerencias Científicas:</strong>
+                          <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-200">
+                            {diag.tips.map((t, i) => (
+                              <li key={i}>{t}</li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {routineAudit.findings.map((f, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 rounded-xl border text-xs ${
-                          f.type === 'alert'
-                            ? 'bg-red-950/35 border-red-500/50 text-red-200'
-                            : f.type === 'warning'
-                            ? 'bg-amber-950/35 border-amber-500/50 text-amber-200'
-                            : 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
-                        }`}
-                      >
-                        <p className="font-bold mb-1">{f.title}</p>
-                        <p className="text-[11px] opacity-90">{f.detail}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/40 text-xs">
-                    <p className="font-bold text-cyan-300 mb-1">Ajustes Científicos Recomendados:</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
-                      {routineAudit.recommendations.map((rec, i) => (
-                        <li key={i}>{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -2985,94 +2871,65 @@ export default function App() {
         )}
 
         {/* ==================================================================
-            MÓDULO 5: CONTADOR DE SUEÑO Y RECUPERACIÓN SEMANAL
+            MÓDULO 6: CONTADOR DE SUEÑO Y RECUPERACIÓN SEMANAL (49-63H)
            ================================================================== */}
         {activeTab === 'sueno' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-4 shadow-xl">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="lg:col-span-7 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-3 shadow-xl">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Moon className="w-5 h-5 text-cyan-400" />
-                    Registro Diario de Sueño y Arquitectura Circadiana
+                  <h2 className="text-lg font-black text-white flex items-center gap-2">
+                    <Moon className="w-5 h-5 text-cyan-300" />
+                    Contador Diario de Sueño (Lunes a Domingo)
                   </h2>
-                  <p className="text-xs text-slate-400">
-                    Objetivo científico recomendado: <strong>49 a 63 horas semanales</strong> (7.0 a 9.0h por noche).
+                  <p className="text-xs text-purple-200">
+                    Rango científico óptimo: <strong>49 a 63 horas semanales</strong> (7–9 h/noche).
                   </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSleepDays([7.5, 8.0, 7.5, 8.0, 7.5, 8.5, 8.0])}
-                    className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-[11px] font-mono font-bold"
-                  >
-                    Simular Óptimo (55h)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSleepDays([5.5, 5.0, 6.0, 5.5, 5.0, 6.5, 5.5])}
-                    className="px-2.5 py-1.5 rounded-lg bg-red-500/20 border border-red-400/50 text-red-300 text-[11px] font-mono font-bold"
-                  >
-                    Simular Déficit (39h)
-                  </button>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                {dayNames.map((dayName, idx) => {
-                  const hrs = sleepDays[idx];
-                  const isLow = hrs < 7;
+              <div className="space-y-2.5">
+                {weekDays.map((day, idx) => {
+                  const val = sleepHours[idx];
                   return (
                     <div
-                      key={dayName}
-                      className="p-3 rounded-xl bg-black/60 border border-slate-800 flex items-center justify-between gap-4"
+                      key={day}
+                      className="p-3 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-between gap-3"
                     >
-                      <div className="w-24 shrink-0">
-                        <span className="text-xs font-bold text-slate-200 block">{dayName}</span>
-                        <span className={`text-[10px] font-mono ${isLow ? 'text-amber-400' : 'text-emerald-400'}`}>
-                          {isLow ? 'Déficit leve' : 'Fase REM OK'}
-                        </span>
-                      </div>
-
+                      <span className="w-20 text-xs font-bold text-white shrink-0">{day}</span>
                       <input
                         type="range"
                         min="3"
                         max="12"
                         step="0.5"
-                        value={hrs}
+                        value={val}
                         onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setSleepDays((prev) => prev.map((d, i) => (i === idx ? val : d)));
+                          const num = Number(e.target.value);
+                          setSleepHours((prev) => prev.map((h, i) => (i === idx ? num : h)));
                         }}
                         className="flex-1 accent-cyan-400 cursor-pointer"
                       />
-
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() =>
-                            setSleepDays((prev) =>
-                              prev.map((d, i) => (i === idx ? Math.max(3, d - 0.5) : d))
-                            )
+                            setSleepHours((prev) => prev.map((h, i) => (i === idx ? Math.max(3, h - 0.5) : h)))
                           }
-                          className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
+                          className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 font-black text-xs"
                         >
-                          -
+                          -0.5
                         </button>
-                        <span className="w-12 text-center font-mono text-xs font-bold text-cyan-300">
-                          {hrs.toFixed(1)}h
+                        <span className="w-12 text-center font-mono text-xs font-black text-amber-300">
+                          {val.toFixed(1)}h
                         </span>
                         <button
                           type="button"
                           onClick={() =>
-                            setSleepDays((prev) =>
-                              prev.map((d, i) => (i === idx ? Math.min(12, d + 0.5) : d))
-                            )
+                            setSleepHours((prev) => prev.map((h, i) => (i === idx ? Math.min(12, h + 0.5) : h)))
                           }
-                          className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
+                          className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 font-black text-xs"
                         >
-                          +
+                          +0.5
                         </button>
                       </div>
                     </div>
@@ -3081,373 +2938,53 @@ export default function App() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 space-y-5">
-              <div className="rounded-2xl border border-cyan-500/25 bg-[#080D1B]/90 backdrop-blur-xl p-5 space-y-4 shadow-xl">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
-                  ACUMULACIÓN SEMANAL DE DESCANSO
+            <div className="lg:col-span-5 rounded-3xl border-2 border-purple-400/45 bg-gradient-to-br from-[#1b134a] to-[#110c29] p-5 space-y-4 shadow-xl">
+              <span className="text-[10px] font-mono text-cyan-300 uppercase">ACUMULADOR DE RECUPERACIÓN SEMANAL</span>
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <span className="text-4xl font-black font-mono text-white">{sleepInfo.total}h</span>
+                  <span className="text-xs text-purple-200 ml-2">({sleepInfo.avg}h / noche)</span>
+                </div>
+                <span className="px-3 py-1 rounded-xl bg-amber-400/20 border border-amber-300 text-amber-200 font-mono text-xs font-black">
+                  ENERGÍA {sleepInfo.energyPct}%
                 </span>
-
-                <div className="flex items-end justify-between">
-                  <div>
-                    <span className="text-4xl font-black font-mono text-white">{sleepMetrics.totalHours}h</span>
-                    <span className="text-xs text-slate-400 ml-2">
-                      (Promedio: {sleepMetrics.avgHours}h / noche)
-                    </span>
-                  </div>
-                  <span
-                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${
-                      sleepMetrics.status === 'critical'
-                        ? 'bg-red-950/60 border-red-500 text-red-300'
-                        : sleepMetrics.status === 'warning'
-                        ? 'bg-amber-950/60 border-amber-500 text-amber-300'
-                        : 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
-                    }`}
-                  >
-                    RECUPERACIÓN: {sleepMetrics.recoveryScore}%
-                  </span>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mb-1">
-                    <span>0h</span>
-                    <span className="text-emerald-400">Zona Óptima: 49h – 63h</span>
-                    <span>70h+</span>
-                  </div>
-                  <div className="w-full h-4 rounded-full bg-black border border-slate-800 relative overflow-hidden">
-                    <div
-                      className="absolute top-0 bottom-0 bg-emerald-500/25 border-x border-emerald-400/50"
-                      style={{ left: '70%', width: '20%' }}
-                    />
-                    <div
-                      className={`h-full transition-all duration-500 ${
-                        sleepMetrics.status === 'critical'
-                          ? 'bg-red-500'
-                          : sleepMetrics.status === 'warning'
-                          ? 'bg-amber-400'
-                          : 'bg-gradient-to-r from-cyan-400 to-emerald-400'
-                      }`}
-                      style={{ width: `${Math.min(100, (sleepMetrics.totalHours / 70) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2.5 pt-2">
-                  <div className="p-3 rounded-xl bg-black/60 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Síntesis Proteica Miofibrilar:</span>
-                    <span className="font-mono font-bold text-slate-200">{sleepMetrics.proteinSynthesis}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-black/60 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Disponibilidad del SNC:</span>
-                    <span className="font-mono font-bold text-cyan-300">{sleepMetrics.cnsReadiness}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-black/60 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Riesgo de Fallo en Retos Pesados:</span>
-                    <span className="font-mono font-bold text-amber-300">{sleepMetrics.failureRisk}</span>
-                  </div>
-                </div>
-
-                <div
-                  className={`p-4 rounded-xl border text-xs leading-relaxed ${
-                    sleepMetrics.status === 'critical'
-                      ? 'bg-red-950/35 border-red-500/50 text-red-200'
-                      : sleepMetrics.status === 'warning'
-                      ? 'bg-amber-950/35 border-amber-500/50 text-amber-200'
-                      : 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200'
-                  }`}
-                >
-                  <HeartPulse className="w-4 h-4 inline mr-1.5 mb-0.5" />
-                  {sleepMetrics.advisory}
-                </div>
               </div>
-            </div>
-          </div>
-        )}
 
-        {/* ==================================================================
-            MÓDULO 6: ESTUDIO DE AVATAR 2D ANIME & COSMÉTICOS
-           ================================================================== */}
-        {activeTab === 'avatar' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Columna Izquierda: Vista Previa Grande del Personaje 2D Anime */}
-            <div className="lg:col-span-5 rounded-2xl border border-cyan-500/30 bg-[#080D1B]/95 backdrop-blur-xl p-5 flex flex-col justify-between space-y-4 shadow-2xl">
+              {/* Barra de energía */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-bold flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-cyan-400" />
-                    PERSONAJE 2D ANIME // EN VIVO
-                  </span>
-                  <span
-                    className="text-xs font-mono font-black px-2.5 py-0.5 rounded-md bg-black/80 border"
-                    style={{ borderColor: rankInfo.rank.color, color: rankInfo.rank.color }}
-                  >
-                    {rankInfo.fullTitle}
-                  </span>
+                <div className="flex justify-between text-[10px] font-mono text-slate-300 mb-1">
+                  <span>0h</span>
+                  <span className="text-emerald-300 font-bold">Recomendado: 49h – 63h</span>
+                  <span>70h+</span>
                 </div>
-
-                <AnimeAvatar2D
-                  avatar={avatar}
-                  rankColor={rankInfo.rank.color}
-                  rankTitle={rankInfo.fullTitle}
-                  rankIndex={rankInfo.rankIndex}
-                  physicalGrade={currentPhysicalGrade.grade}
-                />
-              </div>
-
-              {/* Alias del Operador + Reset */}
-              <div className="p-3.5 rounded-xl bg-black/70 border border-slate-800 space-y-2.5">
-                <div>
-                  <label className="block text-[10px] font-mono text-slate-400 mb-1">
-                    NOMBRE CLAVE DEL CAZADOR / OPERADOR
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={18}
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono font-bold text-cyan-300 focus:outline-none focus:border-cyan-400"
+                <div className="w-full h-4 rounded-full bg-black/70 border border-white/20 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      sleepInfo.status === 'critical'
+                        ? 'bg-rose-500'
+                        : sleepInfo.status === 'warning'
+                        ? 'bg-amber-400'
+                        : 'bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300'
+                    }`}
+                    style={{ width: `${Math.min(100, (sleepInfo.total / 70) * 100)}%` }}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={handleResetDemo}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-[11px] font-mono text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Restaurar Perfil Inicial
-                </button>
-              </div>
-            </div>
-
-            {/* Columna Derecha: Controles de Personalización Anime */}
-            <div className="lg:col-span-7 rounded-2xl border border-cyan-500/25 bg-[#080D1B]/95 backdrop-blur-xl p-5 space-y-5 shadow-2xl">
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Sliders className="w-5 h-5 text-purple-400" />
-                  Estudio de Avatar 2D Anime y Cosméticos
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Personaliza tu personaje estilo anime con sombreado cel-shading, peinados shonen, atuendos de combate y auras evolutivas.
-                </p>
               </div>
 
-              {/* Bloque 1: Silueta, Complexión, Piel y Cicatriz */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">SILUETA ANIME</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'masculino', label: 'Masculino' },
-                      { id: 'femenino', label: 'Femenino' }
-                    ].map((g) => (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, gender: g.id }))}
-                        className={`py-2 px-3 rounded-xl border text-xs font-bold transition ${
-                          avatar.gender === g.id
-                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                            : 'bg-slate-900 border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {g.label}
-                      </button>
-                    ))}
-                  </div>
+              <div
+                className={`p-4 rounded-2xl border-2 text-xs space-y-1.5 ${
+                  sleepInfo.status === 'critical'
+                    ? 'bg-rose-950/60 border-rose-400 text-rose-100'
+                    : sleepInfo.status === 'warning'
+                    ? 'bg-amber-950/60 border-amber-400 text-amber-100'
+                    : 'bg-emerald-950/50 border-emerald-400 text-emerald-100'
+                }`}
+              >
+                <div className="font-black flex items-center gap-1.5">
+                  <HeartPulse className="w-4 h-4" />
+                  {sleepInfo.label}
                 </div>
-
-                <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">COMPLEXIÓN MUSCULAR</label>
-                  <select
-                    value={avatar.build}
-                    onChange={(e) => setAvatar((a) => ({ ...a, build: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
-                  >
-                    <option value="atletico">Atlético / Calisténico</option>
-                    <option value="mesomorfo">Mesomorfo / Estético</option>
-                    <option value="powerlifter">Powerlifter / Fuerza Bruta</option>
-                    <option value="titan">Titán / Hipertrofia Élite</option>
-                  </select>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">TONO DE PIEL (CEL-SHADING)</label>
-                  <div className="flex gap-2 flex-wrap items-center">
-                    {[
-                      { id: 'claro', hex: '#FFE0C8' },
-                      { id: 'trigueno', hex: '#E9B48B' },
-                      { id: 'bronceado', hex: '#C88459' },
-                      { id: 'moreno', hex: '#965A38' },
-                      { id: 'oscuro', hex: '#633B26' },
-                      { id: 'cyber', hex: '#CBD5E1' }
-                    ].map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, skin: s.id }))}
-                        className={`w-7 h-7 rounded-full border-2 transition ${
-                          avatar.skin === s.id ? 'border-cyan-400 scale-110 shadow-[0_0_10px_#00F0FF]' : 'border-slate-700'
-                        }`}
-                        style={{ backgroundColor: s.hex }}
-                        title={s.id}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-black/60 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">RASGO DE COMBATE</label>
-                  <button
-                    type="button"
-                    onClick={() => setAvatar((a) => ({ ...a, scar: !a.scar }))}
-                    className={`w-full py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-between transition ${
-                      avatar.scar
-                        ? 'bg-red-500/20 border-red-400 text-red-200'
-                        : 'bg-slate-900 border-slate-800 text-slate-400'
-                    }`}
-                  >
-                    <span>Cicatriz de Batalla</span>
-                    <span className="font-mono text-[10px]">{avatar.scar ? 'ACTIVA' : 'OFF'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Bloque 2: Peinados Anime y Color de Cabello */}
-              <div className="p-4 rounded-xl bg-black/60 border border-slate-800 space-y-3">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
-                  Peinado Shonen & Color de Cabello Anime
-                </h3>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {[
-                    { id: 'hunter', label: 'Cazador' },
-                    { id: 'spiky', label: 'Erizado Shonen' },
-                    { id: 'samurai', label: 'Coleta Samurai' },
-                    { id: 'undercut', label: 'Undercut' },
-                    { id: 'wild', label: 'Melena Salvaje' }
-                  ].map((h) => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, hair: h.id }))}
-                      className={`py-2 px-2 rounded-xl border text-xs font-bold transition ${
-                        avatar.hair === h.id
-                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {h.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <span className="text-[10px] font-mono text-slate-400 mr-1">COLOR CABELLO:</span>
-                  {[
-                    { id: 'negro', label: 'Azabache', hex: '#151926' },
-                    { id: 'blanco', label: 'Ultra Instinto', hex: '#F1F5F9' },
-                    { id: 'carmesi', label: 'Carmesí', hex: '#DC2626' },
-                    { id: 'azul', label: 'Eléctrico', hex: '#0284C7' },
-                    { id: 'dorado', label: 'Dorado Ki', hex: '#F59E0B' },
-                    { id: 'violeta', label: 'Sombra', hex: '#7C3AED' }
-                  ].map((hc) => (
-                    <button
-                      key={hc.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, hairColor: hc.id }))}
-                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1.5 transition ${
-                        avatar.hairColor === hc.id
-                          ? 'bg-slate-800 border-cyan-400 text-white'
-                          : 'bg-slate-950 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      <span className="w-3 h-3 rounded-full border border-white/30" style={{ backgroundColor: hc.hex }} />
-                      {hc.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bloque 3: Atuendos Anime, Accesorios y Aura de Energía */}
-              <div className="p-4 rounded-xl bg-black/60 border border-slate-800 space-y-4">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-purple-300">
-                  Atuendo de Combate, Accesorios & Aura de Ki
-                </h3>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {[
-                    { id: 'cazador', label: 'Traje Cazador' },
-                    { id: 'gi', label: 'Gi Marcial' },
-                    { id: 'cyber', label: 'Compresión' },
-                    { id: 'gym', label: 'Musculosa EX' },
-                    { id: 'armadura', label: 'Armadura Titán' }
-                  ].map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, outfit: item.id }))}
-                      className={`py-2 px-2 rounded-xl border text-xs font-bold transition ${
-                        avatar.outfit === item.id
-                          ? 'bg-purple-500/25 border-purple-400 text-purple-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {[
-                    { id: 'ninguno', label: 'Sin Accesorio' },
-                    { id: 'visor', label: 'Visor Scouter' },
-                    { id: 'vendas', label: 'Vendas Puños' },
-                    { id: 'auriculares', label: 'Auriculares' },
-                    { id: 'bufanda', label: 'Bufanda Sombra' }
-                  ].map((acc) => (
-                    <button
-                      key={acc.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, accessory: acc.id }))}
-                      className={`py-2 px-2 rounded-xl border text-xs font-semibold transition ${
-                        avatar.accessory === acc.id
-                          ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {acc.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block text-[10px] font-mono text-slate-400 mb-1">AURA DE ENERGÍA ANIME</label>
-                    <select
-                      value={avatar.aura}
-                      onChange={(e) => setAvatar((a) => ({ ...a, aura: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white"
-                    >
-                      <option value="rango">Vinculada al Rango ({rankInfo.rank.name})</option>
-                      <option value="cian">Cian Eléctrico</option>
-                      <option value="violeta">Violeta Monarca</option>
-                      <option value="carmesi">Carmesí Berserker</option>
-                      <option value="dorado">Dorado Super Saiyan</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono text-slate-400 mb-1">ESCENARIO DE FONDO</label>
-                    <select
-                      value={avatar.bg}
-                      onChange={(e) => setAvatar((a) => ({ ...a, bg: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white"
-                    >
-                      <option value="monarca">Trono del Monarca Oscuro</option>
-                      <option value="ciber_dojo">Dojo Cibernético Neón</option>
-                      <option value="eclipse">Eclipse Carmesí</option>
-                      <option value="santuario">Santuario Dorado</option>
-                    </select>
-                  </div>
-                </div>
+                <p className="leading-relaxed">{sleepInfo.impact}</p>
               </div>
             </div>
           </div>
@@ -3455,75 +2992,75 @@ export default function App() {
       </main>
 
       {/* ====================================================================
-          MODAL DE JUSTIFICACIÓN DE IMPREVISTO -> DESAFÍO EN CASA
+          MODAL: JUSTIFICAR IMPREVISTO -> DESAFÍO EQUIVALENTE EN CASA
          ==================================================================== */}
-      {contingencyTarget && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-2xl border-2 border-amber-500/70 bg-[#080C18] p-6 shadow-2xl space-y-4">
+      {modalChallenge && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-3xl border-2 border-cyan-400 bg-[#150f38] p-5 sm:p-6 shadow-2xl space-y-4">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
-                  PROTOCOLO DE CONTINGENCIA // PROTECCIÓN DE RACHA
+                <span className="text-[10px] font-mono text-cyan-300 uppercase">
+                  CONTINGENCIA INTELIGENTE // PROTEGE TU RACHA
                 </span>
-                <h3 className="text-lg font-bold text-white mt-0.5">Justificar Imprevisto</h3>
+                <h3 className="text-lg font-black text-white">Justificar Imprevisto</h3>
               </div>
               <button
                 type="button"
-                onClick={() => setContingencyTarget(null)}
-                className="p-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white"
+                onClick={() => setModalChallenge(null)}
+                className="p-1.5 rounded-xl bg-white/10 text-white"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Reto original: <strong className="text-white">{contingencyTarget.title}</strong>. Selecciona el motivo y el Sistema generará una alternativa equivalente en casa:
+            <p className="text-xs text-purple-200">
+              Reto original: <strong className="text-white">{modalChallenge.title}</strong>. Elige el motivo para transformar el reto en un Desafío Equivalente en Casa:
             </p>
 
-            <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-              {CONTINGENCY_PRESETS.map((preset) => (
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {CONTINGENCY_OPTIONS.map((opt) => (
                 <button
-                  key={preset.id}
+                  key={opt.id}
                   type="button"
-                  onClick={() => setSelectedPresetId(preset.id)}
-                  className={`w-full p-3 rounded-xl border text-left transition ${
-                    selectedPresetId === preset.id
-                      ? 'bg-amber-500/15 border-amber-400 text-white'
-                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                  onClick={() => setSelectedContingencyId(opt.id)}
+                  className={`w-full p-3 rounded-2xl border-2 text-left transition ${
+                    selectedContingencyId === opt.id
+                      ? 'bg-cyan-500/20 border-cyan-300 text-white'
+                      : 'bg-black/40 border-white/10 text-slate-300'
                   }`}
                 >
-                  <div className="flex items-center justify-between text-xs font-bold mb-1">
+                  <div className="flex justify-between text-xs font-black mb-0.5">
                     <span>
-                      {preset.icon} {preset.label}
+                      {opt.emoji} {opt.reason}
                     </span>
-                    <span className="font-mono text-amber-300">+{preset.lpBonus} LP</span>
+                    <span className="text-amber-300 font-mono">+{opt.lp} LP</span>
                   </div>
-                  <p className="text-[11px] text-cyan-300 font-semibold">{preset.title}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{preset.detail}</p>
+                  <p className="text-xs font-bold text-cyan-200">{opt.title}</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">{opt.plan}</p>
                 </button>
               ))}
             </div>
 
             <input
               type="text"
-              value={customJustificationNote}
-              onChange={(e) => setCustomJustificationNote(e.target.value)}
-              placeholder="Nota adicional opcional (ej. Tormenta eléctrica en mi zona)..."
-              className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
+              value={customReasonText}
+              onChange={(e) => setCustomReasonText(e.target.value)}
+              placeholder="Explicación opcional (ej. Lluvia torrencial en mi barrio)..."
+              className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/20 text-xs text-white focus:outline-none focus:border-cyan-300"
             />
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => setContingencyTarget(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+                onClick={() => setModalChallenge(null)}
+                className="px-4 py-2.5 rounded-xl bg-white/10 text-xs font-bold"
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                onClick={handleConfirmContingency}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 text-xs font-black transition"
+                onClick={handleApplyContingency}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-black text-xs shadow-lg"
               >
                 Activar Desafío en Casa
               </button>
@@ -3533,3017 +3070,89 @@ export default function App() {
       )}
 
       {/* ====================================================================
-          MODAL ANIMADO DE ASCENSO / DESCENSO DE RANGO O DIVISIÓN
+          CELEBRACIÓN CON CONFETI Y BANNER GIGANTE AL COMPLETAR RETO
          ==================================================================== */}
-      {rankBanner && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div
-            className="w-full max-w-md rounded-2xl border-2 bg-[#070A14] p-6 text-center shadow-2xl space-y-4"
-            style={{ borderColor: rankBanner.color, boxShadow: `0 0 45px ${rankBanner.color}66` }}
-          >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-slate-700 text-xs font-mono uppercase tracking-widest">
-              {rankBanner.type === 'promotion' ? (
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  <ChevronUp className="w-4 h-4" /> ASCENSO DE SISTEMA
-                </span>
-              ) : (
-                <span className="text-red-400 font-bold flex items-center gap-1">
-                  <ChevronDown className="w-4 h-4" /> DESCENSO DE DIVISIÓN
-                </span>
-              )}
+      {celebration && (
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4 overflow-hidden">
+          {/* Partículas de Confeti */}
+          {Array.from({ length: 28 }).map((_, idx) => {
+            const colors = ['#FACC15', '#00F5FF', '#F43F5E', '#10B981', '#C084FC', '#FB923C'];
+            return (
+              <span
+                key={idx}
+                className="absolute top-0 w-3 h-3 rounded-sm animate-confetti"
+                style={{
+                  left: `${(idx * 3.6) % 100}%`,
+                  backgroundColor: colors[idx % colors.length],
+                  animationDelay: `${(idx % 7) * 0.12}s`
+                }}
+              />
+            );
+          })}
+
+          <div className="rounded-3xl border-4 border-amber-300 bg-gradient-to-br from-amber-500 via-orange-600 to-pink-600 p-6 text-center shadow-[0_0_50px_rgba(250,204,21,0.85)] max-w-sm w-full">
+            <Sparkles className="w-10 h-10 text-yellow-200 mx-auto mb-1 animate-spin" />
+            <h3 className="text-2xl font-black text-white tracking-tight drop-shadow">
+              {celebration.title}
+            </h3>
+            <p className="text-xs font-bold text-amber-100 mt-1 line-clamp-2">{celebration.subtitle}</p>
+            <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/50 text-yellow-300 font-mono font-black text-sm">
+              <span>+{celebration.lp} LP</span>
+              <span>•</span>
+              <span>🔥 RACHA: {celebration.newStreak} DÍAS</span>
             </div>
-
-            <div className="flex justify-center">
-              <RankEmblemSVG rankIndex={rankInfo.rankIndex} color={rankBanner.color} size={92} />
-            </div>
-
-            <div>
-              <p className="text-xs font-mono text-slate-400">{rankBanner.from} →</p>
-              <h3
-                className="text-3xl font-black uppercase tracking-wide mt-1"
-                style={{ color: rankBanner.color }}
-              >
-                {rankBanner.to}
-              </h3>
-            </div>
-
-            <p className="text-xs text-slate-300">
-              {rankBanner.type === 'promotion'
-                ? 'Tu disciplina biomecánica y cumplimiento diario han elevado tu poder en el Sistema.'
-                : 'Se ha registrado una caída de puntos de liga. Completa tus misiones declaradas para recuperar tu división.'}
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setRankBanner(null)}
-              className="w-full py-3 rounded-xl font-black text-xs uppercase tracking-wider text-slate-950 transition"
-              style={{ backgroundColor: rankBanner.color }}
-            >
-              Continuar en el Sistema
-            </button>
           </div>
         </div>
       )}
 
       {/* ====================================================================
-          NOTIFICACIÓN HOLOGRÁFICA DEL SISTEMA (TOAST)
+          BANNER DE ASCENSO / DESCENSO DE LIGA
          ==================================================================== */}
-      {toast && (
-        <div className="fixed bottom-4 right-4 left-4 sm:left-auto z-50 sm:max-w-sm px-4 py-3 rounded-xl bg-[#080E1F]/95 border-2 border-cyan-400/70 shadow-[0_0_25px_rgba(0,240,255,0.3)] flex items-center gap-2.5 text-xs text-slate-100 backdrop-blur-xl">
-          <Zap className="w-4 h-4 text-cyan-400 shrink-0" />
-          <div>
-            <span className="block text-[9px] font-mono uppercase tracking-widest text-cyan-400">
-              NOTIFICACIÓN DEL SISTEMA
+      {rankUpBanner && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div
+            className="w-full max-w-md rounded-3xl border-4 bg-[#140e36] p-6 text-center space-y-4 shadow-2xl"
+            style={{ borderColor: rankUpBanner.color, boxShadow: `0 0 45px ${rankUpBanner.color}` }}
+          >
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-mono font-black">
+              {rankUpBanner.type === 'up' ? (
+                <span className="text-emerald-300 flex items-center gap-1">
+                  <ChevronUp className="w-4 h-4" /> ¡ASCENSO DE LIGA!
+                </span>
+              ) : (
+                <span className="text-rose-300 flex items-center gap-1">
+                  <ChevronDown className="w-4 h-4" /> DESCENSO DE DIVISIÓN
+                </span>
+              )}
             </span>
-            <span>{toast.message}</span>
+
+            <div>
+              <p className="text-xs font-mono text-slate-300">{rankUpBanner.from} →</p>
+              <h3 className="text-3xl font-black uppercase mt-1" style={{ color: rankUpBanner.color }}>
+                {rankUpBanner.to}
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setRankUpBanner(null)}
+              className="w-full py-3 rounded-2xl font-black text-xs uppercase text-slate-950 shadow-lg"
+              style={{ backgroundColor: rankUpBanner.color }}
+            >
+              ¡Seguir Entrenando!
+            </button>
           </div>
+        </div>
+      )}
+
+      {/* Notificación flotante rápida */}
+      {toastMsg && (
+        <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:max-w-sm z-50 px-4 py-3 rounded-2xl bg-[#191245]/95 border-2 border-cyan-400 shadow-2xl flex items-center gap-2.5 text-xs font-bold text-white">
+          <Zap className="w-4 h-4 text-amber-300 shrink-0" />
+          <span>{toastMsg.text}</span>
         </div>
       )}
     </div>
   );
 }
 ```
-RIR 2', rest: '90 s', tempo: '2-1-1-1', biomech: 'Fortalece infraespinoso, redondo menor y deltoides posterior.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      focus: 'Especificidad Neuromuscular + Tasa de Desarrollo de Fuerza (RFD)',
-      rationale: 'Optimiza la coordinación intramuscular y la rigidez tendinosa mediante cargas del 82%-92% del 1RM con descanso completo para resíntesis de fosfocreatina (ATP-PCr).',
-      days: [
-        {
-          day: 'Día 1: Fuerza Neural Sentadilla & Empuje Vertical',
-          exercises: [
-            { name: 'Sentadilla Trasera Barra Alta/Baja (Competición)', sets: '4x4-5', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Fase concéntrica explosiva (X) para maximizar reclutamiento sincrónico.' },
-            { name: 'Press Militar Estricto de Pie con Barra', sets: '4x5-6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-0-X-0', biomech: 'Transmisión de fuerza a través de cadena cinética cerrada y anti-extensión del core.' },
-            { name: 'Sentadilla Frontal con Pausa (2s)', sets: '3x5', rir: 'RIR 2', rest: '3 min', tempo: '3-2-X-0', biomech: 'Disipa energía elástica en el punto de estancamiento (sticking point).' }
-          ]
-        },
-        {
-          day: 'Día 2: Fuerza Neural Press Banca & Tracción Pesada',
-          exercises: [
-            { name: 'Press de Banca Plano con Pausa Táctil (1s)', sets: '4x4-5', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Mejora la estabilidad escapular y potencia de salida desde el pecho.' },
-            { name: 'Dominadas Lastradas Pronas/Neutras', sets: '4x5-6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-0-X-1', biomech: 'Sobrecarga vertical pura para dorsal ancho y flexores de codo.' },
-            { name: 'Remo Pendlay Estricto desde el Suelo', sets: '3x6', rir: 'RIR 2', rest: '2.5 min', tempo: '1-0-X-0', biomech: 'Desarrolla aceleración concéntrica desde posición muerta.' }
-          ]
-        },
-        {
-          day: 'Día 3: Fuerza Neural Peso Muerto & Potencia',
-          exercises: [
-            { name: 'Peso Muerto Convencional / Sumo', sets: '4x3-4', rir: 'RIR 2', rest: '4.5 min', tempo: '2-1-X-0', biomech: 'Generación máxima de torque extensor de cadera y rigidez torácica.' },
-            { name: 'Press Banca Agarre Cerrado', sets: '3x6', rir: 'RIR 1-2', rest: '3 min', tempo: '2-1-X-0', biomech: 'Refuerza el bloqueo final (lockout) mediante tríceps y deltoides anterior.' },
-            { name: 'Hip Thrust Pesado con Barra', sets: '3x6-8', rir: 'RIR 1', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Máximo momento de fuerza en extensión terminal de cadera.' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      focus: 'Gasto Energético Alto + Preservación de Masa Magra',
-      rationale: 'Combina bloques de fuerza básica para retener masa muscular en déficit calórico moderado con superseries antagonistas que elevan el EPOC sin comprometer la técnica.',
-      days: [
-        {
-          day: 'Día 1: Full Body Metabólico A (Antagonistas)',
-          exercises: [
-            { name: 'Superserie: Prensa Inclinada + Curl Femoral', sets: '3x10+12', rir: 'RIR 1', rest: '2 min', tempo: '3-0-1-0', biomech: 'Inhibición recíproca que mejora la recuperación entre agonista y antagonista.' },
-            { name: 'Superserie: Press Banca Mancuernas + Remo Polea Baja', sets: '3x10+12', rir: 'RIR 1', rest: '2 min', tempo: '2-1-1-0', biomech: 'Equilibrio exacto 1:1 entre empuje horizontal y tracción.' },
-            { name: 'Farmer Walk (Paseo del Granjero Pesado)', sets: '4x35m', rir: 'RIR 1', rest: '90 s', tempo: 'Controlado', biomech: 'Estabilidad lateral de cadera (glúteo medio), trapecio y agarre.' }
-          ]
-        },
-        {
-          day: 'Día 2: Full Body Metabólico B (Cadena Posterior & Core)',
-          exercises: [
-            { name: 'Peso Muerto con Barra Hexagonal / Mancuernas', sets: '3x8-10', rir: 'RIR 1-2', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Centro de masa alineado que reduce el cizallamiento lumbar.' },
-            { name: 'Jalón Prono + Fondos Asistidos/Paralelas', sets: '3x10+10', rir: 'RIR 1', rest: '2 min', tempo: '2-1-1-0', biomech: 'Trabajo vertical completo con alta demanda metabólica.' },
-            { name: 'Pallof Press en Polea + Crunch Declinado', sets: '3x12/lado', rir: 'RIR 1', rest: '60 s', tempo: '2-2-1-0', biomech: 'Anti-rotación del oblicuo interno/externo y flexión espinal.' }
-          ]
-        }
-      ]
-    }
-  },
-  casa: {
-    hipertrofia: {
-      focus: 'Manipulación de Palancas + Tiempo Bajo Tensión (TUT)',
-      rationale: 'Al no contar con cargas externas masivas, se alargan los brazos de momento y se usan ejercicios unilaterales y déficits para alcanzar el fallo mecánico entre 8 y 18 repeticiones.',
-      days: [
-        {
-          day: 'Día 1: Empuje & Pierna Anterior (Palancas Largas)',
-          exercises: [
-            { name: 'Sentadilla Búlgara con Elevación de Talón', sets: '4x10-14/lado', rir: 'RIR 0-1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Duplica la carga relativa sobre un solo miembro inferior sin necesidad de barra.' },
-            { name: 'Flexiones en Déficit (manos sobre libros/soportes)', sets: '4x12-18', rir: 'RIR 0-1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Aumenta el rango de abducción horizontal para estirar el pectoral mayor.' },
-            { name: 'Flexiones en Pica (Pike Push-Ups elevadas)', sets: '3x8-12', rir: 'RIR 1', rest: '2 min', tempo: '3-1-1-0', biomech: 'Simula el ángulo de un press militar para deltoides anterior y medio.' },
-            { name: 'Extensión de Tríceps en Suelo / Mesa (Bodyweight Skullcrusher)', sets: '3x12-15', rir: 'RIR 0', rest: '90 s', tempo: '3-1-1-0', biomech: 'Aislamiento puro de extensión de codo con peso corporal.' }
-          ]
-        },
-        {
-          day: 'Día 2: Tracción & Cadena Posterior Unilateral',
-          exercises: [
-            { name: 'Remo Invertido Bajo Mesa / Barra Baja (pies elevados)', sets: '4x10-15', rir: 'RIR 0-1', rest: '2 min', tempo: '2-1-1-1', biomech: 'Retracción escapular completa bajo vector horizontal.' },
-            { name: 'Curl Nórdico Excéntrico / Deslizamiento Femoral en Suelo', sets: '4x8-12', rir: 'RIR 1', rest: '2 min', tempo: '4-0-1-0', biomech: 'Sobrecarga excéntrica máxima en isquiosurales, clave para prevenir desgarros.' },
-            { name: 'Peso Muerto Unilateral (B-Stance RDL con mochila/mancuerna)', sets: '3x12/lado', rir: 'RIR 1', rest: '90 s', tempo: '3-1-1-0', biomech: 'Estabilidad pélvica anti-rotacional y estiramiento de cadena posterior.' },
-            { name: 'Elevación de Talón Unilateral en Escalón', sets: '4x15-20/lado', rir: 'RIR 0', rest: '60 s', tempo: '2-2-1-0', biomech: 'Déficit plantar completo para hipertrofia de tríceps sural.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      focus: 'Progresiones Gimnásticas + Isometrías Máximas',
-      rationale: 'Incrementa la tensión neural mediante progresiones unilaterales avanzadas y contracciones isométricas de máxima intención (MVIC).',
-      days: [
-        {
-          day: 'Día 1: Potencia Unilateral & Empuje Avanzado',
-          exercises: [
-            { name: 'Pistol Squat Asistida o Sentadilla Camarón (Shrimp Squat)', sets: '4x5-6/lado', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-X-0', biomech: 'Demanda máxima de torque extensor de rodilla y estabilidad de tobillo.' },
-            { name: 'Flexiones Arqueras o Pseudo-Planche Push-Ups', sets: '4x6-8', rir: 'RIR 1', rest: '3 min', tempo: '2-1-X-0', biomech: 'Desplaza el centro de gravedad hacia adelante aumentando la carga en deltoides y pecho.' },
-            { name: 'Sentadilla Isométrica contra Pared (Wall Sit Unilateral)', sets: '3x35s/lado', rir: 'RIR 1', rest: '2 min', tempo: 'Isométrico', biomech: 'Reclutamiento neural sostenido sin impacto articular.' }
-          ]
-        },
-        {
-          day: 'Día 2: Tracción Unilateral & Bisagra Explosiva',
-          exercises: [
-            { name: 'Remo Arquero Unilateral / Dominadas en Marco o Barra', sets: '4x6-8', rir: 'RIR 1', rest: '3 min', tempo: '2-1-X-1', biomech: 'Sobrecarga asimétrica de dorsal ancho y bíceps braquial.' },
-            { name: 'Puente Glúteo Unilateral Explosivo con Pausa Alta', sets: '4x8/lado', rir: 'RIR 1', rest: '2 min', tempo: '2-2-X-0', biomech: 'Potencia de extensión de cadera en ángulo de máxima activación glútea.' },
-            { name: 'Plancha RKC (Contracción Máxima Total)', sets: '3x30s', rir: 'RIR 1', rest: '90 s', tempo: 'Isométrico', biomech: 'Co-contracción simultánea de recto abdominal, glúteos y dorsales.' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      focus: 'Acondicionamiento Metabólico + Densidad Muscular en Casa',
-      rationale: 'Maximiza la oxidación lipídica y la capacidad cardiovascular preservando tejido contráctil mediante circuitos biomecánicos de cuerpo completo.',
-      days: [
-        {
-          day: 'Día 1: Circuito Bio-Metabólico Total',
-          exercises: [
-            { name: 'Zancadas Reversas Alternas + Flexiones Explosivas', sets: '4x12/lado + 12', rir: 'RIR 1', rest: '90 s', tempo: '2-0-1-0', biomech: 'Transición rápida tren inferior-superior que dispara el gasto cardíaco.' },
-            { name: 'Remo Invertido + Mountain Climbers Controlados', sets: '4x12 + 30s', rir: 'RIR 1', rest: '90 s', tempo: '2-0-1-0', biomech: 'Tracción postural combinada con flexión dinámica de cadera.' }
-          ]
-        }
-      ]
-    }
-  },
-  hibrido: {
-    hipertrofia: {
-      focus: 'Cargas Pesadas en Gimnasio + Volumen de Detalle en Casa',
-      rationale: 'Aprovecha el equipamiento pesado del gimnasio para los movimientos compuestos principales y utiliza días en casa para acumular volumen metabólico de recuperación rápida.',
-      days: [
-        {
-          day: 'Día 1 (GIMNASIO): Compuestos Pesados Torso/Pierna',
-          exercises: [
-            { name: 'Sentadilla Trasera o Prensa Pesada', sets: '3x6-8', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Carga axial/mecánica imposible de replicar fácilmente en casa.' },
-            { name: 'Press de Banca Inclinado con Barra', sets: '3x6-8', rir: 'RIR 1-2', rest: '3 min', tempo: '3-1-1-0', biomech: 'Sobrecarga progresiva lineal de alta precisión.' },
-            { name: 'Jalón al Pecho / Dominadas Lastradas', sets: '3x8-10', rir: 'RIR 1', rest: '2.5 min', tempo: '2-1-1-1', biomech: 'Tracción vertical con resistencia estable.' }
-          ]
-        },
-        {
-          day: 'Día 2 (CASA): Bomba Metabólica, Hombros, Brazos & Core',
-          exercises: [
-            { name: 'Elevaciones Laterales con Banda/Mancuerna + Pike Push-Ups', sets: '4x15 + 10', rir: 'RIR 0', rest: '90 s', tempo: '2-0-1-1', biomech: 'Acumulación de volumen efectivo en deltoides sin fatiga sistémica.' },
-            { name: 'Sentadilla Búlgara + Flexiones en Déficit', sets: '3x12/lado + 15', rir: 'RIR 1', rest: '2 min', tempo: '3-0-1-0', biomech: 'Estímulo unilateral de alta frecuencia semanal.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      focus: 'Días Primarios en Gym + Potencia/Movilidad en Casa',
-      rationale: 'Concentra el 100% de los levantamientos con barra en el gimnasio y usa las sesiones en casa para potencia pliométrica, estabilidad de core y prevención de lesiones.',
-      days: [
-        {
-          day: 'Día 1 (GIMNASIO): Los 3 Grandes (SBD Neural)',
-          exercises: [
-            { name: 'Sentadilla + Press de Banca + Peso Muerto (Esquema Top Set)', sets: '3x4 cada uno', rir: 'RIR 2', rest: '4 min', tempo: '2-1-X-0', biomech: 'Sinergia neuromuscular de alta intensidad en una sola sesión.' }
-          ]
-        },
-        {
-          day: 'Día 2 (CASA): Potencia Reactiva & Estabilidad Escapular',
-          exercises: [
-            { name: 'Saltos al Cajón / Squat Jumps + Flexiones Pliométricas', sets: '4x6 + 6', rir: 'RIR 2', rest: '2 min', tempo: 'Explosivo', biomech: 'Mejora la curva fuerza-velocidad y el ciclo estiramiento-acortamiento.' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      focus: 'Fuerza en Gym + Cardio/Circuitos en Casa',
-      rationale: 'Mantiene la fuerza máxima en sala de pesas mientras maximiza el gasto calórico semanal desde casa sin traslados extra.',
-      days: [
-        {
-          day: 'Día 1 (GIMNASIO): Full Body Tensión Mecánica',
-          exercises: [
-            { name: 'Peso Muerto Rumano + Press Plano + Remo con Barra', sets: '3x8 cada uno', rir: 'RIR 1-2', rest: '2.5 min', tempo: '2-1-1-0', biomech: 'Preserva masa muscular en los principales grupos motores.' }
-          ]
-        },
-        {
-          day: 'Día 2 (CASA): Acondicionamiento HIIT & Core',
-          exercises: [
-            { name: 'Burpees Técnicos + Zancadas + Plancha Dinámica', sets: '5 rondas x 40s', rir: 'RIR 1', rest: '40 s', tempo: 'Fluido', biomech: 'Eleva el VO2 y la densidad energética semanal.' }
-          ]
-        }
-      ]
-    }
-  }
-};
-
-// ============================================================================
-// FUNCIONES CIENTÍFICAS DE CÁLCULO Y EVALUACIÓN
-// ============================================================================
-
-/**
- * Calcula el rango competitivo exacto (15 rangos x 6 divisiones = 90 niveles)
- * Cada nivel equivale a 100 LP (0 a 8999+ LP).
- */
-function getCompetitiveRankInfo(totalLP) {
-  const clampedLP = Math.max(0, Math.min(8999, Math.round(totalLP)));
-  const totalTierIndex = Math.floor(clampedLP / 100); // 0 a 89
-  const rankIndex = Math.min(14, Math.floor(totalTierIndex / 6)); // 0 a 14
-  const division = 6 - (totalTierIndex % 6); // 6 (más baja) a 1 (más alta)
-  const divisionLP = clampedLP % 100;
-  const rankObj = COMPETITIVE_RANKS[rankIndex];
-
-  return {
-    totalLP: clampedLP,
-    totalTierIndex,
-    rankIndex,
-    rank: rankObj,
-    division,
-    divisionLP,
-    fullTitle: `${rankObj.name} ${division}`,
-    isMaxRank: rankIndex === 14 && division === 1
-  };
-}
-
-/**
- * Calcula 1RM científico (híbrido Brzycki/Epley) y clasifica en escala F a EX
- */
-function calculateStrengthAnalysis(bodyWeight, lifts) {
-  const bw = Math.max(35, Number(bodyWeight) || 75);
-
-  const calc1RM = (weight, reps) => {
-    const w = Math.max(0, Number(weight) || 0);
-    const r = Math.max(1, Math.min(20, Number(reps) || 1));
-    if (w === 0) return 0;
-    if (r === 1) return w;
-    // Brzycki es más precisa debajo de 10 reps; Epley por encima
-    if (r <= 10) {
-      return Math.round(w * (36 / (37 - r)));
-    }
-    return Math.round(w * (1 + r / 30));
-  };
-
-  const squat1RM = calc1RM(lifts.squat.weight, lifts.squat.reps);
-  const bench1RM = calc1RM(lifts.bench.weight, lifts.bench.reps);
-  const deadlift1RM = calc1RM(lifts.deadlift.weight, lifts.deadlift.reps);
-  const ohp1RM = calc1RM(lifts.ohp.weight, lifts.ohp.reps);
-
-  // Total Powerlifting + Militar
-  const sbdTotal = squat1RM + bench1RM + deadlift1RM;
-  const grandTotal = sbdTotal + ohp1RM;
-
-  // Coeficiente DOTS científico simplificado (estándar moderno de fuerza absoluta ajustada)
-  const dotsDenominator =
-    -307.75076 +
-    24.0900756 * bw -
-    0.1918759221 * Math.pow(bw, 2) +
-    0.0007391293 * Math.pow(bw, 3) -
-    0.000001093 * Math.pow(bw, 4);
-  const dotsScore = dotsDenominator > 0 ? Math.round((sbdTotal * 500) / dotsDenominator) : 0;
-
-  // Ratio relativo combinado (Total SBD / Peso Corporal)
-  const relativeRatio = Number((sbdTotal / bw).toFixed(2));
-
-  // Clasificar Fuerza Absoluta (basada en Total SBD + DOTS)
-  const getAbsoluteGradeIndex = (total, dots) => {
-    const composite = total * 0.65 + dots * 0.55;
-    if (composite < 160) return 0; // F
-    if (composite < 230) return 1; // E
-    if (composite < 300) return 2; // D
-    if (composite < 375) return 3; // C
-    if (composite < 450) return 4; // B
-    if (composite < 530) return 5; // A
-    if (composite < 615) return 6; // S
-    if (composite < 700) return 7; // SS
-    if (composite < 790) return 8; // SSS
-    return 9; // EX
-  };
-
-  // Clasificar Fuerza Relativa (basada en múltiplos de Peso Corporal)
-  const getRelativeGradeIndex = (ratio) => {
-    if (ratio < 1.8) return 0; // F
-    if (ratio < 2.5) return 1; // E
-    if (ratio < 3.2) return 2; // D
-    if (ratio < 3.9) return 3; // C
-    if (ratio < 4.6) return 4; // B
-    if (ratio < 5.3) return 5; // A
-    if (ratio < 6.0) return 6; // S
-    if (ratio < 6.7) return 7; // SS
-    if (ratio < 7.4) return 8; // SSS
-    return 9; // EX
-  };
-
-  const gradeLiftRatio = (ratio, thresholds) => {
-    for (let i = thresholds.length - 1; i >= 0; i--) {
-      if (ratio >= thresholds[i]) return SCIENTIFIC_GRADES[i];
-    }
-    return SCIENTIFIC_GRADES[0];
-  };
-
-  const squatRatio = Number((squat1RM / bw).toFixed(2));
-  const benchRatio = Number((bench1RM / bw).toFixed(2));
-  const deadliftRatio = Number((deadlift1RM / bw).toFixed(2));
-  const ohpRatio = Number((ohp1RM / bw).toFixed(2));
-
-  const exercises = [
-    {
-      key: 'squat',
-      name: 'Sentadilla Trasera',
-      oneRM: squat1RM,
-      ratio: squatRatio,
-      targetNext: 2.0,
-      grade: gradeLiftRatio(squatRatio, [0, 0.75, 1.0, 1.25, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0]),
-      biomech: 'Evalúa torque extensor de rodilla y cadera bajo carga axial. Ratio ≥ 1.75x BW indica alta eficiencia neural.'
-    },
-    {
-      key: 'bench',
-      name: 'Press de Banca',
-      oneRM: bench1RM,
-      ratio: benchRatio,
-      targetNext: 1.5,
-      grade: gradeLiftRatio(benchRatio, [0, 0.55, 0.75, 0.95, 1.15, 1.35, 1.55, 1.75, 1.95, 2.15]),
-      biomech: 'Mide potencia de empuje horizontal (pectoral mayor, deltoides anterior, tríceps) y estabilidad escapular.'
-    },
-    {
-      key: 'deadlift',
-      name: 'Peso Muerto',
-      oneRM: deadlift1RM,
-      ratio: deadliftRatio,
-      targetNext: 2.5,
-      grade: gradeLiftRatio(deadliftRatio, [0, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3]),
-      biomech: 'Indicador supremo de cadena posterior (glúteo mayor, isquiosurales, erectores) y fuerza de agarre.'
-    },
-    {
-      key: 'ohp',
-      name: 'Press Militar Estricto',
-      oneRM: ohp1RM,
-      ratio: ohpRatio,
-      targetNext: 1.0,
-      grade: gradeLiftRatio(ohpRatio, [0, 0.35, 0.5, 0.65, 0.78, 0.9, 1.02, 1.15, 1.28, 1.4]),
-      biomech: 'Evalúa estabilidad del manguito rotador, deltoides y rigidez del core sin impulso de piernas.'
-    }
-  ];
-
-  return {
-    sbdTotal,
-    grandTotal,
-    dotsScore,
-    relativeRatio,
-    absoluteGrade: SCIENTIFIC_GRADES[getAbsoluteGradeIndex(sbdTotal, dotsScore)],
-    relativeGrade: SCIENTIFIC_GRADES[getRelativeGradeIndex(relativeRatio)],
-    exercises
-  };
-}
-
-/**
- * Analizador científico de rutina propia (texto o archivo subido)
- */
-function analyzeCustomRoutine(routineText, progressStatus) {
-  const text = (routineText || '').toLowerCase();
-
-  // Detección heurística de patrones musculares
-  const pushHits = (text.match(/banca|press|flexion|push|fondos|aperturas|elevacion|lateral|tricep|extension/g) || []).length;
-  const pullHits = (text.match(/remo|jalon|dominada|pull|curl|bicep|face|peso muerto|deadlift/g) || []).length;
-  const legHits = (text.match(/sentadilla|squat|prensa|zancada|bulgara|femoral|cuadricep|gemelo|talon|hip thrust|gluteo/g) || []).length;
-  const coreHits = (text.match(/plancha|plank|crunch|abdom|pallof|rueda/g) || []).length;
-
-  const estPushSets = Math.max(4, pushHits * 4);
-  const estPullSets = Math.max(3, pullHits * 4);
-  const estLegSets = Math.max(4, legHits * 4);
-  const estCoreSets = Math.max(2, coreHits * 3);
-
-  const pushPullRatio = estPullSets > 0 ? Number((estPushSets / estPullSets).toFixed(2)) : 2.0;
-
-  const findings = [];
-  const recommendations = [];
-
-  if (pushPullRatio > 1.35) {
-    findings.push({
-      type: 'warning',
-      title: `Desbalance Empuje / Tracción (${pushPullRatio}:1)`,
-      detail: 'Exceso de volumen de empuje anterior respecto a tracción posterior. Riesgo de antepulsión de hombros y pinzamiento subacromial.'
-    });
-    recommendations.push('Añadir 4-6 series semanales de tracción horizontal (remo con apoyo) y rotación externa (Face Pulls).');
-  } else {
-    findings.push({
-      type: 'good',
-      title: `Equilibrio Empuje / Tracción Óptimo (${pushPullRatio}:1)`,
-      detail: 'Buena proporción biomecánica entre cadena anterior y cintura escapular.'
-    });
-  }
-
-  if (estLegSets < 10) {
-    findings.push({
-      type: 'warning',
-      title: 'Sub-volumen en Tren Inferior (< 10 series efectivas/sem)',
-      detail: 'El volumen detectado para cuádriceps e isquiosurales está por debajo del Volumen Mínimo Adaptativo (MAV).'
-    });
-    recommendations.push('Incluir al menos 1 patrón de dominancia de rodilla (Sentadilla/Hack) y 1 bisagra de cadera (RDL/Curl Femoral) 2 veces por semana.');
-  } else {
-    findings.push({
-      type: 'good',
-      title: 'Estímulo de Tren Inferior Adecuado',
-      detail: 'Distribución correcta entre cadena anterior y posterior.'
-    });
-  }
-
-  let cnsFatigue = 'Moderada (Óptima)';
-  if (progressStatus === 'estancado') {
-    cnsFatigue = 'Alta (Posible saturación de MRV)';
-    findings.push({
-      type: 'alert',
-      title: 'Diagnóstico de Estancamiento (> 3 semanas)',
-      detail: 'La acumulación de fatiga periférica y del SNC está enmascarando tus adaptaciones de fuerza.'
-    });
-    recommendations.push('Aplicar una semana de descarga (Deload): reducir series al 50% manteniendo la carga, o trabajar a RIR 2-3 durante 2 semanas.');
-  } else if (progressStatus === 'fatiga') {
-    cnsFatigue = 'Crítica (Sobrecarga Articular/Neural)';
-    findings.push({
-      type: 'alert',
-      title: 'Alerta de Fatiga Sistémica / Dolor Articular',
-      detail: 'Frecuencia excesiva cerca del fallo absoluto (RIR 0) en movimientos multiarticulares pesados.'
-    });
-    recommendations.push('Sustituir variantes con barra libre fatigantes por máquinas convergentes o poleas durante 2 semanas y priorizar 8h de sueño.');
-  } else {
-    recommendations.push('Mantener sobrecarga progresiva doble: cuando completes el rango máximo de repeticiones con RIR 1, sube +2.5 kg.');
-  }
-
-  return {
-    volumeByGroup: [
-      { label: 'Empuje (Pecho/Hombro/Tríceps)', sets: estPushSets, target: '12-18 series', color: '#00F0FF' },
-      { label: 'Tracción (Espalda/Bíceps)', sets: estPullSets, target: '14-20 series', color: '#A855F7' },
-      { label: 'Tren Inferior (Cuádriceps/Femoral)', sets: estLegSets, target: '12-18 series', color: '#10B981' },
-      { label: 'Core & Estabilidad', sets: estCoreSets, target: '6-10 series', color: '#F59E0B' }
-    ],
-    pushPullRatio,
-    cnsFatigue,
-    findings,
-    recommendations
-  };
-}
-
-/**
- * Calcula métricas fisiológicas del sueño semanal (objetivo científico: 49h - 63h)
- */
-function calculateSleepMetrics(sleepHoursArray) {
-  const totalHours = Number(sleepHoursArray.reduce((acc, val) => acc + Number(val || 0), 0).toFixed(1));
-  const avgHours = Number((totalHours / 7).toFixed(1));
-  const minRecommended = 49; // 7h x 7 días
-  const maxRecommended = 63; // 9h x 7 días
-
-  let status = 'optimal';
-  let recoveryScore = 95;
-  let proteinSynthesis = '100% (Óptima)';
-  let cnsReadiness = 'Alto Rendimiento';
-  let failureRisk = 'Bajo (8%)';
-  let advisory = 'Tu arquitectura del sueño (fases REM y sueño profundo N3) optimiza la secreción de GH y testosterona endógena. Estás listo para retos pesados.';
-
-  if (totalHours < 42) {
-    status = 'critical';
-    recoveryScore = Math.max(25, Math.round((totalHours / 49) * 75));
-    proteinSynthesis = '68% (-32% degradación acelerada)';
-    cnsReadiness = 'Déficit Neural Severo';
-    failureRisk = 'Alto (64%)';
-    advisory = 'ALERTA FISIOLÓGICA: Déficit severo de sueño (< 6h/noche). Aumenta el cortisol y cae la síntesis proteica miofibrilar. Reduce cargas un 15-20% hoy o usa un Desafío de Contingencia.';
-  } else if (totalHours < minRecommended) {
-    status = 'warning';
-    recoveryScore = Math.round((totalHours / 49) * 88);
-    proteinSynthesis = '84% (Subóptima)';
-    cnsReadiness = 'Recuperación Parcial';
-    failureRisk = 'Moderado (35%)';
-    advisory = 'Deuda de sueño leve acumulada (< 49h semanales). Evita llegar al fallo muscular absoluto (RIR 0) en ejercicios compuestos hoy.';
-  } else if (totalHours > maxRecommended) {
-    status = 'excess';
-    recoveryScore = 90;
-    proteinSynthesis = '96% (Alta)';
-    cnsReadiness = 'Completamente Recuperado';
-    failureRisk = 'Bajo (12%)';
-    advisory = 'Superávit de descanso (> 63h). Asegura activación neuromuscular dinámica (calentamiento prolongado) antes de levantar pesado.';
-  }
-
-  return {
-    totalHours,
-    avgHours,
-    minRecommended,
-    maxRecommended,
-    status,
-    recoveryScore,
-    proteinSynthesis,
-    cnsReadiness,
-    failureRisk,
-    advisory
-  };
-}
-
-// ============================================================================
-// COMPONENTES VISUALES SVG PERSONALIZADOS (EMBLEMAS & AVATAR)
-// ============================================================================
-
-/**
- * Emblema geométrico futurista que evoluciona visualmente con el rango actual
- */
-function RankEmblemSVG({ rankIndex, color, size = 72 }) {
-  const tierLevel = Math.floor(rankIndex / 3); // 0 a 4 (5 niveles de complejidad visual)
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" className="drop-shadow-lg select-none">
-      <defs>
-        <radialGradient id={`rankGlow-${rankIndex}`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={color} stopOpacity="0.45" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <circle cx="50" cy="50" r="46" fill={`url(#rankGlow-${rankIndex})`} />
-      {/* Anillo exterior */}
-      <polygon
-        points="50,6 88,28 88,72 50,94 12,72 12,28"
-        fill="rgba(10,14,26,0.9)"
-        stroke={color}
-        strokeWidth="2.5"
-      />
-      {/* Alas laterales para rangos altos */}
-      {tierLevel >= 2 && (
-        <>
-          <path d="M12,35 L2,22 L12,50 Z" fill={color} opacity="0.85" />
-          <path d="M88,35 L98,22 L88,50 Z" fill={color} opacity="0.85" />
-        </>
-      )}
-      {tierLevel >= 3 && (
-        <>
-          <path d="M12,55 L0,65 L12,70 Z" fill={color} opacity="0.65" />
-          <path d="M88,55 L100,65 L88,70 Z" fill={color} opacity="0.65" />
-        </>
-      )}
-      {/* Núcleo geométrico interior */}
-      <polygon
-        points="50,18 76,34 76,66 50,82 24,66 24,34"
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeDasharray={tierLevel >= 1 ? 'none' : '4 3'}
-        opacity="0.8"
-      />
-      {/* Cristal central */}
-      <polygon
-        points="50,27 65,50 50,73 35,50"
-        fill={color}
-        opacity="0.25"
-        stroke={color}
-        strokeWidth="2"
-      />
-      {/* Corona superior en Maestro / Jefe Maestro / Challenger */}
-      {tierLevel >= 4 && (
-        <polygon points="36,12 43,3 50,10 57,3 64,12" fill={color} />
-      )}
-      <circle cx="50" cy="50" r="5" fill="#FFFFFF" />
-    </svg>
-  );
-}
-
-/**
- * Avatar Interactivo Personalizable SVG con Cosméticos y Aura de Rango
- */
-function PlayerAvatarSVG({ avatar, rankColor, physicalGrade }) {
-  const skinColors = {
-    claro: '#F5D0B5',
-    trigueno: '#DCA882',
-    bronceado: '#B97A56',
-    moreno: '#8D5538',
-    oscuro: '#5C3824',
-    cyber: '#94A3B8'
-  };
-
-  const buildScale = {
-    atletico: { shoulder: 34, waist: 18, arm: 9 },
-    mesomorfo: { shoulder: 40, waist: 20, arm: 12 },
-    powerlifter: { shoulder: 45, waist: 26, arm: 14 },
-    titan: { shoulder: 48, waist: 21, arm: 15 }
-  };
-
-  const cardBackgrounds = {
-    laboratorio: 'from-slate-950 via-cyan-950/40 to-slate-950',
-    matriz: 'from-zinc-950 via-purple-950/40 to-zinc-950',
-    obsidiana: 'from-black via-neutral-900 to-black',
-    dorado: 'from-stone-950 via-amber-950/45 to-stone-950'
-  };
-
-  const auraColors = {
-    rango: rankColor,
-    cian: '#00F0FF',
-    violeta: '#A855F7',
-    esmeralda: '#10B981',
-    dorado: '#F59E0B'
-  };
-
-  const skin = skinColors[avatar.skin] || skinColors.trigueno;
-  const dims = buildScale[avatar.build] || buildScale.mesomorfo;
-  const activeAura = auraColors[avatar.aura] || rankColor;
-  const isFemale = avatar.gender === 'femenino';
-
-  const shoulderW = isFemale ? dims.shoulder - 5 : dims.shoulder;
-  const waistW = isFemale ? dims.waist - 3 : dims.waist;
-  const armW = isFemale ? dims.arm - 2 : dims.arm;
-
-  return (
-    <div className={`relative w-full h-72 rounded-2xl border border-slate-700/80 bg-gradient-to-b ${cardBackgrounds[avatar.bg] || cardBackgrounds.laboratorio} overflow-hidden flex items-center justify-center shadow-2xl`}>
-      {/* Rejilla HUD de fondo */}
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: `linear-gradient(to right, ${activeAura}33 1px, transparent 1px), linear-gradient(to bottom, ${activeAura}33 1px, transparent 1px)`,
-          backgroundSize: '24px 24px'
-        }}
-      />
-
-      {/* Aura Energética Radial */}
-      <div
-        className="absolute w-52 h-52 rounded-full blur-2xl animate-pulse"
-        style={{ backgroundColor: activeAura, opacity: 0.28 }}
-      />
-
-      {/* Etiqueta HUD Superior */}
-      <div className="absolute top-3 left-3 right-3 flex justify-between items-center text-[10px] font-mono tracking-widest uppercase">
-        <span className="px-2 py-0.5 rounded bg-black/70 border border-slate-700 text-slate-300">
-          BIO-ID // {avatar.build.toUpperCase()}
-        </span>
-        <span
-          className="px-2 py-0.5 rounded bg-black/80 border font-bold"
-          style={{ borderColor: activeAura, color: activeAura }}
-        >
-          FÍSICO: {physicalGrade}
-        </span>
-      </div>
-
-      {/* Personaje SVG */}
-      <svg viewBox="0 0 200 240" className="w-56 h-64 relative z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
-        {/* Círculo de plataforma holográfica */}
-        <ellipse cx="100" cy="218" rx="64" ry="12" fill="none" stroke={activeAura} strokeWidth="2" opacity="0.7" />
-        <ellipse cx="100" cy="218" rx="45" ry="7" fill={activeAura} opacity="0.18" />
-
-        {/* Cabello trasero si es largo */}
-        {avatar.hair === 'largo' && (
-          <path d="M78,46 Q72,85 76,105 L124,105 Q128,85 122,46 Z" fill="#1E1B2E" />
-        )}
-
-        {/* Piernas / Pantalón Deportivo Técnico */}
-        <path
-          d={`M${100 - waistW + 2},138 L${100 - waistW - 3},212 L${95},212 L99,155 L101,155 L105,212 L${100 + waistW + 3},212 L${100 + waistW - 2},138 Z`}
-          fill="#111827"
-          stroke="#334155"
-          strokeWidth="1.5"
-        />
-        {/* Líneas neón en pantalón */}
-        <line x1={100 - waistW} y1="145" x2={100 - waistW - 2} y2="205" stroke={activeAura} strokeWidth="1.5" opacity="0.7" />
-        <line x1={100 + waistW} y1="145" x2={100 + waistW + 2} y2="205" stroke={activeAura} strokeWidth="1.5" opacity="0.7" />
-
-        {/* Brazos */}
-        <rect
-          x={100 - shoulderW - armW + 2}
-          y="74"
-          width={armW}
-          height="64"
-          rx={armW / 2}
-          fill={avatar.top === 'hoodie' ? '#1E293B' : skin}
-        />
-        <rect
-          x={100 + shoulderW - 2}
-          y="74"
-          width={armW}
-          height="64"
-          rx={armW / 2}
-          fill={avatar.top === 'hoodie' ? '#1E293B' : skin}
-        />
-
-        {/* Cosmético: Muñequeras Neón */}
-        {avatar.wristWraps && (
-          <>
-            <rect x={100 - shoulderW - armW + 1} y="122" width={armW + 2} height="9" rx="2" fill={activeAura} />
-            <rect x={100 + shoulderW - 3} y="122" width={armW + 2} height="9" rx="2" fill={activeAura} />
-          </>
-        )}
-
-        {/* Torso base */}
-        <polygon
-          points={`${100 - shoulderW},72 ${100 + shoulderW},72 ${100 + waistW},140 ${100 - waistW},140`}
-          fill={skin}
-        />
-
-        {/* Definición pectoral/abdominal si está sin remera o compresión */}
-        {(avatar.top === 'sin_remera' || avatar.top === 'compresion') && (
-          <g opacity="0.35" stroke="#0F172A" strokeWidth="1.3" fill="none">
-            <path d={`M${100 - shoulderW * 0.55},92 Q100,98 ${100 + shoulderW * 0.55},92`} />
-            <line x1="100" y1="95" x2="100" y2="132" />
-            <line x1="91" y1="107" x2="109" y2="107" />
-            <line x1="91" y1="118" x2="109" y2="118" />
-          </g>
-        )}
-
-        {/* Ropa Superior (Cosméticos) */}
-        {avatar.top === 'compresion' && (
-          <polygon
-            points={`${100 - shoulderW - 1},71 ${100 + shoulderW + 1},71 ${100 + waistW + 1},140 ${100 - waistW - 1},140`}
-            fill="#0F172A"
-            stroke={activeAura}
-            strokeWidth="1.5"
-          />
-        )}
-        {avatar.top === 'musculosa' && (
-          <polygon
-            points={`${100 - shoulderW * 0.65},71 ${100 + shoulderW * 0.65},71 ${100 + waistW + 1},140 ${100 - waistW - 1},140`}
-            fill="#1E293B"
-            stroke={activeAura}
-            strokeWidth="1.4"
-          />
-        )}
-        {avatar.top === 'hoodie' && (
-          <>
-            <polygon
-              points={`${100 - shoulderW - 3},70 ${100 + shoulderW + 3},70 ${100 + waistW + 4},142 ${100 - waistW - 4},142`}
-              fill="#1E293B"
-              stroke="#475569"
-              strokeWidth="1.5"
-            />
-            <line x1="100" y1="72" x2="100" y2="142" stroke={activeAura} strokeWidth="1.8" />
-          </>
-        )}
-
-        {/* Cosmético: Cinturón de Levantamiento (Powerlifting Belt) */}
-        {avatar.belt && (
-          <g>
-            <rect
-              x={100 - waistW - 2}
-              y="125"
-              width={(waistW + 2) * 2}
-              height="13"
-              rx="3"
-              fill="#090D16"
-              stroke="#F59E0B"
-              strokeWidth="1.8"
-            />
-            <rect x="93" y="126" width="14" height="11" rx="2" fill="#F59E0B" />
-          </g>
-        )}
-
-        {/* Cuello y Cabeza */}
-        <rect x="92" y="57" width="16" height="16" rx="4" fill={skin} />
-        <ellipse cx="100" cy="43" rx="17" ry="20" fill={skin} />
-
-        {/* Estilos de Cabello */}
-        {avatar.hair === 'corto' && (
-          <path d="M83,38 Q84,20 100,20 Q116,20 117,38 Q110,29 100,29 Q90,29 83,38 Z" fill="#18181B" />
-        )}
-        {avatar.hair === 'fade' && (
-          <path d="M84,34 Q86,17 100,17 Q114,17 116,34 L112,26 L88,26 Z" fill="#09090B" />
-        )}
-        {avatar.hair === 'largo' && (
-          <path d="M82,42 Q82,19 100,19 Q118,19 118,42 Q112,28 100,28 Q88,28 82,42 Z" fill="#1E1B2E" />
-        )}
-        {avatar.hair === 'spikes' && (
-          <polygon points="82,36 86,16 94,25 100,12 106,25 114,16 118,36 108,28 92,28" fill="#1E1B4B" stroke={activeAura} strokeWidth="0.8" />
-        )}
-
-        {/* Ojos o Visor Táctico HUD */}
-        {avatar.visor ? (
-          <g>
-            <rect x="84" y="37" width="32" height="9" rx="3" fill="#020617" stroke={activeAura} strokeWidth="1.6" />
-            <line x1="88" y1="41.5" x2="112" y2="41.5" stroke={activeAura} strokeWidth="2" />
-          </g>
-        ) : (
-          <g fill="#0F172A">
-            <circle cx="93" cy="42" r="2.2" />
-            <circle cx="107" cy="42" r="2.2" />
-          </g>
-        )}
-      </svg>
-
-      {/* Pie de tarjeta */}
-      <div className="absolute bottom-2.5 left-3 right-3 flex justify-between items-center text-[10px] font-mono text-slate-400">
-        <span>EQUIPO: {avatar.belt ? 'BELT+ ' : ''}{avatar.wristWraps ? 'WRAPS+ ' : ''}{avatar.visor ? 'HUD' : 'STD'}</span>
-        <span className="text-cyan-400">SYNC 100%</span>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Procesador Canvas con Filtro Automático de Privacidad Facial (Recorte/Pixelado Superior)
- */
-function PrivacyPhotoVaultCard({ sideLabel, imageDataUrl, onUploadImage, onGenerateSample }) {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const width = 280;
-    const height = 340;
-    canvas.width = width;
-    canvas.height = height;
-
-    if (!imageDataUrl) {
-      // Estado vacío técnico
-      ctx.fillStyle = '#070B14';
-      ctx.fillRect(0, 0, width, height);
-      ctx.strokeStyle = '#1E293B';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < width; x += 20) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < height; y += 20) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-      }
-      ctx.fillStyle = '#64748B';
-      ctx.font = '12px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(`SIN CAPTURA ${sideLabel.toUpperCase()}`, width / 2, height / 2 - 10);
-      ctx.fillStyle = '#00F0FF';
-      ctx.font = '10px monospace';
-      ctx.fillText('FILTRO FACIAL AUTOMÁTICO ACTIVO', width / 2, height / 2 + 12);
-      return;
-    }
-
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, width, height);
-      // Dibujar imagen escalada manteniendo proporción
-      const scale = Math.max(width / img.width, height / img.height);
-      const drawW = img.width * scale;
-      const drawH = img.height * scale;
-      const offsetX = (width - drawW) / 2;
-      const offsetY = (height - drawH) / 2;
-      ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
-
-      // FILTRO AUTOMÁTICO DE PRIVACIDAD FACIAL (24% superior pixelado + banda opaca AES-256)
-      const headHeight = Math.round(height * 0.24);
-      const pixelSize = 14;
-      for (let py = 0; py < headHeight; py += pixelSize) {
-        for (let px = 0; px < width; px += pixelSize) {
-          const sample = ctx.getImageData(Math.min(width - 1, px + 4), Math.min(height - 1, py + 4), 1, 1).data;
-          ctx.fillStyle = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
-          ctx.fillRect(px, py, pixelSize, pixelSize);
-        }
-      }
-
-      // Banda de censura biométrica superior
-      ctx.fillStyle = 'rgba(4, 7, 15, 0.88)';
-      ctx.fillRect(0, 0, width, headHeight);
-      ctx.strokeStyle = '#00F0FF';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, headHeight);
-      ctx.lineTo(width, headHeight);
-      ctx.stroke();
-
-      ctx.fillStyle = '#00F0FF';
-      ctx.font = 'bold 11px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('ROSTRO REDACTADO // ZERO-FACE ID', width / 2, headHeight / 2 - 4);
-      ctx.fillStyle = '#10B981';
-      ctx.font = '9px monospace';
-      ctx.fillText('METADATOS EXIF ELIMINADOS • AES-256', width / 2, headHeight / 2 + 12);
-    };
-    img.src = imageDataUrl;
-  }, [imageDataUrl, sideLabel]);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      if (ev.target?.result) {
-        onUploadImage(ev.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  return (
-    <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-4 flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-3">
-        <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-          {sideLabel}
-        </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
-          <EyeOff className="w-3 h-3" /> Privacidad Activa
-        </span>
-      </div>
-
-      <div className="relative rounded-lg overflow-hidden border border-slate-700/80 shadow-inner mb-3">
-        <canvas ref={canvasRef} className="block max-w-full h-auto" />
-      </div>
-
-      <div className="w-full grid grid-cols-2 gap-2">
-        <label className="cursor-pointer flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/50 text-cyan-300 text-xs font-semibold transition">
-          <Upload className="w-3.5 h-3.5" />
-          Subir Foto
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-        </label>
-        <button
-          type="button"
-          onClick={onGenerateSample}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-semibold transition"
-        >
-          <Scan className="w-3.5 h-3.5 text-purple-400" />
-          Escáner Demo
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// APLICACIÓN PRINCIPAL: PROTOCOLO EX // SYSTEM FITNESS
-// ============================================================================
-
-export default function App() {
-  // Navegación principal (6 módulos)
-  const [activeTab, setActiveTab] = useState('comando');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Notificaciones HUD (Toasts) y Modal de Ascenso/Descenso
-  const [toast, setToast] = useState(null);
-  const [rankBanner, setRankBanner] = useState(null);
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 1: SISTEMA DE RANGOS (15 RANGOS x 6 DIVISIONES) Y RETOS DIARIOS
-  // --------------------------------------------------------------------------
-  // 420 LP = Hierro 2 (Tierra=0..599, Madera=600..1199, Piedra=1200..1799, Carbón=1800..2399, Hierro=2400..2999 -> 2840 LP = Hierro 2)
-  const [totalLP, setTotalLP] = useState(2845);
-  const [streak, setStreak] = useState(6);
-
-  const [dailyChallenges, setDailyChallenges] = useState([
-    {
-      id: 'ch-1',
-      title: 'Gimnasio: Sentadilla 130kg 4x6 + Press Banca 90kg 4x8',
-      category: 'Gimnasio',
-      lpReward: 40,
-      status: 'active', // 'active' | 'completed' | 'contingency'
-      contingencyNote: ''
-    },
-    {
-      id: 'ch-2',
-      title: 'Salir a correr 5 km ritmo umbral (4:45/km)',
-      category: 'Cardio Exterior',
-      lpReward: 35,
-      status: 'active',
-      contingencyNote: ''
-    }
-  ]);
-
-  const [nextWeekPending, setNextWeekPending] = useState([
-    {
-      id: 'fail-prev-1',
-      title: 'Peso Muerto 165kg 3x5 (Fallo por fatiga acumulada)',
-      category: 'Gimnasio',
-      lpReward: 45,
-      failedDate: 'Semana Anterior'
-    }
-  ]);
-
-  // Formulario de nuevo reto
-  const [newChallengeTitle, setNewChallengeTitle] = useState('');
-  const [newChallengeCategory, setNewChallengeCategory] = useState('Gimnasio');
-  const [newChallengeLP, setNewChallengeLP] = useState(35);
-
-  // Modal de Justificación de Imprevisto
-  const [contingencyTarget, setContingencyTarget] = useState(null);
-  const [selectedPresetId, setSelectedPresetId] = useState('lluvia');
-  const [customJustificationNote, setCustomJustificationNote] = useState('');
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 2: FUERZA ABSOLUTA Y RELATIVA (ESCALA F A EX)
-  // --------------------------------------------------------------------------
-  const [bodyWeight, setBodyWeight] = useState(78);
-  const [lifts, setLifts] = useState({
-    squat: { weight: 135, reps: 5 },
-    bench: { weight: 95, reps: 6 },
-    deadlift: { weight: 165, reps: 4 },
-    ohp: { weight: 62.5, reps: 5 }
-  });
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 3: EVALUACIÓN FÍSICA TRIMESTRAL, BÓVEDA Y RECAP ANUAL
-  // --------------------------------------------------------------------------
-  const [daysUntilRenewal, setDaysUntilRenewal] = useState(64); // Contador 90 días
-  const [frontPhoto, setFrontPhoto] = useState(null);
-  const [backPhoto, setBackPhoto] = useState(null);
-  const [visualSymmetryScore, setVisualSymmetryScore] = useState(72); // 0-100 -> mapea a F..EX
-  const [quarterlyHistory, setQuarterlyHistory] = useState([
-    { quarter: 'Q1', label: 'Trimestre 1 (Base)', grade: 'D', bodyfat: '18.5%', note: 'Inicio de recomposición y control motor.' },
-    { quarter: 'Q2', label: 'Trimestre 2 (Progreso)', grade: 'C', bodyfat: '15.8%', note: 'Aumento de densidad dorsal y hombro lateral.' },
-    { quarter: 'Q3', label: 'Trimestre 3 (Actual)', grade: 'B', bodyfat: '13.4%', note: 'V-taper marcado y separación abdominal.' },
-    { quarter: 'Q4', label: 'Trimestre 4 (Proyección)', grade: 'A', bodyfat: '11.5%', note: 'Pendiente de renovación trimestral.' }
-  ]);
-  const [showAnnualRecap, setShowAnnualRecap] = useState(false);
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 4: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
-  // --------------------------------------------------------------------------
-  const [routineEnv, setRoutineEnv] = useState('gimnasio');
-  const [routineGoal, setRoutineGoal] = useState('hipertrofia');
-  const [routineDaysPerWeek, setRoutineDaysPerWeek] = useState(4);
-
-  const [customRoutineText, setCustomRoutineText] = useState(
-    'Lunes: Press banca 4x8, Press inclinado mancuernas 4x10, Aperturas 3x12, Elevaciones laterales 4x15, Extensión tríceps 3x12.\nMiércoles: Jalón al pecho 4x10, Remo barra 3x8, Curl bíceps 4x12.\nViernes: Sentadilla 3x8, Curl femoral 3x12, Plancha 3x45s.'
-  );
-  const [customProgressStatus, setCustomProgressStatus] = useState('estancado');
-  const [uploadedFileName, setUploadedFileName] = useState('');
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 5: CONTADOR DE SUEÑO Y RECUPERACIÓN SEMANAL
-  // --------------------------------------------------------------------------
-  const [sleepDays, setSleepDays] = useState([7.5, 7.0, 6.5, 8.0, 7.5, 8.5, 7.0]); // Total: 52.0h (Óptimo)
-  const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
-  // --------------------------------------------------------------------------
-  // ESTADO GLOBAL 6: AVATAR PERSONALIZABLE Y COSMÉTICOS
-  // --------------------------------------------------------------------------
-  const [playerName, setPlayerName] = useState('HUNTER_01');
-  const [avatar, setAvatar] = useState({
-    gender: 'masculino',
-    build: 'mesomorfo',
-    skin: 'trigueno',
-    hair: 'fade',
-    top: 'compresion',
-    belt: true,
-    wristWraps: true,
-    visor: true,
-    aura: 'rango',
-    bg: 'laboratorio'
-  });
-
-  // --------------------------------------------------------------------------
-  // CÁLCULOS DERIVADOS CONECTADOS EN TIEMPO REAL
-  // --------------------------------------------------------------------------
-  const rankInfo = useMemo(() => getCompetitiveRankInfo(totalLP), [totalLP]);
-  const strengthMetrics = useMemo(() => calculateStrengthAnalysis(bodyWeight, lifts), [bodyWeight, lifts]);
-  const sleepMetrics = useMemo(() => calculateSleepMetrics(sleepDays), [sleepDays]);
-  const routineAudit = useMemo(
-    () => analyzeCustomRoutine(customRoutineText, customProgressStatus),
-    [customRoutineText, customProgressStatus]
-  );
-
-  // Rango físico derivado de Q3 (actual)
-  const currentPhysicalGrade = useMemo(() => {
-    const q3 = quarterlyHistory.find((q) => q.quarter === 'Q3');
-    return SCIENTIFIC_GRADES.find((g) => g.grade === (q3?.grade || 'B')) || SCIENTIFIC_GRADES[4];
-  }, [quarterlyHistory]);
-
-  // Helper de notificación HUD sin usar alert()
-  const triggerToast = (message, type = 'info') => {
-    setToast({ message, type, id: Date.now() });
-    setTimeout(() => {
-      setToast((prev) => (prev && Date.now() - prev.id >= 3600 ? null : prev));
-    }, 3800);
-  };
-
-  // Modificador de LP con detección automática de ascenso/descenso de división o rango
-  const modifyLP = (delta, reason = '') => {
-    const prevInfo = getCompetitiveRankInfo(totalLP);
-    const nextLP = Math.max(0, Math.min(8999, totalLP + delta));
-    const nextInfo = getCompetitiveRankInfo(nextLP);
-
-    setTotalLP(nextLP);
-
-    if (nextInfo.totalTierIndex > prevInfo.totalTierIndex) {
-      setRankBanner({
-        type: 'promotion',
-        from: prevInfo.fullTitle,
-        to: nextInfo.fullTitle,
-        color: nextInfo.rank.color
-      });
-    } else if (nextInfo.totalTierIndex < prevInfo.totalTierIndex) {
-      setRankBanner({
-        type: 'demotion',
-        from: prevInfo.fullTitle,
-        to: nextInfo.fullTitle,
-        color: '#EF4444'
-      });
-    } else if (reason) {
-      triggerToast(`${reason} (${delta >= 0 ? `+${delta}` : delta} LP)`, delta >= 0 ? 'success' : 'warning');
-    }
-  };
-
-  // Acciones de Retos Diarios
-  const handleAddChallenge = (e) => {
-    e.preventDefault();
-    if (!newChallengeTitle.trim()) return;
-    const item = {
-      id: `ch-${Date.now()}`,
-      title: newChallengeTitle.trim(),
-      category: newChallengeCategory,
-      lpReward: Number(newChallengeLP) || 35,
-      status: 'active',
-      contingencyNote: ''
-    };
-    setDailyChallenges((prev) => [item, ...prev]);
-    setNewChallengeTitle('');
-    triggerToast('Nuevo reto diario declarado en el Sistema.', 'info');
-  };
-
-  const handleCompleteChallenge = (challenge) => {
-    if (challenge.status === 'completed') return;
-    setDailyChallenges((prev) =>
-      prev.map((c) => (c.id === challenge.id ? { ...c, status: 'completed' } : c))
-    );
-    setStreak((s) => s + 1);
-    modifyLP(challenge.lpReward, `Reto completado: ${challenge.title}`);
-  };
-
-  const handleFailChallenge = (challenge) => {
-    setDailyChallenges((prev) => prev.filter((c) => c.id !== challenge.id));
-    setNextWeekPending((prev) => [
-      {
-        id: `fail-${Date.now()}`,
-        title: challenge.title,
-        category: challenge.category,
-        lpReward: challenge.lpReward,
-        failedDate: 'Hoy (Mover a Próxima Semana)'
-      },
-      ...prev
-    ]);
-    setStreak(0);
-    modifyLP(-20, 'Reto fallido. Enviado a cola de recuperación semanal.');
-  };
-
-  const handleConfirmContingency = () => {
-    if (!contingencyTarget) return;
-    const preset = CONTINGENCY_PRESETS.find((p) => p.id === selectedPresetId) || CONTINGENCY_PRESETS[0];
-
-    setDailyChallenges((prev) =>
-      prev.map((c) =>
-        c.id === contingencyTarget.id
-          ? {
-              ...c,
-              title: `${preset.title}`,
-              category: 'Contingencia Casa',
-              lpReward: preset.lpBonus,
-              status: 'contingency',
-              contingencyNote: `${preset.detail}${customJustificationNote ? ` | Nota: ${customJustificationNote}` : ''}`
-            }
-          : c
-      )
-    );
-
-    setContingencyTarget(null);
-    setCustomJustificationNote('');
-    triggerToast('Desafío de Contingencia en Casa generado. ¡Racha protegida!', 'success');
-  };
-
-  const handleRetakePendingChallenge = (pendingItem) => {
-    setNextWeekPending((prev) => prev.filter((p) => p.id !== pendingItem.id));
-    setDailyChallenges((prev) => [
-      {
-        id: `retake-${Date.now()}`,
-        title: `[RETOMADO] ${pendingItem.title}`,
-        category: pendingItem.category,
-        lpReward: pendingItem.lpReward + 10, // Bonus de redención
-        status: 'active',
-        contingencyNote: ''
-      },
-      ...prev
-    ]);
-    triggerToast('Reto retomado para la nueva semana (+10 LP bonus de redención).', 'info');
-  };
-
-  // Generador de imagen de muestra anatómica para la Bóveda Segura
-  const generateSyntheticScan = (side) => {
-    const c = document.createElement('canvas');
-    c.width = 280;
-    c.height = 340;
-    const ctx = c.getContext('2d');
-
-    ctx.fillStyle = '#0B1324';
-    ctx.fillRect(0, 0, 280, 340);
-
-    // Silueta atlética renderizada
-    ctx.fillStyle = '#1E293B';
-    ctx.beginPath();
-    ctx.arc(140, 48, 24, 0, Math.PI * 2); // Cabeza (será redactada automáticamente)
-    ctx.fill();
-
-    // Torso V-taper
-    const grad = ctx.createLinearGradient(80, 85, 200, 220);
-    grad.addColorStop(0, '#00F0FF');
-    grad.addColorStop(1, '#A855F7');
-    ctx.fillStyle = grad;
-    ctx.globalAlpha = 0.35;
-    ctx.beginPath();
-    ctx.moveTo(82, 92);
-    ctx.lineTo(198, 92);
-    ctx.lineTo(172, 210);
-    ctx.lineTo(108, 210);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#00F0FF';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Marcas de escaneo muscular
-    ctx.fillStyle = '#E2E8F0';
-    ctx.font = '11px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(`SCAN BIOMÉTRICO ${side.toUpperCase()}`, 140, 150);
-    ctx.fillStyle = '#10B981';
-    ctx.fillText('SIMETRÍA: 94.2% | DENSIDAD: ALTA', 140, 172);
-
-    const url = c.toDataURL('image/png');
-    if (side === 'Frente') setFrontPhoto(url);
-    else setBackPhoto(url);
-    triggerToast(`Escáner ${side} procesado con filtro facial automático.`, 'success');
-  };
-
-  // Enviar sesión generada directamente a Retos Diarios
-  const sendRoutineDayToChallenges = (dayObj) => {
-    const summary = dayObj.exercises.map((ex) => `${ex.name} (${ex.sets})`).join(' + ');
-    setDailyChallenges((prev) => [
-      {
-        id: `rut-${Date.now()}`,
-        title: `${dayObj.day}: ${summary}`,
-        category: routineEnv === 'casa' ? 'Casa' : 'Gimnasio',
-        lpReward: 45,
-        status: 'active',
-        contingencyNote: ''
-      },
-      ...prev
-    ]);
-    setActiveTab('comando');
-    triggerToast('Sesión enviada a tus Retos Diarios Declarados.', 'success');
-  };
-
-  // Ítems de navegación
-  const navItems = [
-    { id: 'comando', label: 'Comando & Retos', icon: Shield, badge: rankInfo.fullTitle },
-    { id: 'fuerza', label: 'Fuerza Científica', icon: Dumbbell, badge: `${strengthMetrics.relativeGrade.grade}/${strengthMetrics.absoluteGrade.grade}` },
-    { id: 'fisico', label: 'Evaluación & Bóveda', icon: Lock, badge: `Físico ${currentPhysicalGrade.grade}` },
-    { id: 'rutinas', label: 'Rutinas & Escáner', icon: Cpu, badge: 'Biomecánica' },
-    { id: 'sueno', label: 'Sueño & Recuperación', icon: Moon, badge: `${sleepMetrics.totalHours}h` },
-    { id: 'avatar', label: 'Avatar & Cosméticos', icon: User, badge: 'HUD' }
-  ];
-
-  const activeRoutine = BIOMECHANICAL_ROUTINES[routineEnv]?.[routineGoal] || BIOMECHANICAL_ROUTINES.gimnasio.hipertrofia;
-
-  return (
-    <div className="min-h-screen bg-[#05070E] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
-      {/* ====================================================================
-          BARRA SUPERIOR HUD PERSISTENTE
-         ==================================================================== */}
-      <header className="sticky top-0 z-40 bg-[#070B16]/95 backdrop-blur-md border-b border-slate-800/90 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          {/* Logo y Título del Sistema */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg bg-slate-900 border border-slate-700 text-cyan-400"
-              aria-label="Abrir menú"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 p-[1px] shadow-[0_0_15px_rgba(0,240,255,0.4)]">
-                <div className="w-full h-full bg-[#070B16] rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-cyan-400" />
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-sm sm:text-base font-black tracking-wider uppercase bg-gradient-to-r from-cyan-300 via-white to-purple-400 bg-clip-text text-transparent">
-                    PROTOCOLO EX
-                  </h1>
-                  <span className="hidden sm:inline-block text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300">
-                    SYSTEM FITNESS v4.2
-                  </span>
-                </div>
-                <p className="text-[11px] font-mono text-slate-400">
-                  OPERADOR: <span className="text-slate-200 font-semibold">{playerName}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Indicadores Globales HUD */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-            {/* Rango Competitivo Actual */}
-            <div
-              className="flex items-center gap-2 px-2.5 py-1 rounded-lg border bg-slate-900/90"
-              style={{ borderColor: rankInfo.rank.color }}
-            >
-              <Trophy className="w-3.5 h-3.5" style={{ color: rankInfo.rank.color }} />
-              <div className="text-xs font-mono">
-                <span className="text-slate-400 hidden md:inline">RANGO: </span>
-                <span className="font-bold" style={{ color: rankInfo.rank.color }}>
-                  {rankInfo.fullTitle}
-                </span>
-              </div>
-            </div>
-
-            {/* Rango Físico */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-purple-500/40 bg-purple-950/30 text-xs font-mono">
-              <span className="text-slate-400">FÍSICO:</span>
-              <span className="font-bold text-purple-300">{currentPhysicalGrade.grade}</span>
-            </div>
-
-            {/* Rango Fuerza Relativa */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-cyan-500/40 bg-cyan-950/30 text-xs font-mono">
-              <span className="text-slate-400">FUERZA REL:</span>
-              <span className="font-bold text-cyan-300">{strengthMetrics.relativeGrade.grade}</span>
-            </div>
-
-            {/* Estado Sueño */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('sueno')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-mono transition ${
-                sleepMetrics.status === 'critical'
-                  ? 'border-red-500/70 bg-red-950/50 text-red-300 animate-pulse'
-                  : sleepMetrics.status === 'warning'
-                  ? 'border-amber-500/60 bg-amber-950/40 text-amber-300'
-                  : 'border-emerald-500/50 bg-emerald-950/30 text-emerald-300'
-              }`}
-            >
-              <Moon className="w-3.5 h-3.5" />
-              <span>{sleepMetrics.totalHours}h/sem</span>
-            </button>
-
-            {/* Racha */}
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-mono font-bold">
-              <Flame className="w-3.5 h-3.5 text-amber-400" />
-              <span>{streak}d</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Barra de Navegación de los 6 Módulos */}
-        <nav className={`${mobileMenuOpen ? 'block' : 'hidden'} lg:block border-t border-slate-800/80 bg-[#060913]`}>
-          <div className="max-w-7xl mx-auto px-4 py-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center justify-between lg:justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border ${
-                    isActive
-                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border-cyan-400/80 text-white shadow-[0_0_15px_rgba(0,240,255,0.18)]'
-                      : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:text-slate-200 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
-                    <span>{item.label}</span>
-                  </div>
-                  <span
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
-                      isActive ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
-      </header>
-
-      {/* ALERTA FISIOLÓGICA GLOBAL SI HAY DEUDA DE SUEÑO */}
-      {sleepMetrics.status !== 'optimal' && sleepMetrics.status !== 'excess' && (
-        <div className="bg-gradient-to-r from-red-950/80 via-amber-950/70 to-red-950/80 border-b border-amber-500/40 px-4 py-2">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-2 text-amber-200">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>
-                <strong>MODIFICADOR DE SUEÑO ACTIVO ({sleepMetrics.totalHours}h / 49-63h rec.):</strong>{' '}
-                {sleepMetrics.advisory}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveTab('sueno')}
-              className="shrink-0 px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-200 font-mono text-[11px]"
-            >
-              Ajustar Sueño →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================================
-          CONTENIDO PRINCIPAL DE MÓDULOS
-         ==================================================================== */}
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* ==================================================================
-            MÓDULO 1: PANEL DE COMANDO Y RETOS DIARIOS
-           ================================================================== */}
-        {activeTab === 'comando' && (
-          <div className="space-y-6">
-            {/* Fila Superior: Tarjeta de Rango Competitivo (15 Rangos x 6 Divisiones) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Panel de Rango Actual */}
-              <div
-                className={`lg:col-span-7 rounded-2xl border p-6 bg-gradient-to-br ${rankInfo.rank.badgeBg} relative overflow-hidden shadow-2xl`}
-                style={{ borderColor: rankInfo.rank.color }}
-              >
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 relative z-10">
-                  <RankEmblemSVG rankIndex={rankInfo.rankIndex} color={rankInfo.rank.color} size={96} />
-
-                  <div className="flex-1 text-center sm:text-left">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-black/60 border border-slate-700 text-[11px] font-mono text-slate-300 mb-2">
-                      <span>LIGA: {rankInfo.rank.tierGroup.toUpperCase()}</span>
-                      <span>•</span>
-                      <span>DIVISIÓN {rankInfo.division} DE 6</span>
-                    </div>
-
-                    <h2
-                      className="text-3xl sm:text-4xl font-black tracking-tight uppercase"
-                      style={{ color: rankInfo.rank.color, textShadow: `0 0 24px ${rankInfo.rank.glow}` }}
-                    >
-                      {rankInfo.fullTitle}
-                    </h2>
-
-                    <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                      Puntos de Liga Totales: <strong className="font-mono text-white">{rankInfo.totalLP} LP</strong>{' '}
-                      <span className="text-slate-400">
-                        ({rankInfo.isMaxRank ? 'Cúspide del Sistema alcanzada' : `${100 - rankInfo.divisionLP} LP para siguiente división`})
-                      </span>
-                    </p>
-
-                    {/* Barra de progreso de división (0 a 100 LP) */}
-                    <div className="mt-4">
-                      <div className="flex justify-between text-[11px] font-mono text-slate-300 mb-1">
-                        <span>PROGRESO DE DIVISIÓN</span>
-                        <span>{rankInfo.isMaxRank ? '100 / 100 LP (MAX)' : `${rankInfo.divisionLP} / 100 LP`}</span>
-                      </div>
-                      <div className="w-full h-3 rounded-full bg-black/70 border border-slate-700/80 overflow-hidden p-0.5">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{
-                            width: `${rankInfo.isMaxRank ? 100 : rankInfo.divisionLP}%`,
-                            backgroundColor: rankInfo.rank.color,
-                            boxShadow: `0 0 12px ${rankInfo.rank.color}`
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Controles de Prueba Rápida de Ascenso/Descenso */}
-                    <div className="mt-5 pt-4 border-t border-white/10">
-                      <p className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2">
-                        Simulador de Puntos de Rango (Prueba Rápida):
-                      </p>
-                      <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(35, 'Simulación: Reto cumplido')}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 text-xs font-mono font-bold transition"
-                        >
-                          +35 LP
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(100, 'Simulación: Ascenso de división')}
-                          className="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold transition"
-                        >
-                          +100 LP (Subir Div.)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(-35, 'Simulación: Penalización')}
-                          className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 text-xs font-mono font-bold transition"
-                        >
-                          -35 LP
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => modifyLP(-100, 'Simulación: Descenso de división')}
-                          className="px-3 py-1.5 rounded-lg bg-rose-900/40 hover:bg-rose-900/60 border border-rose-500/50 text-rose-300 text-xs font-mono font-bold transition"
-                        >
-                          -100 LP (Bajar Div.)
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mapa de la Escala de 15 Rangos (Tierra 6 -> Challenger 1) */}
-              <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-mono uppercase tracking-wider text-cyan-400 font-bold">
-                      Jerarquía del Sistema (15 Rangos × 6 Div.)
-                    </h3>
-                    <span className="text-[11px] font-mono text-slate-400">Tierra 6 → Challenger 1</span>
-                  </div>
-
-                  <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-3 gap-1.5 max-h-56 overflow-y-auto pr-1">
-                    {COMPETITIVE_RANKS.map((r, idx) => {
-                      const isCurrent = idx === rankInfo.rankIndex;
-                      const isUnlocked = idx <= rankInfo.rankIndex;
-                      return (
-                        <button
-                          key={r.id}
-                          type="button"
-                          onClick={() => {
-                            // Permite saltar directamente al rango para inspeccionarlo
-                            setTotalLP(idx * 600 + 250);
-                            triggerToast(`Vista previa calibrada en ${r.name} 4`, 'info');
-                          }}
-                          className={`px-2 py-1.5 rounded-lg border text-left transition flex items-center justify-between ${
-                            isCurrent
-                              ? 'bg-slate-800/90 shadow-md scale-[1.02]'
-                              : isUnlocked
-                              ? 'bg-slate-900/70 border-slate-800 opacity-90 hover:opacity-100'
-                              : 'bg-slate-950/60 border-slate-900 opacity-50 hover:opacity-80'
-                          }`}
-                          style={{ borderColor: isCurrent ? r.color : undefined }}
-                        >
-                          <span className="text-[11px] font-bold truncate" style={{ color: r.color }}>
-                            {idx + 1}. {r.name}
-                          </span>
-                          {isCurrent && (
-                            <span className="text-[10px] font-mono px-1 rounded bg-black/70 text-white">
-                              D{rankInfo.division}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Click en cualquier rango para calibrar vista</span>
-                  <span className="font-mono text-cyan-400">90 DIVISIONES TOTALES</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fila Inferior: Gestor de Retos Diarios Declarados + Cola de Próxima Semana */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Columna Izquierda: Retos Diarios Activos */}
-              <div className="lg:col-span-8 space-y-4">
-                <div className="rounded-2xl border border-slate-800 bg-[#090D1A] p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-                    <div>
-                      <h3 className="text-base font-bold text-white flex items-center gap-2">
-                        <Target className="w-5 h-5 text-cyan-400" />
-                        Retos Diarios Declarados al Sistema
-                      </h3>
-                      <p className="text-xs text-slate-400">
-                        Declara tus pesos o metas del día. Si surge un imprevisto, justifícalo para activar un desafío en casa.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Formulario para Declarar Nuevo Reto */}
-                  <form onSubmit={handleAddChallenge} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 mb-5 p-3 rounded-xl bg-slate-950/90 border border-slate-800">
-                    <input
-                      type="text"
-                      value={newChallengeTitle}
-                      onChange={(e) => setNewChallengeTitle(e.target.value)}
-                      placeholder="Ej. Gym: Sentadilla 140kg 4x6 + Press Banca 95kg 4x8..."
-                      className="sm:col-span-6 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-                    />
-                    <select
-                      value={newChallengeCategory}
-                      onChange={(e) => setNewChallengeCategory(e.target.value)}
-                      className="sm:col-span-3 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400"
-                    >
-                      <option value="Gimnasio">Gimnasio</option>
-                      <option value="Cardio Exterior">Cardio Exterior</option>
-                      <option value="Casa">Casa</option>
-                      <option value="Movilidad">Movilidad</option>
-                    </select>
-                    <button
-                      type="submit"
-                      className="sm:col-span-3 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition shadow-lg"
-                    >
-                      <Plus className="w-4 h-4" /> Declarar Reto
-                    </button>
-                  </form>
-
-                  {/* Lista de Retos Declarados */}
-                  <div className="space-y-3">
-                    {dailyChallenges.length === 0 ? (
-                      <div className="text-center py-8 border border-dashed border-slate-800 rounded-xl text-xs text-slate-500">
-                        No hay retos activos hoy. Declara tu próximo objetivo arriba.
-                      </div>
-                    ) : (
-                      dailyChallenges.map((ch) => (
-                        <div
-                          key={ch.id}
-                          className={`p-4 rounded-xl border transition ${
-                            ch.status === 'completed'
-                              ? 'bg-emerald-950/20 border-emerald-500/40'
-                              : ch.status === 'contingency'
-                              ? 'bg-purple-950/25 border-purple-500/50'
-                              : 'bg-slate-900/70 border-slate-800'
-                          }`}
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700">
-                                  {ch.category}
-                                </span>
-                                <span className="text-[11px] font-mono font-bold text-amber-400">
-                                  +{ch.lpReward} LP
-                                </span>
-                                {ch.status === 'completed' && (
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                                    ✓ COMPLETADO
-                                  </span>
-                                )}
-                                {ch.status === 'contingency' && (
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40">
-                                    ⚡ CONTINGENCIA EN CASA ACTIVA
-                                  </span>
-                                )}
-                              </div>
-                              <h4 className="text-sm font-bold text-white">{ch.title}</h4>
-                              {ch.contingencyNote && (
-                                <p className="text-xs text-purple-200/90 bg-purple-950/40 p-2 rounded-lg border border-purple-500/30 mt-1">
-                                  {ch.contingencyNote}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Botones de Acción por Reto */}
-                            {ch.status !== 'completed' && (
-                              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => handleCompleteChallenge(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/60 text-emerald-300 text-xs font-bold transition"
-                                >
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
-                                  Completado (+{ch.lpReward} LP)
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => handleFailChallenge(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/50 text-red-300 text-xs font-bold transition"
-                                >
-                                  <XCircle className="w-3.5 h-3.5" />
-                                  No logrado
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => setContingencyTarget(ch)}
-                                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/50 text-amber-300 text-xs font-bold transition"
-                                >
-                                  <CloudRain className="w-3.5 h-3.5" />
-                                  Justificar Imprevisto
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Columna Derecha: Retos Fallidos (Retomar la Próxima Semana) */}
-              <div className="lg:col-span-4">
-                <div className="rounded-2xl border border-red-900/50 bg-[#0B0912] p-5 h-full">
-                  <div className="flex items-center gap-2 mb-2">
-                    <RefreshCw className="w-4 h-4 text-red-400" />
-                    <h3 className="text-sm font-bold text-red-300 uppercase tracking-wide">
-                      Retomar Próxima Semana
-                    </h3>
-                  </div>
-                  <p className="text-xs text-slate-400 mb-4">
-                    Los retos marcados como <span className="text-red-400 font-semibold">FALLIDOS</span> quedan bloqueados aquí hasta el reinicio semanal para su revancha.
-                  </p>
-
-                  <div className="space-y-3">
-                    {nextWeekPending.length === 0 ? (
-                      <div className="p-6 rounded-xl border border-slate-800/80 text-center text-xs text-slate-500">
-                        Sin retos fallidos pendientes. ¡Disciplina impecable!
-                      </div>
-                    ) : (
-                      nextWeekPending.map((item) => (
-                        <div
-                          key={item.id}
-                          className="p-3.5 rounded-xl bg-red-950/20 border border-red-500/40 space-y-2.5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 font-bold">
-                              FALLIDO • {item.failedDate}
-                            </span>
-                            <span className="text-[11px] font-mono text-slate-400">
-                              +{item.lpReward + 10} LP Revancha
-                            </span>
-                          </div>
-                          <p className="text-xs font-semibold text-slate-200">{item.title}</p>
-                          <button
-                            type="button"
-                            onClick={() => handleRetakePendingChallenge(item)}
-                            className="w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 text-xs font-bold flex items-center justify-center gap-1.5 transition"
-                          >
-                            <RefreshCw className="w-3.5 h-3.5" />
-                            Simular Nueva Semana: Retomar
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 2: FUERZA ABSOLUTA Y RELATIVA (CIENCIA BIOMECÁNICA F A EX)
-           ================================================================== */}
-        {activeTab === 'fuerza' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Panel de Entrada de Marcas y Peso Corporal */}
-              <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-4">
-                <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Dumbbell className="w-5 h-5 text-cyan-400" />
-                    Laboratorio de Fuerza Biomecánica
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Cálculo de 1RM estimado (fórmula híbrida Brzycki/Epley) y coeficiente científico DOTS.
-                  </p>
-                </div>
-
-                {/* Peso Corporal */}
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <label className="flex justify-between text-xs font-mono text-slate-300 mb-2">
-                    <span>PESO CORPORAL DEL ATLETA</span>
-                    <span className="text-cyan-400 font-bold">{bodyWeight} kg</span>
-                  </label>
-                  <input
-                    type="range"
-                    min="40"
-                    max="150"
-                    step="0.5"
-                    value={bodyWeight}
-                    onChange={(e) => setBodyWeight(Number(e.target.value))}
-                    className="w-full accent-cyan-400 cursor-pointer"
-                  />
-                </div>
-
-                {/* Inputs de los 4 Levantamientos */}
-                <div className="space-y-3">
-                  {[
-                    { key: 'squat', label: 'Sentadilla Trasera (Squat)' },
-                    { key: 'bench', label: 'Press de Banca (Bench Press)' },
-                    { key: 'deadlift', label: 'Peso Muerto (Deadlift)' },
-                    { key: 'ohp', label: 'Press Militar Estricto (OHP)' }
-                  ].map((item) => (
-                    <div key={item.key} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-bold text-slate-200">{item.label}</span>
-                        <span className="text-[11px] font-mono text-cyan-300">
-                          1RM Est.:{' '}
-                          <strong>
-                            {strengthMetrics.exercises.find((e) => e.key === item.key)?.oneRM} kg
-                          </strong>
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-[10px] font-mono text-slate-400 mb-1">PESO (KG)</label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="500"
-                            step="2.5"
-                            value={lifts[item.key].weight}
-                            onChange={(e) =>
-                              setLifts((prev) => ({
-                                ...prev,
-                                [item.key]: { ...prev[item.key], weight: Number(e.target.value) }
-                              }))
-                            }
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-mono text-slate-400 mb-1">REPETICIONES</label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="20"
-                            value={lifts[item.key].reps}
-                            onChange={(e) =>
-                              setLifts((prev) => ({
-                                ...prev,
-                                [item.key]: { ...prev[item.key], reps: Number(e.target.value) }
-                              }))
-                            }
-                            className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-white focus:border-cyan-400 focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Panel de Resultados Científicos: Fuerza Absoluta vs Relativa */}
-              <div className="lg:col-span-7 space-y-5">
-                {/* Dos Tarjetas Principales de Rango (F a EX) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Fuerza Absoluta */}
-                  <div className="rounded-2xl border border-purple-500/50 bg-gradient-to-br from-purple-950/40 to-slate-950 p-5">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-purple-300">
-                          CLASIFICACIÓN NEURAL TOTAL
-                        </span>
-                        <h3 className="text-base font-bold text-white">Fuerza Absoluta</h3>
-                      </div>
-                      <div
-                        className={`px-3.5 py-1.5 rounded-xl border text-2xl font-black font-mono ${strengthMetrics.absoluteGrade.bg}`}
-                      >
-                        {strengthMetrics.absoluteGrade.grade}
-                      </div>
-                    </div>
-                    <p className="text-xs font-semibold text-purple-200 mb-2">
-                      {strengthMetrics.absoluteGrade.label}
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-black/50 border border-slate-800 text-xs font-mono mb-2">
-                      <div>
-                        <span className="text-slate-400 block text-[10px]">TOTAL SBD</span>
-                        <span className="text-white font-bold">{strengthMetrics.sbdTotal} kg</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[10px]">ÍNDICE DOTS</span>
-                        <span className="text-purple-300 font-bold">{strengthMetrics.dotsScore} pts</span>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-slate-400">{strengthMetrics.absoluteGrade.desc}</p>
-                  </div>
-
-                  {/* Fuerza Relativa */}
-                  <div className="rounded-2xl border border-cyan-500/50 bg-gradient-to-br from-cyan-950/40 to-slate-950 p-5">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-300">
-                          EFICIENCIA PESO / POTENCIA
-                        </span>
-                        <h3 className="text-base font-bold text-white">Fuerza Relativa</h3>
-                      </div>
-                      <div
-                        className={`px-3.5 py-1.5 rounded-xl border text-2xl font-black font-mono ${strengthMetrics.relativeGrade.bg}`}
-                      >
-                        {strengthMetrics.relativeGrade.grade}
-                      </div>
-                    </div>
-                    <p className="text-xs font-semibold text-cyan-200 mb-2">
-                      {strengthMetrics.relativeGrade.label}
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-black/50 border border-slate-800 text-xs font-mono mb-2">
-                      <div>
-                        <span className="text-slate-400 block text-[10px]">RATIO TOTAL/BW</span>
-                        <span className="text-white font-bold">{strengthMetrics.relativeRatio}x BW</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block text-[10px]">TOTAL 4 LIFTS</span>
-                        <span className="text-cyan-300 font-bold">{strengthMetrics.grandTotal} kg</span>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-slate-400">{strengthMetrics.relativeGrade.desc}</p>
-                  </div>
-                </div>
-
-                {/* Desglose Biomecánico por Ejercicio */}
-                <div className="rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                      Perfil Biomecánico por Patrón Motor
-                    </h3>
-                    <span className="text-[11px] font-mono text-slate-400">Escala: F → EX</span>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    {strengthMetrics.exercises.map((ex) => {
-                      const pct = Math.min(100, Math.round((ex.ratio / (ex.targetNext * 1.4)) * 100));
-                      return (
-                        <div key={ex.key} className="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800/90">
-                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`px-2 py-0.5 rounded border text-xs font-black font-mono ${ex.grade.bg}`}
-                              >
-                                {ex.grade.grade}
-                              </span>
-                              <span className="text-xs font-bold text-white">{ex.name}</span>
-                            </div>
-                            <div className="text-xs font-mono">
-                              <span className="text-cyan-300 font-bold">{ex.oneRM} kg</span>
-                              <span className="text-slate-500 mx-1.5">|</span>
-                              <span className="text-amber-300 font-bold">{ex.ratio}x BW</span>
-                            </div>
-                          </div>
-
-                          {/* Barra comparativa */}
-                          <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden mb-2">
-                            <div
-                              className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 transition-all duration-500"
-                              style={{ width: `${pct}%` }}
-                            />
-                          </div>
-
-                          <p className="text-[11px] text-slate-400 leading-relaxed">{ex.biomech}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 3: EVALUACIÓN FÍSICA TRIMESTRAL, BÓVEDA SEGURA Y RECAP ANUAL
-           ================================================================== */}
-        {activeTab === 'fisico' && (
-          <div className="space-y-6">
-            {/* Encabezado de Estado Trimestral y Contador Regresivo de 90 Días */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-5 rounded-2xl border border-cyan-500/40 bg-gradient-to-br from-slate-900 via-[#090E1C] to-purple-950/30 p-5 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-cyan-400">
-                      AUDITORÍA MORFOLÓGICA TRIMESTRAL
-                    </span>
-                    <span className={`px-3 py-1 rounded-lg border text-sm font-black font-mono ${currentPhysicalGrade.bg}`}>
-                      RANGO FÍSICO: {currentPhysicalGrade.grade}
-                    </span>
-                  </div>
-
-                  <h2 className="text-xl font-bold text-white mb-1">{currentPhysicalGrade.label}</h2>
-                  <p className="text-xs text-slate-400 mb-4">{currentPhysicalGrade.desc}</p>
-
-                  {/* Contador Regresivo 3 Meses (90 días) */}
-                  <div className="p-4 rounded-xl bg-black/70 border border-slate-800 mb-4">
-                    <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-amber-400" />
-                        RENOVACIÓN OBLIGATORIA (CICLO 90 DÍAS)
-                      </span>
-                      <span className="text-amber-300 font-bold">{daysUntilRenewal} DÍAS RESTANTES</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden mb-3">
-                      <div
-                        className="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-500 transition-all"
-                        style={{ width: `${Math.round(((90 - daysUntilRenewal) / 90) * 100)}%` }}
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setDaysUntilRenewal((d) => Math.max(0, d - 15))}
-                        className="flex-1 py-1.5 px-2 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200 transition"
-                      >
-                        Avanzar 15 días
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDaysUntilRenewal(90);
-                          triggerToast('Ciclo trimestral renovado por 90 días.', 'success');
-                        }}
-                        className="flex-1 py-1.5 px-2 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-[11px] font-mono text-cyan-300 transition"
-                      >
-                        Renovar Hoy (90d)
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Indicador de Seguridad AES-256 */}
-                <div className="p-3.5 rounded-xl bg-emerald-950/25 border border-emerald-500/40 flex items-start gap-3">
-                  <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="text-xs">
-                    <p className="font-bold text-emerald-300">
-                      Bóveda Privada Cifrada (AES-256 / Zero-Face ID)
-                    </p>
-                    <p className="text-slate-300/90 text-[11px] mt-0.5">
-                      Tus capturas de frente y espalda se procesan localmente en memoria con recorte/pixelado automático del rostro y eliminación de metadatos EXIF. Nunca se suben a servidores públicos.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Módulo de Carga Segura (Frente y Espalda con Redacción Facial Automática) */}
-              <div className="lg:col-span-7 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-emerald-400" />
-                      Escáner Corporal Seguro (Frente & Espalda Sin Rostro)
-                    </h3>
-                    <p className="text-xs text-slate-400">
-                      Sube tus fotos o usa el escáner demo; el sistema censura automáticamente el área facial.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <PrivacyPhotoVaultCard
-                    sideLabel="Vista Frontal"
-                    imageDataUrl={frontPhoto}
-                    onUploadImage={(url) => {
-                      setFrontPhoto(url);
-                      triggerToast('Foto frontal cifrada y rostro redactado.', 'success');
-                    }}
-                    onGenerateSample={() => generateSyntheticScan('Frente')}
-                  />
-                  <PrivacyPhotoVaultCard
-                    sideLabel="Vista Dorsal (Espalda)"
-                    imageDataUrl={backPhoto}
-                    onUploadImage={(url) => {
-                      setBackPhoto(url);
-                      triggerToast('Foto dorsal cifrada y rostro redactado.', 'success');
-                    }}
-                    onGenerateSample={() => generateSyntheticScan('Espalda')}
-                  />
-                </div>
-
-                {/* Calibrador de Evaluación Visual Trimestral */}
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="w-full sm:w-2/3">
-                    <div className="flex justify-between text-xs font-mono mb-1">
-                      <span className="text-slate-400">ÍNDICE DE DEFINICIÓN & SIMETRÍA VISUAL</span>
-                      <span className="text-cyan-300 font-bold">
-                        {visualSymmetryScore}/100 → Rango {SCIENTIFIC_GRADES[Math.min(9, Math.floor(visualSymmetryScore / 10))].grade}
-                      </span>
-                    </div>
-                    <input
-                      type="range"
-                      min="5"
-                      max="99"
-                      value={visualSymmetryScore}
-                      onChange={(e) => setVisualSymmetryScore(Number(e.target.value))}
-                      className="w-full accent-purple-500 cursor-pointer"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newGrade = SCIENTIFIC_GRADES[Math.min(9, Math.floor(visualSymmetryScore / 10))].grade;
-                      setQuarterlyHistory((prev) =>
-                        prev.map((q) => (q.quarter === 'Q3' ? { ...q, grade: newGrade } : q))
-                      );
-                      setDaysUntilRenewal(90);
-                      triggerToast(`Evaluación trimestral guardada en Bóveda. Nuevo Rango Físico: ${newGrade}`, 'success');
-                    }}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold text-xs transition shrink-0"
-                  >
-                    Registrar Evaluación
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Línea de Tiempo de Recap Anual (Q1, Q2, Q3, Q4) */}
-            <div className="rounded-2xl border border-slate-800 bg-[#090D1A] p-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-amber-400" />
-                    Evolución Trimestral y Recap Anual (Q1 → Q4)
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Comparativa histórica de los 4 trimestres del año para verificar tu transformación física real.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowAnnualRecap(!showAnnualRecap)}
-                  className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 text-amber-200 text-xs font-bold flex items-center gap-2 transition"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-400" />
-                  {showAnnualRecap ? 'Ocultar Resumen Anual' : 'Desbloquear Recap Anual Comparativo'}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {quarterlyHistory.map((q, i) => {
-                  const gradeObj = SCIENTIFIC_GRADES.find((g) => g.grade === q.grade) || SCIENTIFIC_GRADES[2];
-                  return (
-                    <div
-                      key={q.quarter}
-                      className="p-4 rounded-xl bg-slate-950 border border-slate-800 relative overflow-hidden"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-mono font-bold text-slate-400">{q.label}</span>
-                        <span className={`px-2.5 py-0.5 rounded border text-sm font-black font-mono ${gradeObj.bg}`}>
-                          {q.grade}
-                        </span>
-                      </div>
-                      <div className="text-xs font-mono text-cyan-300 mb-1">Grasa Est.: {q.bodyfat}</div>
-                      <p className="text-xs text-slate-400">{q.note}</p>
-                      {i < 3 && (
-                        <div className="mt-3 pt-2 border-t border-slate-800/80 text-[10px] font-mono text-emerald-400">
-                          ✓ VERIFICADO EN BÓVEDA
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Resumen Desplegable de Recap Anual */}
-              {showAnnualRecap && (
-                <div className="mt-5 p-5 rounded-xl bg-gradient-to-r from-cyan-950/50 via-purple-950/50 to-amber-950/40 border border-amber-400/50">
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300">
-                        INFORME ANUAL CONSOLIDADO // PROTOCOLO EX
-                      </span>
-                      <h4 className="text-lg font-black text-white mt-0.5">
-                        Progresión Anual: Rango D → Rango {quarterlyHistory[3].grade} (+4 Saltos de Grado)
-                      </h4>
-                      <p className="text-xs text-slate-300 mt-1">
-                        Reducción estimada de tejido adiposo del <strong>-7.0%</strong> con ganancia neta de masa libre de grasa y mejora sostenida en simetría dorsal y cintura escapular.
-                      </p>
-                    </div>
-                    <div className="flex gap-3 shrink-0 font-mono text-xs">
-                      <div className="p-3 rounded-lg bg-black/60 border border-slate-700 text-center">
-                        <span className="block text-slate-400 text-[10px]">INICIO Q1</span>
-                        <span className="text-lg font-black text-green-400">D</span>
-                      </div>
-                      <div className="flex items-center text-amber-400 font-bold">→</div>
-                      <div className="p-3 rounded-lg bg-black/60 border border-amber-400/60 text-center">
-                        <span className="block text-slate-400 text-[10px]">CIERRE Q4</span>
-                        <span className="text-lg font-black text-amber-300">{quarterlyHistory[3].grade}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 4: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
-           ================================================================== */}
-        {activeTab === 'rutinas' && (
-          <div className="space-y-6">
-            {/* Sección A: Generador Basado en Biomecánica */}
-            <div className="rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-5">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-cyan-400" />
-                    Generador de Rutinas Basadas en Biomecánica
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Programación estructurada según perfil de resistencia, longitud muscular bajo carga y gestión de fatiga.
-                  </p>
-                </div>
-
-                {/* Selectores de Entorno, Objetivo y Días */}
-                <div className="flex flex-wrap gap-2">
-                  <select
-                    value={routineEnv}
-                    onChange={(e) => setRoutineEnv(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-slate-950 border border-cyan-500/40 text-xs font-semibold text-cyan-200 focus:outline-none"
-                  >
-                    <option value="gimnasio">Entorno: Gimnasio</option>
-                    <option value="casa">Entorno: Casa</option>
-                    <option value="hibrido">Entorno: Híbrido (Casa + Gym)</option>
-                  </select>
-
-                  <select
-                    value={routineGoal}
-                    onChange={(e) => setRoutineGoal(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-slate-950 border border-purple-500/40 text-xs font-semibold text-purple-200 focus:outline-none"
-                  >
-                    <option value="hipertrofia">Objetivo: Hipertrofia</option>
-                    <option value="fuerza">Objetivo: Fuerza Máxima</option>
-                    <option value="recomposicion">Objetivo: Recomposición</option>
-                  </select>
-
-                  <select
-                    value={routineDaysPerWeek}
-                    onChange={(e) => setRoutineDaysPerWeek(Number(e.target.value))}
-                    className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs font-semibold text-slate-200 focus:outline-none"
-                  >
-                    <option value={3}>3 días / semana</option>
-                    <option value={4}>4 días / semana</option>
-                    <option value={5}>5 días / semana</option>
-                    <option value={6}>6 días / semana</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Fundamento Científico del Protocolo Seleccionado */}
-              <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-950/40 to-purple-950/30 border border-cyan-500/30">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-mono font-bold text-cyan-300 uppercase">
-                    ENFOQUE: {activeRoutine.focus}
-                  </span>
-                  <span className="text-[11px] font-mono text-slate-400">
-                    Frecuencia configurada: {routineDaysPerWeek} días/sem (Rotación Ondulante)
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{activeRoutine.rationale}</p>
-              </div>
-
-              {/* Bloques de Entrenamiento */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {activeRoutine.days.map((dayBlock, dIdx) => (
-                  <div key={dIdx} className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-800">
-                        <h3 className="text-sm font-bold text-white">{dayBlock.day}</h3>
-                        <button
-                          type="button"
-                          onClick={() => sendRoutineDayToChallenges(dayBlock)}
-                          className="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/50 text-cyan-300 text-[11px] font-bold transition shrink-0"
-                        >
-                          + Enviar a Retos
-                        </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        {dayBlock.exercises.map((ex, eIdx) => (
-                          <div key={eIdx} className="p-3 rounded-lg bg-slate-900/70 border border-slate-800/80">
-                            <div className="flex flex-wrap justify-between items-center gap-1 mb-1">
-                              <span className="text-xs font-bold text-slate-100">{ex.name}</span>
-                              <span className="text-[11px] font-mono text-emerald-300 font-bold">
-                                {ex.sets} • {ex.rir}
-                              </span>
-                            </div>
-                            <div className="flex gap-3 text-[10px] font-mono text-slate-400 mb-1.5">
-                              <span>Descanso: {ex.rest}</span>
-                              <span>Tempo: {ex.tempo}</span>
-                            </div>
-                            <p className="text-[11px] text-cyan-200/80">
-                              <strong>Biomecánica:</strong> {ex.biomech}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Sección B: Escáner y Auditor Científico de Rutina Propia */}
-            <div className="rounded-2xl border border-purple-500/40 bg-[#090D1A] p-5">
-              <div className="mb-4">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-purple-400" />
-                  Escáner y Auditor Biomecánico de Rutina Propia
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Pega tu planilla actual o sube un archivo/foto de tu rutina junto con tus resultados para detectar desbalances, volumen semanal y fatiga del SNC.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Input de Rutina y Estado de Progreso */}
-                <div className="lg:col-span-5 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 text-purple-200 text-xs font-bold transition">
-                      <Upload className="w-3.5 h-3.5" />
-                      Subir Archivo / Foto de Planilla
-                      <input
-                        type="file"
-                        accept=".txt,.csv,.md,image/*"
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (!f) return;
-                          setUploadedFileName(f.name);
-                          if (f.type.startsWith('text/')) {
-                            const r = new FileReader();
-                            r.onload = (ev) => setCustomRoutineText(String(ev.target?.result || ''));
-                            r.readAsText(f);
-                          } else {
-                            setCustomRoutineText(
-                              `[OCR PLANILLA: ${f.name}]\nDía 1: Press Banca 4x8, Press Inclinado 4x10, Aperturas 4x12, Tríceps Polea 4x15\nDía 2: Jalón Pecho 3x10, Curl Bíceps 4x12\nDía 3: Sentadilla 3x8, Prensa 3x10`
-                            );
-                          }
-                          triggerToast(`Planilla "${f.name}" escaneada por el motor biomecánico.`, 'success');
-                        }}
-                        className="hidden"
-                      />
-                    </label>
-                    {uploadedFileName && (
-                      <span className="text-[11px] font-mono text-emerald-400 truncate max-w-[160px]">
-                        ✓ {uploadedFileName}
-                      </span>
-                    )}
-                  </div>
-
-                  <textarea
-                    rows={6}
-                    value={customRoutineText}
-                    onChange={(e) => setCustomRoutineText(e.target.value)}
-                    placeholder="Escribe o pega aquí los ejercicios, series y repeticiones de tu rutina actual..."
-                    className="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono text-slate-200 focus:outline-none focus:border-purple-400"
-                  />
-
-                  <div>
-                    <label className="block text-[11px] font-mono text-slate-400 mb-1">
-                      ¿CUÁLES SON TUS RESULTADOS ACTUALES CON ESTA RUTINA?
-                    </label>
-                    <select
-                      value={customProgressStatus}
-                      onChange={(e) => setCustomProgressStatus(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:border-purple-400 focus:outline-none"
-                    >
-                      <option value="progresando">Progresando bien en cargas y medidas</option>
-                      <option value="estancado">Estancado sin subir pesos hace +3 semanas</option>
-                      <option value="fatiga">Fatiga extrema / Molestias articulares</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Diagnóstico Científico en Tiempo Real */}
-                <div className="lg:col-span-7 space-y-4">
-                  {/* Barras de Volumen Semanal por Grupo */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-mono font-bold text-slate-300">
-                        VOLUMEN SEMANAL ESTIMADO POR PATRÓN
-                      </span>
-                      <span className="text-[11px] font-mono text-purple-300">
-                        Fatiga SNC: {routineAudit.cnsFatigue}
-                      </span>
-                    </div>
-
-                    {routineAudit.volumeByGroup.map((grp) => (
-                      <div key={grp.label}>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-slate-300">{grp.label}</span>
-                          <span className="font-mono text-slate-400">
-                            <strong className="text-white">{grp.sets} series</strong> (Óptimo: {grp.target})
-                          </span>
-                        </div>
-                        <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-300"
-                            style={{
-                              width: `${Math.min(100, (grp.sets / 22) * 100)}%`,
-                              backgroundColor: grp.color
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Hallazgos y Recomendaciones */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {routineAudit.findings.map((f, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 rounded-xl border text-xs ${
-                          f.type === 'alert'
-                            ? 'bg-red-950/30 border-red-500/50 text-red-200'
-                            : f.type === 'warning'
-                            ? 'bg-amber-950/30 border-amber-500/50 text-amber-200'
-                            : 'bg-emerald-950/25 border-emerald-500/40 text-emerald-200'
-                        }`}
-                      >
-                        <p className="font-bold mb-1">{f.title}</p>
-                        <p className="text-[11px] opacity-90">{f.detail}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-cyan-950/25 border border-cyan-500/40 text-xs">
-                    <p className="font-bold text-cyan-300 mb-1">Ajustes Científicos Recomendados:</p>
-                    <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
-                      {routineAudit.recommendations.map((rec, i) => (
-                        <li key={i}>{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 5: CONTADOR DE SUEÑO Y RECUPERACIÓN SEMANAL
-           ================================================================== */}
-        {activeTab === 'sueno' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Registro Diario Lunes a Domingo */}
-            <div className="lg:col-span-7 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Moon className="w-5 h-5 text-cyan-400" />
-                    Registro Diario de Sueño y Arquitectura Circadiana
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Objetivo científico recomendado: <strong>49 a 63 horas semanales</strong> (7.0 a 9.0h por noche).
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSleepDays([7.5, 8.0, 7.5, 8.0, 7.5, 8.5, 8.0])}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[11px] font-mono"
-                  >
-                    Simular Óptimo (55h)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSleepDays([5.5, 5.0, 6.0, 5.5, 5.0, 6.5, 5.5])}
-                    className="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-[11px] font-mono"
-                  >
-                    Simular Déficit (39h)
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {dayNames.map((dayName, idx) => {
-                  const hrs = sleepDays[idx];
-                  const isLow = hrs < 7;
-                  return (
-                    <div
-                      key={dayName}
-                      className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-4"
-                    >
-                      <div className="w-24 shrink-0">
-                        <span className="text-xs font-bold text-slate-200 block">{dayName}</span>
-                        <span className={`text-[10px] font-mono ${isLow ? 'text-amber-400' : 'text-emerald-400'}`}>
-                          {isLow ? 'Déficit leve' : 'Fase REM OK'}
-                        </span>
-                      </div>
-
-                      <input
-                        type="range"
-                        min="3"
-                        max="12"
-                        step="0.5"
-                        value={hrs}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setSleepDays((prev) => prev.map((d, i) => (i === idx ? val : d)));
-                        }}
-                        className="flex-1 accent-cyan-400 cursor-pointer"
-                      />
-
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSleepDays((prev) =>
-                              prev.map((d, i) => (i === idx ? Math.max(3, d - 0.5) : d))
-                            )
-                          }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
-                        >
-                          -
-                        </button>
-                        <span className="w-12 text-center font-mono text-xs font-bold text-cyan-300">
-                          {hrs.toFixed(1)}h
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSleepDays((prev) =>
-                              prev.map((d, i) => (i === idx ? Math.min(12, d + 0.5) : d))
-                            )
-                          }
-                          className="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Panel de Acumulación Semanal y Modificador Fisiológico */}
-            <div className="lg:col-span-5 space-y-5">
-              <div className="rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-4">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
-                  ACUMULACIÓN SEMANAL DE DESCANSO
-                </span>
-
-                <div className="flex items-end justify-between">
-                  <div>
-                    <span className="text-4xl font-black font-mono text-white">{sleepMetrics.totalHours}h</span>
-                    <span className="text-xs text-slate-400 ml-2">
-                      (Promedio: {sleepMetrics.avgHours}h / noche)
-                    </span>
-                  </div>
-                  <span
-                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${
-                      sleepMetrics.status === 'critical'
-                        ? 'bg-red-950/60 border-red-500 text-red-300'
-                        : sleepMetrics.status === 'warning'
-                        ? 'bg-amber-950/60 border-amber-500 text-amber-300'
-                        : 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
-                    }`}
-                  >
-                    RECUPERACIÓN: {sleepMetrics.recoveryScore}%
-                  </span>
-                </div>
-
-                {/* Barra visual comparada contra 49h - 63h */}
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-slate-400 mb-1">
-                    <span>0h</span>
-                    <span className="text-emerald-400">Zona Óptima: 49h – 63h</span>
-                    <span>70h+</span>
-                  </div>
-                  <div className="w-full h-4 rounded-full bg-slate-950 border border-slate-800 relative overflow-hidden">
-                    {/* Marcador de zona óptima 49h a 63h sobre escala de 70h */}
-                    <div
-                      className="absolute top-0 bottom-0 bg-emerald-500/20 border-x border-emerald-400/50"
-                      style={{ left: '70%', width: '20%' }}
-                    />
-                    <div
-                      className={`h-full transition-all duration-500 ${
-                        sleepMetrics.status === 'critical'
-                          ? 'bg-red-500'
-                          : sleepMetrics.status === 'warning'
-                          ? 'bg-amber-400'
-                          : 'bg-gradient-to-r from-cyan-400 to-emerald-400'
-                      }`}
-                      style={{ width: `${Math.min(100, (sleepMetrics.totalHours / 70) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Impacto en Rendimiento Físico */}
-                <div className="space-y-2.5 pt-2">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Síntesis Proteica Miofibrilar:</span>
-                    <span className="font-mono font-bold text-slate-200">{sleepMetrics.proteinSynthesis}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Disponibilidad del SNC:</span>
-                    <span className="font-mono font-bold text-cyan-300">{sleepMetrics.cnsReadiness}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-400">Riesgo de Fallo en Retos Pesados:</span>
-                    <span className="font-mono font-bold text-amber-300">{sleepMetrics.failureRisk}</span>
-                  </div>
-                </div>
-
-                <div
-                  className={`p-4 rounded-xl border text-xs leading-relaxed ${
-                    sleepMetrics.status === 'critical'
-                      ? 'bg-red-950/30 border-red-500/50 text-red-200'
-                      : sleepMetrics.status === 'warning'
-                      ? 'bg-amber-950/30 border-amber-500/50 text-amber-200'
-                      : 'bg-emerald-950/25 border-emerald-500/40 text-emerald-200'
-                  }`}
-                >
-                  <HeartPulse className="w-4 h-4 inline mr-1.5 mb-0.5" />
-                  {sleepMetrics.advisory}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 6: AVATAR PERSONALIZABLE Y COSMÉTICOS
-           ================================================================== */}
-        {activeTab === 'avatar' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Tarjeta de Visualización en Vivo del Avatar */}
-            <div className="lg:col-span-5 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 flex flex-col justify-between space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-mono uppercase tracking-wider text-cyan-400 font-bold">
-                    IDENTIDAD DEL JUGADOR // HUD
-                  </span>
-                  <span
-                    className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-black/70 border"
-                    style={{ borderColor: rankInfo.rank.color, color: rankInfo.rank.color }}
-                  >
-                    {rankInfo.fullTitle}
-                  </span>
-                </div>
-
-                <PlayerAvatarSVG
-                  avatar={avatar}
-                  rankColor={rankInfo.rank.color}
-                  physicalGrade={currentPhysicalGrade.grade}
-                />
-              </div>
-
-              {/* Alias del Jugador */}
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                <label className="block text-[10px] font-mono text-slate-400 mb-1">
-                  NOMBRE CLAVE DEL OPERADOR
-                </label>
-                <input
-                  type="text"
-                  maxLength={18}
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs font-mono font-bold text-cyan-300 focus:outline-none focus:border-cyan-400"
-                />
-              </div>
-            </div>
-
-            {/* Panel de Personalización de Rasgos y Cosméticos */}
-            <div className="lg:col-span-7 rounded-2xl border border-slate-800 bg-[#090D1A] p-5 space-y-5">
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Sliders className="w-5 h-5 text-purple-400" />
-                  Personalización de Avatar y Equipamiento Cosmético
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Configura tu silueta biomecánica, vestimenta técnica y aura vinculada a tu rango competitivo.
-                </p>
-              </div>
-
-              {/* Rasgos Físicos */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">SILUETA</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'masculino', label: 'Masculino' },
-                      { id: 'femenino', label: 'Femenino' }
-                    ].map((g) => (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, gender: g.id }))}
-                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition ${
-                          avatar.gender === g.id
-                            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
-                            : 'bg-slate-900 border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {g.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">COMPLEXIÓN FÍSICA</label>
-                  <select
-                    value={avatar.build}
-                    onChange={(e) => setAvatar((a) => ({ ...a, build: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
-                  >
-                    <option value="atletico">Atlético / Calisténico</option>
-                    <option value="mesomorfo">Mesomorfo / Estético</option>
-                    <option value="powerlifter">Powerlifter / Fuerza Bruta</option>
-                    <option value="titan">Titán / Hipertrofia Élite</option>
-                  </select>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">TONO DE PIEL</label>
-                  <div className="flex gap-2 flex-wrap">
-                    {[
-                      { id: 'claro', hex: '#F5D0B5' },
-                      { id: 'trigueno', hex: '#DCA882' },
-                      { id: 'bronceado', hex: '#B97A56' },
-                      { id: 'moreno', hex: '#8D5538' },
-                      { id: 'oscuro', hex: '#5C3824' },
-                      { id: 'cyber', hex: '#94A3B8' }
-                    ].map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, skin: s.id }))}
-                        className={`w-7 h-7 rounded-full border-2 transition ${
-                          avatar.skin === s.id ? 'border-cyan-400 scale-110' : 'border-slate-700'
-                        }`}
-                        style={{ backgroundColor: s.hex }}
-                        title={s.id}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                  <label className="block text-[11px] font-mono text-slate-400">ESTILO DE CABELLO</label>
-                  <select
-                    value={avatar.hair}
-                    onChange={(e) => setAvatar((a) => ({ ...a, hair: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
-                  >
-                    <option value="fade">Fade Moderno</option>
-                    <option value="corto">Corto Táctico</option>
-                    <option value="largo">Largo / Coleta</option>
-                    <option value="spikes">Cyber-Spikes</option>
-                    <option value="rapado">Rapado / Militar</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Cosméticos y Equipamiento */}
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-purple-300">
-                  Indumentaria Técnica & Accesorios
-                </h3>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'compresion', label: 'Compresión' },
-                    { id: 'musculosa', label: 'Musculosa' },
-                    { id: 'hoodie', label: 'Buzo Técnico' },
-                    { id: 'sin_remera', label: 'Modo Física' }
-                  ].map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, top: item.id }))}
-                      className={`py-2 px-2.5 rounded-lg border text-xs font-semibold transition ${
-                        avatar.top === item.id
-                          ? 'bg-purple-500/20 border-purple-400 text-purple-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Toggles de Accesorios */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  {[
-                    { key: 'belt', label: 'Cinturón Powerlifting' },
-                    { key: 'wristWraps', label: 'Muñequeras Neón' },
-                    { key: 'visor', label: 'Visor Táctico HUD' }
-                  ].map((acc) => (
-                    <button
-                      key={acc.key}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, [acc.key]: !a[acc.key] }))}
-                      className={`p-2.5 rounded-lg border text-xs font-semibold flex items-center justify-between transition ${
-                        avatar[acc.key]
-                          ? 'bg-cyan-500/15 border-cyan-400/70 text-cyan-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-500'
-                      }`}
-                    >
-                      <span>{acc.label}</span>
-                      <span className="font-mono text-[10px]">{avatar[acc.key] ? 'ON' : 'OFF'}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Aura y Fondo de Tarjeta */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block text-[10px] font-mono text-slate-400 mb-1">AURA ENERGÉTICA</label>
-                    <select
-                      value={avatar.aura}
-                      onChange={(e) => setAvatar((a) => ({ ...a, aura: e.target.value }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white"
-                    >
-                      <option value="rango">Vinculada al Rango Actual ({rankInfo.rank.name})</option>
-                      <option value="cian">Cian Eléctrico</option>
-                      <option value="violeta">Violeta Soberano</option>
-                      <option value="esmeralda">Verde Esmeralda</option>
-                      <option value="dorado">Dorado Challenger</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono text-slate-400 mb-1">FONDO DE TARJETA</label>
-                    <select
-                      value={avatar.bg}
-                      onChange={(e) => setAvatar((a) => ({ ...a, bg: e.target.value }))}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white"
-                    >
-                      <option value="laboratorio">Laboratorio Biomecánico</option>
-                      <option value="matriz">Matriz Violeta HUD</option>
-                      <option value="obsidiana">Eclipse Obsidiana</option>
-                      <option value="dorado">Santuario Dorado</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* ====================================================================
-          MODAL DE JUSTIFICACIÓN DE IMPREVISTO -> DESAFÍO EN CASA
-         ==================================================================== */}
-      {contingencyTarget && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-amber-500/60 bg-[#0A0E1A] p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
-                  PROTOCOLO DE CONTINGENCIA // PROTECCIÓN DE RACHA
-                </span>
-                <h3 className="text-lg font-bold text-white mt-0.5">Justificar Imprevisto</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setContingencyTarget(null)}
-                className="p-1.5 rounded-lg bg-slate-900 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <p className="text-xs text-slate-300">
-              Reto original: <strong className="text-white">{contingencyTarget.title}</strong>. Selecciona el motivo y el Sistema generará una alternativa equivalente en casa:
-            </p>
-
-            <div className="space-y-2">
-              {CONTINGENCY_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => setSelectedPresetId(preset.id)}
-                  className={`w-full p-3 rounded-xl border text-left transition ${
-                    selectedPresetId === preset.id
-                      ? 'bg-amber-500/15 border-amber-400 text-white'
-                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-xs font-bold mb-1">
-                    <span>
-                      {preset.icon} {preset.label}
-                    </span>
-                    <span className="font-mono text-amber-300">+{preset.lpBonus} LP</span>
-                  </div>
-                  <p className="text-[11px] text-cyan-300 font-semibold">{preset.title}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{preset.detail}</p>
-                </button>
-              ))}
-            </div>
-
-            <input
-              type="text"
-              value={customJustificationNote}
-              onChange={(e) => setCustomJustificationNote(e.target.value)}
-              placeholder="Nota adicional opcional (ej. Tormenta eléctrica en mi zona)..."
-              className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-amber-400"
-            />
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setContingencyTarget(null)}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmContingency}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 text-xs font-black transition"
-              >
-                Activar Desafío en Casa
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================================
-          MODAL ANIMADO DE ASCENSO / DESCENSO DE RANGO O DIVISIÓN
-         ==================================================================== */}
-      {rankBanner && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div
-            className="w-full max-w-md rounded-2xl border-2 bg-[#080B14] p-6 text-center shadow-2xl space-y-4"
-            style={{ borderColor: rankBanner.color, boxShadow: `0 0 40px ${rankBanner.color}55` }}
-          >
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-slate-700 text-xs font-mono uppercase tracking-widest">
-              {rankBanner.type === 'promotion' ? (
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  <ChevronUp className="w-4 h-4" /> ASCENSO DE SISTEMA
-                </span>
-              ) : (
-                <span className="text-red-400 font-bold flex items-center gap-1">
-                  <ChevronDown className="w-4 h-4" /> DESCENSO DE DIVISIÓN
-                </span>
-              )}
-            </div>
-
-            <div className="flex justify-center">
-              <RankEmblemSVG rankIndex={rankInfo.rankIndex} color={rankBanner.color} size={88} />
-            </div>
-
-            <div>
-              <p className="text-xs font-mono text-slate-400">
-                {rankBanner.from} →
-              </p>
-              <h3
-                className="text-3xl font-black uppercase tracking-wide mt-1"
-                style={{ color: rankBanner.color }}
-              >
-                {rankBanner.to}
-              </h3>
-            </div>
-
-            <p className="text-xs text-slate-300">
-              {rankBanner.type === 'promotion'
-                ? 'Tu disciplina biomecánica y cumplimiento diario han elevado tu clasificación en el Sistema.'
-                : 'Se ha registrado una caída de puntos de liga. Completa tus retos declarados para recuperar tu división.'}
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setRankBanner(null)}
-              className="w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-950 transition"
-              style={{ backgroundColor: rankBanner.color }}
-            >
-              Continuar en el Sistema
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================================
-          NOTIFICACIÓN HUD FLOTANTE (TOAST)
-         ==================================================================== */}
-      {toast && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-sm px-4 py-3 rounded-xl bg-[#0B1120]/95 border border-cyan-500/60 shadow-2xl flex items-center gap-2.5 text-xs text-slate-100 backdrop-blur-md">
-          <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span>{toast.message}</span>
-        </div>
-      )}
-    </div>
-  );
-}
