@@ -6,7 +6,7 @@ import {
   ChevronRight, Sword, Clock, Save, Check,
   UserCheck, Users, MapPin, Play, BookOpen, Plus, Crosshair,
   LogIn, LogOut, KeyRound, Mail, UserPlus, Settings, Trash2,
-  Heart, MessageSquare, Building2, Send
+  Heart, Building2, Send
 } from 'lucide-react';
 
 // ============================================================================
@@ -331,15 +331,14 @@ const HUNTER_GRADE_STANDARDS = [
   { grade: 'E', minComposite: 0.70, benchReq: 0.65, squatReq: 0.85, deadliftReq: 1.00, desc: 'Novato consolidado' },
   { grade: 'D', minComposite: 0.90, benchReq: 0.80, squatReq: 1.05, deadliftReq: 1.25, desc: 'Base atlética funcional' },
   { grade: 'C', minComposite: 1.12, benchReq: 1.00, squatReq: 1.25, deadliftReq: 1.50, desc: 'Intermedio sólido (1x BW en Banca)' },
-  { grade: 'B', minComposite: 1.35, benchReq: 1.15, squatReq: 1.50, deadliftReq: 1.75, desc: 'Atlético avanzado' },
-  { grade: 'A', minComposite: 1.58, benchReq: 1.35, squatReq: 1.75, deadliftReq: 2.05, desc: 'Élite regional / Alta densidad muscular' },
-  { grade: 'S', minComposite: 1.82, benchReq: 1.55, squatReq: 2.00, deadliftReq: 2.35, desc: 'Maestría biomecánica (2x BW Sentadilla)' },
+  { grade: 'B', minComposite: 1.32, benchReq: 1.15, squatReq: 1.50, deadliftReq: 1.75, desc: 'Atlético avanzado' },
+  { grade: 'A', minComposite: 1.55, benchReq: 1.34, squatReq: 1.75, deadliftReq: 2.05, desc: 'Élite regional / Alta densidad muscular' },
+  { grade: 'S', minComposite: 1.80, benchReq: 1.55, squatReq: 2.00, deadliftReq: 2.35, desc: 'Maestría biomecánica (2x BW Sentadilla)' },
   { grade: 'SS', minComposite: 2.05, benchReq: 1.75, squatReq: 2.25, deadliftReq: 2.60, desc: 'Competidor nacional' },
   { grade: 'SSS', minComposite: 2.28, benchReq: 1.95, squatReq: 2.50, deadliftReq: 2.85, desc: 'Portento físico sobrehumano' },
   { grade: 'EX', minComposite: 2.50, benchReq: 2.15, squatReq: 2.75, deadliftReq: 3.10, desc: 'Cúspide humana absoluta' },
 ];
 
-// Arquetipos con Habilidad Pasiva Única e Irrepetible
 const CLASS_ARCHETYPES = [
   {
     base: 'Espadachín',
@@ -471,9 +470,6 @@ const DAILY_REWARD_POOL = [
   { id: 'gear_crown', type: 'Equipamiento', name: 'Coraza del Monarca Eterno', power: 110, desc: 'Armadura legendaria de placas doradas.' },
 ];
 
-// ============================================================================
-// MODO HISTORIA PVE + PERSONAJES DESBLOQUEABLES DE NOVELA VISUAL
-// ============================================================================
 const PVE_STORY_CHAPTERS = [
   {
     id: 'act1_ch1',
@@ -555,7 +551,6 @@ const PVE_STORY_CHAPTERS = [
   }
 ];
 
-// Personajes interactuables de Novela Visual (con IA, memoria propia y romance)
 const STORY_CHARACTERS = [
   {
     id: 'lyra',
@@ -655,11 +650,23 @@ function calcEpley1RM(weight, reps) {
   return Math.round(weight * (1 + reps / 30));
 }
 
+// Calcula el 1RM efectivo considerando lastre en dominadas si el usuario ingresó solo el disco
+function getEffectiveExercise1RM(exName, weight, reps, bodyWeight) {
+  const w = Number(weight) || 0;
+  const r = Number(reps) || 1;
+  const bw = Math.max(40, Number(bodyWeight) || 75);
+  if (exName.toLowerCase().includes('dominada') && w < bw * 0.75) {
+    return calcEpley1RM(bw + w, r);
+  }
+  return calcEpley1RM(w, r);
+}
+
+// Cálculo automático y exacto del Grado de Cazador (sin trabas por decimales ocultos)
 function computeHunterGradeData(liftsObj, weightKg) {
   const bw = Math.max(40, Number(weightKg) || 75);
-  const bench1RM = calcEpley1RM(liftsObj['Press Banca']?.weight || 0, liftsObj['Press Banca']?.reps || 1);
-  const squat1RM = calcEpley1RM(liftsObj['Sentadilla Trasera']?.weight || 0, liftsObj['Sentadilla Trasera']?.reps || 1);
-  const deadlift1RM = calcEpley1RM(liftsObj['Peso Muerto Convencional']?.weight || 0, liftsObj['Peso Muerto Convencional']?.reps || 1);
+  const bench1RM = getEffectiveExercise1RM('Press Banca', liftsObj['Press Banca']?.weight || 0, liftsObj['Press Banca']?.reps || 1, bw);
+  const squat1RM = getEffectiveExercise1RM('Sentadilla Trasera', liftsObj['Sentadilla Trasera']?.weight || 0, liftsObj['Sentadilla Trasera']?.reps || 1, bw);
+  const deadlift1RM = getEffectiveExercise1RM('Peso Muerto Convencional', liftsObj['Peso Muerto Convencional']?.weight || 0, liftsObj['Peso Muerto Convencional']?.reps || 1, bw);
 
   const benchRatio = bench1RM / bw;
   const squatRatio = squat1RM / bw;
@@ -669,16 +676,20 @@ function computeHunterGradeData(liftsObj, weightKg) {
   let currentIdx = 0;
   for (let i = HUNTER_GRADE_STANDARDS.length - 1; i >= 0; i--) {
     const std = HUNTER_GRADE_STANDARDS[i];
+    const reqBenchKg = Math.round(std.benchReq * bw);
+    const reqSquatKg = Math.round(std.squatReq * bw);
+    const reqDeadliftKg = Math.round(std.deadliftReq * bw);
+
     if (
-      compositeRelStrength >= std.minComposite &&
-      benchRatio >= std.benchReq &&
-      squatRatio >= std.squatReq &&
-      deadliftRatio >= std.deadliftReq
+      bench1RM >= reqBenchKg &&
+      squat1RM >= reqSquatKg &&
+      deadlift1RM >= reqDeadliftKg
     ) {
       currentIdx = i;
       break;
     }
   }
+
   return {
     bw,
     bench1RM,
@@ -713,7 +724,6 @@ function getRelationshipLabel(affection) {
   return { label: 'Conocido', color: '#94a3b8' };
 }
 
-// Motor de IA Conversacional con Memoria del Personaje + Contexto IRL + Historia
 function generateCharacterAIReply(char, userMsg, memoryList, context) {
   const lower = userMsg.toLowerCase();
   const { hunterName, hunterGrade, bench1RM, squat1RM, deadlift1RM, streak, cityName, clearedCount, affection, clsName } = context;
@@ -1024,7 +1034,7 @@ function AuthPortal({ onAuthenticated }) {
     setLoading(true);
     try {
       const passHash = await hashSecret(passwordInput);
-      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v8') || '{}');
+      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v9') || '{}');
 
       if (authMode === 'register') {
         if (usersDb[cleanEmail]) {
@@ -1040,7 +1050,7 @@ function AuthPortal({ onAuthenticated }) {
           createdAt: new Date().toISOString()
         };
         usersDb[cleanEmail] = newAccount;
-        localStorage.setItem('pex_users_registry_v8', JSON.stringify(usersDb));
+        localStorage.setItem('pex_users_registry_v9', JSON.stringify(usersDb));
         onAuthenticated(newAccount, rememberMe);
       } else {
         const existing = usersDb[cleanEmail];
@@ -1192,9 +1202,9 @@ export default function App() {
   }, []);
 
   const [currentUser, setCurrentUser] = useState(() => {
-    const remembered = localStorage.getItem('pex_remembered_session_v8');
+    const remembered = localStorage.getItem('pex_remembered_session_v9');
     if (remembered) return JSON.parse(remembered);
-    const tabSession = sessionStorage.getItem('pex_active_session_v8');
+    const tabSession = sessionStorage.getItem('pex_active_session_v9');
     if (tabSession) return JSON.parse(tabSession);
     return null;
   });
@@ -1202,24 +1212,24 @@ export default function App() {
   const handleAuthenticated = (account, remember) => {
     setCurrentUser(account);
     if (remember) {
-      localStorage.setItem('pex_remembered_session_v8', JSON.stringify(account));
+      localStorage.setItem('pex_remembered_session_v9', JSON.stringify(account));
     } else {
-      sessionStorage.setItem('pex_active_session_v8', JSON.stringify(account));
-      localStorage.removeItem('pex_remembered_session_v8');
+      sessionStorage.setItem('pex_active_session_v9', JSON.stringify(account));
+      localStorage.removeItem('pex_remembered_session_v9');
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('pex_remembered_session_v8');
-    sessionStorage.removeItem('pex_active_session_v8');
+    localStorage.removeItem('pex_remembered_session_v9');
+    sessionStorage.removeItem('pex_active_session_v9');
     setCurrentUser(null);
   };
 
   const handleDeleteAccount = (emailToDelete) => {
-    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v8') || '{}');
+    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v9') || '{}');
     delete usersDb[emailToDelete];
-    localStorage.setItem('pex_users_registry_v8', JSON.stringify(usersDb));
-    localStorage.removeItem(`pex_user_data_v8_${emailToDelete}`);
+    localStorage.setItem('pex_users_registry_v9', JSON.stringify(usersDb));
+    localStorage.removeItem(`pex_user_data_v9_${emailToDelete}`);
     handleLogout();
   };
 
@@ -1241,7 +1251,7 @@ export default function App() {
 // ESPACIO DE TRABAJO DEL CAZADOR (AISLADO POR USUARIO Y PERSISTENTE)
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
-  const storageKey = `pex_user_data_v8_${currentUser.email}`;
+  const storageKey = `pex_user_data_v9_${currentUser.email}`;
 
   const loadUserState = () => {
     try {
@@ -1289,7 +1299,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
   const [completedChapters, setCompletedChapters] = useState(() => initialData?.completedChapters || ['act1_ch1']);
   const [pveBattleLog, setPveBattleLog] = useState(null);
 
-  // Estado de Ciudad Personalizable + Novela Visual con IA, Memoria y Romance
   const [cityName, setCityName] = useState(() => initialData?.cityName || 'Bastión de Ceniza');
   const [builtBuildings, setBuiltBuildings] = useState(() => initialData?.builtBuildings || ['forge', 'tavern']);
   const [selectedCharId, setSelectedCharId] = useState('lyra');
@@ -1300,8 +1309,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
     isolde: { affection: 30, memories: ['Observé el brillo de tu clase infinita en el Altar del Eclipse.'], lastReply: 'Las estrellas sobre nuestra ciudad brillan distinto desde que superaste tus marcas... Estaba esperando hablar contigo.' },
   });
   const [chatInput, setChatInput] = useState('');
-
-  // Confirmación de borrado de cuenta en Configuración
   const [confirmDeleteText, setConfirmDeleteText] = useState('');
 
   const [userCoords, setUserCoords] = useState({ lat: -34.0981, lon: -59.0286, label: 'Zárate, Buenos Aires (GPS Activo)' });
@@ -1402,14 +1409,13 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
 
   const triggerToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 4200);
+    setTimeout(() => setToast(null), 4600);
   };
 
   const level = Math.max(1, Math.floor(exp / 100) + 1);
   const expInLevel = exp % 100;
   const classEvolution = getInfiniteClassEvolution(hunterClass?.cls?.name, level);
 
-  // Bonificación de Pasiva Única de Clase + Edificios de Ciudad
   const passiveClassBonus = 30 + level * 6 + builtBuildings.length * 12;
   const gearBonusPower = unlockedInventory.reduce((acc, item) => acc + (item.power || 0), 0);
   const hunterCombatPower = Math.round(
@@ -1419,7 +1425,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
     passiveClassBonus
   );
 
-  // Rumores dinámicos del pueblo basados en tus marcas IRL y hazañas del Modo Historia
   const townRumors = [
     `En la ${builtBuildings.includes('tavern') ? 'Taberna del Crepúsculo' : 'plaza'} todos comentan que ${profile.hunterName} levantó ${gradeData.bench1RM} kg en Press Banca y ${gradeData.squat1RM} kg en Sentadilla.`,
     `Los guardias de ${cityName} afirman que tu Grado de Cazador ${hunterGrade} (${gradeData.compositeRelStrength.toFixed(2)}x peso corporal) intimida a cualquier invasor.`,
@@ -1429,7 +1434,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
     `Los mercaderes admiran tu racha disciplinada de ${streak} días consecutivos sin rendirte.`
   ];
 
-  // Personajes desbloqueados según avance en Modo Historia
   const unlockedCharacters = STORY_CHARACTERS.filter((c) => completedChapters.includes(c.unlockChapter));
   const activeChar = unlockedCharacters.find((c) => c.id === selectedCharId) || unlockedCharacters[0] || STORY_CHARACTERS[0];
   const activeCharState = characterStates[activeChar.id] || { affection: 10, memories: [], lastReply: activeChar.intro };
@@ -1564,9 +1568,21 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
     }
   };
 
+  // Automatización completa: recalcula 1RM, otorga EXP por kilos superados, sube Nivel y Grado solo
   const handleSaveExerciseLoad = () => {
     const w = Math.max(1, Number(liftWeightInput));
     const r = Math.max(1, Number(liftRepsInput));
+
+    const prevRecord = savedLifts[selectedExercise];
+    const prev1RM = prevRecord
+      ? getEffectiveExercise1RM(selectedExercise, prevRecord.weight, prevRecord.reps, profile.weightKg)
+      : 0;
+    const new1RM = getEffectiveExercise1RM(selectedExercise, w, r, profile.weightKg);
+
+    const kgGain = Math.max(0, new1RM - prev1RM);
+    const gainedExp = 35 + kgGain * 15;
+    const gainedLp = 15 + kgGain * 5;
+
     const updated = {
       ...savedLifts,
       [selectedExercise]: {
@@ -1575,12 +1591,25 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
         date: new Date().toLocaleDateString(),
       },
     };
+
+    const prevLevel = Math.max(1, Math.floor(exp / 100) + 1);
+    const nextTotalExp = exp + gainedExp;
+    const nextLevel = Math.max(1, Math.floor(nextTotalExp / 100) + 1);
+
     setSavedLifts(updated);
-    setExp((e) => e + 25);
+    setExp(nextTotalExp);
+    setLp((l) => l + gainedLp);
 
     const nextGradeInfo = computeHunterGradeData(updated, profile.weightKg);
-    if (nextGradeInfo.currentStd.grade === hunterGrade) {
-      triggerToast(`[SISTEMA] Marca guardada en ${selectedExercise}: ${w} kg x ${r} reps (+25 EXP).`);
+    const nextGrade = nextGradeInfo.currentStd.grade;
+
+    if (nextGrade !== hunterGrade) {
+      prevGradeRef.current = nextGrade;
+      triggerToast(`¡ASCENSO AUTOMÁTICO A GRADO ${nextGrade} Y NIVEL ${nextLevel}! (+${gainedExp} EXP por récord de ${new1RM} kg)`);
+    } else if (nextLevel > prevLevel) {
+      triggerToast(`¡SUBIDA DE NIVEL AUTOMÁTICA! Nv. ${prevLevel} → Nv. ${nextLevel} (+${gainedExp} EXP, +${kgGain} kg de récord)`);
+    } else {
+      triggerToast(`[SISTEMA] ${selectedExercise} actualizado (${new1RM} kg 1RM) • +${gainedExp} EXP y +${gainedLp} LP.`);
     }
   };
 
@@ -1676,7 +1705,7 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
   const rankInfo = getRankFromLP(lp);
   const totalSleep = sleepLog.reduce((acc, d) => acc + d.hours, 0);
   const sleepOptimal = totalSleep >= 49 && totalSleep <= 63;
-  const currentEx1RM = calcEpley1RM(liftWeightInput, liftRepsInput);
+  const currentEx1RM = getEffectiveExercise1RM(selectedExercise, liftWeightInput, liftRepsInput, profile.weightKg);
   const currentExRatio = (currentEx1RM / gradeData.bw).toFixed(2);
 
   // ==========================================================================
@@ -1965,7 +1994,7 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
   }
 
   // ==========================================================================
-  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD DE CAZADOR v8)
+  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD DE CAZADOR v9)
   // ==========================================================================
   return (
     <div className="sys-container">
@@ -2463,7 +2492,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
                 EVOLUCIÓN DE CLASE INFINITA (NV. {level})
               </h2>
 
-              {/* Habilidad Pasiva Única e Irrepetible de esta Clase */}
               <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(0,240,255,0.08)', border: '1px solid #00f0ff' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: '#00f0ff' }}>HABILIDAD PASIVA ÚNICA DE CLASE</span>
@@ -2658,7 +2686,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
          ==================================================================== */}
       {activeTab === 'city_vn' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* SECCIÓN A: CONSTRUCCIÓN DE CIUDAD Y TABLÓN DE RUMORES VIVOS */}
           <div className="sys-window" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
               <h2 className="font-souls" style={{ fontSize: '16px', color: '#d4af37' }}>
@@ -2679,7 +2706,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
               />
             </div>
 
-            {/* Tablón de Rumores del Pueblo (Hazañas IRL + Modo Historia) */}
             <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.35)', marginBottom: '14px' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#fde047', marginBottom: '6px' }}>
                 RUMORES ACTUALES EN LAS CALLES DE {cityName.toUpperCase()} (IRL + HISTORIA):
@@ -2691,7 +2717,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
               ))}
             </div>
 
-            {/* Construcción de Edificios */}
             <div className="grid-2">
               {CITY_BUILDINGS_CATALOG.map((b) => {
                 const isBuilt = builtBuildings.includes(b.id);
@@ -2735,14 +2760,12 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
             </div>
           </div>
 
-          {/* SECCIÓN B: NOVELA VISUAL INTERACTIVA CON IA, MEMORIA PROPIA Y ROMANCE */}
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-souls" style={{ fontSize: '16px', color: '#fb7185', marginBottom: '12px' }}>
               <Heart size={16} style={{ display: 'inline', marginRight: '6px' }} />
               NOVELA VISUAL — VÍNCULOS, MEMORIA IA Y ROMANCE
             </h2>
 
-            {/* Selector de Personajes Desbloqueados en la Historia */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
               {STORY_CHARACTERS.map((char) => {
                 const isUnlocked = completedChapters.includes(char.unlockChapter);
@@ -2762,7 +2785,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
             </div>
 
             <div className="grid-2">
-              {/* Retrato del Personaje */}
               <div style={{
                 borderRadius: '12px',
                 overflow: 'hidden',
@@ -2794,7 +2816,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
                 </div>
               </div>
 
-              {/* Caja de Diálogo de Novela Visual + Memoria IA + Interacciones Románticas */}
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
                 <div>
                   <div style={{
@@ -2812,7 +2833,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
                     </p>
                   </div>
 
-                  {/* Memoria Persistente del Personaje */}
                   <div style={{
                     padding: '10px',
                     borderRadius: '10px',
@@ -2829,7 +2849,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
                   </div>
                 </div>
 
-                {/* Acciones Rápidas de Romance y Cita */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     <button
@@ -2860,7 +2879,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
                     )}
                   </div>
 
-                  {/* Chat Libre con la IA del Personaje */}
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <input
                       className="sys-input"
@@ -3041,13 +3059,13 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 7: CARGAS GUARDADAS POR SEPARADO (ACTUALIZA GRADO DE CAZADOR SOLO)
+          MÓDULO 7: CARGAS GUARDADAS (ACTUALIZA GRADO Y SUBE NIVEL AUTOMÁTICAMENTE)
          ==================================================================== */}
       {activeTab === 'strength' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#e11d48', marginBottom: '12px' }}>
-              REGISTRO DE CARGAS POR EJERCICIO (ACTUALIZA TU GRADO DE CAZADOR AUTOMÁTICAMENTE)
+              REGISTRO DE CARGAS POR EJERCICIO (SUBE NIVEL Y GRADO DE CAZADOR AUTOMÁTICAMENTE)
             </h2>
 
             <div className="grid-2" style={{ marginBottom: '14px' }}>
@@ -3065,7 +3083,9 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#94a3b8' }}>CARGA (KG)</label>
+                  <label style={{ fontSize: '12px', color: '#94a3b8' }}>
+                    {selectedExercise.toLowerCase().includes('dominada') ? 'LASTRE / TOTAL (KG)' : 'CARGA (KG)'}
+                  </label>
                   <input
                     type="number"
                     className="sys-input"
@@ -3087,7 +3107,7 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', color: '#cbd5e1' }}>
-                1RM Estimado en <strong>{selectedExercise}</strong>: <span style={{ color: '#00f0ff', fontWeight: 700 }}>{currentEx1RM} kg</span> ({currentExRatio}x peso corporal)
+                1RM Efectivo en <strong>{selectedExercise}</strong>: <span style={{ color: '#00f0ff', fontWeight: 700 }}>{currentEx1RM} kg</span> ({currentExRatio}x peso corporal)
               </div>
               <button className="sys-btn sys-btn-gold" onClick={handleSaveExerciseLoad}>
                 <Save size={15} /> GUARDAR MARCA DE {selectedExercise.toUpperCase()}
@@ -3096,7 +3116,7 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
 
             <div className="grid-2">
               {Object.entries(savedLifts).map(([exName, data]) => {
-                const ex1rm = calcEpley1RM(data.weight, data.reps);
+                const ex1rm = getEffectiveExercise1RM(exName, data.weight, data.reps, gradeData.bw);
                 const exRel = (ex1rm / gradeData.bw).toFixed(2);
                 const isSelected = exName === selectedExercise;
                 return (
@@ -3286,7 +3306,6 @@ function HunterSystemWorkspace({ currentUser, onLogout, onDeleteAccount }) {
             </button>
           </div>
 
-          {/* Zona de Peligro: Borrar Cuenta Permanentemente */}
           <div className="sys-window" style={{ padding: '18px', borderColor: 'rgba(225, 29, 72, 0.55)' }}>
             <h3 className="font-hud" style={{ fontSize: '14px', color: '#fb7185', marginBottom: '8px' }}>
               <Trash2 size={15} style={{ display: 'inline', marginRight: '6px' }} />
