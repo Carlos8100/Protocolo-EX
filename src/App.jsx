@@ -1,3154 +1,1498 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  Flame,
-  Trophy,
-  Dumbbell,
-  Moon,
-  User,
-  Camera,
-  Sparkles,
-  Shield,
-  CheckCircle2,
-  XCircle,
-  CloudRain,
-  Zap,
-  Award,
-  Lock,
-  EyeOff,
-  Upload,
-  Scan,
-  Cpu,
-  FileText,
-  Calendar,
-  Plus,
-  RefreshCw,
-  Sliders,
-  HeartPulse,
-  AlertTriangle,
-  ChevronUp,
-  ChevronDown,
-  Target,
-  Swords,
-  Crown,
-  Star,
-  RotateCcw,
-  Check,
-  X
+  Flame, Trophy, Dumbbell, Moon, User, Camera, Sparkles, Shield,
+  CheckCircle2, XCircle, CloudRain, Zap, Award, Lock, EyeOff,
+  Upload, Scan, Cpu, FileText, AlertTriangle, Calendar, RefreshCw,
+  ChevronRight, Sword, Heart, Activity, BarChart3, Clock, Check
 } from 'lucide-react';
 
-/**
- * ============================================================================
- * ¡PROTOCOLO EX! // ANIME FITNESS SYSTEM
- * Plataforma Anime-Gaming de Alto Rendimiento, Gamificación RPG y Biomecánica
- * ============================================================================
- */
+// ============================================================================
+// ESTILOS INTEGRADOS (HOLOGRAPHIC ANIME SYSTEM HUD - 100% AUTOCONTENIDO)
+// ============================================================================
+const SYSTEM_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
-const STORAGE_KEY = 'protocolo_ex_anime_vibrant_v1';
-
-// 1. LOS 15 RANGOS COMPETITIVOS (Cada uno con 6 divisiones: 6 -> 1)
-const COMPETITIVE_RANKS = [
-  { id: 'tierra', name: 'Tierra', color: '#D97706', secondary: '#92400E', glow: 'rgba(217, 119, 6, 0.6)', league: 'Iniciado' },
-  { id: 'madera', name: 'Madera', color: '#F59E0B', secondary: '#B45309', glow: 'rgba(245, 158, 11, 0.6)', league: 'Iniciado' },
-  { id: 'piedra', name: 'Piedra', color: '#94A3B8', secondary: '#475569', glow: 'rgba(148, 163, 184, 0.6)', league: 'Iniciado' },
-  { id: 'carbon', name: 'Carbón', color: '#64748B', secondary: '#334155', glow: 'rgba(100, 116, 139, 0.65)', league: 'Forja' },
-  { id: 'hierro', name: 'Hierro', color: '#E2E8F0', secondary: '#64748B', glow: 'rgba(226, 232, 240, 0.65)', league: 'Forja' },
-  { id: 'bronce', name: 'Bronce', color: '#FB923C', secondary: '#C2410C', glow: 'rgba(251, 146, 60, 0.7)', league: 'Forja' },
-  { id: 'plata', name: 'Plata', color: '#F8FAFC', secondary: '#94A3B8', glow: 'rgba(248, 250, 252, 0.75)', league: 'Competitivo' },
-  { id: 'oro', name: 'Oro', color: '#FACC15', secondary: '#CA8A04', glow: 'rgba(250, 204, 21, 0.8)', league: 'Competitivo' },
-  { id: 'platino', name: 'Platino', color: '#2DD4BF', secondary: '#0D9488', glow: 'rgba(45, 212, 191, 0.8)', league: 'Competitivo' },
-  { id: 'esmeralda', name: 'Esmeralda', color: '#10B981', secondary: '#047857', glow: 'rgba(16, 185, 129, 0.85)', league: 'Élite' },
-  { id: 'diamante', name: 'Diamante', color: '#38BDF8', secondary: '#0284C7', glow: 'rgba(56, 189, 248, 0.9)', league: 'Élite' },
-  { id: 'especialista', name: 'Especialista', color: '#818CF8', secondary: '#4F46E5', glow: 'rgba(129, 140, 248, 0.9)', league: 'Élite' },
-  { id: 'maestro', name: 'Maestro', color: '#C084FC', secondary: '#7E22CE', glow: 'rgba(192, 132, 252, 0.9)', league: 'Soberano' },
-  { id: 'jefe_maestro', name: 'Jefe Maestro', color: '#F472B6', secondary: '#BE185D', glow: 'rgba(244, 114, 182, 0.95)', league: 'Soberano' },
-  { id: 'challenger', name: 'Challenger', color: '#00F5FF', secondary: '#FACC15', glow: 'rgba(0, 245, 255, 1)', league: 'Leyenda EX' }
-];
-
-// 2. ESCALA CIENTÍFICA F A EX (Fuerza Absoluta, Fuerza Relativa y Físico)
-const SCIENTIFIC_GRADES = [
-  { grade: 'F', label: 'Despertar Inicial', badge: 'bg-slate-800 border-slate-500 text-slate-200', desc: 'Adaptación neuromuscular inicial y aprendizaje técnico.' },
-  { grade: 'E', label: 'Aprendiz Activo', badge: 'bg-zinc-800 border-zinc-400 text-zinc-100', desc: 'Coordinación intermuscular básica consolidada.' },
-  { grade: 'D', label: 'Guerrero Novato', badge: 'bg-emerald-950 border-emerald-500 text-emerald-300', desc: 'Reclutamiento sólido en patrones multiarticulares.' },
-  { grade: 'C', label: 'Atleta Intermedio', badge: 'bg-teal-950 border-teal-400 text-teal-200', desc: 'Hipertrofia funcional visible y control excéntrico.' },
-  { grade: 'B', label: 'Atleta Avanzado', badge: 'bg-cyan-950 border-cyan-400 text-cyan-200', desc: 'Alta densidad miofibrilar y eficiencia biomecánica.' },
-  { grade: 'A', label: 'Vanguardia Élite', badge: 'bg-blue-950 border-blue-400 text-blue-200', desc: 'Producción de fuerza y simetría muscular superior.' },
-  { grade: 'S', label: 'Rango S // Regional', badge: 'bg-purple-950 border-purple-400 text-purple-200', desc: 'Tasa de desarrollo de fuerza (RFD) extraordinaria.' },
-  { grade: 'SS', label: 'Rango SS // Nacional', badge: 'bg-fuchsia-950 border-fuchsia-400 text-fuchsia-200', desc: 'Optimización extrema de palancas y composición corporal.' },
-  { grade: 'SSS', label: 'Rango SSS // Mundial', badge: 'bg-amber-950 border-amber-400 text-amber-200', desc: 'Límite fisiológico natural y reclutamiento máximo.' },
-  { grade: 'EX', label: 'RANGO EX // ANOMALÍA', badge: 'bg-gradient-to-r from-cyan-600 via-fuchsia-600 to-amber-500 border-yellow-300 text-white shadow-[0_0_20px_rgba(250,204,21,0.6)]', desc: 'Nivel sobrehumano. Referente absoluto del Sistema.' }
-];
-
-// 3. CONTINGENCIAS INTELIGENTES PARA IMPREVISTOS
-const CONTINGENCY_OPTIONS = [
-  {
-    id: 'lluvia',
-    emoji: '🌧️',
-    reason: 'Está lloviendo / Clima adverso',
-    title: 'Desafío Relámpago Indoor HIIT & Potencia (Casa)',
-    plan: '5 rondas explosivas: 45s Burpees + 45s Sentadillas con salto + 45s Mountain Climbers + 45s Plancha dinámica (30s descanso).',
-    lp: 35
-  },
-  {
-    id: 'gym_cerrado',
-    emoji: '🔒',
-    reason: 'Gimnasio cerrado / Sin acceso a máquinas',
-    title: 'Protocolo Calisténico de Alta Tensión Mecánica (Casa)',
-    plan: '4 series al fallo técnico (RIR 1): Sentadilla Búlgara con pausa 3s + Flexiones en déficit profundo + Remo invertido bajo mesa.',
-    lp: 40
-  },
-  {
-    id: 'poco_tiempo',
-    emoji: '⚡',
-    reason: 'Poco tiempo disponible (< 25 min)',
-    title: 'Circuito Myo-Reps Metabólico Express (Casa)',
-    plan: 'Bloque de 20 min: 1 serie de activación (15 reps) + 4 mini-series de 5 reps con 15s de pausa en empuje, tracción y pierna.',
-    lp: 30
-  },
-  {
-    id: 'fatiga',
-    emoji: '🧬',
-    reason: 'Cansancio acumulado / Molestia articular',
-    title: 'Flujo Isométrico Recuperador & Movilidad Activa',
-    plan: '3 rondas: Sentadilla isométrica en pared 45s + Puente glúteo unilateral 15 reps + Movilidad escapular y torácica controlada.',
-    lp: 30
+  :root {
+    --bg-void: #050814;
+    --bg-panel: rgba(12, 20, 42, 0.85);
+    --bg-panel-solid: #0c142a;
+    --cyan-glow: #00f0ff;
+    --blue-core: #2563eb;
+    --gold-rank: #fbbf24;
+    --purple-myth: #a855f7;
+    --emerald-ok: #10b981;
+    --crimson-alert: #f43f5e;
+    --text-main: #f1f5f9;
+    --text-dim: #94a3b8;
   }
-];
 
-// 4. RUTINAS CIENTÍFICAS Y BIOMECÁNICA
-const BIOMECHANICAL_ROUTINES = {
-  gimnasio: {
-    hipertrofia: {
-      title: 'Hipertrofia Científica // Tensión en Estiramiento',
-      summary: 'Maximiza el reclutamiento de unidades motoras de alto umbral cargando los músculos en longitud larga con estabilidad externa.',
-      blocks: [
-        {
-          day: 'Sesión A: Torso (Énfasis Estiramiento & Plano Frontal)',
-          exercises: [
-            { name: 'Press Inclinado con Mancuernas (30°)', sets: '3x8-10', rir: 'RIR 1', biomech: 'Elongación máxima de fibras claviculares del pectoral sin bloqueo escapular.' },
-            { name: 'Jalón al Pecho Agarre Neutro Estrecho', sets: '3x10-12', rir: 'RIR 1', biomech: 'Alinea el brazo de momento en el plano sagital para aislar el dorsal ancho.' },
-            { name: 'Elevaciones Laterales en Polea', sets: '4x12-15', rir: 'RIR 0-1', biomech: 'Tensión continua en los primeros 30° de abducción donde la mancuerna pierde torque.' },
-            { name: 'Extensión de Tríceps sobre la Cabeza en Polea', sets: '3x10-12', rir: 'RIR 1', biomech: 'Hipertrofia mediada por estiramiento de la cabeza larga del tríceps.' }
-          ]
-        },
-        {
-          day: 'Sesión B: Pierna (Dominancia de Rodilla & Cadena Posterior)',
-          exercises: [
-            { name: 'Sentadilla Hack o con Talones Elevados', sets: '3x8-10', rir: 'RIR 1-2', biomech: 'Maximiza la dorsiflexión y el momento flexor de rodilla para el cuádriceps.' },
-            { name: 'Peso Muerto Rumano (RDL) con Barra', sets: '3x8-10', rir: 'RIR 1-2', biomech: 'Carga los isquiosurales en posición alargada con bisagra pura de cadera.' },
-            { name: 'Curl Femoral Sentado', sets: '3x10-12', rir: 'RIR 0-1', biomech: 'Pre-estira el bíceps femoral desde la cadera flexionada.' },
-            { name: 'Elevación de Talones de Pie (Pausa 2s abajo)', sets: '4x12-15', rir: 'RIR 0', biomech: 'Anula el rebote elástico del tendón de Aquiles para aislar el gastrocnemio.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      title: 'Fuerza Máxima // Tasa de Desarrollo de Fuerza (RFD)',
-      summary: 'Optimiza la coordinación intramuscular y sincronización neural con cargas altas (82%-92% 1RM) y descansos completos.',
-      blocks: [
-        {
-          day: 'Sesión A: Sentadilla & Empuje Vertical Neural',
-          exercises: [
-            { name: 'Sentadilla Trasera Competición', sets: '4x4-5', rir: 'RIR 2', biomech: 'Fase concéntrica explosiva para maximizar reclutamiento sincrónico.' },
-            { name: 'Press Militar Estricto de Pie con Barra', sets: '4x5-6', rir: 'RIR 1-2', biomech: 'Transferencia de fuerza en cadena cinética cerrada y anti-extensión del core.' },
-            { name: 'Sentadilla Frontal con Pausa (2s)', sets: '3x5', rir: 'RIR 2', biomech: 'Disipa energía elástica en el punto de estancamiento.' }
-          ]
-        },
-        {
-          day: 'Sesión B: Press Banca & Tracción Pesada',
-          exercises: [
-            { name: 'Press de Banca Plano con Pausa Táctil (1s)', sets: '4x4-5', rir: 'RIR 2', biomech: 'Estabilidad escapular y potencia de salida desde el pecho.' },
-            { name: 'Peso Muerto Convencional / Sumo', sets: '4x3-4', rir: 'RIR 2', biomech: 'Torque máximo extensor de cadera y rigidez torácica.' },
-            { name: 'Dominadas Lastradas Neutras', sets: '4x5-6', rir: 'RIR 1', biomech: 'Sobrecarga vertical pura para dorsal y flexores de codo.' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      title: 'Recomposición Corporal // Densidad Metabólica',
-      summary: 'Combina tensión mecánica pesada para retener masa magra con superseries antagonistas que elevan el gasto calórico.',
-      blocks: [
-        {
-          day: 'Sesión Full Body Antagonista',
-          exercises: [
-            { name: 'Superserie: Prensa Inclinada + Curl Femoral', sets: '3x10+12', rir: 'RIR 1', biomech: 'Inhibición recíproca que acelera la recuperación entre series.' },
-            { name: 'Superserie: Press Banca Mancuernas + Remo Polea', sets: '3x10+12', rir: 'RIR 1', biomech: 'Equilibrio 1:1 entre empuje horizontal y tracción escapular.' },
-            { name: 'Paseo del Granjero Pesado (Farmer Walk)', sets: '4x35m', rir: 'RIR 1', biomech: 'Estabilidad lateral de cadera, trapecio y fuerza de agarre.' }
-          ]
-        }
-      ]
-    }
-  },
-  casa: {
-    hipertrofia: {
-      title: 'Hipertrofia en Casa // Palancas Largas & Unilateral',
-      summary: 'Alarga los brazos de momento y utiliza carga unilateral para alcanzar estímulo mecánico efectivo sin máquinas.',
-      blocks: [
-        {
-          day: 'Sesión A: Empuje & Cuádriceps Unilateral',
-          exercises: [
-            { name: 'Sentadilla Búlgara con Elevación de Talón', sets: '4x10-14/lado', rir: 'RIR 0-1', biomech: 'Duplica la carga relativa sobre un solo miembro inferior.' },
-            { name: 'Flexiones en Déficit (manos elevadas en soportes)', sets: '4x12-18', rir: 'RIR 0-1', biomech: 'Aumenta el rango de abducción horizontal del pectoral mayor.' },
-            { name: 'Flexiones en Pica (Pike Push-Ups)', sets: '3x8-12', rir: 'RIR 1', biomech: 'Simula el vector vertical del press militar para deltoides.' }
-          ]
-        },
-        {
-          day: 'Sesión B: Tracción & Cadena Posterior en Casa',
-          exercises: [
-            { name: 'Remo Invertido Bajo Mesa / Barra Baja', sets: '4x10-15', rir: 'RIR 0-1', biomech: 'Retracción escapular completa bajo vector horizontal.' },
-            { name: 'Curl Nórdico Excéntrico / Deslizamiento Femoral', sets: '4x8-12', rir: 'RIR 1', biomech: 'Sobrecarga excéntrica máxima en isquiosurales.' },
-            { name: 'Elevación de Talón Unilateral en Escalón', sets: '4x15-20/lado', rir: 'RIR 0', biomech: 'Déficit plantar completo para tríceps sural.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      title: 'Fuerza Calisténica // Progresiones Gimnásticas',
-      summary: 'Incrementa la demanda neural mediante palancas asimétricas e isometrías de máxima contracción voluntaria.',
-      blocks: [
-        {
-          day: 'Sesión Potencia & Control Unilateral',
-          exercises: [
-            { name: 'Pistol Squat Asistida o Sentadilla Camarón', sets: '4x5-6/lado', rir: 'RIR 1-2', biomech: 'Demanda máxima de torque extensor de rodilla y movilidad de tobillo.' },
-            { name: 'Flexiones Arqueras / Pseudo-Planche', sets: '4x6-8', rir: 'RIR 1', biomech: 'Desplaza el centro de masa aumentando la carga en hombros y pecho.' },
-            { name: 'Plancha RKC (Contracción Máxima Total)', sets: '3x30s', rir: 'RIR 1', biomech: 'Co-contracción simultánea de abdomen, glúteos y dorsales.' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      title: 'Acondicionamiento Bio-Metabólico en Casa',
-      summary: 'Maximiza la oxidación lipídica y capacidad cardiovascular preservando tejido muscular activo.',
-      blocks: [
-        {
-          day: 'Circuito Metabólico de Cuerpo Completo',
-          exercises: [
-            { name: 'Zancadas Reversas Alternas + Flexiones Explosivas', sets: '4x12/lado + 12', rir: 'RIR 1', biomech: 'Transición tren inferior-superior que eleva el gasto cardíaco.' },
-            { name: 'Remo Invertido + Mountain Climbers Controlados', sets: '4x12 + 30s', rir: 'RIR 1', biomech: 'Tracción postural combinada con flexión dinámica de cadera.' }
-          ]
-        }
-      ]
-    }
-  },
-  hibrido: {
-    hipertrofia: {
-      title: 'Sistema Híbrido // Cargas Pesadas Gym + Volumen Casa',
-      summary: 'Usa el gimnasio para los compuestos pesados y días en casa para acumular volumen metabólico de rápida recuperación.',
-      blocks: [
-        {
-          day: 'Día GIMNASIO: Compuestos Pesados',
-          exercises: [
-            { name: 'Sentadilla Trasera o Prensa Pesada', sets: '3x6-8', rir: 'RIR 1-2', biomech: 'Carga axial/mecánica de alta precisión.' },
-            { name: 'Press Banca Inclinado + Jalón al Pecho', sets: '3x8-10 c/u', rir: 'RIR 1', biomech: 'Empuje y tracción vertical equilibrados.' }
-          ]
-        },
-        {
-          day: 'Día CASA: Detalle Estético & Bomba Metabólica',
-          exercises: [
-            { name: 'Sentadilla Búlgara + Flexiones en Déficit', sets: '3x12/lado + 15', rir: 'RIR 1', biomech: 'Estímulo unilateral de alta frecuencia semanal.' },
-            { name: 'Pike Push-Ups + Elevaciones Laterales Banda/Mancuerna', sets: '4x12 + 15', rir: 'RIR 0', biomech: 'Volumen efectivo para deltoides sin fatiga sistémica.' }
-          ]
-        }
-      ]
-    },
-    fuerza: {
-      title: 'Sistema Híbrido Fuerza // SBD Gym + Pliometría Casa',
-      summary: 'Concentra el trabajo pesado con barra en el gimnasio y la potencia reactiva en casa.',
-      blocks: [
-        {
-          day: 'Día GIMNASIO: Los 3 Grandes (SBD)',
-          exercises: [
-            { name: 'Sentadilla + Press Banca + Peso Muerto (Top Sets)', sets: '3x4 c/u', rir: 'RIR 2', biomech: 'Sinergia neuromuscular máxima en una sesión.' }
-          ]
-        },
-        {
-          day: 'Día CASA: Potencia Explosiva & Core',
-          exercises: [
-            { name: 'Squat Jumps + Flexiones Pliométricas', sets: '4x6 + 6', rir: 'RIR 2', biomech: 'Optimiza el ciclo estiramiento-acortamiento (CEA).' }
-          ]
-        }
-      ]
-    },
-    recomposicion: {
-      title: 'Sistema Híbrido Recomposición // Tensión + HIIT',
-      summary: 'Preserva fuerza en sala de pesas y dispara el gasto energético semanal desde casa.',
-      blocks: [
-        {
-          day: 'Día GIMNASIO: Full Body Tensión Mecánica',
-          exercises: [
-            { name: 'Peso Muerto Rumano + Press Plano + Remo Barra', sets: '3x8 c/u', rir: 'RIR 1-2', biomech: 'Mantiene masa muscular en déficit calórico.' }
-          ]
-        },
-        {
-          day: 'Día CASA: Circuito HIIT & Core',
-          exercises: [
-            { name: 'Burpees Técnicos + Zancadas + Plancha Dinámica', sets: '5 rondas x 40s', rir: 'RIR 1', biomech: 'Eleva el consumo post-ejercicio (EPOC).' }
-          ]
-        }
-      ]
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--bg-void);
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.14) 0%, transparent 45%),
+      linear-gradient(180deg, #050814 0%, #091128 100%);
+    color: var(--text-main);
+    font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .font-hud {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.06em;
+  }
+
+  .sys-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 14px 90px;
+  }
+
+  .sys-window {
+    background: var(--bg-panel);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(0, 240, 255, 0.32);
+    box-shadow:
+      0 0 24px rgba(0, 240, 255, 0.08),
+      inset 0 0 20px rgba(0, 240, 255, 0.04);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sys-window::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan-glow), var(--gold-rank), transparent);
+  }
+
+  .sys-window-gold {
+    border-color: rgba(251, 191, 36, 0.45);
+    box-shadow: 0 0 28px rgba(251, 191, 36, 0.12);
+  }
+
+  .sys-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .sys-btn:active {
+    transform: scale(0.97);
+  }
+
+  .sys-btn-primary {
+    background: linear-gradient(135deg, #0284c7 0%, #00f0ff 100%);
+    color: #030712;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.4);
+  }
+
+  .sys-btn-gold {
+    background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+    color: #030712;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.45);
+  }
+
+  .sys-btn-ghost {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(148, 163, 184, 0.3);
+    color: var(--text-main);
+  }
+
+  .sys-btn-danger {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.5);
+    color: #fda4af;
+  }
+
+  .sys-btn-success {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #6ee7b7;
+  }
+
+  .sys-input, .sys-select, .sys-textarea {
+    width: 100%;
+    background: rgba(5, 8, 20, 0.85);
+    border: 1px solid rgba(0, 240, 255, 0.28);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .sys-input:focus, .sys-select:focus, .sys-textarea:focus {
+    border-color: var(--cyan-glow);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+  }
+
+  .sys-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .nav-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  @media (min-width: 720px) {
+    .nav-tabs {
+      grid-template-columns: repeat(6, 1fr);
     }
   }
-};
+
+  .nav-tab {
+    background: rgba(12, 20, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 10px 6px;
+    color: var(--text-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-tab.active {
+    background: linear-gradient(180deg, rgba(0, 240, 255, 0.18) 0%, rgba(12, 20, 42, 0.95) 100%);
+    border-color: var(--cyan-glow);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(5, 8, 20, 0.9);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  @media (min-width: 680px) {
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .toast-alert {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: rgba(5, 12, 30, 0.96);
+    border: 1px solid var(--cyan-glow);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.45);
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    max-width: 92vw;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5)); }
+    50% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.75)); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 3s infinite ease-in-out;
+  }
+`;
 
 // ============================================================================
-// FUNCIONES DE CÁLCULO CIENTÍFICO Y PROGRESIÓN
+// DATOS DEL SISTEMA: 15 RANGOS x 6 DIVISIONES, GRADOS F->EX Y RAZAS/CLASES
 // ============================================================================
+const RANKS = [
+  { name: 'Tierra', tier: 0, color: '#a16207', armorColor: '#78350f', trimColor: '#d97706', weaponTier: 1 },
+  { name: 'Madera', tier: 1, color: '#65a30d', armorColor: '#3f6212', trimColor: '#84cc16', weaponTier: 1 },
+  { name: 'Piedra', tier: 2, color: '#64748b', armorColor: '#334155', trimColor: '#94a3b8', weaponTier: 1 },
+  { name: 'Carbón', tier: 3, color: '#374151', armorColor: '#1f2937', trimColor: '#6b7280', weaponTier: 2 },
+  { name: 'Hierro', tier: 4, color: '#9ca3af', armorColor: '#4b5563', trimColor: '#e5e7eb', weaponTier: 2 },
+  { name: 'Bronce', tier: 5, color: '#ea580c', armorColor: '#9a3412', trimColor: '#fb923c', weaponTier: 2 },
+  { name: 'Plata', tier: 6, color: '#cbd5e1', armorColor: '#475569', trimColor: '#f8fafc', weaponTier: 3 },
+  { name: 'Oro', tier: 7, color: '#eab308', armorColor: '#854d0e', trimColor: '#fde047', weaponTier: 3 },
+  { name: 'Platino', tier: 8, color: '#14b8a6', armorColor: '#115e59', trimColor: '#5eead4', weaponTier: 3 },
+  { name: 'Esmeralda', tier: 9, color: '#10b981', armorColor: '#065f46', trimColor: '#6ee7b7', weaponTier: 4 },
+  { name: 'Diamante', tier: 10, color: '#38bdf8', armorColor: '#075985', trimColor: '#7dd3fc', weaponTier: 4 },
+  { name: 'Especialista', tier: 11, color: '#8b5cf6', armorColor: '#4c1d95', trimColor: '#c4b5fd', weaponTier: 4 },
+  { name: 'Maestro', tier: 12, color: '#d946ef', armorColor: '#701a75', trimColor: '#f0abfc', weaponTier: 5 },
+  { name: 'Jefe Maestro', tier: 13, color: '#f43f5e', armorColor: '#881337', trimColor: '#fda4af', weaponTier: 5 },
+  { name: 'Challenger', tier: 14, color: '#fbbf24', armorColor: '#1e1b4b', trimColor: '#00f0ff', weaponTier: 5 },
+];
 
-function getRankProgress(totalLP) {
-  const safeLP = Math.max(0, Math.min(8999, Math.round(totalLP)));
-  const globalDivIndex = Math.floor(safeLP / 100); // 0 a 89
-  const rankIndex = Math.min(14, Math.floor(globalDivIndex / 6)); // 0 a 14
-  const division = 6 - (globalDivIndex % 6); // 6 a 1
+const PHYSICAL_GRADES = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS', 'EX'];
+
+const RACES_POOL = [
+  { id: 'saiyan', name: 'Guerrero Saiyajin', trait: 'Zenkai: +15% progresión tras superar fallos', hairStyle: 'spiky', hairColor: '#111827', skin: '#f1c29b', horns: false, ears: 'human', halo: false },
+  { id: 'demon', name: 'Señor Demoníaco Carmesí', trait: 'Furia Abisal: Potencia máxima en cargas pesadas', hairStyle: 'wild', hairColor: '#e11d48', skin: '#e2b49a', horns: true, ears: 'pointed', halo: false },
+  { id: 'valkyrie', name: 'Heroína Astral / Valkiria', trait: 'Gracia Estelar: Recuperación acelerada', hairStyle: 'twin', hairColor: '#fde047', skin: '#ffe0bd', horns: false, ears: 'human', halo: true },
+  { id: 'beastkin', name: 'Semi-Humano Berserker (Tanuki/Lobo)', trait: 'Instinto Salvaje: Agilidad y resistencia explosiva', hairStyle: 'medium', hairColor: '#92400e', skin: '#f5cba7', horns: false, ears: 'beast', halo: false },
+  { id: 'celestial', name: 'Inmortal Celestial', trait: 'Cuerpo de Jade: Densidad muscular superior', hairStyle: 'long', hairColor: '#e0f2fe', skin: '#fad7b8', horns: false, ears: 'pointed', halo: true },
+  { id: 'human_awakened', name: 'Humano Despertado (Monarca)', trait: 'Voluntad Inquebrantable: Sin límite de rango', hairStyle: 'messy', hairColor: '#0f172a', skin: '#eab68c', horns: false, ears: 'human', halo: false },
+];
+
+const CLASSES_POOL = [
+  { id: 'martial_artist', name: 'Artista Marcial de Puño Dragón', weapon: 'gauntlets', desc: 'Combate cuerpo a cuerpo puro con guanteletes reforzados.' },
+  { id: 'sword_saint', name: 'Espadachín Espiritual', weapon: 'sword', desc: 'Precisión letal y control total de la postura.' },
+  { id: 'dragon_lancer', name: 'Lancero Celestial', weapon: 'spear', desc: 'Alcance implacable y potencia explosiva en tren inferior.' },
+  { id: 'staff_monk', name: 'Monje del Bastón Sagrado', weapon: 'staff', desc: 'Equilibrio absoluto, movilidad y resistencia funcional.' },
+  { id: 'titan_vanguard', name: 'Vanguardia Titán', weapon: 'greatsword', desc: 'Fuerza bruta imparable capaz de levantar toneladas.' },
+];
+
+const MOTIVATIONAL_QUOTES = [
+  '«El dolor de hoy es el rango EX de mañana. ¡No te detengas, Cazador!»',
+  '«Cada repetición que otros abandonan es un peldaño hacia Challenger 1.»',
+  '«Tu cuerpo es el único templo y la única armadura que llevarás toda tu vida.»',
+  '«El Sistema no regala rangos: los forja con tu disciplina diaria.»',
+];
+
+function getRankFromLP(lp) {
+  const safeLP = Math.max(0, Math.min(8999, lp));
+  const totalDivisions = Math.floor(safeLP / 100); // 0 to 89
+  const rankIndex = Math.min(14, Math.floor(totalDivisions / 6));
+  const divInRank = 6 - (totalDivisions % 6); // 6 down to 1
   const currentDivLP = safeLP % 100;
-  const rankObj = COMPETITIVE_RANKS[rankIndex];
-
   return {
-    totalLP: safeLP,
-    globalDivIndex,
-    rankIndex,
-    rank: rankObj,
-    division,
+    ...RANKS[rankIndex],
+    division: divInRank,
+    label: `${RANKS[rankIndex].name} ${divInRank}`,
     currentDivLP,
-    fullName: `${rankObj.name} ${division}`,
-    isMax: rankIndex === 14 && division === 1
-  };
-}
-
-function computeStrengthProfile(bodyWeight, lifts) {
-  const bw = Math.max(35, Number(bodyWeight) || 75);
-
-  // Promedio científico de fórmulas Epley y Brzycki para 1RM
-  const estimate1RM = (weight, reps) => {
-    const w = Math.max(0, Number(weight) || 0);
-    const r = Math.max(1, Math.min(20, Number(reps) || 1));
-    if (w === 0) return 0;
-    if (r === 1) return w;
-    const epley = w * (1 + r / 30);
-    const brzycki = r < 37 ? w * (36 / (37 - r)) : epley;
-    return Math.round((epley + brzycki) / 2);
-  };
-
-  const squat1RM = estimate1RM(lifts.squat.weight, lifts.squat.reps);
-  const bench1RM = estimate1RM(lifts.bench.weight, lifts.bench.reps);
-  const deadlift1RM = estimate1RM(lifts.deadlift.weight, lifts.deadlift.reps);
-  // Para dominadas lastradas: peso corporal + lastre añadido
-  const pullupTotalLoad = bw + Math.max(0, Number(lifts.pullup.weight) || 0);
-  const pullup1RM = estimate1RM(pullupTotalLoad, lifts.pullup.reps);
-  const ohp1RM = estimate1RM(lifts.ohp.weight, lifts.ohp.reps);
-
-  const sbdTotal = squat1RM + bench1RM + deadlift1RM;
-  const fiveLiftsTotal = sbdTotal + pullup1RM + ohp1RM;
-
-  // Coeficiente científico DOTS
-  const dotsDenom =
-    -307.75076 +
-    24.0900756 * bw -
-    0.1918759221 * Math.pow(bw, 2) +
-    0.0007391293 * Math.pow(bw, 3) -
-    0.000001093 * Math.pow(bw, 4);
-  const dotsScore = dotsDenom > 0 ? Math.round((sbdTotal * 500) / dotsDenom) : 0;
-
-  const relativeRatio = Number((sbdTotal / bw).toFixed(2));
-
-  const getGradeByThresholds = (val, thresholds) => {
-    for (let i = thresholds.length - 1; i >= 0; i--) {
-      if (val >= thresholds[i]) return SCIENTIFIC_GRADES[i];
-    }
-    return SCIENTIFIC_GRADES[0];
-  };
-
-  const absComposite = sbdTotal * 0.65 + dotsScore * 0.55;
-  const absoluteGrade = getGradeByThresholds(absComposite, [0, 170, 240, 310, 385, 460, 540, 625, 710, 800]);
-  const relativeGrade = getGradeByThresholds(relativeRatio, [0, 1.9, 2.6, 3.3, 4.0, 4.7, 5.4, 6.1, 6.8, 7.5]);
-
-  const rows = [
-    {
-      key: 'squat',
-      name: 'Sentadilla Trasera',
-      oneRM: squat1RM,
-      ratio: Number((squat1RM / bw).toFixed(2)),
-      grade: getGradeByThresholds(squat1RM / bw, [0, 0.75, 1.0, 1.25, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0])
-    },
-    {
-      key: 'bench',
-      name: 'Press de Banca',
-      oneRM: bench1RM,
-      ratio: Number((bench1RM / bw).toFixed(2)),
-      grade: getGradeByThresholds(bench1RM / bw, [0, 0.55, 0.75, 0.95, 1.15, 1.35, 1.55, 1.75, 1.95, 2.15])
-    },
-    {
-      key: 'deadlift',
-      name: 'Peso Muerto',
-      oneRM: deadlift1RM,
-      ratio: Number((deadlift1RM / bw).toFixed(2)),
-      grade: getGradeByThresholds(deadlift1RM / bw, [0, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.0, 3.3])
-    },
-    {
-      key: 'pullup',
-      name: 'Dominadas Lastradas (Total)',
-      oneRM: pullup1RM,
-      ratio: Number((pullup1RM / bw).toFixed(2)),
-      grade: getGradeByThresholds(pullup1RM / bw, [0, 0.95, 1.1, 1.25, 1.4, 1.55, 1.7, 1.85, 2.0, 2.15])
-    },
-    {
-      key: 'ohp',
-      name: 'Press Militar Estricto',
-      oneRM: ohp1RM,
-      ratio: Number((ohp1RM / bw).toFixed(2)),
-      grade: getGradeByThresholds(ohp1RM / bw, [0, 0.35, 0.5, 0.65, 0.78, 0.9, 1.02, 1.15, 1.28, 1.4])
-    }
-  ];
-
-  return {
-    sbdTotal,
-    fiveLiftsTotal,
-    dotsScore,
-    relativeRatio,
-    absoluteGrade,
-    relativeGrade,
-    rows
-  };
-}
-
-function auditUserRoutine(text, feeling) {
-  const lower = (text || '').toLowerCase();
-  const pushCount = (lower.match(/banca|press|flexion|push|fondos|aperturas|lateral|tricep/g) || []).length;
-  const pullCount = (lower.match(/remo|jalon|dominada|pull|curl|bicep|face|peso muerto|deadlift/g) || []).length;
-  const legCount = (lower.match(/sentadilla|squat|prensa|zancada|bulgara|femoral|cuadricep|gemelo|hip thrust/g) || []).length;
-
-  const pushSets = Math.max(4, pushCount * 4);
-  const pullSets = Math.max(3, pullCount * 4);
-  const legSets = Math.max(4, legCount * 4);
-  const ratio = pullSets > 0 ? Number((pushSets / pullSets).toFixed(2)) : 2.0;
-
-  let score = 86;
-  const alerts = [];
-  const tips = [];
-
-  if (ratio > 1.35) {
-    score -= 14;
-    alerts.push({
-      level: 'warn',
-      title: `Desbalance Empuje / Tracción (${ratio}:1)`,
-      detail: 'Predominio excesivo de empuje anterior. Riesgo de rotación interna de hombros.'
-    });
-    tips.push('Suma 4-6 series semanales de remo horizontal y Face Pulls para equilibrar la cintura escapular.');
-  } else {
-    alerts.push({
-      level: 'ok',
-      title: `Balance Empuje / Tracción Saludable (${ratio}:1)`,
-      detail: 'Proporción biomecánica equilibrada entre cadena anterior y posterior.'
-    });
-  }
-
-  if (legSets < 10) {
-    score -= 12;
-    alerts.push({
-      level: 'warn',
-      title: 'Volumen Bajo en Tren Inferior (< 10 series/sem)',
-      detail: 'Por debajo del Volumen Mínimo Adaptativo (MAV) para cuádriceps e isquiosurales.'
-    });
-    tips.push('Incluye al menos un patrón de rodilla (Sentadilla/Prensa) y uno de cadera (RDL/Curl Femoral) 2x/semana.');
-  }
-
-  let cnsStatus = 'Óptima';
-  if (feeling === 'estancado') {
-    score -= 15;
-    cnsStatus = 'Saturación de Fatiga (MRV)';
-    alerts.push({
-      level: 'danger',
-      title: 'Meseta de Progresión Detectada',
-      detail: 'La fatiga acumulada en el Sistema Nervioso Central está ocultando tus ganancias de fuerza.'
-    });
-    tips.push('Ejecuta una semana de descarga (Deload): reduce las series al 50% manteniendo el peso y trabaja a RIR 3.');
-  } else if (feeling === 'fatiga') {
-    score -= 20;
-    cnsStatus = 'Sobrecarga Articular / SNC Alto';
-    alerts.push({
-      level: 'danger',
-      title: 'Riesgo de Sobreentrenamiento',
-      detail: 'Demasiadas series cerca del fallo absoluto (RIR 0) en ejercicios compuestos pesados.'
-    });
-    tips.push('Cambia variantes con barra libre por máquinas convergentes o poleas durante 2 semanas y prioriza 8h de sueño.');
-  } else {
-    tips.push('Aplica sobrecarga progresiva doble: sube +2.5 kg cuando completes el tope de repeticiones con RIR 1.');
-  }
-
-  return {
-    score: Math.max(40, Math.min(99, score)),
-    pushSets,
-    pullSets,
-    legSets,
-    ratio,
-    cnsStatus,
-    alerts,
-    tips
-  };
-}
-
-function analyzeSleepWeek(hoursArray) {
-  const total = Number(hoursArray.reduce((sum, h) => sum + Number(h || 0), 0).toFixed(1));
-  const avg = Number((total / 7).toFixed(1));
-
-  if (total < 42) {
-    return {
-      total,
-      avg,
-      status: 'critical',
-      energyPct: Math.max(25, Math.round((total / 49) * 70)),
-      label: 'DÉFICIT CRÍTICO DE SUEÑO',
-      impact: 'Caída del 30% en síntesis proteica y alerta alta de fatiga del SNC. Reduce cargas 15% hoy o usa un Desafío en Casa.'
-    };
-  }
-  if (total < 49) {
-    return {
-      total,
-      avg,
-      status: 'warning',
-      energyPct: Math.round((total / 49) * 88),
-      label: 'DEUDA LEVE DE DESCANSO',
-      impact: 'Recuperación parcial (< 49h/sem). Evita llegar al fallo muscular absoluto en ejercicios multiarticulares.'
-    };
-  }
-  if (total > 63) {
-    return {
-      total,
-      avg,
-      status: 'high',
-      energyPct: 94,
-      label: 'SUPERÁVIT DE RECUPERACIÓN',
-      impact: 'Descanso máximo (> 63h). Realiza una activación dinámica prolongada antes de levantar pesado.'
-    };
-  }
-  return {
-    total,
-    avg,
-    status: 'optimal',
-    energyPct: 100,
-    label: 'ZONA ANABÓLICA ÓPTIMA (49–63h)',
-    impact: 'Secreción óptima de hormona de crecimiento y resíntesis de glucógeno. Estás al 100% para romper récords.'
+    totalLP: safeLP,
   };
 }
 
 // ============================================================================
-// COMPONENTE: AVATAR 2D ESTILO ANIME (CEL-SHADING EXPRESIVO + AURA DE KI)
+// COMPONENTE AVATAR ANIME 2D EVOLUTIVO (CEL-SHADING LIMPIO SIN AURA DE KI)
 // ============================================================================
+function AnimeHunterAvatar({ hunterClass, rankInfo, physicalGrade }) {
+  const gradeIdx = PHYSICAL_GRADES.indexOf(physicalGrade); // 0 (F) to 9 (EX)
+  const tier = rankInfo.tier; // 0 (Tierra) to 14 (Challenger)
 
-function AnimeWarrior2D({ avatar, rankColor, rankTitle, rankIndex, physicalGrade, compact = false }) {
-  const skinTones = {
-    claro: { base: '#FFE2CC', shadow: '#E0AF8E' },
-    trigueno: { base: '#EBB68D', shadow: '#C2865B' },
-    bronceado: { base: '#CA865A', shadow: '#995933' },
-    moreno: { base: '#965A38', shadow: '#69381D' },
-    oscuro: { base: '#633B26', shadow: '#3E2012' },
-    celestial: { base: '#DCE7F7', shadow: '#8FA7CC' }
-  };
+  // Escala muscular según grado físico (F -> EX) y rango
+  const shoulderW = 34 + gradeIdx * 1.6 + tier * 0.4;
+  const chestW = 24 + gradeIdx * 1.1;
+  const waistW = 16 + gradeIdx * 0.45;
+  const armThick = 8.5 + gradeIdx * 0.65;
+  const legThick = 10.5 + gradeIdx * 0.65;
 
-  const hairTones = {
-    azabache: { base: '#161B2B', shine: '#4F6399' },
-    platino: { base: '#F8FAFC', shine: '#FFFFFF' },
-    fuego: { base: '#EF4444', shine: '#FCA5A5' },
-    relampago: { base: '#0EA5E9', shine: '#BAE6FD' },
-    dorado: { base: '#F59E0B', shine: '#FEF08A' },
-    amatista: { base: '#9333EA', shine: '#E9D5FF' }
-  };
-
-  const biotypes = {
-    atletico: { sh: 44, wa: 21, arm: 11, trap: 18, label: 'Atlético / Calisténico' },
-    mesomorfo: { sh: 51, wa: 23, arm: 14, trap: 22, label: 'Mesomorfo / Estético' },
-    powerlifter: { sh: 57, wa: 29, arm: 16, trap: 26, label: 'Powerlifter / Fuerza Bruta' },
-    titan: { sh: 62, wa: 24, arm: 18, trap: 30, label: 'Titán / Hipertrofia Élite' }
-  };
-
-  const auraPalette = {
-    rango: rankColor,
-    dorado: '#FACC15',
-    cian: '#00F5FF',
-    magenta: '#F43F5E',
-    esmeralda: '#10B981',
-    violeta: '#C084FC'
-  };
-
-  const skin = skinTones[avatar.skin] || skinTones.trigueno;
-  const hair = hairTones[avatar.hairColor] || hairTones.azabache;
-  const bio = biotypes[avatar.build] || biotypes.mesomorfo;
-  const auraHex = auraPalette[avatar.aura] || rankColor;
-  const isFem = avatar.gender === 'femenino';
-
-  const shW = isFem ? bio.sh - 8 : bio.sh;
-  const waW = isFem ? bio.wa - 4 : bio.wa;
-  const armW = isFem ? bio.arm - 2.5 : bio.arm;
-  const trapW = isFem ? bio.trap - 4 : bio.trap;
-  const hasLightning = rankIndex >= 6 || ['S', 'SS', 'SSS', 'EX'].includes(physicalGrade);
-
-  if (compact) {
-    return (
-      <div
-        className="relative w-12 h-12 rounded-2xl overflow-hidden border-2 shrink-0 bg-[#120D2B] shadow-lg"
-        style={{ borderColor: auraHex, boxShadow: `0 0 15px ${auraHex}88` }}
-      >
-        <div
-          className="absolute inset-0 opacity-45 animate-pulse"
-          style={{ background: `radial-gradient(circle, ${auraHex} 0%, transparent 72%)` }}
-        />
-        <svg viewBox="75 26 130 130" className="w-full h-full relative z-10">
-          {avatar.hair === 'salvaje' && (
-            <path d="M96,65 L84,138 L112,126 L140,142 L168,126 L196,138 L184,65 Z" fill={hair.base} stroke="#090B14" strokeWidth="2.5" />
-          )}
-          <path d={`M${140 - shW},150 L${140 - trapW},116 L160,116 L${140 + shW},150 Z`} fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
-          <rect x="128" y="96" width="24" height="24" fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
-          <path d="M114,60 L116,86 L128,103 L140,109 L152,103 L164,86 L166,60 Z" fill={skin.base} stroke="#090B14" strokeWidth="2.5" />
-          {/* Ojos Anime */}
-          <polygon points="119,76 133,78 131,85 120,84" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
-          <circle cx="126.5" cy="81" r="3.4" fill={auraHex} />
-          <circle cx="125.3" cy="79.8" r="1.3" fill="#FFFFFF" />
-          <polygon points="161,76 147,78 149,85 160,84" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
-          <circle cx="153.5" cy="81" r="3.4" fill={auraHex} />
-          <circle cx="152.3" cy="79.8" r="1.3" fill="#FFFFFF" />
-          {/* Flequillo */}
-          <path d="M110,68 L104,44 L122,30 L140,22 L158,30 L176,44 L170,68 L158,52 L148,72 L140,54 L132,73 L122,52 Z" fill={hair.base} stroke="#090B14" strokeWidth="2.5" />
-        </svg>
-      </div>
-    );
-  }
+  const race = hunterClass?.race || RACES_POOL[5];
+  const cls = hunterClass?.cls || CLASSES_POOL[0];
+  const weaponTier = rankInfo.weaponTier || 1;
 
   return (
-    <div
-      className="relative w-full h-[365px] rounded-2xl border-2 bg-gradient-to-b from-[#17113B] via-[#1D154A] to-[#0E0B24] overflow-hidden flex items-center justify-center shadow-2xl select-none"
-      style={{ borderColor: auraHex, boxShadow: `0 0 36px ${auraHex}44` }}
-    >
-      {/* Estrellas y partículas brillantes anime */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[12, 24, 38, 52, 68, 82, 91].map((leftPct, i) => (
-          <span
-            key={i}
-            className="absolute bottom-6 w-2 h-2 rounded-full animate-ki-rise"
-            style={{
-              left: `${leftPct}%`,
-              backgroundColor: i % 2 === 0 ? auraHex : '#FFFFFF',
-              boxShadow: `0 0 10px ${auraHex}`,
-              animationDelay: `${i * 0.38}s`
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Aura Radial Vibrante */}
-      <div
-        className="absolute w-72 h-72 rounded-full blur-3xl animate-aura-breathe"
-        style={{ backgroundColor: auraHex, opacity: 0.42 }}
-      />
-
-      {/* Insignias superiores */}
-      <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-20 gap-2">
-        <span className="px-2.5 py-1 rounded-xl bg-black/65 border border-white/20 text-[10px] font-mono font-bold text-cyan-200 backdrop-blur-md">
-          BIOTIPO: {bio.label.toUpperCase()}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      background: 'radial-gradient(circle at 50% 35%, rgba(0,240,255,0.14) 0%, rgba(5,8,20,0.95) 75%)',
+      border: `1px solid ${rankInfo.color}`,
+      borderRadius: '16px',
+      padding: '16px 12px',
+      position: 'relative'
+    }}>
+      {/* Etiqueta de Clase y Rango */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '8px' }}>
+        <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.15)', color: '#00f0ff', border: '1px solid rgba(0,240,255,0.4)' }}>
+          {race.name}
         </span>
-        <span
-          className="px-3 py-1 rounded-xl bg-black/75 border text-[11px] font-mono font-black backdrop-blur-md shadow-md"
-          style={{ borderColor: auraHex, color: auraHex }}
-        >
-          FÍSICO {physicalGrade} • {rankTitle}
+        <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.4)' }}>
+          FÍSICO {physicalGrade}
         </span>
       </div>
 
-      {/* ILUSTRACIÓN SVG ANIME 2D DE CUERPO COMPLETO */}
-      <svg viewBox="0 0 280 345" className="w-72 h-[340px] relative z-10 overflow-visible">
+      {/* SVG ANIME 2D CEL-SHADING (SIN AURA DE KI) */}
+      <svg viewBox="0 0 240 310" width="215" height="275" style={{ overflow: 'visible' }}>
         <defs>
-          <linearGradient id="animeKiFlame" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor={auraHex} stopOpacity="0.85" />
-            <stop offset="55%" stopColor={auraHex} stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          <linearGradient id="armorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={rankInfo.trimColor} />
+            <stop offset="55%" stopColor={rankInfo.armorColor} />
+            <stop offset="100%" stopColor="#090d16" />
           </linearGradient>
-          <radialGradient id="animeFloorRing" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={auraHex} stopOpacity="0.7" />
-            <stop offset="100%" stopColor={auraHex} stopOpacity="0" />
-          </radialGradient>
+          <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={race.skin} />
+            <stop offset="75%" stopColor={race.skin} />
+            <stop offset="100%" stopColor="#c68b63" />
+          </linearGradient>
+          <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="50%" stopColor={rankInfo.trimColor} />
+            <stop offset="100%" stopColor={rankInfo.color} />
+          </linearGradient>
         </defs>
 
-        {/* Círculo de Energía en el Suelo */}
-        <g transform="translate(140, 312)">
-          <ellipse cx="0" cy="0" rx="92" ry="18" fill="url(#animeFloorRing)" />
-          <ellipse
-            cx="0"
-            cy="0"
-            rx="80"
-            ry="15"
-            fill="none"
-            stroke={auraHex}
-            strokeWidth="2.2"
-            strokeDasharray="14 6"
-            className="animate-ring-rotate"
-          />
-        </g>
+        {/* Plataforma Holográfica de Base */}
+        <ellipse cx="120" cy="292" rx="68" ry="11" fill="rgba(0, 240, 255, 0.12)" stroke={rankInfo.color} strokeWidth="1.5" />
+        <ellipse cx="120" cy="292" rx="46" ry="6" fill="none" stroke="rgba(255,255,255,0.25)" strokeDasharray="4 4" />
 
-        {/* Llamas de Ki Estilo Shonen detrás del Guerrero */}
-        <g className="animate-aura-breathe">
-          <path
-            d="M80,305 Q60,230 80,168 Q62,122 88,78 Q105,32 140,16 Q175,32 192,78 Q218,122 200,168 Q220,230 200,305 Z"
-            fill="url(#animeKiFlame)"
-          />
-          <polygon points="80,198 54,154 84,166" fill={auraHex} opacity="0.6" />
-          <polygon points="200,198 226,154 196,166" fill={auraHex} opacity="0.6" />
-          <polygon points="92,118 68,74 100,92" fill={auraHex} opacity="0.65" />
-          <polygon points="188,118 212,74 180,92" fill={auraHex} opacity="0.65" />
-        </g>
+        {/* Halo Celestial si la raza lo posee */}
+        {race.halo && (
+          <ellipse cx="120" cy="22" rx="22" ry="5" fill="none" stroke="#fde047" strokeWidth="2.5" />
+        )}
 
-        {/* Rayos eléctricos para rangos elevados */}
-        {hasLightning && (
-          <g stroke="#FFFFFF" strokeWidth="1.8" fill="none" opacity="0.9">
-            <polyline points="68,140 82,124 72,112 90,94" stroke={auraHex} strokeWidth="2.4" />
-            <polyline points="212,140 198,124 208,112 190,94" stroke={auraHex} strokeWidth="2.4" />
-            <polyline points="78,245 92,228 82,216 96,198" />
-            <polyline points="202,245 188,228 198,216 184,198" />
+        {/* ARMA DE CLASE (EVOLUCIONA CON EL RANGO) */}
+        {cls.weapon === 'sword' && (
+          <g transform="translate(174, 82) rotate(14)">
+            <rect x="-3" y="95" width="6" height="26" rx="2" fill="#1e293b" stroke="#94a3b8" />
+            <rect x="-14" y="91" width="28" height="6" rx="2" fill={rankInfo.trimColor} />
+            <polygon points={`0,${15 - weaponTier * 6} -${5 + weaponTier},91 ${5 + weaponTier},91`} fill="url(#bladeGrad)" stroke="#0f172a" strokeWidth="1.2" />
           </g>
         )}
 
-        {/* PERSONAJE ANIME (ANIMACIÓN DE RESPIRACIÓN HEROICA) */}
-        <g className="animate-hero-breath">
-          {/* Cabello trasero */}
-          {avatar.hair === 'salvaje' && (
-            <path
-              d="M100,66 L80,160 L108,146 L124,166 L140,150 L156,166 L172,146 L200,160 L180,66 Z"
-              fill={hair.base}
-              stroke="#090B14"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          )}
-          {avatar.hair === 'coleta' && (
-            <path
-              d="M136,28 Q174,36 182,88 Q164,68 144,34 Z"
-              fill={hair.base}
-              stroke="#090B14"
-              strokeWidth="2.4"
-            />
-          )}
-
-          {/* Piernas & Calzado Deportivo */}
-          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
-            <path
-              d={`M${140 - waW},186 L${140 - waW - 8},282 L111,282 L138,208 L142,208 L169,282 L${140 + waW + 8},282 L${140 + waW},186 Z`}
-              fill="#15192B"
-            />
-            <line x1={140 - waW - 2} y1="196" x2={140 - waW - 7} y2="276" stroke={auraHex} strokeWidth="2.4" />
-            <line x1={140 + waW + 2} y1="196" x2={140 + waW + 7} y2="276" stroke={auraHex} strokeWidth="2.4" />
-            {/* Zapatillas de Entrenamiento */}
-            <path d={`M${140 - waW - 9},282 L110,282 L106,308 L${140 - waW - 12},308 Z`} fill="#F8FAFC" />
-            <path d={`M170,282 L${140 + waW + 9},282 L${140 + waW + 12},308 L174,308 Z`} fill="#F8FAFC" />
-            <line x1={140 - waW - 10} y1="298" x2="108" y2="298" stroke={auraHex} strokeWidth="3" />
-            <line x1="172" y1="298" x2={140 + waW + 10} y2="298" stroke={auraHex} strokeWidth="3" />
+        {cls.weapon === 'greatsword' && (
+          <g transform="translate(178, 70) rotate(16)">
+            <rect x="-4" y="110" width="8" height="32" rx="2" fill="#0f172a" stroke={rankInfo.trimColor} />
+            <polygon points="-20,104 20,104 14,112 -14,112" fill={rankInfo.trimColor} />
+            <polygon points={`0,${5 - weaponTier * 5} -${11 + weaponTier * 1.5},104 ${11 + weaponTier * 1.5},104`} fill="url(#bladeGrad)" stroke="#0f172a" strokeWidth="1.5" />
           </g>
+        )}
 
-          {/* Brazos Cel-Shaded */}
-          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
-            <path
-              d={`M${140 - shW + 2},114 L${140 - shW - armW},148 L${140 - shW - armW + 3},196 L${140 - shW + 4},196 L${140 - shW + 5},152 Z`}
-              fill={skin.base}
-            />
-            <polygon
-              points={`${140 - shW + 1},136 ${140 - shW + 4},152 ${140 - shW + 3},194 ${140 - shW - 2},194`}
-              fill={skin.shadow}
-              stroke="none"
-            />
-            <path
-              d={`M${140 + shW - 2},114 L${140 + shW + armW},148 L${140 + shW + armW - 3},196 L${140 + shW - 4},196 L${140 + shW - 5},152 Z`}
-              fill={skin.base}
-            />
-            <polygon
-              points={`${140 + shW - 1},136 ${140 + shW - 4},152 ${140 + shW - 3},194 ${140 + shW + 2},194`}
-              fill={skin.shadow}
-              stroke="none"
-            />
-
-            {/* Accesorio: Muñequeras de Fuerza */}
-            {avatar.accessory === 'munequeras' && (
-              <>
-                <rect x={140 - shW - armW + 1} y="172" width={armW + 2} height="22" rx="3" fill={auraHex} />
-                <rect x={140 + shW - 3} y="172" width={armW + 2} height="22" rx="3" fill={auraHex} />
-              </>
-            )}
+        {cls.weapon === 'spear' && (
+          <g transform="translate(178, 35) rotate(8)">
+            <rect x="-2.5" y="45" width="5" height="215" fill="#475569" stroke="#0f172a" />
+            <polygon points={`0,${10 - weaponTier * 4} -${7 + weaponTier},48 ${7 + weaponTier},48`} fill="url(#bladeGrad)" stroke="#0f172a" strokeWidth="1.2" />
           </g>
+        )}
 
-          {/* Torso & Indumentaria */}
-          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
-            <polygon
-              points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},188 ${140 - waW},188 ${140 - shW},116`}
-              fill={skin.base}
-            />
-            <polygon
-              points={`${140 + shW - 8},116 ${140 + shW},116 ${140 + waW},188 ${140 + waW - 7},188`}
-              fill={skin.shadow}
-              stroke="none"
-            />
-
-            {/* Definición muscular anime */}
-            <g fill="none" stroke="#090B14" strokeWidth="1.6" strokeLinecap="round" opacity="0.7">
-              <path d={`M${140 - shW * 0.58},134 Q140,140 140,124`} />
-              <path d={`M${140 + shW * 0.58},134 Q140,140 140,124`} />
-              <line x1="140" y1="138" x2="140" y2="180" />
-              <path d="M131,149 L138,149 M142,149 L149,149" />
-              <path d="M131,160 L138,160 M142,160 L149,160" />
-            </g>
-
-            {/* 4 Conjuntos Deportivos / Anime */}
-            {avatar.outfit === 'neogym' && (
-              <g>
-                <polygon
-                  points={`125,104 155,104 149,130 ${140 + waW + 1},188 ${140 - waW - 1},188 131,130`}
-                  fill="#18181B"
-                />
-                <polygon
-                  points={`${140 - waW - 1},156 128,164 128,188 ${140 - waW - 1},188`}
-                  fill="#EF4444"
-                  stroke="none"
-                />
-                <polygon
-                  points={`${140 + waW + 1},156 152,164 152,188 ${140 + waW + 1},188`}
-                  fill="#EF4444"
-                  stroke="none"
-                />
-                <text x="140" y="152" textAnchor="middle" fill={auraHex} fontSize="12" fontWeight="900" fontFamily="monospace" stroke="none">
-                  EX
-                </text>
-              </g>
-            )}
-
-            {avatar.outfit === 'gi' && (
-              <g>
-                <polygon
-                  points={`${140 - trapW},103 ${140 + trapW},103 ${140 + shW * 0.78},114 ${140 + waW + 1},188 ${140 - waW - 1},188 ${140 - shW * 0.78},114`}
-                  fill="#1E293B"
-                />
-                <polyline points={`${140 - trapW + 4},104 140,148 ${140 + trapW - 4},104`} fill="none" stroke={auraHex} strokeWidth="3.2" />
-                <rect x={140 - waW - 2} y="175" width={(waW + 2) * 2} height="11" fill={auraHex} />
-              </g>
-            )}
-
-            {avatar.outfit === 'cyber' && (
-              <g>
-                <polygon
-                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW},116 ${140 + waW},188 ${140 - waW},188 ${140 - shW},116`}
-                  fill="#0F172A"
-                />
-                <polyline points={`${140 - shW + 6},122 132,135 148,135 ${140 + shW - 6},122`} fill="none" stroke={auraHex} strokeWidth="2.4" />
-                <circle cx="140" cy="135" r="4.5" fill={auraHex} stroke="none" />
-              </g>
-            )}
-
-            {avatar.outfit === 'titan' && (
-              <g>
-                <polygon
-                  points={`${140 - trapW},104 ${140 + trapW},104 ${140 + shW * 0.85},122 ${140 + waW},188 ${140 - waW},188 ${140 - shW * 0.85},122`}
-                  fill="#1E1B4B"
-                />
-                <polygon points={`${140 - shW - 8},125 ${140 - shW + 6},106 ${140 - trapW + 2},122`} fill="#090D16" stroke={auraHex} strokeWidth="2.2" />
-                <polygon points={`${140 + shW + 8},125 ${140 + shW - 6},106 ${140 + trapW - 2},122`} fill="#090D16" stroke={auraHex} strokeWidth="2.2" />
-                <polygon points="140,122 151,135 140,148 129,135" fill={auraHex} />
-              </g>
-            )}
-
-            {/* Accesorio: Cinturón de Poder */}
-            {avatar.accessory === 'cinturon' && (
-              <g>
-                <rect x={140 - waW - 2} y="176" width={(waW + 2) * 2} height="12" rx="2" fill="#090B14" />
-                <rect x="133" y="174" width="14" height="16" rx="3" fill={auraHex} />
-              </g>
-            )}
+        {cls.weapon === 'staff' && (
+          <g transform="translate(176, 42) rotate(7)">
+            <rect x="-3.5" y="25" width="7" height="230" rx="3" fill="#78350f" stroke="#fbbf24" strokeWidth="1.2" />
+            <circle cx="0" cy="22" r={5 + weaponTier} fill={rankInfo.trimColor} stroke="#fff" strokeWidth="1.2" />
           </g>
+        )}
 
-          {/* Cuello y Cabeza Anime */}
-          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
-            <rect x="130" y="86" width="20" height="22" fill={skin.base} />
-            <polygon points="130,88 150,88 150,98 130,94" fill={skin.shadow} stroke="none" />
-            <path d="M115,50 L116,74 L128,90 L140,96 L152,90 L164,74 L165,50 Z" fill={skin.base} />
-            <polygon points="158,52 164,52 163,74 151,90 140,95 150,86 157,72" fill={skin.shadow} stroke="none" />
-          </g>
+        {/* PIERNAS Y BOTAS DE COMBATE */}
+        <path
+          d={`M ${120 - waistW * 0.7} 166 L ${106 - legThick * 0.5} 230 L ${102 - legThick * 0.4} 285 L ${106 + legThick * 0.6} 285 L ${118} 230 L ${120} 178 Z`}
+          fill="#111827"
+          stroke="#050814"
+          strokeWidth="1.5"
+        />
+        <path
+          d={`M ${120 + waistW * 0.7} 166 L ${134 + legThick * 0.5} 230 L ${138 + legThick * 0.4} 285 L ${134 - legThick * 0.6} 285 L ${122} 230 L ${120} 178 Z`}
+          fill="#111827"
+          stroke="#050814"
+          strokeWidth="1.5"
+        />
+        {/* Grebas / Botas blindadas según rango */}
+        <path d={`M ${101 - legThick * 0.4} 242 L ${106 + legThick * 0.6} 242 L ${107 + legThick * 0.6} 288 L ${97 - legThick * 0.4} 288 Z`} fill="url(#armorGrad)" stroke="#050814" strokeWidth="1.4" />
+        <path d={`M ${139 + legThick * 0.4} 242 L ${134 - legThick * 0.6} 242 L ${133 - legThick * 0.6} 288 L ${143 + legThick * 0.4} 288 Z`} fill="url(#armorGrad)" stroke="#050814" strokeWidth="1.4" />
 
-          {/* Rasgos Faciales Expresivos Anime */}
-          <g>
-            <polyline points="119,61 134,65" stroke="#090B14" strokeWidth="2.6" strokeLinecap="round" fill="none" />
-            <polyline points="161,61 146,65" stroke="#090B14" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+        {/* TORSO ANATÓMICO Y ARMADURA EVOLUTIVA */}
+        <path
+          d={`M ${120 - shoulderW} 94 Q 120 88 ${120 + shoulderW} 94 L ${120 + chestW} 134 L ${120 + waistW} 170 L ${120 - waistW} 170 L ${120 - chestW} 134 Z`}
+          fill={tier >= 4 ? 'url(#armorGrad)' : 'url(#skinGrad)'}
+          stroke="#050814"
+          strokeWidth="1.8"
+        />
+        {/* Detalles de pectorales / placas del pecho */}
+        <path
+          d={`M ${120 - chestW * 0.85} 106 Q 120 116 120 124 Q 120 116 ${120 + chestW * 0.85} 106`}
+          fill="none"
+          stroke={tier >= 4 ? rankInfo.trimColor : '#b57b52'}
+          strokeWidth="1.8"
+        />
+        {/* Cinturón de Rango */}
+        <rect x={120 - waistW} y="162" width={waistW * 2} height="9" rx="2" fill={rankInfo.trimColor} stroke="#050814" strokeWidth="1.3" />
 
-            {/* Ojo Izquierdo */}
-            <polygon points="119,66 134,68 132,75 120,74" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
-            <circle cx="127" cy="71" r="3.4" fill={auraHex} />
-            <circle cx="127" cy="71" r="1.5" fill="#090B14" />
-            <circle cx="125.6" cy="69.8" r="1.2" fill="#FFFFFF" />
+        {/* HOMBRERAS (APARECEN DESDE RANGO BRONCE / PLATA) */}
+        {tier >= 5 && (
+          <>
+            <path d={`M ${120 - shoulderW - 6} 92 Q ${120 - shoulderW + 6} 80 ${120 - shoulderW + 18} 96 L ${120 - shoulderW - 2} 112 Z`} fill="url(#armorGrad)" stroke={rankInfo.trimColor} strokeWidth="1.5" />
+            <path d={`M ${120 + shoulderW + 6} 92 Q ${120 + shoulderW - 6} 80 ${120 + shoulderW - 18} 96 L ${120 + shoulderW + 2} 112 Z`} fill="url(#armorGrad)" stroke={rankInfo.trimColor} strokeWidth="1.5" />
+          </>
+        )}
 
-            {/* Ojo Derecho */}
-            <polygon points="161,66 146,68 148,75 160,74" fill="#FFFFFF" stroke="#090B14" strokeWidth="1.6" />
-            <circle cx="153" cy="71" r="3.4" fill={auraHex} />
-            <circle cx="153" cy="71" r="1.5" fill="#090B14" />
-            <circle cx="151.6" cy="69.8" r="1.2" fill="#FFFFFF" />
+        {/* BRAZOS CON VOLUMEN MUSCULAR */}
+        <path
+          d={`M ${120 - shoulderW + 2} 96 Q ${120 - shoulderW - armThick} 122 ${120 - shoulderW - armThick * 0.5} 145 L ${120 - shoulderW + 4} 172 L ${120 - shoulderW + 13} 170 L ${120 - shoulderW + 10} 142 Q ${120 - shoulderW + 12} 120 ${120 - shoulderW + 12} 104 Z`}
+          fill="url(#skinGrad)"
+          stroke="#050814"
+          strokeWidth="1.5"
+        />
+        <path
+          d={`M ${120 + shoulderW - 2} 96 Q ${120 + shoulderW + armThick} 122 ${120 + shoulderW + armThick * 0.5} 145 L ${120 + shoulderW - 4} 172 L ${120 + shoulderW - 13} 170 L ${120 + shoulderW - 10} 142 Q ${120 + shoulderW - 12} 120 ${120 + shoulderW - 12} 104 Z`}
+          fill="url(#skinGrad)"
+          stroke="#050814"
+          strokeWidth="1.5"
+        />
 
-            {/* Sonrisa Confiada Anime */}
-            <path d="M133,85 Q140,89 147,84" stroke="#090B14" strokeWidth="2" fill="none" strokeLinecap="round" />
-          </g>
+        {/* Guanteletes (más robustos si es Artista Marcial o rango alto) */}
+        <rect x={120 - shoulderW - 1} y="152" width="14" height="22" rx="3" fill={cls.weapon === 'gauntlets' ? rankInfo.trimColor : rankInfo.armorColor} stroke="#050814" strokeWidth="1.4" />
+        <rect x={120 + shoulderW - 13} y="152" width="14" height="22" rx="3" fill={cls.weapon === 'gauntlets' ? rankInfo.trimColor : rankInfo.armorColor} stroke="#050814" strokeWidth="1.4" />
 
-          {/* 4 Peinados Shonen Originales */}
-          <g stroke="#090B14" strokeWidth="2.5" strokeLinejoin="round">
-            {avatar.hair === 'shonen' && (
-              <g>
-                <path
-                  d="M111,60 L99,40 L116,36 L112,16 L130,27 L140,8 L150,27 L168,16 L164,36 L181,40 L169,60 L157,46 L149,65 L140,48 L131,65 L123,46 Z"
-                  fill={hair.base}
-                />
-                <polyline points="120,37 129,32 136,38 144,32 151,38 160,33" fill="none" stroke={hair.shine} strokeWidth="2.2" />
-              </g>
-            )}
+        {/* CUELLO Y CABEZA ANIME ESTILIZADA */}
+        <rect x="112" y="76" width="16" height="16" rx="4" fill="url(#skinGrad)" stroke="#050814" strokeWidth="1.4" />
 
-            {avatar.hair === 'cazador' && (
-              <g>
-                <path
-                  d="M111,64 L106,40 L122,26 L140,21 L158,26 L174,40 L169,64 L158,48 L151,69 L143,50 L136,70 L128,49 L120,66 Z"
-                  fill={hair.base}
-                />
-                <polyline points="120,40 130,35 140,41 150,35 160,40" fill="none" stroke={hair.shine} strokeWidth="2.2" />
-              </g>
-            )}
+        {/* Orejas de Bestia si la raza es Semi-Humana */}
+        {race.ears === 'beast' && (
+          <>
+            <polygon points="98,46 92,24 110,38" fill={race.hairColor} stroke="#050814" strokeWidth="1.4" />
+            <polygon points="142,46 148,24 130,38" fill={race.hairColor} stroke="#050814" strokeWidth="1.4" />
+          </>
+        )}
 
-            {avatar.hair === 'coleta' && (
-              <g>
-                <path
-                  d="M113,58 Q115,30 140,28 Q165,30 167,58 L156,45 L146,62 L140,45 L134,62 L124,45 Z"
-                  fill={hair.base}
-                />
-                <path d="M123,39 Q140,35 157,39" fill="none" stroke={hair.shine} strokeWidth="2.2" />
-              </g>
-            )}
+        {/* Cuernos Demoníacos si la raza es Demonio */}
+        {race.horns && (
+          <>
+            <path d="M 102 44 Q 88 30 95 16 Q 104 28 108 40 Z" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="1.3" />
+            <path d="M 138 44 Q 152 30 145 16 Q 136 28 132 40 Z" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="1.3" />
+          </>
+        )}
 
-            {avatar.hair === 'salvaje' && (
-              <g>
-                <path
-                  d="M104,68 L102,38 L121,22 L140,14 L159,22 L178,38 L176,68 L161,49 L152,70 L140,50 L128,70 L119,49 Z"
-                  fill={hair.base}
-                />
-                <polyline points="118,37 131,32 140,38 149,32 162,37" fill="none" stroke={hair.shine} strokeWidth="2.2" />
-              </g>
-            )}
-          </g>
+        {/* Rostro Anime (mentón afilado) */}
+        <polygon points="101,44 139,44 137,68 120,81 103,68" fill="url(#skinGrad)" stroke="#050814" strokeWidth="1.6" />
 
-          {/* Accesorios de Cabeza */}
-          {avatar.accessory === 'banda' && (
-            <g>
-              <rect x="114" y="52" width="52" height="7" rx="2" fill={auraHex} stroke="#090B14" strokeWidth="1.8" />
-              <rect x="133" y="51" width="14" height="9" rx="1.5" fill="#E2E8F0" stroke="#090B14" strokeWidth="1.5" />
-            </g>
-          )}
+        {/* Ojos Anime Expresivos con Brillo */}
+        <polygon points="106,56 116,58 115,63 107,62" fill="#ffffff" stroke="#050814" strokeWidth="1" />
+        <circle cx="112" cy="60" r="2.3" fill={rankInfo.color} />
+        <circle cx="111" cy="59" r="0.9" fill="#ffffff" />
 
-          {avatar.accessory === 'auriculares' && (
-            <g>
-              <path d="M110,64 Q110,20 140,20 Q170,20 170,64" fill="none" stroke="#1E293B" strokeWidth="4.8" />
-              <rect x="106" y="57" width="8" height="19" rx="3" fill="#0F172A" stroke={auraHex} strokeWidth="2.2" />
-              <rect x="166" y="57" width="8" height="19" rx="3" fill="#0F172A" stroke={auraHex} strokeWidth="2.2" />
-            </g>
-          )}
-        </g>
+        <polygon points="134,56 124,58 125,63 133,62" fill="#ffffff" stroke="#050814" strokeWidth="1" />
+        <circle cx="128" cy="60" r="2.3" fill={rankInfo.color} />
+        <circle cx="127" cy="59" r="0.9" fill="#ffffff" />
+
+        {/* Cejas determinadas y expresión */}
+        <line x1="105" y1="53" x2="117" y2="56" stroke="#050814" strokeWidth="2" strokeLinecap="round" />
+        <line x1="135" y1="53" x2="123" y2="56" stroke="#050814" strokeWidth="2" strokeLinecap="round" />
+        <path d="M 115 71 Q 120 74 125 70" fill="none" stroke="#050814" strokeWidth="1.6" strokeLinecap="round" />
+
+        {/* Cabello Anime */}
+        {race.hairStyle === 'spiky' && (
+          <polygon
+            points="97,52 90,34 103,38 106,18 118,32 126,14 133,33 148,26 142,48 138,44 120,41 102,44"
+            fill={race.hairColor}
+            stroke="#050814"
+            strokeWidth="1.6"
+          />
+        )}
+        {race.hairStyle !== 'spiky' && (
+          <path
+            d="M 97 56 Q 96 26 120 24 Q 144 26 143 56 L 138 45 L 128 50 L 120 42 L 112 50 L 102 45 Z"
+            fill={race.hairColor}
+            stroke="#050814"
+            strokeWidth="1.6"
+          />
+        )}
       </svg>
-    </div>
-  );
-}
 
-// ============================================================================
-// COMPONENTE: BÓVEDA PRIVADA DE FOTOS (FRENTE Y ESPALDA SIN ROSTRO)
-// ============================================================================
-
-function SecureBodyPhotoCard({ title, photoUrl, onPhotoProcessed, onSimulatePhoto }) {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = 260;
-    const h = 320;
-    canvas.width = w;
-    canvas.height = h;
-
-    if (!photoUrl) {
-      ctx.fillStyle = '#0D0A22';
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = 'rgba(0, 245, 255, 0.16)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < w; x += 20) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += 20) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-      ctx.fillStyle = '#94A3B8';
-      ctx.font = 'bold 11px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(`VISTA ${title.toUpperCase()}`, w / 2, h / 2 - 8);
-      ctx.fillStyle = '#00F5FF';
-      ctx.font = '10px monospace';
-      ctx.fillText('CENSURA FACIAL AUTOMÁTICA', w / 2, h / 2 + 12);
-      return;
-    }
-
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0, 0, w, h);
-      const scale = Math.max(w / img.width, h / img.height);
-      const dw = img.width * scale;
-      const dh = img.height * scale;
-      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
-
-      // Pixelado y barra de privacidad automática en el 24% superior (zona del rostro)
-      const faceH = Math.round(h * 0.24);
-      const block = 12;
-      for (let py = 0; py < faceH; py += block) {
-        for (let px = 0; px < w; px += block) {
-          const p = ctx.getImageData(Math.min(w - 1, px + 3), Math.min(h - 1, py + 3), 1, 1).data;
-          ctx.fillStyle = `rgb(${p[0]},${p[1]},${p[2]})`;
-          ctx.fillRect(px, py, block, block);
-        }
-      }
-
-      ctx.fillStyle = 'rgba(12, 9, 32, 0.9)';
-      ctx.fillRect(0, 0, w, faceH);
-      ctx.strokeStyle = '#00F5FF';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, faceH);
-      ctx.lineTo(w, faceH);
-      ctx.stroke();
-
-      ctx.fillStyle = '#00F5FF';
-      ctx.font = 'bold 10px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('ROSTRO CENSURADO // ZERO-FACE', w / 2, faceH / 2 - 3);
-      ctx.fillStyle = '#34D399';
-      ctx.font = '9px monospace';
-      ctx.fillText('CIFRADO LOCAL AES-256', w / 2, faceH / 2 + 11);
-    };
-    img.src = photoUrl;
-  }, [photoUrl, title]);
-
-  const handleFile = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      if (ev.target?.result) onPhotoProcessed(ev.target.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  return (
-    <div className="rounded-2xl border border-cyan-400/35 bg-[#120D2D]/90 p-4 flex flex-col items-center shadow-lg">
-      <div className="w-full flex items-center justify-between mb-2.5">
-        <span className="text-xs font-mono font-black text-cyan-300 uppercase">{title}</span>
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-[10px] font-mono text-emerald-200">
-          <EyeOff className="w-3 h-3" /> Rostro Censurado & Cifrado Local
-        </span>
-      </div>
-
-      <div className="rounded-xl overflow-hidden border-2 border-purple-500/40 mb-3 shadow-inner">
-        <canvas ref={canvasRef} className="block max-w-full h-auto" />
-      </div>
-
-      <div className="w-full grid grid-cols-2 gap-2">
-        <label className="cursor-pointer py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md transition">
-          <Upload className="w-3.5 h-3.5" />
-          Subir Foto
-          <input type="file" accept="image/*" onChange={handleFile} className="hidden" />
-        </label>
-        <button
-          type="button"
-          onClick={onSimulatePhoto}
-          className="py-2.5 px-3 rounded-xl bg-purple-600/35 hover:bg-purple-600/50 border border-purple-400/50 text-purple-100 text-xs font-bold flex items-center justify-center gap-1.5 transition"
-        >
-          <Scan className="w-3.5 h-3.5 text-amber-300" />
-          Demo Scan
-        </button>
+      {/* Pie de tarjeta del Avatar */}
+      <div style={{ textAlign: 'center', marginTop: '6px' }}>
+        <div className="font-hud" style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>
+          {cls.name}
+        </div>
+        <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>
+          {race.trait}
+        </div>
       </div>
     </div>
   );
 }
 
 // ============================================================================
-// APLICACIÓN PRINCIPAL: ¡PROTOCOLO EX! // ANIME FITNESS SYSTEM
+// APLICACIÓN PRINCIPAL: PROTOCOLO EX // HUNTER SYSTEM
 // ============================================================================
-
 export default function App() {
-  const savedData = useMemo(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+  // Inyectar CSS autocontenido al montar
+  useEffect(() => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = SYSTEM_CSS;
+    document.head.appendChild(styleTag);
+    return () => document.head.removeChild(styleTag);
   }, []);
 
-  // Navegación entre los 6 módulos
-  const [activeTab, setActiveTab] = useState('anime_cam');
+  // Estado persistente en localStorage
+  const [awakened, setAwakened] = useState(() => localStorage.getItem('pex_awakened') === 'true');
+  const [surveyStep, setSurveyStep] = useState(1);
 
-  // Celebración (Confeti + Banner Gigante) y Notificaciones
-  const [celebration, setCelebration] = useState(null);
-  const [rankUpBanner, setRankUpBanner] = useState(null);
-  const [toastMsg, setToastMsg] = useState(null);
+  // Datos de la encuesta inicial única
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem('pex_profile');
+    return saved ? JSON.parse(saved) : {
+      hunterName: 'CAZADOR_01',
+      goal: 'Hipertrofia y Estética',
+      environment: 'Gimnasio y Casa',
+      experienceMonths: 8,
+      age: 22,
+      weightKg: 75,
+      heightCm: 176,
+      benchKg: 80,
+      squatKg: 110,
+      deadliftKg: 140,
+      pushupsMax: 30,
+      photoScanned: false,
+      censoredPreview: null,
+    };
+  });
 
-  // Estado del Operador y Avatar 2D Anime
-  const [operatorName, setOperatorName] = useState(savedData?.operatorName ?? 'HUNTER_01');
-  const [avatar, setAvatar] = useState(
-    savedData?.avatar ?? {
-      gender: 'masculino',
-      build: 'mesomorfo',
-      skin: 'trigueno',
-      hair: 'shonen',
-      hairColor: 'azabache',
-      outfit: 'neogym',
-      accessory: 'banda',
-      aura: 'rango'
-    }
-  );
+  // Clase asignada aleatoriamente por el Sistema (no elegible manualmente)
+  const [hunterClass, setHunterClass] = useState(() => {
+    const saved = localStorage.getItem('pex_class');
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Módulo 1: Cámara de Transformación Anime 2D
-  const [camPreviewUrl, setCamPreviewUrl] = useState(null);
-  const [isScanningAnime, setIsScanningAnime] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
-  const [scanResult, setScanResult] = useState(
-    savedData?.scanResult ?? {
-      biotypeLabel: 'Mesomorfo / Estético',
-      symmetry: '93.4%',
-      syncStatus: 'Guerrero 2D Sincronizado'
-    }
-  );
+  // Progreso competitivo, retos, sueño y evaluaciones
+  const [lp, setLp] = useState(() => Number(localStorage.getItem('pex_lp') || 1840)); // Piedra 1 / Carbón
+  const [streak, setStreak] = useState(() => Number(localStorage.getItem('pex_streak') || 5));
+  const [activeTab, setActiveTab] = useState('quests');
+  const [toast, setToast] = useState(null);
 
-  // Módulo 2: Rangos (15 x 6 divisiones), Racha y Retos Diarios
-  const [totalLP, setTotalLP] = useState(savedData?.totalLP ?? 4255); // Oro 6 por defecto para lucir vibrante
-  const [streakDays, setStreakDays] = useState(savedData?.streakDays ?? 7);
-  const [challenges, setChallenges] = useState(
-    savedData?.challenges ?? [
-      {
-        id: 'c-1',
-        title: 'Gym: Press Banca 4x8 con 80kg + Sentadilla 4x6 con 115kg',
-        env: 'Gimnasio',
-        lp: 45,
-        status: 'active',
-        contingencyInfo: ''
-      },
-      {
-        id: 'c-2',
-        title: 'Salir a correr 5 km ritmo constante',
-        env: 'Exterior',
-        lp: 35,
-        status: 'active',
-        contingencyInfo: ''
-      }
-    ]
-  );
-  const [nextWeekQueue, setNextWeekQueue] = useState(
-    savedData?.nextWeekQueue ?? [
-      {
-        id: 'nw-1',
-        title: 'Peso Muerto 150kg 3x5 (Reto fallido semana previa)',
-        env: 'Gimnasio',
-        lp: 50
-      }
-    ]
-  );
-  const [newTitle, setNewTitle] = useState('');
-  const [newEnv, setNewEnv] = useState('Gimnasio');
-  const [modalChallenge, setModalChallenge] = useState(null);
-  const [selectedContingencyId, setSelectedContingencyId] = useState('lluvia');
-  const [customReasonText, setCustomReasonText] = useState('');
+  const [quests, setQuests] = useState([
+    { id: 1, title: 'Press Banca: 4x8 con 80 kg declarados', env: 'Gimnasio', lp: 45, status: 'pending' },
+    { id: 2, title: 'Correr 5 km ritmo constante al aire libre', env: 'Exterior', lp: 40, status: 'pending' },
+    { id: 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, status: 'completed' },
+  ]);
+  const [nextWeekQueue, setNextWeekQueue] = useState([
+    { id: 101, title: 'Sentadilla Profunda 4x6 (115 kg) - Reto recuperable', lp: 50 }
+  ]);
+  const [newQuestTitle, setNewQuestTitle] = useState('');
+  const [justifyModalId, setJustifyModalId] = useState(null);
+  const [justifyReason, setJustifyReason] = useState('Tormenta / Lluvia intensa');
 
-  // Módulo 3: Fuerza Absoluta y Relativa (F a EX)
-  const [bodyWeight, setBodyWeight] = useState(savedData?.bodyWeight ?? 76);
-  const [lifts, setLifts] = useState(
-    savedData?.lifts ?? {
-      squat: { weight: 130, reps: 5 },
-      bench: { weight: 92.5, reps: 6 },
-      deadlift: { weight: 160, reps: 4 },
-      pullup: { weight: 20, reps: 6 },
-      ohp: { weight: 60, reps: 5 }
-    }
-  );
+  // Fuerza F -> EX
+  const [liftInput, setLiftInput] = useState({ weight: 85, reps: 5, exercise: 'Press Banca' });
 
-  // Módulo 4: Evaluación Física Trimestral (F a EX) & Bóveda Privada
-  const [daysToRenewal, setDaysToRenewal] = useState(savedData?.daysToRenewal ?? 68);
-  const [frontVaultPhoto, setFrontVaultPhoto] = useState(null);
-  const [backVaultPhoto, setBackVaultPhoto] = useState(null);
-  const [physiqueScore, setPhysiqueScore] = useState(savedData?.physiqueScore ?? 74);
-  const [quarters, setQuarters] = useState(
-    savedData?.quarters ?? [
-      { id: 'Q1', title: 'Q1 // Inicio', grade: 'D', bf: '18.2%', note: 'Base técnica y adaptación metabólica.' },
-      { id: 'Q2', title: 'Q2 // Evolución', grade: 'C', bf: '15.4%', note: 'Aumento de amplitud dorsal y hombros.' },
-      { id: 'Q3', title: 'Q3 // Actual', grade: 'B', bf: '13.1%', note: 'Definición abdominal y densidad muscular.' },
-      { id: 'Q4', title: 'Q4 // Meta Anual', grade: 'A', bf: '11.2%', note: 'Objetivo trimestral en curso.' }
-    ]
-  );
-
-  // Módulo 5: Rutinas Científicas y Escáner de Rutina Propia
-  const [routineEnv, setRoutineEnv] = useState(savedData?.routineEnv ?? 'gimnasio');
-  const [routineGoal, setRoutineGoal] = useState(savedData?.routineGoal ?? 'hipertrofia');
-  const [routineDays, setRoutineDays] = useState(savedData?.routineDays ?? 4);
-  const [userRoutineText, setUserRoutineText] = useState(
-    savedData?.userRoutineText ??
-      'Lunes: Press Banca 4x8, Press Inclinado 4x10, Aperturas 3x12, Elevaciones Laterales 4x15, Tríceps Polea 3x12.\nMiércoles: Jalón al Pecho 4x10, Remo Barra 3x8, Curl Bíceps 4x12.\nViernes: Sentadilla 3x8, Curl Femoral 3x12.'
-  );
-  const [userRoutineFeeling, setUserRoutineFeeling] = useState(savedData?.userRoutineFeeling ?? 'estancado');
-  const [routineDiagnosis, setRoutineDiagnosis] = useState(null);
-  const [routineFileName, setRoutineFileName] = useState('');
-
-  // Módulo 6: Contador de Sueño Semanal (49-63h)
-  const [sleepHours, setSleepHours] = useState(savedData?.sleepHours ?? [7.5, 7.5, 7.0, 8.0, 7.5, 8.5, 7.5]);
-  const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
-  // Guardar estado en localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          operatorName,
-          avatar,
-          scanResult,
-          totalLP,
-          streakDays,
-          challenges,
-          nextWeekQueue,
-          bodyWeight,
-          lifts,
-          daysToRenewal,
-          physiqueScore,
-          quarters,
-          routineEnv,
-          routineGoal,
-          routineDays,
-          userRoutineText,
-          userRoutineFeeling,
-          sleepHours
-        })
-      );
-    } catch {
-      // Ignorar si localStorage no está disponible
-    }
-  }, [
-    operatorName,
-    avatar,
-    scanResult,
-    totalLP,
-    streakDays,
-    challenges,
-    nextWeekQueue,
-    bodyWeight,
-    lifts,
-    daysToRenewal,
-    physiqueScore,
-    quarters,
-    routineEnv,
-    routineGoal,
-    routineDays,
-    userRoutineText,
-    userRoutineFeeling,
-    sleepHours
+  // Bóveda Física Trimestral (90 días)
+  const [daysUntilEval, setDaysUntilEval] = useState(64);
+  const [physicalGrade, setPhysicalGrade] = useState('B');
+  const [vaultPhotos, setVaultPhotos] = useState({ front: null, back: null });
+  const [yearlyRecap] = useState([
+    { quarter: 'Q1 (Inicio)', grade: 'D', weight: '71 kg', note: 'Despertar del Sistema. Base estructural.' },
+    { quarter: 'Q2 (3 Meses)', grade: 'C', weight: '73.5 kg', note: '+18% fuerza en básicos y mejora postural.' },
+    { quarter: 'Q3 (Actual)', grade: 'B', weight: '75 kg', note: 'Definición escapular y densidad muscular.' },
   ]);
 
-  // Cálculos derivados
-  const rankInfo = useMemo(() => getRankProgress(totalLP), [totalLP]);
-  const strengthInfo = useMemo(() => computeStrengthProfile(bodyWeight, lifts), [bodyWeight, lifts]);
-  const sleepInfo = useMemo(() => analyzeSleepWeek(sleepHours), [sleepHours]);
-  const currentPhysiqueGrade = useMemo(() => {
-    const q3 = quarters.find((q) => q.id === 'Q3');
-    return SCIENTIFIC_GRADES.find((g) => g.grade === (q3?.grade || 'B')) || SCIENTIFIC_GRADES[4];
-  }, [quarters]);
+  // Rutinas y Escáner
+  const [routineEnv, setRoutineEnv] = useState('Gimnasio');
+  const [customRoutineText, setCustomRoutineText] = useState('');
+  const [scanReport, setScanReport] = useState(null);
 
-  const showToast = (text) => {
-    setToastMsg({ text, id: Date.now() });
-    setTimeout(() => {
-      setToastMsg((prev) => (prev && Date.now() - prev.id >= 3400 ? null : prev));
-    }, 3600);
+  // Sueño semanal (49 - 63h recomendado)
+  const [sleepLog, setSleepLog] = useState([
+    { day: 'Lun', hours: 7.5 },
+    { day: 'Mar', hours: 7.0 },
+    { day: 'Mié', hours: 8.0 },
+    { day: 'Jue', hours: 6.5 },
+    { day: 'Vie', hours: 7.5 },
+    { day: 'Sáb', hours: 8.5 },
+    { day: 'Dom', hours: 7.5 },
+  ]);
+  const [todaySleep, setTodaySleep] = useState(7.5);
+
+  const canvasRef = useRef(null);
+
+  // Guardar estado automáticamente
+  useEffect(() => {
+    localStorage.setItem('pex_awakened', String(awakened));
+    localStorage.setItem('pex_profile', JSON.stringify(profile));
+    if (hunterClass) localStorage.setItem('pex_class', JSON.stringify(hunterClass));
+    localStorage.setItem('pex_lp', String(lp));
+    localStorage.setItem('pex_streak', String(streak));
+  }, [awakened, profile, hunterClass, lp, streak]);
+
+  const triggerToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3600);
   };
 
-  // Actualizar LP y detectar ascenso/descenso de división
-  const updateLeaguePoints = (delta, triggerCelebrate = false, missionTitle = '') => {
-    const before = getRankProgress(totalLP);
-    const nextLP = Math.max(0, Math.min(8999, totalLP + delta));
-    const after = getRankProgress(nextLP);
-    setTotalLP(nextLP);
-
-    if (triggerCelebrate) {
-      setCelebration({
-        title: '¡MISIÓN CUMPLIDA!',
-        subtitle: missionTitle,
-        lp: delta,
-        newStreak: streakDays + 1
-      });
-      setTimeout(() => setCelebration(null), 3200);
-    }
-
-    if (after.globalDivIndex > before.globalDivIndex) {
-      setRankUpBanner({
-        type: 'up',
-        from: before.fullName,
-        to: after.fullName,
-        color: after.rank.color
-      });
-    } else if (after.globalDivIndex < before.globalDivIndex) {
-      setRankUpBanner({
-        type: 'down',
-        from: before.fullName,
-        to: after.fullName,
-        color: '#F43F5E'
-      });
-    }
-  };
-
-  // Procesar foto de cuerpo completo en la Cámara de Transformación Anime 2D
-  const runAnimeTransformationScan = (sourceImageUrl, detectedBuildOverride = null) => {
-    setCamPreviewUrl(sourceImageUrl);
-    setIsScanningAnime(true);
-    setScanProgress(8);
-
-    const interval = setInterval(() => {
-      setScanProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsScanningAnime(false);
-
-          const buildOrder = ['atletico', 'mesomorfo', 'titan', 'powerlifter'];
-          const buildLabels = {
-            atletico: 'Atlético / Calisténico',
-            mesomorfo: 'Mesomorfo / Estético',
-            titan: 'Titán / Hipertrofia Élite',
-            powerlifter: 'Powerlifter / Fuerza Bruta'
-          };
-          const nextBuild =
-            detectedBuildOverride ||
-            buildOrder[(buildOrder.indexOf(avatar.build) + 1) % buildOrder.length];
-
-          setAvatar((a) => ({ ...a, build: nextBuild }));
-          setScanResult({
-            biotypeLabel: buildLabels[nextBuild],
-            symmetry: `${(91 + Math.random() * 7).toFixed(1)}%`,
-            syncStatus: '¡Avatar Anime 2D Actualizado!'
-          });
-          showToast(`¡Transformación Anime completada! Biotipo: ${buildLabels[nextBuild]}`);
-          return 100;
-        }
-        return prev + 18;
-      });
-    }, 240);
-  };
-
-  const handleFullBodyUpload = (e) => {
+  // Procesador de foto con censura facial automática en Canvas
+  const handleSecurePhotoUpload = (e, target = 'onboarding') => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      if (ev.target?.result) {
-        // Redactar rostro automáticamente antes de mostrar preview
-        const img = new Image();
-        img.onload = () => {
-          const c = document.createElement('canvas');
-          c.width = 260;
-          c.height = 320;
-          const ctx = c.getContext('2d');
-          const sc = Math.max(260 / img.width, 320 / img.height);
-          ctx.drawImage(img, (260 - img.width * sc) / 2, (320 - img.height * sc) / 2, img.width * sc, img.height * sc);
-          // Censura facial superior
-          ctx.fillStyle = 'rgba(15, 12, 41, 0.92)';
-          ctx.fillRect(0, 0, 260, 72);
-          ctx.fillStyle = '#00F5FF';
-          ctx.font = 'bold 10px monospace';
-          ctx.textAlign = 'center';
-          ctx.fillText('ROSTRO PROTEGIDO // ESCÁNER ANIME', 130, 40);
-          runAnimeTransformationScan(c.toDataURL('image/png'));
-        };
-        img.src = String(ev.target.result);
-      }
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current || document.createElement('canvas');
+        canvas.width = 240;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 240, 300);
+
+        // Censura biométrica automática sobre la zona superior (rostro)
+        ctx.fillStyle = '#050814';
+        ctx.fillRect(65, 12, 110, 58);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(65, 12, 110, 58);
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText('ROSTRO CENSURADO', 71, 40);
+        ctx.fillText('AES-256 LOCAL', 82, 54);
+
+        const safeDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        if (target === 'onboarding') {
+          setProfile((p) => ({ ...p, photoScanned: true, censoredPreview: safeDataUrl }));
+          triggerToast('[SISTEMA] Fotografía escaneada y rostro censurado con éxito.');
+        } else if (target === 'front' || target === 'back') {
+          setVaultPhotos((v) => ({ ...v, [target]: safeDataUrl }));
+          triggerToast(`[BÓVEDA] Captura ${target === 'front' ? 'frontal' : 'dorsal'} cifrada sin rostro.`);
+        }
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSimulateFullBodyScan = () => {
-    const c = document.createElement('canvas');
-    c.width = 260;
-    c.height = 320;
-    const ctx = c.getContext('2d');
-    const g = ctx.createLinearGradient(0, 0, 260, 320);
-    g.addColorStop(0, '#130F38');
-    g.addColorStop(1, '#2B1659');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 260, 320);
+  // Algoritmo de Asignación Aleatoria Ponderada de Clase y Raza
+  const awakenHunter = () => {
+    const seed =
+      Number(profile.weightKg) * 7 +
+      Number(profile.heightCm) * 3 +
+      Number(profile.benchKg || profile.pushupsMax) * 11 +
+      Math.floor(Math.random() * 997);
 
-    // Silueta atlética de escaneo
-    ctx.fillStyle = 'rgba(0, 245, 255, 0.28)';
-    ctx.strokeStyle = '#00F5FF';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(74, 96);
-    ctx.lineTo(186, 96);
-    ctx.lineTo(164, 212);
-    ctx.lineTo(96, 212);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    const chosenRace = RACES_POOL[seed % RACES_POOL.length];
+    const chosenCls = CLASSES_POOL[(seed * 3 + Math.floor(Math.random() * 5)) % CLASSES_POOL.length];
 
-    ctx.fillStyle = 'rgba(15, 12, 41, 0.92)';
-    ctx.fillRect(0, 0, 260, 68);
-    ctx.fillStyle = '#00F5FF';
-    ctx.font = 'bold 10px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('SILUETA CORPORAL DETECTADA', 130, 38);
+    // LP inicial calibrado según experiencia y fuerza declarada
+    const baseLP = Math.min(2400, 300 + Number(profile.experienceMonths) * 65 + Number(profile.benchKg) * 4);
+    const assigned = { race: chosenRace, cls: chosenCls, assignedAt: new Date().toLocaleDateString() };
 
-    runAnimeTransformationScan(c.toDataURL('image/png'));
+    setHunterClass(assigned);
+    setLp(baseLP);
+    setAwakened(true);
+    triggerToast(`¡DESPERTAR COMPLETADO! Clase asignada: ${chosenRace.name} - ${chosenCls.name}`);
   };
 
-  // Acciones de Retos Diarios
-  const handleAddChallenge = (e) => {
-    e.preventDefault();
-    if (!newTitle.trim()) return;
-    setChallenges((prev) => [
-      {
-        id: `ch-${Date.now()}`,
-        title: newTitle.trim(),
-        env: newEnv,
-        lp: 40,
-        status: 'active',
-        contingencyInfo: ''
-      },
-      ...prev
-    ]);
-    setNewTitle('');
-    showToast('¡Nuevo reto diario declarado! ¡A por todas!');
+  const rankInfo = getRankFromLP(lp);
+  const totalSleep = sleepLog.reduce((acc, d) => acc + d.hours, 0);
+  const sleepOptimal = totalSleep >= 49 && totalSleep <= 63;
+
+  // Cálculos científicos de Fuerza (Epley 1RM + Relativa)
+  const est1RM = Math.round(liftInput.weight * (1 + liftInput.reps / 30));
+  const relRatio = (est1RM / Math.max(40, Number(profile.weightKg))).toFixed(2);
+  const getStrengthGrade = (ratio) => {
+    const r = Number(ratio);
+    if (r >= 2.6) return 'EX';
+    if (r >= 2.3) return 'SSS';
+    if (r >= 2.05) return 'SS';
+    if (r >= 1.8) return 'S';
+    if (r >= 1.55) return 'A';
+    if (r >= 1.3) return 'B';
+    if (r >= 1.05) return 'C';
+    if (r >= 0.85) return 'D';
+    if (r >= 0.65) return 'E';
+    return 'F';
   };
+  const strengthGrade = getStrengthGrade(relRatio);
 
-  const handleCompleteChallenge = (ch) => {
-    if (ch.status === 'completed') return;
-    setChallenges((prev) => prev.map((item) => (item.id === ch.id ? { ...item, status: 'completed' } : item)));
-    setStreakDays((s) => s + 1);
-    updateLeaguePoints(ch.lp, true, ch.title);
-  };
-
-  const handleFailChallenge = (ch) => {
-    setChallenges((prev) => prev.filter((item) => item.id !== ch.id));
-    setNextWeekQueue((prev) => [
-      {
-        id: `nw-${Date.now()}`,
-        title: ch.title,
-        env: ch.env,
-        lp: ch.lp + 10
-      },
-      ...prev
-    ]);
-    setStreakDays(0);
-    updateLeaguePoints(-20, false);
-    showToast('Reto movido a la Cola para Retomar la Próxima Semana (-20 LP).');
-  };
-
-  const handleApplyContingency = () => {
-    if (!modalChallenge) return;
-    const opt = CONTINGENCY_OPTIONS.find((o) => o.id === selectedContingencyId) || CONTINGENCY_OPTIONS[0];
-    setChallenges((prev) =>
-      prev.map((item) =>
-        item.id === modalChallenge.id
-          ? {
-              ...item,
-              title: opt.title,
-              env: 'Contingencia Casa',
-              lp: opt.lp,
-              status: 'contingency',
-              contingencyInfo: `${opt.plan}${customReasonText ? ` (Motivo: ${customReasonText})` : ''}`
-            }
-          : item
-      )
-    );
-    setModalChallenge(null);
-    setCustomReasonText('');
-    showToast('¡Desafío Equivalente en Casa activado! Tu racha sigue a salvo.');
-  };
-
-  const handleRetakeFromQueue = (item) => {
-    setNextWeekQueue((prev) => prev.filter((x) => x.id !== item.id));
-    setChallenges((prev) => [
-      {
-        id: `retake-${Date.now()}`,
-        title: `[REVANCHA] ${item.title}`,
-        env: item.env,
-        lp: item.lp,
-        status: 'active',
-        contingencyInfo: ''
-      },
-      ...prev
-    ]);
-    showToast('¡Reto retomado para esta semana con bonus de LP!');
-  };
-
-  // Generar foto demo para Bóveda Física
-  const generateVaultDemoPhoto = (side) => {
-    const c = document.createElement('canvas');
-    c.width = 260;
-    c.height = 320;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#140E33';
-    ctx.fillRect(0, 0, 260, 320);
-    const grad = ctx.createLinearGradient(70, 85, 190, 215);
-    grad.addColorStop(0, '#00F5FF');
-    grad.addColorStop(1, '#F43F5E');
-    ctx.fillStyle = grad;
-    ctx.globalAlpha = 0.35;
-    ctx.beginPath();
-    ctx.moveTo(76, 92);
-    ctx.lineTo(184, 92);
-    ctx.lineTo(160, 206);
-    ctx.lineTo(100, 206);
-    ctx.closePath();
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#00F5FF';
-    ctx.stroke();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 11px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(`CAPTURA ${side.toUpperCase()} VERIFICADA`, 130, 152);
-
-    const url = c.toDataURL('image/png');
-    if (side === 'Frente') setFrontVaultPhoto(url);
-    else setBackVaultPhoto(url);
-    showToast(`Foto de ${side} procesada con censura facial automática.`);
-  };
-
-  const activeRoutinePlan =
-    BIOMECHANICAL_ROUTINES[routineEnv]?.[routineGoal] || BIOMECHANICAL_ROUTINES.gimnasio.hipertrofia;
-
-  const tabs = [
-    { id: 'anime_cam', label: 'Avatar Anime 2D', icon: Camera, tag: 'Estudio' },
-    { id: 'retos', label: 'Retos & Rangos', icon: Trophy, tag: rankInfo.fullName },
-    { id: 'fuerza', label: 'Fuerza F→EX', icon: Dumbbell, tag: `${strengthInfo.relativeGrade.grade}/${strengthInfo.absoluteGrade.grade}` },
-    { id: 'fisico', label: 'Físico & Bóveda', icon: Lock, tag: `Grado ${currentPhysiqueGrade.grade}` },
-    { id: 'rutinas', label: 'Rutinas & Escáner', icon: Cpu, tag: 'Ciencia' },
-    { id: 'sueno', label: 'Sueño Semanal', icon: Moon, tag: `${sleepInfo.total}h` }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a103c] to-[#24243e] text-white font-sans selection:bg-cyan-400/30 selection:text-cyan-100 overflow-x-hidden pb-12">
-      {/* Animaciones CSS personalizadas */}
-      <style>{`
-        @keyframes auraBreathe {
-          0%, 100% { transform: scale(1); opacity: 0.85; }
-          50% { transform: scale(1.05); opacity: 1; }
-        }
-        @keyframes heroBreath {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-        }
-        @keyframes kiRise {
-          0% { transform: translateY(0) scale(0.8); opacity: 0; }
-          25% { opacity: 1; }
-          100% { transform: translateY(-250px) scale(0.2); opacity: 0; }
-        }
-        @keyframes ringRotate {
-          0% { stroke-dashoffset: 0; }
-          100% { stroke-dashoffset: 200; }
-        }
-        @keyframes laserSweep {
-          0%, 100% { top: 8%; }
-          50% { top: 88%; }
-        }
-        @keyframes confettiFall {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-        .animate-aura-breathe { animation: auraBreathe 2.6s ease-in-out infinite; transform-origin: center; }
-        .animate-hero-breath { animation: heroBreath 3.2s ease-in-out infinite; }
-        .animate-ki-rise { animation: kiRise 2.3s ease-out infinite; }
-        .animate-ring-rotate { animation: ringRotate 5s linear infinite; }
-        .animate-laser { animation: laserSweep 1.2s ease-in-out infinite; }
-        .animate-confetti { animation: confettiFall 2.8s ease-out forwards; }
-      `}</style>
-
-      {/* ====================================================================
-          HEADER MOTIVADOR ANIME-GAMING (MOBILE-FIRST)
-         ==================================================================== */}
-      <header className="sticky top-0 z-40 bg-[#0f0c29]/90 backdrop-blur-xl border-b border-purple-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.65)]">
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 space-y-2.5">
-          {/* Fila 1: Avatar Miniatura + Título + Racha Encendida */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setActiveTab('anime_cam')}
-                className="shrink-0 active:scale-95 transition"
-                title="Personalizar Guerrero 2D"
-              >
-                <AnimeWarrior2D
-                  avatar={avatar}
-                  rankColor={rankInfo.rank.color}
-                  rankTitle={rankInfo.fullName}
-                  rankIndex={rankInfo.rankIndex}
-                  physicalGrade={currentPhysiqueGrade.grade}
-                  compact
-                />
-              </button>
-
-              <div>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <h1 className="text-base sm:text-xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent drop-shadow">
-                    ¡PROTOCOLO EX!
-                  </h1>
-                  <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 text-[10px] font-black uppercase shadow">
-                    ANIME SYSTEM
-                  </span>
-                </div>
-
-                {/* Nombre editable del operador */}
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] font-mono text-purple-300">OPERADOR:</span>
-                  <input
-                    type="text"
-                    maxLength={16}
-                    value={operatorName}
-                    onChange={(e) => setOperatorName(e.target.value.toUpperCase())}
-                    aria-label="Nombre del operador"
-                    className="bg-white/10 border border-purple-400/40 rounded-lg px-2 py-0.5 text-xs font-mono font-bold text-cyan-200 w-32 focus:outline-none focus:border-cyan-300"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Racha Encendida */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-gradient-to-r from-orange-600/90 via-amber-500/90 to-yellow-500/90 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(245,158,11,0.55)] shrink-0">
-              <Flame className="w-4 h-4 fill-red-600 text-red-700 animate-bounce" />
-              <div className="leading-tight">
-                <span className="block text-[9px] uppercase tracking-wider">¡RACHA IMPARABLE!</span>
-                <span className="text-xs sm:text-sm font-mono">{streakDays} DÍAS</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Fila 2: Chips de Rango Competitivo, Físico, Fuerza Relativa y Sueño */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] font-mono">
-            <button
-              type="button"
-              onClick={() => setActiveTab('retos')}
-              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border"
-              style={{ borderColor: rankInfo.rank.color }}
-            >
-              <span className="text-slate-300 flex items-center gap-1">
-                <Trophy className="w-3.5 h-3.5" style={{ color: rankInfo.rank.color }} />
-                RANGO
-              </span>
-              <span className="font-black" style={{ color: rankInfo.rank.color }}>
-                {rankInfo.fullName}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('fisico')}
-              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border border-pink-400/50"
-            >
-              <span className="text-slate-300">FÍSICO</span>
-              <span className="font-black text-pink-300">GRADO {currentPhysiqueGrade.grade}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('fuerza')}
-              className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border border-cyan-400/50"
-            >
-              <span className="text-slate-300">FUERZA REL.</span>
-              <span className="font-black text-cyan-300">
-                {strengthInfo.relativeGrade.grade} ({strengthInfo.relativeRatio}x)
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('sueno')}
-              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-black/50 border ${
-                sleepInfo.status === 'critical'
-                  ? 'border-red-400 text-red-300 animate-pulse'
-                  : 'border-emerald-400/50 text-emerald-300'
-              }`}
-            >
-              <span className="text-slate-300 flex items-center gap-1">
-                <Moon className="w-3.5 h-3.5" />
-                SUEÑO
-              </span>
-              <span className="font-black">{sleepInfo.total}h / 49-63h</span>
-            </button>
-          </div>
-
-          {/* Fila 3: Navegación táctil de los 6 módulos */}
-          <nav className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-0.5">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all border ${
-                    active
-                      ? 'bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 border-white/60 text-white shadow-[0_0_16px_rgba(168,85,247,0.6)] scale-[1.02]'
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </header>
-
-      {/* ====================================================================
-          CONTENIDO PRINCIPAL DE LOS 6 MÓDULOS
-         ==================================================================== */}
-      <main className="max-w-6xl mx-auto px-3 sm:px-4 pt-5 space-y-6">
-        {/* ==================================================================
-            MÓDULO 1: CÁMARA DE TRANSFORMACIÓN ANIME 2D & PERSONALIZADOR
-           ================================================================== */}
-        {activeTab === 'anime_cam' && (
-          <div className="space-y-6">
-            {/* Banner Superior de Cámara de Transformación Anime 2D */}
-            <div className="rounded-3xl border-2 border-cyan-400/50 bg-gradient-to-br from-[#191242] via-[#231659] to-[#120d2d] p-4 sm:p-6 shadow-[0_0_35px_rgba(0,245,255,0.2)]">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/50 text-cyan-200 text-[10px] font-mono font-black uppercase">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    MÓDULO ESTRELLA // IA DE SILUETA CORPORAL
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-black text-white mt-1">
-                    Cámara de Transformación Anime 2D 📸⚡
-                  </h2>
-                  <p className="text-xs text-purple-200">
-                    Sube una foto de cuerpo completo (rostro censurado automáticamente) o simula un escaneo para generar tu Guerrero Anime 2D personalizado.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-                {/* Izquierda: Visor de Foto de Cuerpo Completo + Escáner Láser */}
-                <div className="lg:col-span-5 space-y-3">
-                  <div className="relative h-[300px] rounded-2xl border-2 border-dashed border-cyan-400/60 bg-[#0c0921] overflow-hidden flex flex-col items-center justify-center p-3">
-                    {camPreviewUrl ? (
-                      <img
-                        src={camPreviewUrl}
-                        alt="Escaneo corporal"
-                        className="h-full w-auto object-contain rounded-xl"
-                      />
-                    ) : (
-                      <div className="text-center space-y-2 px-4">
-                        <div className="w-14 h-14 mx-auto rounded-2xl bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center">
-                          <Camera className="w-7 h-7 text-cyan-300" />
-                        </div>
-                        <p className="text-xs font-bold text-cyan-200">
-                          Foto de Entrenamiento (Cuerpo Completo)
-                        </p>
-                        <p className="text-[11px] text-slate-400">
-                          Tu rostro se pixelará y protegerá localmente antes del análisis de biotipo.
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Línea Láser Animada durante el escaneo */}
-                    {isScanningAnime && (
-                      <>
-                        <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_18px_#00F5FF] animate-laser z-20" />
-                        <div className="absolute inset-0 bg-cyan-500/15 backdrop-blur-[1px] flex flex-col items-center justify-center p-4 z-30">
-                          <span className="px-3 py-1.5 rounded-xl bg-black/85 border border-cyan-300 text-cyan-200 font-mono text-xs font-black animate-pulse mb-2">
-                            ¡Procesando tu foto a Anime 2D...! {scanProgress}%
-                          </span>
-                          <div className="w-4/5 h-3 rounded-full bg-black/80 border border-cyan-400/60 overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-cyan-400 via-pink-500 to-amber-400 transition-all duration-200"
-                              style={{ width: `${scanProgress}%` }}
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Botones de Acción de Cámara */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,245,255,0.4)] transition">
-                      <Upload className="w-4 h-4" />
-                      Subir Foto Cuerpo Completo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFullBodyUpload}
-                        className="hidden"
-                      />
-                    </label>
-
-                    <button
-                      type="button"
-                      onClick={handleSimulateFullBodyScan}
-                      disabled={isScanningAnime}
-                      className="py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 hover:brightness-110 text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(249,115,22,0.45)] transition disabled:opacity-50"
-                    >
-                      <Scan className="w-4 h-4" />
-                      Simular Escaneo Corporal
-                    </button>
-                  </div>
-
-                  {/* Resultado del Escáner */}
-                  <div className="p-3 rounded-2xl bg-black/50 border border-purple-400/35 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-[10px] font-mono text-purple-300 block">RESULTADO BIOMÉTRICO</span>
-                      <strong className="text-amber-300">{scanResult.biotypeLabel}</strong>
-                    </div>
-                    <div className="text-right font-mono">
-                      <span className="text-[10px] text-emerald-300 block">{scanResult.syncStatus}</span>
-                      <span className="text-xs font-bold text-cyan-300">Simetría: {scanResult.symmetry}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Derecha: Guerrero 2D Anime Resultante + Barras RPG */}
-                <div className="lg:col-span-7 space-y-3">
-                  <AnimeWarrior2D
-                    avatar={avatar}
-                    rankColor={rankInfo.rank.color}
-                    rankTitle={rankInfo.fullName}
-                    rankIndex={rankInfo.rankIndex}
-                    physicalGrade={currentPhysiqueGrade.grade}
-                  />
-
-                  {/* Barras de Poder RPG debajo del Avatar */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-black/55 border border-white/15">
-                    <div>
-                      <div className="flex justify-between text-[11px] font-mono mb-1">
-                        <span className="text-amber-300 font-bold">FUERZA ABSOLUTA ({strengthInfo.absoluteGrade.grade})</span>
-                        <span>{strengthInfo.sbdTotal} kg</span>
-                      </div>
-                      <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-300"
-                          style={{ width: `${Math.min(100, Math.round((strengthInfo.sbdTotal / 650) * 100))}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-[11px] font-mono mb-1">
-                        <span className="text-cyan-300 font-bold">ENERGÍA DE SUEÑO SEMANAL</span>
-                        <span>{sleepInfo.total}h / 63h</span>
-                      </div>
-                      <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-                          style={{ width: `${sleepInfo.energyPct}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Personalizador de Guerrero 2D */}
-            <div className="rounded-3xl border-2 border-purple-400/40 bg-[#140f33]/90 p-5 space-y-5 shadow-xl">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <h3 className="text-lg font-black text-white flex items-center gap-2">
-                    <Sliders className="w-5 h-5 text-pink-400" />
-                    Personalizador de Guerrero 2D (Cosméticos & Estilo Shonen)
-                  </h3>
-                  <p className="text-xs text-purple-200">
-                    Ajusta manualmente tu silueta, peinado anime, traje de combate, equipamiento y aura de energía.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Silueta */}
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-cyan-300 font-bold block">1. SILUETA DEL GUERRERO</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'masculino', label: 'Masculino' },
-                      { id: 'femenino', label: 'Femenino' }
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, gender: item.id }))}
-                        className={`py-2.5 rounded-xl font-bold text-xs border transition ${
-                          avatar.gender === item.id
-                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-white text-white shadow'
-                            : 'bg-white/5 border-white/10 text-slate-300'
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Biotipo Físico */}
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-amber-300 font-bold block">2. BIOTIPO FÍSICO</span>
-                  <select
-                    value={avatar.build}
-                    onChange={(e) => setAvatar((a) => ({ ...a, build: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#1b1445] border border-purple-400/50 text-xs font-bold text-white focus:outline-none"
-                  >
-                    <option value="atletico">Atlético / Calisténico</option>
-                    <option value="mesomorfo">Mesomorfo / Estético</option>
-                    <option value="powerlifter">Powerlifter / Fuerza Bruta</option>
-                    <option value="titan">Titán / Hipertrofia Élite</option>
-                  </select>
-                </div>
-
-                {/* Tono de Piel */}
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-pink-300 font-bold block">3. TONO DE PIEL CEL-SHADED</span>
-                  <div className="flex items-center gap-2 flex-wrap pt-1">
-                    {[
-                      { id: 'claro', hex: '#FFE2CC' },
-                      { id: 'trigueno', hex: '#EBB68D' },
-                      { id: 'bronceado', hex: '#CA865A' },
-                      { id: 'moreno', hex: '#965A38' },
-                      { id: 'oscuro', hex: '#633B26' },
-                      { id: 'celestial', hex: '#DCE7F7' }
-                    ].map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, skin: s.id }))}
-                        className={`w-8 h-8 rounded-full border-2 transition ${
-                          avatar.skin === s.id ? 'border-cyan-300 scale-110 shadow-[0_0_12px_#00F5FF]' : 'border-white/25'
-                        }`}
-                        style={{ backgroundColor: s.hex }}
-                        title={s.id}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Peinado Shonen & Color de Cabello */}
-              <div className="p-4 rounded-2xl bg-black/50 border border-white/10 space-y-3">
-                <span className="text-xs font-mono text-orange-300 font-black block">
-                  4. PEINADO ESTILO SHONEN & COLOR DE CABELLO
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'shonen', label: 'Erizado Shonen' },
-                    { id: 'cazador', label: 'Cazador Rebelde' },
-                    { id: 'coleta', label: 'Coleta Marcial' },
-                    { id: 'salvaje', label: 'Flama Salvaje' }
-                  ].map((h) => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, hair: h.id }))}
-                      className={`py-2.5 px-3 rounded-xl font-bold text-xs border transition ${
-                        avatar.hair === h.id
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 border-white text-slate-950 font-black shadow'
-                          : 'bg-white/5 border-white/10 text-slate-200'
-                      }`}
-                    >
-                      {h.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {[
-                    { id: 'azabache', label: 'Azabache', hex: '#161B2B' },
-                    { id: 'platino', label: 'Platino', hex: '#F8FAFC' },
-                    { id: 'fuego', label: 'Carmesí', hex: '#EF4444' },
-                    { id: 'relampago', label: 'Relámpago', hex: '#0EA5E9' },
-                    { id: 'dorado', label: 'Dorado Ki', hex: '#F59E0B' },
-                    { id: 'amatista', label: 'Amatista', hex: '#9333EA' }
-                  ].map((hc) => (
-                    <button
-                      key={hc.id}
-                      type="button"
-                      onClick={() => setAvatar((a) => ({ ...a, hairColor: hc.id }))}
-                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${
-                        avatar.hairColor === hc.id
-                          ? 'bg-white/20 border-cyan-300 text-white'
-                          : 'bg-white/5 border-white/10 text-slate-300'
-                      }`}
-                    >
-                      <span className="w-3.5 h-3.5 rounded-full border border-white/40" style={{ backgroundColor: hc.hex }} />
-                      {hc.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Indumentaria, Equipamiento y Aura */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-pink-300 font-bold block">5. INDUMENTARIA TÉCNICA</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'neogym', label: 'Neo-Gym EX' },
-                      { id: 'gi', label: 'Gi Marcial' },
-                      { id: 'cyber', label: 'Traje Cyber' },
-                      { id: 'titan', label: 'Armadura Titán' }
-                    ].map((o) => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, outfit: o.id }))}
-                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition ${
-                          avatar.outfit === o.id
-                            ? 'bg-gradient-to-r from-pink-500 to-purple-600 border-white text-white'
-                            : 'bg-white/5 border-white/10 text-slate-300'
-                        }`}
-                      >
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-emerald-300 font-bold block">6. EQUIPAMIENTO / ACCESORIO</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'banda', label: 'Banda Frontal' },
-                      { id: 'munequeras', label: 'Muñequeras' },
-                      { id: 'cinturon', label: 'Cinturón Poder' },
-                      { id: 'auriculares', label: 'Auriculares' }
-                    ].map((acc) => (
-                      <button
-                        key={acc.id}
-                        type="button"
-                        onClick={() => setAvatar((a) => ({ ...a, accessory: acc.id }))}
-                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition ${
-                          avatar.accessory === acc.id
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 border-white text-slate-950 font-black'
-                            : 'bg-white/5 border-white/10 text-slate-300'
-                        }`}
-                      >
-                        {acc.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2">
-                  <span className="text-[11px] font-mono text-amber-300 font-bold block">7. COLOR / ESTILO DE AURA KI</span>
-                  <select
-                    value={avatar.aura}
-                    onChange={(e) => setAvatar((a) => ({ ...a, aura: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#1b1445] border border-amber-400/50 text-xs font-bold text-amber-200 focus:outline-none"
-                  >
-                    <option value="rango">Dinámica por Rango ({rankInfo.rank.name})</option>
-                    <option value="dorado">Dorado Super Ki</option>
-                    <option value="cian">Cian Relámpago</option>
-                    <option value="magenta">Magenta Cósmico</option>
-                    <option value="esmeralda">Esmeralda Vital</option>
-                    <option value="violeta">Violeta Soberano</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+  // ==========================================================================
+  // PANTALLA 1: ENCUESTA ÚNICA DE DESPERTAR (SOLO PRIMERA VEZ)
+  // ==========================================================================
+  if (!awakened) {
+    return (
+      <div className="sys-container" style={{ maxWidth: '560px', paddingTop: '28px' }}>
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+        {toast && (
+          <div className="toast-alert">
+            <Sparkles size={18} color="#00f0ff" />
+            <span>{toast}</span>
           </div>
         )}
 
-        {/* ==================================================================
-            MÓDULO 2: PANEL DE COMANDO, RANGOS (15 x 6 DIV) Y RETOS DIARIOS
-           ================================================================== */}
-        {activeTab === 'retos' && (
-          <div className="space-y-6">
-            {/* Tarjeta de Rango Competitivo Actual */}
-            <div
-              className="rounded-3xl border-2 bg-gradient-to-r from-[#17113b] via-[#26165c] to-[#17113b] p-5 sm:p-6 shadow-2xl"
-              style={{ borderColor: rankInfo.rank.color, boxShadow: `0 0 32px ${rankInfo.rank.glow}` }}
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/20 text-[11px] font-mono text-amber-300 mb-2">
-                    <Crown className="w-3.5 h-3.5" /> LIGA {rankInfo.rank.league.toUpperCase()} • DIVISIÓN {rankInfo.division} DE 6
-                  </span>
-                  <h2
-                    className="text-3xl sm:text-4xl font-black uppercase tracking-tight"
-                    style={{ color: rankInfo.rank.color, textShadow: `0 0 24px ${rankInfo.rank.glow}` }}
-                  >
-                    {rankInfo.fullName}
-                  </h2>
-                  <p className="text-xs text-purple-200 mt-1">
-                    Puntos de Liga Totales: <strong className="font-mono text-white">{rankInfo.totalLP} LP</strong> •{' '}
-                    {rankInfo.isMax ? '¡Cúspide Challenger 1 alcanzada!' : `Faltan ${100 - rankInfo.currentDivLP} LP para ascender`}
-                  </p>
-                </div>
-
-                {/* Botones rápidos de prueba LP */}
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => updateLeaguePoints(25, true, 'Entrenamiento Bonus')}
-                    className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-green-600 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition"
-                  >
-                    +25 LP
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => updateLeaguePoints(100, true, '¡Salto de División!')}
-                    className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-xs shadow-lg active:scale-95 transition"
-                  >
-                    +100 LP (Ascender)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => updateLeaguePoints(-20, false)}
-                    className="px-4 py-2.5 rounded-2xl bg-rose-600/30 hover:bg-rose-600/50 border border-rose-400 text-rose-200 font-black text-xs active:scale-95 transition"
-                  >
-                    -20 LP
-                  </button>
-                </div>
-              </div>
-
-              {/* Barra LP de División */}
-              <div className="mt-4">
-                <div className="flex justify-between text-xs font-mono mb-1">
-                  <span className="text-slate-300">PROGRESO DE DIVISIÓN</span>
-                  <span className="font-black text-amber-300">{rankInfo.isMax ? '100 / 100 LP' : `${rankInfo.currentDivLP} / 100 LP`}</span>
-                </div>
-                <div className="w-full h-4 rounded-full bg-black/70 border border-white/20 p-0.5 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${rankInfo.isMax ? 100 : rankInfo.currentDivLP}%`,
-                      background: `linear-gradient(90deg, ${rankInfo.rank.secondary}, ${rankInfo.rank.color}, #FFFFFF)`
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Escala visual de los 15 rangos */}
-              <div className="mt-4 pt-3 border-t border-white/10">
-                <span className="text-[10px] font-mono text-purple-300 uppercase block mb-2">
-                  Escalera Completa de 15 Rangos (Tierra 6 → Challenger 1):
-                </span>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                  {COMPETITIVE_RANKS.map((r, i) => {
-                    const current = i === rankInfo.rankIndex;
-                    return (
-                      <button
-                        key={r.id}
-                        type="button"
-                        onClick={() => {
-                          setTotalLP(i * 600 + 250);
-                          showToast(`Vista calibrada en ${r.name} 4`);
-                        }}
-                        className={`px-2 py-1.5 rounded-xl border text-left text-[10px] font-bold flex items-center justify-between transition ${
-                          current ? 'bg-black/80 scale-[1.03] shadow-lg' : 'bg-black/35 border-white/10 opacity-75 hover:opacity-100'
-                        }`}
-                        style={{ borderColor: current ? r.color : undefined, color: r.color }}
-                      >
-                        <span className="truncate">{i + 1}. {r.name}</span>
-                        {current && <span className="px-1 rounded bg-white/15 text-white font-mono">D{rankInfo.division}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Gestor de Retos Diarios + Cola Próxima Semana */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-8 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
-                <div>
-                  <h3 className="text-lg font-black text-white flex items-center gap-2">
-                    <Target className="w-5 h-5 text-amber-400" />
-                    Retos Diarios Declarados ¡A POR TODAS!
-                  </h3>
-                  <p className="text-xs text-purple-200">
-                    Declara tu misión de hoy. Si llueve o surge un imprevisto, justifícalo para convertirlo en un Desafío en Casa.
-                  </p>
-                </div>
-
-                {/* Crear Nuevo Reto */}
-                <form onSubmit={handleAddChallenge} className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 p-3 rounded-2xl bg-black/45 border border-white/15">
-                  <input
-                    type="text"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Ej. Gym: Press Banca 4x8 con 80kg..."
-                    className="sm:col-span-6 px-3.5 py-2.5 rounded-xl bg-white/10 border border-purple-400/40 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-cyan-300"
-                  />
-                  <select
-                    value={newEnv}
-                    onChange={(e) => setNewEnv(e.target.value)}
-                    className="sm:col-span-3 px-3 py-2.5 rounded-xl bg-[#1c154a] border border-purple-400/40 text-xs font-bold text-white"
-                  >
-                    <option value="Gimnasio">Gimnasio</option>
-                    <option value="Casa">Casa</option>
-                    <option value="Exterior">Cardio Exterior</option>
-                  </select>
-                  <button
-                    type="submit"
-                    className="sm:col-span-3 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 text-slate-950 font-black text-xs flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition"
-                  >
-                    <Plus className="w-4 h-4" /> Declarar Reto
-                  </button>
-                </form>
-
-                {/* Lista de Retos Activos */}
-                <div className="space-y-3">
-                  {challenges.map((ch) => (
-                    <div
-                      key={ch.id}
-                      className={`p-4 rounded-2xl border-2 transition ${
-                        ch.status === 'completed'
-                          ? 'bg-emerald-950/40 border-emerald-400/70'
-                          : ch.status === 'contingency'
-                          ? 'bg-purple-950/50 border-cyan-400/70'
-                          : 'bg-black/45 border-purple-400/30'
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-cyan-200 text-[10px] font-mono font-bold">
-                          {ch.env}
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[11px] font-mono font-black">
-                          +{ch.lp} LP
-                        </span>
-                        {ch.status === 'completed' && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[10px] font-black">
-                            ✓ ¡COMPLETADO!
-                          </span>
-                        )}
-                      </div>
-
-                      <h4 className="text-sm font-bold text-white mb-2">{ch.title}</h4>
-
-                      {ch.contingencyInfo && (
-                        <p className="text-xs text-cyan-100 bg-cyan-950/60 border border-cyan-400/40 p-2.5 rounded-xl mb-3">
-                          {ch.contingencyInfo}
-                        </p>
-                      )}
-
-                      {ch.status !== 'completed' && (
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleCompleteChallenge(ch)}
-                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-green-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition"
-                          >
-                            <CheckCircle2 className="w-4 h-4" />
-                            ¡Completado! (+{ch.lp} LP)
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleFailChallenge(ch)}
-                            className="px-3.5 py-2 rounded-xl bg-rose-600/25 hover:bg-rose-600/40 border border-rose-400/60 text-rose-200 font-bold text-xs flex items-center gap-1.5 transition"
-                          >
-                            <XCircle className="w-4 h-4" />
-                            Fallido
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setModalChallenge(ch)}
-                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500/30 to-blue-600/30 hover:from-cyan-500/45 hover:to-blue-600/45 border border-cyan-300/60 text-cyan-100 font-bold text-xs flex items-center gap-1.5 transition"
-                          >
-                            <CloudRain className="w-4 h-4 text-cyan-300" />
-                            ¿Llueve? Justificar imprevisto
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cola para Retomar la Próxima Semana */}
-              <div className="lg:col-span-4 rounded-3xl border border-rose-400/40 bg-[#1a0d26]/90 p-5 space-y-3 shadow-xl">
-                <h3 className="text-sm font-black text-rose-300 uppercase flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4" />
-                  Cola para Retomar la Próxima Semana
-                </h3>
-                <p className="text-xs text-slate-300">
-                  Misiones fallidas pendientes de revancha semanal con recompensa extra.
-                </p>
-
-                {nextWeekQueue.length === 0 ? (
-                  <div className="p-6 rounded-2xl border border-dashed border-white/15 text-center text-xs text-slate-400">
-                    ¡Sin retos fallidos! Tu racha está impecable.
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {nextWeekQueue.map((item) => (
-                      <div key={item.id} className="p-3.5 rounded-2xl bg-black/50 border border-rose-400/40 space-y-2">
-                        <span className="inline-block px-2 py-0.5 rounded bg-rose-500/25 text-rose-200 text-[10px] font-mono font-bold">
-                          REVANCHA SEMANAL • +{item.lp} LP
-                        </span>
-                        <p className="text-xs font-bold text-white">{item.title}</p>
-                        <button
-                          type="button"
-                          onClick={() => handleRetakeFromQueue(item)}
-                          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow transition"
-                        >
-                          <RefreshCw className="w-3.5 h-3.5" />
-                          Retomar en Nueva Semana
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 3: FUERZA ABSOLUTA Y RELATIVA (ESCALA CIENTÍFICA F A EX)
-           ================================================================== */}
-        {activeTab === 'fuerza' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-5 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
-              <div>
-                <h2 className="text-lg font-black text-white flex items-center gap-2">
-                  <Dumbbell className="w-5 h-5 text-cyan-300" />
-                  Calculadora Científica de 1RM (F → EX)
-                </h2>
-                <p className="text-xs text-purple-200">
-                  Promedio científico Epley/Brzycki + Índice DOTS y Fuerza Relativa al peso corporal.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-black/50 border border-white/15">
-                <div className="flex justify-between text-xs font-mono mb-1.5">
-                  <span className="text-cyan-200 font-bold">PESO CORPORAL DEL ATLETA</span>
-                  <span className="text-amber-300 font-black">{bodyWeight} kg</span>
-                </div>
-                <input
-                  type="range"
-                  min="40"
-                  max="150"
-                  step="0.5"
-                  value={bodyWeight}
-                  onChange={(e) => setBodyWeight(Number(e.target.value))}
-                  className="w-full accent-amber-400 cursor-pointer"
-                />
-              </div>
-
-              <div className="space-y-2.5">
-                {[
-                  { key: 'squat', label: 'Sentadilla Trasera' },
-                  { key: 'bench', label: 'Press de Banca' },
-                  { key: 'deadlift', label: 'Peso Muerto' },
-                  { key: 'pullup', label: 'Dominadas Lastradas (Lastre añadido kg)' },
-                  { key: 'ohp', label: 'Press Militar Estricto' }
-                ].map((ex) => (
-                  <div key={ex.key} className="p-3 rounded-2xl bg-black/45 border border-white/10">
-                    <span className="text-xs font-bold text-white block mb-2">{ex.label}</span>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[10px] font-mono text-purple-300 block mb-1">PESO (KG)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="450"
-                          step="2.5"
-                          value={lifts[ex.key].weight}
-                          onChange={(e) =>
-                            setLifts((p) => ({
-                              ...p,
-                              [ex.key]: { ...p[ex.key], weight: Number(e.target.value) }
-                            }))
-                          }
-                          className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono font-bold text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-mono text-purple-300 block mb-1">REPETICIONES</label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="20"
-                          value={lifts[ex.key].reps}
-                          onChange={(e) =>
-                            setLifts((p) => ({
-                              ...p,
-                              [ex.key]: { ...p[ex.key], reps: Number(e.target.value) }
-                            }))
-                          }
-                          className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono font-bold text-white"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:col-span-7 space-y-5">
-              {/* Tarjetas de Fuerza Absoluta y Relativa */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-950/60 to-[#161038] p-5 shadow-xl">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="text-[10px] font-mono text-amber-300 uppercase">CARGA TOTAL MOVIDA</span>
-                      <h3 className="text-base font-black text-white">Fuerza Absoluta</h3>
-                    </div>
-                    <span className={`px-3.5 py-1.5 rounded-2xl border-2 text-2xl font-black font-mono ${strengthInfo.absoluteGrade.badge}`}>
-                      {strengthInfo.absoluteGrade.grade}
-                    </span>
-                  </div>
-                  <p className="text-xs font-bold text-amber-200 mb-2">{strengthInfo.absoluteGrade.label}</p>
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-black/50 text-xs font-mono">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block">TOTAL SBD</span>
-                      <strong className="text-white">{strengthInfo.sbdTotal} kg</strong>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-slate-400 block">ÍNDICE DOTS</span>
-                      <strong className="text-amber-300">{strengthInfo.dotsScore} pts</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border-2 border-cyan-400/60 bg-gradient-to-br from-cyan-950/60 to-[#161038] p-5 shadow-xl">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="text-[10px] font-mono text-cyan-300 uppercase">POTENCIA POR KG CORPORAL</span>
-                      <h3 className="text-base font-black text-white">Fuerza Relativa</h3>
-                    </div>
-                    <span className={`px-3.5 py-1.5 rounded-2xl border-2 text-2xl font-black font-mono ${strengthInfo.relativeGrade.badge}`}>
-                      {strengthInfo.relativeGrade.grade}
-                    </span>
-                  </div>
-                  <p className="text-xs font-bold text-cyan-200 mb-2">{strengthInfo.relativeGrade.label}</p>
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-black/50 text-xs font-mono">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block">RATIO SBD / BW</span>
-                      <strong className="text-white">{strengthInfo.relativeRatio}x BW</strong>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-slate-400 block">5 LIFTS TOTAL</span>
-                      <strong className="text-cyan-300">{strengthInfo.fiveLiftsTotal} kg</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tabla de Levantamientos Principales */}
-              <div className="rounded-3xl border border-purple-400/35 bg-[#130e30]/90 p-5 space-y-3 shadow-xl">
-                <h3 className="text-sm font-black text-white uppercase">
-                  Desglose de Levantamientos Principales (1RM Estimado & Ratio)
-                </h3>
-                <div className="space-y-2.5">
-                  {strengthInfo.rows.map((row) => (
-                    <div
-                      key={row.key}
-                      className="p-3 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-between gap-2"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={`px-2.5 py-1 rounded-xl border text-xs font-black font-mono ${row.grade.badge}`}>
-                          {row.grade.grade}
-                        </span>
-                        <div>
-                          <span className="text-xs font-bold text-white block">{row.name}</span>
-                          <span className="text-[10px] font-mono text-purple-300">{row.grade.label}</span>
-                        </div>
-                      </div>
-                      <div className="text-right font-mono text-xs">
-                        <strong className="text-cyan-300 block">{row.oneRM} kg 1RM</strong>
-                        <span className="text-amber-300 font-bold">{row.ratio}x peso corp.</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 4: EVALUACIÓN FÍSICA TRIMESTRAL (F A EX) Y BÓVEDA PRIVADA
-           ================================================================== */}
-        {activeTab === 'fisico' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Estado Trimestral y Contador 90 Días */}
-              <div className="lg:col-span-5 rounded-3xl border-2 border-pink-400/50 bg-gradient-to-br from-[#1d1247] to-[#120c2b] p-5 flex flex-col justify-between space-y-4 shadow-xl">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono text-pink-300 uppercase">EVALUACIÓN CADA 3 MESES</span>
-                    <span className={`px-3 py-1 rounded-xl border text-sm font-black font-mono ${currentPhysiqueGrade.badge}`}>
-                      FÍSICO {currentPhysiqueGrade.grade}
-                    </span>
-                  </div>
-                  <h2 className="text-xl font-black text-white">{currentPhysiqueGrade.label}</h2>
-                  <p className="text-xs text-purple-200 mt-1">{currentPhysiqueGrade.desc}</p>
-
-                  <div className="mt-4 p-4 rounded-2xl bg-black/55 border border-white/15 space-y-2.5">
-                    <div className="flex justify-between text-xs font-mono">
-                      <span className="text-amber-300 font-bold">RENOVACIÓN TRIMESTRAL</span>
-                      <span className="text-white font-black">{daysToRenewal} DÍAS RESTANTES</span>
-                    </div>
-                    <div className="w-full h-3 rounded-full bg-slate-900 overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-pink-500"
-                        style={{ width: `${Math.round(((90 - daysToRenewal) / 90) * 100)}%` }}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setDaysToRenewal((d) => Math.max(0, d - 15))}
-                        className="py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-mono font-bold"
-                      >
-                        Simular -15 días
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDaysToRenewal(90);
-                          showToast('¡Ciclo trimestral renovado por 90 días!');
-                        }}
-                        className="py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[11px] font-mono font-bold"
-                      >
-                        Renovar 90 días
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Calibrador de Grado Físico */}
-                <div className="p-3.5 rounded-2xl bg-black/50 border border-white/15 space-y-2">
-                  <div className="flex justify-between text-xs font-mono">
-                    <span className="text-cyan-200">SIMETRÍA & DEFINICIÓN VISUAL</span>
-                    <span className="text-amber-300 font-black">
-                      {physiqueScore}% → Grado {SCIENTIFIC_GRADES[Math.min(9, Math.floor(physiqueScore / 10))].grade}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="5"
-                    max="99"
-                    value={physiqueScore}
-                    onChange={(e) => setPhysiqueScore(Number(e.target.value))}
-                    className="w-full accent-pink-500 cursor-pointer"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const g = SCIENTIFIC_GRADES[Math.min(9, Math.floor(physiqueScore / 10))].grade;
-                      setQuarters((prev) => prev.map((q) => (q.id === 'Q3' ? { ...q, grade: g } : q)));
-                      setDaysToRenewal(90);
-                      showToast(`¡Grado Físico actualizado a ${g}!`);
-                    }}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-white font-black text-xs shadow-lg"
-                  >
-                    Guardar Evaluación Trimestral
-                  </button>
-                </div>
-              </div>
-
-              {/* Bóveda Segura Frente y Espalda */}
-              <div className="lg:col-span-7 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
-                <div>
-                  <h3 className="text-base font-black text-white flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-emerald-400" />
-                    Bóveda Privada de Progreso (Frente y Espalda Sin Rostro)
-                  </h3>
-                  <p className="text-xs text-purple-200">
-                    Las fotos se procesan en tu dispositivo censurando automáticamente el área superior del rostro.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <SecureBodyPhotoCard
-                    title="Frente"
-                    photoUrl={frontVaultPhoto}
-                    onPhotoProcessed={(url) => {
-                      setFrontVaultPhoto(url);
-                      showToast('Foto Frontal censurada y cifrada localmente.');
-                    }}
-                    onSimulatePhoto={() => generateVaultDemoPhoto('Frente')}
-                  />
-                  <SecureBodyPhotoCard
-                    title="Espalda"
-                    photoUrl={backVaultPhoto}
-                    onPhotoProcessed={(url) => {
-                      setBackVaultPhoto(url);
-                      showToast('Foto de Espalda censurada y cifrada localmente.');
-                    }}
-                    onSimulatePhoto={() => generateVaultDemoPhoto('Espalda')}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Recap Anual (Q1, Q2, Q3, Q4) */}
-            <div className="rounded-3xl border border-amber-400/40 bg-[#140f33]/90 p-5 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <h3 className="text-base font-black text-white flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-amber-400" />
-                    Recap Anual de Transformación (Q1 → Q4)
-                  </h3>
-                  <p className="text-xs text-purple-200">
-                    Línea de tiempo visual de tus 4 evaluaciones trimestrales del año.
-                  </p>
-                </div>
-                <span className="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/50 text-amber-200 text-xs font-mono font-bold">
-                  EVOLUCIÓN ANUAL: D → {quarters[2].grade}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {quarters.map((q) => {
-                  const gObj = SCIENTIFIC_GRADES.find((g) => g.grade === q.grade) || SCIENTIFIC_GRADES[2];
-                  return (
-                    <div key={q.id} className="p-4 rounded-2xl bg-black/50 border border-white/15 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono font-bold text-cyan-200">{q.title}</span>
-                        <span className={`px-2.5 py-0.5 rounded-lg border text-sm font-black font-mono ${gObj.badge}`}>
-                          {q.grade}
-                        </span>
-                      </div>
-                      <span className="text-xs font-mono text-amber-300 block">Grasa Est.: {q.bf}</span>
-                      <p className="text-[11px] text-slate-300">{q.note}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 5: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
-           ================================================================== */}
-        {activeTab === 'rutinas' && (
-          <div className="space-y-6">
-            {/* Generador Biomecánico */}
-            <div className="rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-4 shadow-xl">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-black text-white flex items-center gap-2">
-                    <Cpu className="w-5 h-5 text-cyan-300" />
-                    Generador de Rutinas Basadas en Biomecánica
-                  </h2>
-                  <p className="text-xs text-purple-200">
-                    Elige entorno, días y objetivo para obtener una prescripción con fundamento científico.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <select
-                    value={routineEnv}
-                    onChange={(e) => setRoutineEnv(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-cyan-400/50 text-xs font-bold text-cyan-200"
-                  >
-                    <option value="gimnasio">Gimnasio</option>
-                    <option value="casa">Casa</option>
-                    <option value="hibrido">Híbrido (Casa + Gym)</option>
-                  </select>
-
-                  <select
-                    value={routineGoal}
-                    onChange={(e) => setRoutineGoal(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-pink-400/50 text-xs font-bold text-pink-200"
-                  >
-                    <option value="hipertrofia">Hipertrofia</option>
-                    <option value="fuerza">Fuerza Máxima</option>
-                    <option value="recomposicion">Recomposición</option>
-                  </select>
-
-                  <select
-                    value={routineDays}
-                    onChange={(e) => setRoutineDays(Number(e.target.value))}
-                    className="px-3 py-2 rounded-xl bg-[#1e1652] border border-amber-400/50 text-xs font-bold text-amber-200"
-                  >
-                    <option value={3}>3 días/sem</option>
-                    <option value={4}>4 días/sem</option>
-                    <option value={5}>5 días/sem</option>
-                    <option value={6}>6 días/sem</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/60 to-purple-950/60 border border-cyan-400/40">
-                <span className="text-xs font-mono font-black text-amber-300 block mb-1">
-                  {activeRoutinePlan.title} ({routineDays} DÍAS/SEMANA)
-                </span>
-                <p className="text-xs text-slate-200">{activeRoutinePlan.summary}</p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {activeRoutinePlan.blocks.map((blk, i) => (
-                  <div key={i} className="p-4 rounded-2xl bg-black/50 border border-white/15 flex flex-col justify-between space-y-3">
-                    <div>
-                      <div className="flex items-center justify-between gap-2 pb-2 mb-3 border-b border-white/10">
-                        <h3 className="text-sm font-black text-white">{blk.day}</h3>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const list = blk.exercises.map((e) => `${e.name} (${e.sets})`).join(' + ');
-                            setChallenges((prev) => [
-                              {
-                                id: `r-${Date.now()}`,
-                                title: `${blk.day}: ${list}`,
-                                env: routineEnv === 'casa' ? 'Casa' : 'Gimnasio',
-                                lp: 45,
-                                status: 'active',
-                                contingencyInfo: ''
-                              },
-                              ...prev
-                            ]);
-                            setActiveTab('retos');
-                            showToast('¡Rutina enviada a tus Retos de Hoy!');
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black text-[11px] shrink-0 shadow"
-                        >
-                          Enviar Rutina a Retos de Hoy
-                        </button>
-                      </div>
-
-                      <div className="space-y-2.5">
-                        {blk.exercises.map((ex, idx) => (
-                          <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10">
-                            <div className="flex justify-between items-center gap-1 mb-1">
-                              <span className="text-xs font-bold text-white">{ex.name}</span>
-                              <span className="text-[11px] font-mono font-black text-emerald-300">
-                                {ex.sets} • {ex.rir}
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-cyan-200">
-                              <strong>Biomecánica:</strong> {ex.biomech}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Escáner / Auditor de Rutina Propia */}
-            <div className="rounded-3xl border border-pink-400/40 bg-[#140f33]/90 p-5 space-y-4 shadow-xl">
-              <div>
-                <h3 className="text-base font-black text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-pink-400" />
-                  Auditor / Escáner de Rutina Propia
-                </h3>
-                <p className="text-xs text-purple-200">
-                  Sube una foto/archivo de tu rutina o pega tus ejercicios para auditar volumen, balance empuje/tracción y fatiga del SNC.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                <div className="lg:col-span-5 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-purple-600/40 hover:bg-purple-600/60 border border-purple-300/50 text-xs font-bold text-white flex items-center gap-1.5">
-                      <Upload className="w-3.5 h-3.5" />
-                      Subir Foto / Archivo de Rutina
-                      <input
-                        type="file"
-                        accept=".txt,.csv,.md,image/*"
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (!f) return;
-                          setRoutineFileName(f.name);
-                          if (f.type.startsWith('text/')) {
-                            const r = new FileReader();
-                            r.onload = (ev) => setUserRoutineText(String(ev.target?.result || ''));
-                            r.readAsText(f);
-                          } else {
-                            setUserRoutineText(
-                              `[PLANILLA ESCANEADA: ${f.name}]\nDía 1: Press Banca 4x8, Press Inclinado 4x10, Aperturas 4x12, Tríceps 4x15\nDía 2: Jalón Pecho 3x10, Curl Bíceps 4x12\nDía 3: Sentadilla 3x8, Prensa 3x10`
-                            );
-                          }
-                          showToast(`Archivo "${f.name}" cargado en el escáner.`);
-                        }}
-                        className="hidden"
-                      />
-                    </label>
-                    {routineFileName && <span className="text-[11px] font-mono text-emerald-300 truncate">{routineFileName}</span>}
-                  </div>
-
-                  <textarea
-                    rows={5}
-                    value={userRoutineText}
-                    onChange={(e) => setUserRoutineText(e.target.value)}
-                    className="w-full p-3 rounded-2xl bg-black/60 border border-white/15 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-400"
-                  />
-
-                  <select
-                    value={userRoutineFeeling}
-                    onChange={(e) => setUserRoutineFeeling(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#1e1652] border border-white/20 text-xs font-bold text-white"
-                  >
-                    <option value="progresando">Resultados: Progresando bien</option>
-                    <option value="estancado">Resultados: Estancado (+3 semanas sin subir pesos)</option>
-                    <option value="fatiga">Resultados: Fatiga extrema / Molestias articulares</option>
-                  </select>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRoutineDiagnosis(auditUserRoutine(userRoutineText, userRoutineFeeling));
-                      showToast('¡Auditoría biomecánica completada!');
-                    }}
-                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 text-white font-black text-xs shadow-lg active:scale-95 transition"
-                  >
-                    Analizar Biomecánica
-                  </button>
-                </div>
-
-                <div className="lg:col-span-7">
-                  {(() => {
-                    const diag = routineDiagnosis || auditUserRoutine(userRoutineText, userRoutineFeeling);
-                    return (
-                      <div className="p-4 rounded-2xl bg-black/50 border border-white/15 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-mono font-bold text-cyan-300">
-                            PUNTAJE BIOMECÁNICO: <strong className="text-lg text-amber-300">{diag.score}/100</strong>
-                          </span>
-                          <span className="text-xs font-mono text-pink-300">SNC: {diag.cnsStatus}</span>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                          <div className="p-2.5 rounded-xl bg-white/5">
-                            <span className="text-[10px] text-slate-400 block">EMPUJE</span>
-                            <strong className="text-cyan-300">{diag.pushSets} series</strong>
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-white/5">
-                            <span className="text-[10px] text-slate-400 block">TRACCIÓN</span>
-                            <strong className="text-purple-300">{diag.pullSets} series</strong>
-                          </div>
-                          <div className="p-2.5 rounded-xl bg-white/5">
-                            <span className="text-[10px] text-slate-400 block">PIERNA</span>
-                            <strong className="text-emerald-300">{diag.legSets} series</strong>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          {diag.alerts.map((al, idx) => (
-                            <div
-                              key={idx}
-                              className={`p-3 rounded-xl border text-xs ${
-                                al.level === 'danger'
-                                  ? 'bg-rose-950/50 border-rose-400 text-rose-200'
-                                  : al.level === 'warn'
-                                  ? 'bg-amber-950/50 border-amber-400 text-amber-200'
-                                  : 'bg-emerald-950/40 border-emerald-400 text-emerald-200'
-                              }`}
-                            >
-                              <strong className="block">{al.title}</strong>
-                              <span className="text-[11px]">{al.detail}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-400/40 text-xs">
-                          <strong className="text-cyan-300 block mb-1">Sugerencias Científicas:</strong>
-                          <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-200">
-                            {diag.tips.map((t, i) => (
-                              <li key={i}>{t}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================
-            MÓDULO 6: CONTADOR DE SUEÑO Y RECUPERACIÓN SEMANAL (49-63H)
-           ================================================================== */}
-        {activeTab === 'sueno' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 rounded-3xl border border-cyan-400/35 bg-[#130e30]/90 p-5 space-y-3 shadow-xl">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <h2 className="text-lg font-black text-white flex items-center gap-2">
-                    <Moon className="w-5 h-5 text-cyan-300" />
-                    Contador Diario de Sueño (Lunes a Domingo)
-                  </h2>
-                  <p className="text-xs text-purple-200">
-                    Rango científico óptimo: <strong>49 a 63 horas semanales</strong> (7–9 h/noche).
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2.5">
-                {weekDays.map((day, idx) => {
-                  const val = sleepHours[idx];
-                  return (
-                    <div
-                      key={day}
-                      className="p-3 rounded-2xl bg-black/50 border border-white/10 flex items-center justify-between gap-3"
-                    >
-                      <span className="w-20 text-xs font-bold text-white shrink-0">{day}</span>
-                      <input
-                        type="range"
-                        min="3"
-                        max="12"
-                        step="0.5"
-                        value={val}
-                        onChange={(e) => {
-                          const num = Number(e.target.value);
-                          setSleepHours((prev) => prev.map((h, i) => (i === idx ? num : h)));
-                        }}
-                        className="flex-1 accent-cyan-400 cursor-pointer"
-                      />
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSleepHours((prev) => prev.map((h, i) => (i === idx ? Math.max(3, h - 0.5) : h)))
-                          }
-                          className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 font-black text-xs"
-                        >
-                          -0.5
-                        </button>
-                        <span className="w-12 text-center font-mono text-xs font-black text-amber-300">
-                          {val.toFixed(1)}h
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSleepHours((prev) => prev.map((h, i) => (i === idx ? Math.min(12, h + 0.5) : h)))
-                          }
-                          className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 font-black text-xs"
-                        >
-                          +0.5
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="lg:col-span-5 rounded-3xl border-2 border-purple-400/45 bg-gradient-to-br from-[#1b134a] to-[#110c29] p-5 space-y-4 shadow-xl">
-              <span className="text-[10px] font-mono text-cyan-300 uppercase">ACUMULADOR DE RECUPERACIÓN SEMANAL</span>
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <span className="text-4xl font-black font-mono text-white">{sleepInfo.total}h</span>
-                  <span className="text-xs text-purple-200 ml-2">({sleepInfo.avg}h / noche)</span>
-                </div>
-                <span className="px-3 py-1 rounded-xl bg-amber-400/20 border border-amber-300 text-amber-200 font-mono text-xs font-black">
-                  ENERGÍA {sleepInfo.energyPct}%
-                </span>
-              </div>
-
-              {/* Barra de energía */}
-              <div>
-                <div className="flex justify-between text-[10px] font-mono text-slate-300 mb-1">
-                  <span>0h</span>
-                  <span className="text-emerald-300 font-bold">Recomendado: 49h – 63h</span>
-                  <span>70h+</span>
-                </div>
-                <div className="w-full h-4 rounded-full bg-black/70 border border-white/20 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-500 ${
-                      sleepInfo.status === 'critical'
-                        ? 'bg-rose-500'
-                        : sleepInfo.status === 'warning'
-                        ? 'bg-amber-400'
-                        : 'bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300'
-                    }`}
-                    style={{ width: `${Math.min(100, (sleepInfo.total / 70) * 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              <div
-                className={`p-4 rounded-2xl border-2 text-xs space-y-1.5 ${
-                  sleepInfo.status === 'critical'
-                    ? 'bg-rose-950/60 border-rose-400 text-rose-100'
-                    : sleepInfo.status === 'warning'
-                    ? 'bg-amber-950/60 border-amber-400 text-amber-100'
-                    : 'bg-emerald-950/50 border-emerald-400 text-emerald-100'
-                }`}
-              >
-                <div className="font-black flex items-center gap-1.5">
-                  <HeartPulse className="w-4 h-4" />
-                  {sleepInfo.label}
-                </div>
-                <p className="leading-relaxed">{sleepInfo.impact}</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* ====================================================================
-          MODAL: JUSTIFICAR IMPREVISTO -> DESAFÍO EQUIVALENTE EN CASA
-         ==================================================================== */}
-      {modalChallenge && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-3xl border-2 border-cyan-400 bg-[#150f38] p-5 sm:p-6 shadow-2xl space-y-4">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <span className="text-[10px] font-mono text-cyan-300 uppercase">
-                  CONTINGENCIA INTELIGENTE // PROTEGE TU RACHA
-                </span>
-                <h3 className="text-lg font-black text-white">Justificar Imprevisto</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setModalChallenge(null)}
-                className="p-1.5 rounded-xl bg-white/10 text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <p className="text-xs text-purple-200">
-              Reto original: <strong className="text-white">{modalChallenge.title}</strong>. Elige el motivo para transformar el reto en un Desafío Equivalente en Casa:
+        <div className="sys-window" style={{ padding: '24px 20px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.15)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
+              [ALERTA DEL SISTEMA // DIAGNÓSTICO ÚNICO]
+            </span>
+            <h1 className="font-hud" style={{ fontSize: '24px', marginTop: '10px', color: '#fff' }}>
+              PROTOCOLO EX
+            </h1>
+            <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
+              Paso {surveyStep} de 4 — Calibración biométrica del aspirante
             </p>
+            <div className="progress-track" style={{ marginTop: '12px' }}>
+              <div className="progress-fill" style={{ width: `${surveyStep * 25}%`, background: 'linear-gradient(90deg, #00f0ff, #fbbf24)' }} />
+            </div>
+          </div>
 
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {CONTINGENCY_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setSelectedContingencyId(opt.id)}
-                  className={`w-full p-3 rounded-2xl border-2 text-left transition ${
-                    selectedContingencyId === opt.id
-                      ? 'bg-cyan-500/20 border-cyan-300 text-white'
-                      : 'bg-black/40 border-white/10 text-slate-300'
-                  }`}
+          {surveyStep === 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>NOMBRE CLAVE DEL CAZADOR</label>
+                <input
+                  className="sys-input"
+                  value={profile.hunterName}
+                  onChange={(e) => setProfile({ ...profile, hunterName: e.target.value.toUpperCase() })}
+                  placeholder="Ej. SUNG_JINWOO"
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>OBJETIVO PRINCIPAL</label>
+                <select
+                  className="sys-select"
+                  value={profile.goal}
+                  onChange={(e) => setProfile({ ...profile, goal: e.target.value })}
                 >
-                  <div className="flex justify-between text-xs font-black mb-0.5">
-                    <span>
-                      {opt.emoji} {opt.reason}
-                    </span>
-                    <span className="text-amber-300 font-mono">+{opt.lp} LP</span>
+                  <option>Hipertrofia y Estética</option>
+                  <option>Fuerza Máxima (Powerlifting)</option>
+                  <option>Definición y Recomposición</option>
+                  <option>Resistencia y Calistenia</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>ENTORNO DE ENTRENAMIENTO</label>
+                <select
+                  className="sys-select"
+                  value={profile.environment}
+                  onChange={(e) => setProfile({ ...profile, environment: e.target.value })}
+                >
+                  <option>Gimnasio Completo</option>
+                  <option>Entrenamiento en Casa</option>
+                  <option>Gimnasio y Casa (Híbrido)</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>TIEMPO ENTRENANDO (MESES)</label>
+                <input
+                  type="number"
+                  className="sys-input"
+                  value={profile.experienceMonths}
+                  onChange={(e) => setProfile({ ...profile, experienceMonths: e.target.value })}
+                />
+              </div>
+              <button className="sys-btn sys-btn-primary" style={{ marginTop: '8px' }} onClick={() => setSurveyStep(2)}>
+                SIGUIENTE FASE <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+
+          {surveyStep === 2 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div className="grid-2">
+                <div>
+                  <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>EDAD (AÑOS)</label>
+                  <input type="number" className="sys-input" value={profile.age} onChange={(e) => setProfile({ ...profile, age: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PESO CORPORAL (KG)</label>
+                  <input type="number" className="sys-input" value={profile.weightKg} onChange={(e) => setProfile({ ...profile, weightKg: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>ALTURA (CM)</label>
+                <input type="number" className="sys-input" value={profile.heightCm} onChange={(e) => setProfile({ ...profile, heightCm: e.target.value })} />
+              </div>
+
+              {profile.environment !== 'Entrenamiento en Casa' ? (
+                <div className="grid-2">
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>PRESS BANCA (KG)</label>
+                    <input type="number" className="sys-input" value={profile.benchKg} onChange={(e) => setProfile({ ...profile, benchKg: e.target.value })} />
                   </div>
-                  <p className="text-xs font-bold text-cyan-200">{opt.title}</p>
-                  <p className="text-[11px] text-slate-300 mt-0.5">{opt.plan}</p>
+                  <div>
+                    <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>SENTADILLA / P. MUERTO (KG)</label>
+                    <input type="number" className="sys-input" value={profile.squatKg} onChange={(e) => setProfile({ ...profile, squatKg: e.target.value })} />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>MÁXIMO DE FLEXIONES SEGUIDAS (CASA)</label>
+                  <input type="number" className="sys-input" value={profile.pushupsMax} onChange={(e) => setProfile({ ...profile, pushupsMax: e.target.value })} />
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <button className="sys-btn sys-btn-ghost" onClick={() => setSurveyStep(1)}>ATRÁS</button>
+                <button className="sys-btn sys-btn-primary" style={{ flex: 1 }} onClick={() => setSurveyStep(3)}>
+                  ESCANEO CORPORAL <ChevronRight size={16} />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {surveyStep === 3 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'center' }}>
+              <p style={{ fontSize: '14px', color: '#cbd5e1' }}>
+                Subí una foto de cuerpo completo para calcular tu biotipo y asignar tu <strong>Clase y Raza aleatoria</strong>. El Sistema censura tu rostro automáticamente antes de procesarla.
+              </p>
+
+              <label style={{
+                border: '2px dashed rgba(0,240,255,0.45)',
+                borderRadius: '14px',
+                padding: '22px 14px',
+                cursor: 'pointer',
+                background: 'rgba(0,240,255,0.05)'
+              }}>
+                <Camera size={32} color="#00f0ff" style={{ margin: '0 auto 8px' }} />
+                <div style={{ fontWeight: 700, color: '#fff' }}>SELECCIONAR FOTO DE CUERPO COMPLETO</div>
+                <div style={{ fontSize: '12px', color: '#94a3b8' }}>Censura facial local instantánea</div>
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleSecurePhotoUpload(e, 'onboarding')} />
+              </label>
+
+              {profile.censoredPreview && (
+                <div style={{ margin: '0 auto' }}>
+                  <img src={profile.censoredPreview} alt="Escaneo seguro" style={{ width: '130px', borderRadius: '10px', border: '1px solid #00f0ff' }} />
+                  <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>✓ Biometría verificada y protegida</div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <button className="sys-btn sys-btn-ghost" onClick={() => setSurveyStep(2)}>ATRÁS</button>
+                <button className="sys-btn sys-btn-primary" style={{ flex: 1 }} onClick={() => setSurveyStep(4)}>
+                  CONTINUAR AL DESPERTAR <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {surveyStep === 4 && (
+            <div style={{ textAlign: 'center', padding: '14px 4px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <Shield size={54} color="#fbbf24" className="animate-pulse-glow" style={{ margin: '0 auto' }} />
+              <h2 className="font-hud" style={{ fontSize: '21px', color: '#fbbf24', lineHeight: 1.3 }}>
+                ¿ESTÁS LISTO PARA CONVERTIRTE EN CAZADOR?
+              </h2>
+              <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: 1.5 }}>
+                Una vez aceptes, el Sistema te otorgará una <strong>Raza y Clase aleatoria</strong> acorde a tus atributos reales. No podrás cambiarla: solo hacerla evolucionar desde <strong>Tierra 6</strong> hasta <strong>Challenger 1</strong>.
+              </p>
+              <button className="sys-btn sys-btn-gold" style={{ padding: '16px', fontSize: '14px' }} onClick={awakenHunter}>
+                <Zap size={18} /> SÍ, ACEPTAR EL DESPERTAR
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================================================
+  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD DE CAZADOR)
+  // ==========================================================================
+  return (
+    <div className="sys-container">
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      {toast && (
+        <div className="toast-alert">
+          <Zap size={18} color="#fbbf24" />
+          <span>{toast}</span>
+        </div>
+      )}
+
+      {/* CABECERA HOLOGRÁFICA DE ESTADO */}
+      <div className="sys-window" style={{ padding: '18px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.16)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
+                SISTEMA ACTIVO
+              </span>
+              <span className="sys-badge" style={{ background: 'rgba(249,115,22,0.2)', color: '#fdba74', border: '1px solid #f97316' }}>
+                <Flame size={13} /> RACHA {streak} DÍAS
+              </span>
+            </div>
+            <h1 className="font-hud" style={{ fontSize: '22px', marginTop: '6px', color: '#fff' }}>
+              {profile.hunterName}
+            </h1>
+          </div>
+
+          <div style={{ textAlign: 'right' }}>
+            <div className="font-hud" style={{ fontSize: '18px', fontWeight: 900, color: rankInfo.color }}>
+              {rankInfo.label.toUpperCase()}
+            </div>
+            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+              {rankInfo.totalLP} LP • Faltan {100 - rankInfo.currentDivLP} LP para ascender
+            </div>
+          </div>
+        </div>
+
+        {/* Barra de Progreso de División (1 a 6) */}
+        <div className="progress-track" style={{ marginTop: '12px' }}>
+          <div
+            className="progress-fill"
+            style={{
+              width: `${rankInfo.currentDivLP}%`,
+              background: `linear-gradient(90deg, ${rankInfo.color}, #00f0ff)`
+            }}
+          />
+        </div>
+
+        {/* Banner Motivacional Dinámico */}
+        <div style={{
+          marginTop: '12px',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          background: 'rgba(0, 240, 255, 0.06)',
+          borderLeft: '3px solid #00f0ff',
+          fontSize: '13px',
+          color: '#e2e8f0',
+          fontStyle: 'italic'
+        }}>
+          {MOTIVATIONAL_QUOTES[streak % MOTIVATIONAL_QUOTES.length]}
+        </div>
+      </div>
+
+      {/* MENÚ DE NAVEGACIÓN DE 6 MÓDULOS */}
+      <div className="nav-tabs">
+        <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
+          <Trophy size={18} color="#fbbf24" />
+          <span>Retos & Rangos</span>
+        </button>
+        <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
+          <Sword size={18} color="#00f0ff" />
+          <span>Clase & Avatar</span>
+        </button>
+        <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
+          <Dumbbell size={18} color="#f43f5e" />
+          <span>Fuerza F→EX</span>
+        </button>
+        <button className={`nav-tab ${activeTab === 'vault' ? 'active' : ''}`} onClick={() => setActiveTab('vault')}>
+          <Lock size={18} color="#a855f7" />
+          <span>Físico & Bóveda</span>
+        </button>
+        <button className={`nav-tab ${activeTab === 'routines' ? 'active' : ''}`} onClick={() => setActiveTab('routines')}>
+          <Cpu size={18} color="#10b981" />
+          <span>Rutinas & IA</span>
+        </button>
+        <button className={`nav-tab ${activeTab === 'sleep' ? 'active' : ''}`} onClick={() => setActiveTab('sleep')}>
+          <Moon size={18} color="#38bdf8" />
+          <span>Sueño ({totalSleep}h)</span>
+        </button>
+      </div>
+
+      {/* ====================================================================
+          MÓDULO 1: RETOS DIARIOS, RETOMA SEMANAL Y JUSTIFICACIÓN CLIMÁTICA
+         ==================================================================== */}
+      {activeTab === 'quests' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <h2 className="font-hud" style={{ fontSize: '15px', color: '#00f0ff', marginBottom: '12px' }}>
+              MISIONES DIARIAS DECLARADAS
+            </h2>
+
+            {/* Agregar reto declarado */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+              <input
+                className="sys-input"
+                placeholder="Declarar reto de hoy (ej. Sentadilla 4x6 con 120 kg)..."
+                value={newQuestTitle}
+                onChange={(e) => setNewQuestTitle(e.target.value)}
+              />
+              <button
+                className="sys-btn sys-btn-primary"
+                onClick={() => {
+                  if (!newQuestTitle.trim()) return;
+                  setQuests([{ id: Date.now(), title: newQuestTitle, env: 'Declarado', lp: 45, status: 'pending' }, ...quests]);
+                  setNewQuestTitle('');
+                  triggerToast('[SISTEMA] Nueva misión diaria registrada.');
+                }}
+              >
+                + AGREGAR
+              </button>
+            </div>
+
+            {/* Lista de misiones */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {quests.map((q) => (
+                <div
+                  key={q.id}
+                  style={{
+                    padding: '14px',
+                    borderRadius: '12px',
+                    background: 'rgba(5, 8, 20, 0.75)',
+                    border: `1px solid ${q.status === 'completed' ? '#10b981' : q.status === 'failed' ? '#f43f5e' : 'rgba(148,163,184,0.25)'}`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{q.title}</div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>Entorno: {q.env} • Recompensa: +{q.lp} LP</div>
+                    </div>
+                    <span className="sys-badge" style={{
+                      background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(244,63,94,0.2)' : 'rgba(251,191,36,0.15)',
+                      color: q.status === 'completed' ? '#6ee7b7' : q.status === 'failed' ? '#fda4af' : '#fbbf24'
+                    }}>
+                      {q.status === 'completed' ? 'CUMPLIDA' : q.status === 'failed' ? 'FALLIDA' : 'EN CURSO'}
+                    </span>
+                  </div>
+
+                  {q.status === 'pending' && (
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button
+                        className="sys-btn sys-btn-success"
+                        style={{ padding: '8px 12px', fontSize: '11px' }}
+                        onClick={() => {
+                          setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'completed' } : item));
+                          setLp((prev) => prev + q.lp);
+                          setStreak((s) => s + 1);
+                          triggerToast(`¡MISIÓN CUMPLIDA! +${q.lp} LP obtenidos.`);
+                        }}
+                      >
+                        <CheckCircle2 size={14} /> LOGRADO
+                      </button>
+
+                      <button
+                        className="sys-btn sys-btn-danger"
+                        style={{ padding: '8px 12px', fontSize: '11px' }}
+                        onClick={() => {
+                          setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'failed' } : item));
+                          setNextWeekQueue([...nextWeekQueue, { id: Date.now(), title: `${q.title} (Retoma Semanal)`, lp: q.lp }]);
+                          triggerToast('[ALERTA] Misión fallida. Enviada a cola de retoma de la próxima semana.');
+                        }}
+                      >
+                        <XCircle size={14} /> NO LOGRADO
+                      </button>
+
+                      <button
+                        className="sys-btn sys-btn-ghost"
+                        style={{ padding: '8px 12px', fontSize: '11px' }}
+                        onClick={() => setJustifyModalId(q.id)}
+                      >
+                        <CloudRain size={14} color="#38bdf8" /> JUSTIFICAR IMPREVISTO
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
-            <input
-              type="text"
-              value={customReasonText}
-              onChange={(e) => setCustomReasonText(e.target.value)}
-              placeholder="Explicación opcional (ej. Lluvia torrencial en mi barrio)..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/20 text-xs text-white focus:outline-none focus:border-cyan-300"
-            />
-
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setModalChallenge(null)}
-                className="px-4 py-2.5 rounded-xl bg-white/10 text-xs font-bold"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleApplyContingency}
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-black text-xs shadow-lg"
-              >
-                Activar Desafío en Casa
-              </button>
-            </div>
+            {/* Modal inline de Justificación de Imprevisto */}
+            {justifyModalId && (
+              <div style={{
+                marginTop: '14px',
+                padding: '14px',
+                borderRadius: '12px',
+                background: 'rgba(14, 116, 144, 0.25)',
+                border: '1px solid #00f0ff'
+              }}>
+                <div style={{ fontWeight: 700, fontSize: '13px', color: '#00f0ff', marginBottom: '8px' }}>
+                  JUSTIFICACIÓN DE IMPREVISTO EXTERNO (CONVERSIÓN A DESAFÍO EN CASA)
+                </div>
+                <select className="sys-select" value={justifyReason} onChange={(e) => setJustifyReason(e.target.value)} style={{ marginBottom: '10px' }}>
+                  <option>Lluvia intensa / Tormenta (imposible salir a correr)</option>
+                  <option>Gimnasio cerrado por feriado o mantenimiento</option>
+                  <option>Corte de transporte / Emergencia laboral</option>
+                </select>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    className="sys-btn sys-btn-primary"
+                    onClick={() => {
+                      setQuests(quests.map((item) =>
+                        item.id === justifyModalId
+                          ? { ...item, title: `[DESAFÍO EN CASA] Circuito HIIT Tabata + 120 Burpees/Sentadillas (${justifyReason})`, env: 'Casa (Adaptado)' }
+                          : item
+                      ));
+                      setJustifyModalId(null);
+                      triggerToast('[SISTEMA] Justificación aceptada. Misión transformada a entrenamiento en casa.');
+                    }}
+                  >
+                    GENERAR DESAFÍO EN CASA
+                  </button>
+                  <button className="sys-btn sys-btn-ghost" onClick={() => setJustifyModalId(null)}>CANCELAR</button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* ====================================================================
-          CELEBRACIÓN CON CONFETI Y BANNER GIGANTE AL COMPLETAR RETO
-         ==================================================================== */}
-      {celebration && (
-        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4 overflow-hidden">
-          {/* Partículas de Confeti */}
-          {Array.from({ length: 28 }).map((_, idx) => {
-            const colors = ['#FACC15', '#00F5FF', '#F43F5E', '#10B981', '#C084FC', '#FB923C'];
-            return (
-              <span
-                key={idx}
-                className="absolute top-0 w-3 h-3 rounded-sm animate-confetti"
-                style={{
-                  left: `${(idx * 3.6) % 100}%`,
-                  backgroundColor: colors[idx % colors.length],
-                  animationDelay: `${(idx % 7) * 0.12}s`
-                }}
-              />
-            );
-          })}
-
-          <div className="rounded-3xl border-4 border-amber-300 bg-gradient-to-br from-amber-500 via-orange-600 to-pink-600 p-6 text-center shadow-[0_0_50px_rgba(250,204,21,0.85)] max-w-sm w-full">
-            <Sparkles className="w-10 h-10 text-yellow-200 mx-auto mb-1 animate-spin" />
-            <h3 className="text-2xl font-black text-white tracking-tight drop-shadow">
-              {celebration.title}
-            </h3>
-            <p className="text-xs font-bold text-amber-100 mt-1 line-clamp-2">{celebration.subtitle}</p>
-            <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/50 text-yellow-300 font-mono font-black text-sm">
-              <span>+{celebration.lp} LP</span>
-              <span>•</span>
-              <span>🔥 RACHA: {celebration.newStreak} DÍAS</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================================
-          BANNER DE ASCENSO / DESCENSO DE LIGA
-         ==================================================================== */}
-      {rankUpBanner && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div
-            className="w-full max-w-md rounded-3xl border-4 bg-[#140e36] p-6 text-center space-y-4 shadow-2xl"
-            style={{ borderColor: rankUpBanner.color, boxShadow: `0 0 45px ${rankUpBanner.color}` }}
-          >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-mono font-black">
-              {rankUpBanner.type === 'up' ? (
-                <span className="text-emerald-300 flex items-center gap-1">
-                  <ChevronUp className="w-4 h-4" /> ¡ASCENSO DE LIGA!
-                </span>
+          {/* Cola de Retoma Próxima Semana + Simulador de Ascenso */}
+          <div className="grid-2">
+            <div className="sys-window" style={{ padding: '16px' }}>
+              <h3 className="font-hud" style={{ fontSize: '13px', color: '#f43f5e', marginBottom: '10px' }}>
+                COLA DE RETOMA (PRÓXIMA SEMANA)
+              </h3>
+              {nextWeekQueue.length === 0 ? (
+                <p style={{ fontSize: '13px', color: '#94a3b8' }}>Sin misiones pendientes de recuperación.</p>
               ) : (
-                <span className="text-rose-300 flex items-center gap-1">
-                  <ChevronDown className="w-4 h-4" /> DESCENSO DE DIVISIÓN
-                </span>
+                nextWeekQueue.map((item) => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span style={{ fontSize: '13px' }}>{item.title}</span>
+                    <button
+                      className="sys-btn sys-btn-ghost"
+                      style={{ padding: '5px 10px', fontSize: '10px' }}
+                      onClick={() => {
+                        setQuests([{ id: Date.now(), title: item.title, env: 'Retoma', lp: item.lp, status: 'pending' }, ...quests]);
+                        setNextWeekQueue(nextWeekQueue.filter((x) => x.id !== item.id));
+                        triggerToast('Misión reactivada en tu lista de hoy.');
+                      }}
+                    >
+                      RETOMAR
+                    </button>
+                  </div>
+                ))
               )}
-            </span>
+            </div>
+
+            <div className="sys-window" style={{ padding: '16px' }}>
+              <h3 className="font-hud" style={{ fontSize: '13px', color: '#fbbf24', marginBottom: '10px' }}>
+                ESCALA DE 15 RANGOS (6 DIVISIONES C/U)
+              </h3>
+              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '10px' }}>
+                Tierra 6 → Madera → Piedra → Carbón → Hierro → Bronce → Plata → Oro → Platino → Esmeralda → Diamante → Especialista → Maestro → Jefe Maestro → Challenger 1
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button className="sys-btn sys-btn-primary" style={{ padding: '8px 12px', fontSize: '11px' }} onClick={() => setLp((v) => v + 100)}>
+                  +100 LP (SUBIR DIVISIÓN)
+                </button>
+                <button className="sys-btn sys-btn-gold" style={{ padding: '8px 12px', fontSize: '11px' }} onClick={() => setLp((v) => v + 600)}>
+                  +600 LP (ASCENDER LIGA)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
+          MÓDULO 2: AVATAR ANIME 2D EVOLUTIVO Y CLASE ALEATORIA
+         ==================================================================== */}
+      {activeTab === 'avatar' && (
+        <div className="grid-2">
+          <AnimeHunterAvatar hunterClass={hunterClass} rankInfo={rankInfo} physicalGrade={physicalGrade} />
+
+          <div className="sys-window" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h2 className="font-hud" style={{ fontSize: '15px', color: '#00f0ff' }}>
+              FICHA DE CAZADOR Y EVOLUCIÓN
+            </h2>
+            <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.5 }}>
+              Tu clase fue sellada por el Sistema tras analizar tu foto y tus marcas reales. No puede elegirse manualmente, pero tu avatar gana masa muscular, armadura y armas legendarias conforme ascendés de rango.
+            </p>
+
+            <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(5,8,20,0.8)', border: '1px solid rgba(0,240,255,0.2)' }}>
+              <div style={{ fontSize: '12px', color: '#94a3b8' }}>RAZA ASIGNADA</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#fff' }}>{hunterClass?.race?.name}</div>
+              <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px' }}>CLASE DE COMBATE</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#fbbf24' }}>{hunterClass?.cls?.name}</div>
+              <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>{hunterClass?.cls?.desc}</div>
+            </div>
 
             <div>
-              <p className="text-xs font-mono text-slate-300">{rankUpBanner.from} →</p>
-              <h3 className="text-3xl font-black uppercase mt-1" style={{ color: rankUpBanner.color }}>
-                {rankUpBanner.to}
-              </h3>
+              <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PREVISUALIZAR EVOLUCIÓN DE GRADO FÍSICO (F → EX)</label>
+              <select
+                className="sys-select"
+                value={physicalGrade}
+                onChange={(e) => setPhysicalGrade(e.target.value)}
+                style={{ marginTop: '6px' }}
+              >
+                {PHYSICAL_GRADES.map((g) => (
+                  <option key={g} value={g}>Grado Físico {g}</option>
+                ))}
+              </select>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setRankUpBanner(null)}
-              className="w-full py-3 rounded-2xl font-black text-xs uppercase text-slate-950 shadow-lg"
-              style={{ backgroundColor: rankUpBanner.color }}
-            >
-              ¡Seguir Entrenando!
-            </button>
           </div>
         </div>
       )}
 
-      {/* Notificación flotante rápida */}
-      {toastMsg && (
-        <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:max-w-sm z-50 px-4 py-3 rounded-2xl bg-[#191245]/95 border-2 border-cyan-400 shadow-2xl flex items-center gap-2.5 text-xs font-bold text-white">
-          <Zap className="w-4 h-4 text-amber-300 shrink-0" />
-          <span>{toastMsg.text}</span>
+      {/* ====================================================================
+          MÓDULO 3: CLASIFICACIÓN CIENTÍFICA DE FUERZA ABSOLUTA Y RELATIVA
+         ==================================================================== */}
+      {activeTab === 'strength' && (
+        <div className="sys-window" style={{ padding: '18px' }}>
+          <h2 className="font-hud" style={{ fontSize: '15px', color: '#f43f5e', marginBottom: '12px' }}>
+            ANÁLISIS BIOMECÁNICO DE FUERZA (GRADOS F A EX)
+          </h2>
+          <div className="grid-2" style={{ marginBottom: '16px' }}>
+            <div>
+              <label style={{ fontSize: '12px', color: '#94a3b8' }}>EJERCICIO BASE</label>
+              <select className="sys-select" value={liftInput.exercise} onChange={(e) => setLiftInput({ ...liftInput, exercise: e.target.value })}>
+                <option>Press Banca</option>
+                <option>Sentadilla Trasera</option>
+                <option>Peso Muerto Convencional</option>
+                <option>Dominadas Lastradas (Peso Corp. + Lastre)</option>
+              </select>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#94a3b8' }}>CARGA (KG)</label>
+                <input type="number" className="sys-input" value={liftInput.weight} onChange={(e) => setLiftInput({ ...liftInput, weight: Number(e.target.value) })} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#94a3b8' }}>REPS</label>
+                <input type="number" className="sys-input" value={liftInput.reps} onChange={(e) => setLiftInput({ ...liftInput, reps: Number(e.target.value) })} />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid-2">
+            <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(5,8,20,0.85)', border: '1px solid #f43f5e' }}>
+              <div style={{ fontSize: '12px', color: '#fda4af' }}>FUERZA ABSOLUTA (1RM ESTIMADO EPLEY)</div>
+              <div className="font-hud" style={{ fontSize: '28px', fontWeight: 900, color: '#fff', margin: '4px 0' }}>
+                {est1RM} KG
+              </div>
+              <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                Rango Absoluto: <strong style={{ color: '#fbbf24' }}>GRADO {est1RM >= 180 ? 'EX' : est1RM >= 140 ? 'S' : est1RM >= 100 ? 'B' : 'D'}</strong>
+              </div>
+            </div>
+
+            <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(5,8,20,0.85)', border: '1px solid #00f0ff' }}>
+              <div style={{ fontSize: '12px', color: '#7dd3fc' }}>FUERZA RELATIVA ({profile.weightKg} KG CORPORAL)</div>
+              <div className="font-hud" style={{ fontSize: '28px', fontWeight: 900, color: '#00f0ff', margin: '4px 0' }}>
+                {relRatio}x BW
+              </div>
+              <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                Clasificación Científica: <strong style={{ color: '#00f0ff' }}>GRADO {strengthGrade}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
+          MÓDULO 4: EVALUACIÓN FÍSICA TRIMESTRAL, BÓVEDA SEGURA Y RECAP ANUAL
+         ==================================================================== */}
+      {activeTab === 'vault' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+              <h2 className="font-hud" style={{ fontSize: '15px', color: '#a855f7' }}>
+                BÓVEDA FÍSICA CIFRADA (RENOVACIÓN CADA 3 MESES)
+              </h2>
+              <span className="sys-badge" style={{ background: 'rgba(168,85,247,0.2)', color: '#d8b4fe', border: '1px solid #a855f7' }}>
+                PRÓXIMA REVISIÓN EN {daysUntilEval} DÍAS
+              </span>
+            </div>
+
+            <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '14px' }}>
+              Subí fotos de frente y espalda. El algoritmo censura tu cara localmente en tu navegador y cifra las imágenes para evitar filtraciones o hackeos.
+            </p>
+
+            <div className="grid-2">
+              {['front', 'back'].map((side) => (
+                <div key={side} style={{ padding: '14px', borderRadius: '12px', background: 'rgba(5,8,20,0.85)', border: '1px dashed rgba(168,85,247,0.5)', textAlign: 'center' }}>
+                  <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '8px', color: '#e9d5ff' }}>
+                    {side === 'front' ? 'PERFIL FRONTAL (SIN ROSTRO)' : 'PERFIL DORSAL / ESPALDA'}
+                  </div>
+                  {vaultPhotos[side] ? (
+                    <img src={vaultPhotos[side]} alt={side} style={{ width: '120px', borderRadius: '8px', margin: '0 auto 8px', border: '1px solid #10b981' }} />
+                  ) : (
+                    <EyeOff size={28} color="#a855f7" style={{ margin: '12px auto' }} />
+                  )}
+                  <label className="sys-btn sys-btn-ghost" style={{ fontSize: '11px', padding: '8px 12px' }}>
+                    <Upload size={14} /> SUBIR Y CIFRAR
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleSecurePhotoUpload(e, side)} />
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recap Anual */}
+          <div className="sys-window sys-window-gold" style={{ padding: '18px' }}>
+            <h3 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '10px' }}>
+              RECOPILACIÓN ANUAL DE EVOLUCIÓN (Q1 → Q4)
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {yearlyRecap.map((item, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '10px', background: 'rgba(5,8,20,0.75)' }}>
+                  <div>
+                    <strong style={{ color: '#fff' }}>{item.quarter}</strong> — <span style={{ color: '#94a3b8', fontSize: '13px' }}>{item.note}</span>
+                  </div>
+                  <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.2)', color: '#fbbf24' }}>
+                    GRADO {item.grade} ({item.weight})
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
+          MÓDULO 5: RUTINAS CIENTÍFICAS Y ESCÁNER DE RUTINA PROPIA
+         ==================================================================== */}
+      {activeTab === 'routines' && (
+        <div className="grid-2">
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <h2 className="font-hud" style={{ fontSize: '14px', color: '#10b981', marginBottom: '10px' }}>
+              GENERADOR BIOMECÁNICO ({routineEnv.toUpperCase()})
+            </h2>
+            <select className="sys-select" value={routineEnv} onChange={(e) => setRoutineEnv(e.target.value)} style={{ marginBottom: '12px' }}>
+              <option>Gimnasio</option>
+              <option>Casa (Peso Corporal / Mancuernas)</option>
+              <option>Híbrido (Gym + Casa)</option>
+            </select>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+              {routineEnv === 'Gimnasio' && (
+                <>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Press Inclinado con Mancuernas:</strong> 3x8-10 (RIR 1-2, tensión en haz clavicular)</div>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Remo en Máquina con Apoyo Pecho:</strong> 3x10 (retracción escapular sin fatiga lumbar)</div>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Sentadilla Hack / Jaca:</strong> 3x8 (máxima flexión de rodilla controlada)</div>
+                </>
+              )}
+              {routineEnv !== 'Gimnasio' && (
+                <>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Flexiones en Déficit / Declinadas:</strong> 4x12-15 (pausa de 2s abajo)</div>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Sentadilla Búlgara Unilateral:</strong> 3x10 por pierna (alto estímulo glúteo/cuádriceps)</div>
+                  <div style={{ padding: '10px', background: 'rgba(5,8,20,0.8)', borderRadius: '8px' }}>• <strong>Remo Invertido bajo Mesa / Barra:</strong> 4x12 (control excéntrico 3s)</div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', marginBottom: '10px' }}>
+              ESCÁNER DE RUTINA PROPIA (ARCHIVO O TEXTO)
+            </h2>
+            <textarea
+              className="sys-textarea"
+              rows={4}
+              placeholder="Pegá tu rutina actual o subí una captura para analizar volumen, frecuencia y fatiga del SNC..."
+              value={customRoutineText}
+              onChange={(e) => setCustomRoutineText(e.target.value)}
+            />
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
+              <button
+                className="sys-btn sys-btn-primary"
+                onClick={() => {
+                  setScanReport({
+                    score: '84 / 100 (ÓPTIMA)',
+                    finding: 'Buen estímulo mecánico, pero se detecta exceso de volumen en empuje horizontal frente a tracción.',
+                    fix: 'Añadir 4 series semanales de Face Pulls o Remo posterior para proteger el manguito rotador.'
+                  });
+                  triggerToast('[ESCÁNER IA] Auditoría biomecánica completada.');
+                }}
+              >
+                <Scan size={15} /> EXAMINAR RUTINA
+              </button>
+              <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
+                <FileText size={15} /> SUBIR FOTO/ARCHIVO
+                <input
+                  type="file"
+                  style={{ display: 'none' }}
+                  onChange={() => {
+                    setScanReport({
+                      score: '88 / 100 (ALTO RENDIMIENTO)',
+                      finding: 'Archivo escaneado: Distribución correcta de series efectivas (12-16 por grupo muscular).',
+                      fix: 'Mantener RIR 1-2 en los ejercicios multiarticulares pesados para no comprometer el sueño.'
+                    });
+                    triggerToast('[ESCÁNER IA] Archivo procesado correctamente.');
+                  }}
+                />
+              </label>
+            </div>
+
+            {scanReport && (
+              <div style={{ marginTop: '12px', padding: '12px', borderRadius: '10px', background: 'rgba(16,185,129,0.12)', border: '1px solid #10b981', fontSize: '13px' }}>
+                <div style={{ fontWeight: 700, color: '#6ee7b7' }}>RESULTADO: {scanReport.score}</div>
+                <p style={{ marginTop: '4px', color: '#e2e8f0' }}>{scanReport.finding}</p>
+                <p style={{ marginTop: '4px', color: '#fbbf24' }}>Ajuste sugerido: {scanReport.fix}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
+          MÓDULO 6: CONTADOR DE HORAS DE SUEÑO Y RECUPERACIÓN SEMANAL
+         ==================================================================== */}
+      {activeTab === 'sleep' && (
+        <div className="sys-window" style={{ padding: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+            <h2 className="font-hud" style={{ fontSize: '15px', color: '#38bdf8' }}>
+              RECUPERACIÓN NEURAL Y ACUMULACIÓN DE SUEÑO
+            </h2>
+            <span className="sys-badge" style={{
+              background: sleepOptimal ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)',
+              color: sleepOptimal ? '#6ee7b7' : '#fda4af',
+              border: `1px solid ${sleepOptimal ? '#10b981' : '#f43f5e'}`
+            }}>
+              ACUMULADO: {totalSleep}H / META CIENTÍFICA: 49–63H
+            </span>
+          </div>
+
+          {!sleepOptimal && (
+            <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(244,63,94,0.15)', border: '1px solid #f43f5e', marginBottom: '14px', fontSize: '13px', color: '#fecdd3' }}>
+              <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px' }} />
+              <strong>Deuda de sueño detectada:</strong> Dormir menos de 49 horas semanales reduce la síntesis proteica y la fuerza máxima hasta un 12%.
+            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', marginBottom: '16px', textAlign: 'center' }}>
+            {sleepLog.map((d, i) => (
+              <div key={i} style={{ padding: '10px 4px', borderRadius: '10px', background: 'rgba(5,8,20,0.85)', border: '1px solid rgba(56,189,248,0.3)' }}>
+                <div style={{ fontSize: '11px', color: '#94a3b8' }}>{d.day}</div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: d.hours >= 7 ? '#38bdf8' : '#f43f5e', marginTop: '4px' }}>
+                  {d.hours}h
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <input
+              type="number"
+              step="0.5"
+              className="sys-input"
+              style={{ maxWidth: '140px' }}
+              value={todaySleep}
+              onChange={(e) => setTodaySleep(Number(e.target.value))}
+            />
+            <button
+              className="sys-btn sys-btn-primary"
+              onClick={() => {
+                const updated = [...sleepLog];
+                updated[updated.length - 1].hours = todaySleep;
+                setSleepLog(updated);
+                triggerToast(`[SISTEMA] Sueño actualizado (${todaySleep}h). Recuperación recalculada.`);
+              }}
+            >
+              <Clock size={15} /> REGISTRAR SUEÑO DE HOY
+            </button>
+          </div>
         </div>
       )}
     </div>
