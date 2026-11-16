@@ -6,7 +6,7 @@ import {
   ChevronRight, Sword, Clock, Save, Check,
   UserCheck, Users, MapPin, Play, BookOpen, Plus, Crosshair,
   LogIn, KeyRound, Mail, UserPlus, Settings, Trash2,
-  Heart, Building2, Send, RotateCcw, Image as ImageIcon
+  Heart, Building2, Send, RotateCcw
 } from 'lucide-react';
 
 // ============================================================================
@@ -1611,6 +1611,46 @@ function LegendaryGachaCanvas({ gender, stage }) {
 // ============================================================================
 // TARJETA ANIME FANTASY RPG CHARACTER + EVOLUCIÓN INFINITA
 // ============================================================================
+const GACHA_STYLES = [
+  {
+    id: 'original',
+    label: 'Original',
+    filter: 'none',
+    auraOverlay:
+      'radial-gradient(circle at 20% 25%, rgba(0, 234, 255, 0.16) 0%, transparent 45%),' +
+      'radial-gradient(circle at 80% 20%, rgba(150, 60, 255, 0.18) 0%, transparent 48%),' +
+      'radial-gradient(circle at 50% 85%, rgba(255, 62, 157, 0.12) 0%, transparent 50%)',
+    borderColor: 'var(--neon-blue)',
+  },
+  {
+    id: 'cosmic_void',
+    label: 'Eclipse Cósmico',
+    filter: 'hue-rotate(38deg) saturate(1.35) contrast(1.08)',
+    auraOverlay:
+      'radial-gradient(circle at 50% 35%, rgba(150, 60, 255, 0.36) 0%, transparent 58%),' +
+      'radial-gradient(circle at 80% 75%, rgba(255, 62, 157, 0.28) 0%, transparent 50%)',
+    borderColor: 'var(--neon-purple)',
+  },
+  {
+    id: 'crimson_awakening',
+    label: 'Despertar Carmesí',
+    filter: 'hue-rotate(155deg) saturate(1.45) contrast(1.12)',
+    auraOverlay:
+      'radial-gradient(circle at 50% 40%, rgba(244, 63, 94, 0.34) 0%, transparent 60%),' +
+      'radial-gradient(circle at 20% 80%, rgba(255, 212, 90, 0.25) 0%, transparent 50%)',
+    borderColor: 'var(--neon-pink)',
+  },
+  {
+    id: 'celestial_overdrive',
+    label: 'Sobrecarga Astral',
+    filter: 'hue-rotate(-28deg) brightness(1.1) saturate(1.3)',
+    auraOverlay:
+      'radial-gradient(circle at 50% 25%, rgba(0, 234, 255, 0.38) 0%, transparent 55%),' +
+      'radial-gradient(circle at 50% 80%, rgba(255, 212, 90, 0.26) 0%, transparent 55%)',
+    borderColor: 'var(--neon-gold)',
+  },
+];
+
 function JrpgFantasyPortrait({
   hunterClass,
   hunterGrade,
@@ -1618,9 +1658,7 @@ function JrpgFantasyPortrait({
   classEvolution,
   gender,
   onToggleGender,
-  passiveClassBonus,
-  customGachaArt,
-  onUploadGachaArt
+  passiveClassBonus
 }) {
   const cls = hunterClass?.cls || {
     name: 'Centinela Infinito',
@@ -1637,14 +1675,15 @@ function JrpgFantasyPortrait({
     : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg', '/1000272220.png'];
 
   const [candidateIdx, setCandidateIdx] = useState(0);
+  const [styleIdx, setStyleIdx] = useState(0);
 
   useEffect(() => {
     setCandidateIdx(0);
   }, [gender]);
 
-  const uploadedSrc = customGachaArt?.[gender] || null;
-  const staticPath = candidateIdx < candidateSources.length ? candidateSources[candidateIdx] : null;
-  const activeImageSrc = uploadedSrc || staticPath;
+  const activeImageSrc = candidateIdx < candidateSources.length ? candidateSources[candidateIdx] : null;
+  const activeStyle = GACHA_STYLES[styleIdx];
+  const isStylized = styleIdx !== 0;
   const starCount = Math.min(6, Math.max(4, 3 + stage));
 
   return (
@@ -1681,20 +1720,26 @@ function JrpgFantasyPortrait({
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
               className="rpg-button"
-              title="Cargar ilustración personalizada desde galería"
               style={{ borderColor: 'var(--neon-gold)', boxShadow: '0 0 12px rgba(255, 212, 90, 0.35)' }}
             >
-              <ImageIcon size={12} color="#ffd45a" /> BASE GACHA
-              <input
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={(e) => onUploadGachaArt && onUploadGachaArt(e, gender)}
-              />
-            </label>
+              <Sparkles size={12} color="#ffd45a" /> ESTILIZAR ({activeStyle.label})
+            </button>
+
+            {isStylized && (
+              <button
+                type="button"
+                onClick={() => setStyleIdx(0)}
+                className="rpg-button"
+                style={{ borderColor: 'var(--neon-pink)', boxShadow: '0 0 12px rgba(255, 62, 157, 0.4)' }}
+              >
+                <RotateCcw size={12} color="#ff3e9d" /> VOLVER AL ORIGINAL
+              </button>
+            )}
 
             <button
               type="button"
@@ -1706,41 +1751,41 @@ function JrpgFantasyPortrait({
           </div>
         </div>
 
-        {/* CONTENEDOR CON PULSO DE ENERGÍA CINEMATOGRÁFICO */}
+        {/* CONTENEDOR CON PULSO DE ENERGÍA Y ESTILIZACIÓN DEL PERSONAJE */}
         <div
           className="energy-effect"
           style={{
             borderRadius: '16px',
             overflow: 'hidden',
             position: 'relative',
-            border: '1.5px solid var(--neon-blue)',
+            border: `1.5px solid ${activeStyle.borderColor}`,
             background: 'var(--bg-card)'
           }}
         >
-          {activeImageSrc ? (
-            <img
-              src={activeImageSrc}
-              alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
-              onError={() => !uploadedSrc && setCandidateIdx((prev) => prev + 1)}
-              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
-            />
-          ) : (
-            <LegendaryGachaCanvas
-              gender={gender}
-              stage={stage}
-            />
-          )}
+          <div style={{ filter: activeStyle.filter, transition: 'filter 0.45s ease' }}>
+            {activeImageSrc ? (
+              <img
+                src={activeImageSrc}
+                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
+                onError={() => setCandidateIdx((prev) => prev + 1)}
+                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
+              />
+            ) : (
+              <LegendaryGachaCanvas
+                gender={gender}
+                stage={stage}
+              />
+            )}
+          </div>
 
-          {/* HALO DE ENERGÍA NEÓN PÚRPURA / AZUL / ROSA */}
+          {/* HALO DE ENERGÍA NEÓN DINÁMICO SEGÚN ESTILO */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
               pointerEvents: 'none',
-              background:
-                'radial-gradient(circle at 20% 25%, rgba(0, 234, 255, 0.16) 0%, transparent 45%),' +
-                'radial-gradient(circle at 80% 20%, rgba(150, 60, 255, 0.18) 0%, transparent 48%),' +
-                'radial-gradient(circle at 50% 85%, rgba(255, 62, 157, 0.12) 0%, transparent 50%)'
+              background: activeStyle.auraOverlay,
+              transition: 'background 0.45s ease'
             }}
           />
 
@@ -2440,7 +2485,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     censoredPreview: null,
   });
 
-  const [customGachaArt, setCustomGachaArt] = useState(() => initialData?.customGachaArt || { male: null, female: null });
+  useEffect(() => {
+    const lvl0ResetFlag = `pex_lvl0_init_v13_${currentUser.email}`;
+    if (!localStorage.getItem(lvl0ResetFlag)) {
+      setExp(0);
+      localStorage.setItem(lvl0ResetFlag, 'true');
+    }
+  }, [currentUser.email]);
   const [hunterClass, setHunterClass] = useState(() => initialData?.hunterClass || null);
   const [savedLifts, setSavedLifts] = useState(() => initialData?.savedLifts || ZERO_LIFTS);
 
@@ -2523,7 +2574,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       const payload = {
         awakened,
         profile,
-        customGachaArt,
         hunterClass,
         savedLifts,
         lp,
@@ -2564,7 +2614,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
   }, [
-    storageKey, awakened, profile, customGachaArt, hunterClass, savedLifts,
+    storageKey, awakened, profile, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
     friends, quests, nextWeekQueue, sleepLog, yearlyRecap
@@ -2573,30 +2623,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const triggerToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 4600);
-  };
-
-  // CARGA Y COMPRESIÓN LIGERA DE BASE GACHA DESDE GALERÍA
-  const handleUploadGachaArt = (e, targetGender) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const img = new Image();
-      img.onload = () => {
-        const c = document.createElement('canvas');
-        const maxW = 720;
-        const scale = Math.min(1, maxW / img.width);
-        c.width = Math.round(img.width * scale);
-        c.height = Math.round(img.height * scale);
-        const ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0, c.width, c.height);
-        const compressedUrl = c.toDataURL('image/jpeg', 0.88);
-        setCustomGachaArt((prev) => ({ ...prev, [targetGender]: compressedUrl }));
-        triggerToast(`¡Base Gacha ${targetGender === 'female' ? 'Femenina' : 'Masculina'} aplicada con éxito!`);
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
   };
 
   const resetProgressToZero = () => {
@@ -2622,14 +2648,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       { id: Date.now() + 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending' },
     ]);
     prevGradeRef.current = 'F';
-    triggerToast('[SISTEMA REINICIADO] Todos tus stats, racha (0d), nivel (1), LP (0) y cargas volvieron a 0.');
+    triggerToast('[SISTEMA REINICIADO] Todos tus stats, racha (0d), nivel (0), LP (0) y cargas volvieron a 0.');
   };
 
-  const level = Math.max(1, Math.floor(exp / 100) + 1);
+  const level = Math.floor(exp / 100);
   const expInLevel = exp % 100;
   const classEvolution = getInfiniteClassEvolution(hunterClass?.cls?.name, level);
 
-  const passiveClassBonus = 30 + (level - 1) * 6 + builtBuildings.length * 12;
+  const passiveClassBonus = 30 + level * 6 + builtBuildings.length * 12;
   const gearBonusPower = unlockedInventory.reduce((acc, item) => acc + (item.power || 0), 0);
   const hunterCombatPower = Math.round(
     (gradeData.bench1RM + gradeData.squat1RM + gradeData.deadlift1RM) * 0.45 +
@@ -2809,9 +2835,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       },
     };
 
-    const prevLevel = Math.max(1, Math.floor(exp / 100) + 1);
+    const prevLevel = Math.floor(exp / 100);
     const nextTotalExp = exp + gainedExp;
-    const nextLevel = Math.max(1, Math.floor(nextTotalExp / 100) + 1);
+    const nextLevel = Math.floor(nextTotalExp / 100);
 
     setSavedLifts(updated);
     setExp(nextTotalExp);
@@ -3202,7 +3228,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 ¿ESTÁS LISTO PARA INICIAR DESDE 0 COMO CAZADOR?
               </h2>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: 1.5 }}>
-                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se desplegará tu tarjeta <strong>Anime Fantasy RPG</strong> con iluminación Neon Blue & Gold.
+                Comenzarás en <strong>Nivel 0</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se desplegará tu tarjeta <strong>Anime Fantasy RPG</strong> con iluminación Neon Blue & Gold.
               </p>
               <button className="sys-btn sys-btn-gold" style={{ padding: '16px', fontSize: '13px' }} onClick={awakenHunter}>
                 <Zap size={18} /> SÍ, COMENZAR DESDE 0
@@ -3371,8 +3397,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               gender={profile.gender || 'male'}
               onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
               passiveClassBonus={passiveClassBonus}
-              customGachaArt={customGachaArt}
-              onUploadGachaArt={handleUploadGachaArt}
             />
           </div>
 
