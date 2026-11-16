@@ -10,22 +10,33 @@ import {
 } from 'lucide-react';
 
 // ============================================================================
-// ESTILOS INTEGRADOS (LEGENDARY GACHA RPG HUD + NEON BLUE & GOLD LIGHTING)
+// ESTILOS INTEGRADOS (ANIME FANTASY RPG - VISUAL SYSTEM)
 // ============================================================================
 const SYSTEM_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
+  /* ANIME FANTASY RPG - VISUAL SYSTEM */
   :root {
-    --bg-void: #03050c;
-    --bg-panel: rgba(9, 14, 28, 0.94);
-    --cyan-glow: #00f0ff;
-    --gold-rank: #fbbf24;
+    --bg-main: #050817;
+    --bg-card: #0b1530;
+    --bg-panel: #101b38;
+
+    --neon-blue: #00eaff;
+    --neon-purple: #963cff;
+    --neon-gold: #ffd45a;
+    --neon-pink: #ff3e9d;
+
+    --text-main: #f4f6ff;
+    --text-secondary: #aab9d5;
+
+    --bg-void: var(--bg-main);
+    --cyan-glow: var(--neon-blue);
+    --gold-rank: var(--neon-gold);
     --gold-deep: #b45309;
     --crimson-vein: #be123c;
     --emerald-ok: #10b981;
-    --rose-love: #fb7185;
-    --text-main: #e2e8f0;
-    --text-dim: #94a3b8;
+    --rose-love: var(--neon-pink);
+    --text-dim: var(--text-secondary);
   }
 
   * {
@@ -34,14 +45,13 @@ const SYSTEM_CSS = `
     padding: 0;
   }
 
+  /* Fondo RPG */
   body {
-    background-color: var(--bg-void);
-    background-image:
-      radial-gradient(circle at 18% 12%, rgba(0, 240, 255, 0.14) 0%, transparent 45%),
-      radial-gradient(circle at 82% 85%, rgba(251, 191, 36, 0.12) 0%, transparent 48%),
-      linear-gradient(180deg, #02040a 0%, #070c1b 100%);
+    background:
+      radial-gradient(circle at 50% 35%,
+        #17265b 0%, #080d20 50%, #03050c 100%);
     color: var(--text-main);
-    font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Rajdhani', Georgia, serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -52,7 +62,7 @@ const SYSTEM_CSS = `
   }
 
   .font-souls {
-    font-family: 'Cinzel', serif;
+    font-family: 'Cinzel', Georgia, serif;
     letter-spacing: 0.08em;
   }
 
@@ -63,13 +73,13 @@ const SYSTEM_CSS = `
   }
 
   .sys-window {
-    background: var(--bg-panel);
+    background: linear-gradient(145deg, rgba(16, 27, 56, 0.94), rgba(6, 10, 25, 0.96));
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(0, 240, 255, 0.28);
+    border: 1px solid rgba(0, 234, 255, 0.32);
     box-shadow:
-      0 10px 34px rgba(0, 0, 0, 0.8),
-      inset 0 0 24px rgba(0, 240, 255, 0.06);
-    border-radius: 14px;
+      0 10px 34px rgba(0, 0, 0, 0.82),
+      inset 0 0 24px rgba(0, 234, 255, 0.08);
+    border-radius: 16px;
     position: relative;
     overflow: hidden;
   }
@@ -79,7 +89,105 @@ const SYSTEM_CSS = `
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold-rank), var(--cyan-glow), transparent);
+    background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-blue), var(--neon-gold), transparent);
+  }
+
+  /* Tarjetas de personajes */
+  .rpg-card {
+    position: relative;
+    background: linear-gradient(145deg, #101b38, #060a19);
+    border: 2px solid var(--neon-blue);
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow:
+      0 0 12px #00eaff66,
+      inset 0 0 25px #00eaff18;
+    overflow: hidden;
+  }
+
+  /* Iluminación cinematográfica */
+  .neon-glow {
+    text-shadow:
+      0 0 8px var(--neon-blue),
+      0 0 20px var(--neon-blue);
+  }
+
+  .neon-glow-gold {
+    text-shadow:
+      0 0 8px var(--neon-gold),
+      0 0 20px rgba(255, 212, 90, 0.65);
+  }
+
+  /* Botones RPG */
+  .rpg-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #101b38, #202c52);
+    color: var(--text-main);
+    border: 1px solid var(--neon-blue);
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 12px #00eaff55;
+    transition: 0.3s ease;
+  }
+
+  .rpg-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px #00eaffaa;
+  }
+
+  .rpg-button:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* Efecto dorado legendario */
+  .legendary {
+    border: 2px solid var(--neon-gold);
+    box-shadow:
+      0 0 12px #ffd45a88,
+      0 0 30px #ffd45a44,
+      inset 0 0 24px rgba(150, 60, 255, 0.16);
+  }
+
+  /* Animación de energía */
+  @keyframes energyPulse {
+    0%, 100% {
+      filter: brightness(1);
+      box-shadow: 0 0 10px #00eaff55;
+    }
+
+    50% {
+      filter: brightness(1.16);
+      box-shadow: 0 0 28px #00eaffaa, 0 0 18px rgba(150, 60, 255, 0.45);
+    }
+  }
+
+  .energy-effect {
+    animation: energyPulse 2.5s infinite ease-in-out;
+  }
+
+  /* Aparición cinematográfica */
+  @keyframes cinematicEntry {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .cinematic-entry {
+    animation: cinematicEntry .8s ease-out;
   }
 
   .sys-btn {
@@ -88,14 +196,18 @@ const SYSTEM_CSS = `
     justify-content: center;
     gap: 8px;
     padding: 11px 16px;
-    border-radius: 9px;
+    border-radius: 12px;
     font-family: 'Orbitron', sans-serif;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     border: 1px solid transparent;
+  }
+
+  .sys-btn:hover {
+    transform: translateY(-2px);
   }
 
   .sys-btn:active {
@@ -103,26 +215,27 @@ const SYSTEM_CSS = `
   }
 
   .sys-btn-primary {
-    background: linear-gradient(135deg, #0369a1 0%, #00f0ff 100%);
-    color: #030712;
-    box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);
+    background: linear-gradient(135deg, #101b38 0%, #0284c7 100%);
+    color: var(--text-main);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 14px #00eaff55;
   }
 
   .sys-btn-gold {
-    background: linear-gradient(135deg, #92400e 0%, #fbbf24 100%);
-    color: #090d16;
-    box-shadow: 0 0 18px rgba(251, 191, 36, 0.42);
+    background: linear-gradient(135deg, #92400e 0%, var(--neon-gold) 100%);
+    color: #050817;
+    box-shadow: 0 0 18px #ffd45a66;
   }
 
   .sys-btn-love {
-    background: linear-gradient(135deg, #9f1239 0%, #fb7185 100%);
+    background: linear-gradient(135deg, #9f1239 0%, var(--neon-pink) 100%);
     color: #fff;
-    box-shadow: 0 0 16px rgba(251, 113, 133, 0.35);
+    box-shadow: 0 0 16px rgba(255, 62, 157, 0.4);
   }
 
   .sys-btn-ghost {
-    background: rgba(15, 23, 42, 0.88);
-    border-color: rgba(148, 163, 184, 0.28);
+    background: rgba(16, 27, 56, 0.88);
+    border-color: rgba(170, 185, 213, 0.28);
     color: var(--text-main);
   }
 
@@ -140,21 +253,21 @@ const SYSTEM_CSS = `
 
   .sys-input, .sys-select, .sys-textarea {
     width: 100%;
-    background: rgba(4, 6, 12, 0.92);
-    border: 1px solid rgba(251, 191, 36, 0.32);
-    border-radius: 9px;
+    background: rgba(5, 8, 23, 0.92);
+    border: 1px solid rgba(0, 234, 255, 0.32);
+    border-radius: 10px;
     padding: 10px 13px;
-    color: #f8fafc;
+    color: var(--text-main);
     font-family: 'Rajdhani', sans-serif;
     font-size: 16px;
     font-weight: 600;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
   .sys-input:focus, .sys-select:focus, .sys-textarea:focus {
-    border-color: var(--cyan-glow);
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.22);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 12px #00eaff44;
   }
 
   .sys-badge {
@@ -177,11 +290,11 @@ const SYSTEM_CSS = `
   }
 
   .nav-tab {
-    background: rgba(11, 16, 32, 0.88);
-    border: 1px solid rgba(56, 189, 248, 0.22);
-    border-radius: 11px;
+    background: rgba(11, 21, 48, 0.88);
+    border: 1px solid rgba(0, 234, 255, 0.22);
+    border-radius: 12px;
     padding: 9px 4px;
-    color: var(--text-dim);
+    color: var(--text-secondary);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -194,16 +307,16 @@ const SYSTEM_CSS = `
   }
 
   .nav-tab.active {
-    background: linear-gradient(180deg, rgba(251, 191, 36, 0.28) 0%, rgba(15, 23, 42, 0.96) 100%);
-    border-color: #fbbf24;
+    background: linear-gradient(180deg, rgba(255, 212, 90, 0.24) 0%, rgba(16, 27, 56, 0.96) 100%);
+    border-color: var(--neon-gold);
     color: #fff;
-    box-shadow: 0 0 18px rgba(251, 191, 36, 0.38), inset 0 0 12px rgba(251, 191, 36, 0.16);
+    box-shadow: 0 0 16px #ffd45a55, inset 0 0 12px rgba(255, 212, 90, 0.16);
   }
 
   .progress-track {
     width: 100%;
     height: 8px;
-    background: rgba(4, 6, 12, 0.95);
+    background: rgba(5, 8, 23, 0.95);
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
@@ -233,11 +346,11 @@ const SYSTEM_CSS = `
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
-    background: rgba(6, 10, 20, 0.97);
-    border: 1px solid var(--gold-rank);
-    box-shadow: 0 0 24px rgba(251, 191, 36, 0.42);
+    background: rgba(11, 21, 48, 0.97);
+    border: 1px solid var(--neon-gold);
+    box-shadow: 0 0 24px #ffd45a66;
     padding: 12px 18px;
-    border-radius: 11px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -251,46 +364,6 @@ const SYSTEM_CSS = `
   @keyframes slideDown {
     from { opacity: 0; transform: translate(-50%, -20px); }
     to { opacity: 1; transform: translate(-50%, 0); }
-  }
-
-  /* MARCO LEGENDARY GACHA NEON BLUE & GOLD */
-  .gacha-card-outer {
-    position: relative;
-    border-radius: 20px;
-    padding: 3px;
-    background: linear-gradient(135deg, #00f0ff 0%, #2563eb 35%, #fbbf24 70%, #f59e0b 100%);
-    box-shadow:
-      0 0 30px rgba(0, 240, 255, 0.36),
-      0 0 38px rgba(251, 191, 36, 0.28),
-      0 18px 42px rgba(0, 0, 0, 0.92);
-  }
-
-  .gacha-card-inner {
-    background: radial-gradient(circle at 50% 30%, #0d1734 0%, #040711 100%);
-    border-radius: 17px;
-    padding: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .gacha-corner-tl, .gacha-corner-tr, .gacha-corner-bl, .gacha-corner-br {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    pointer-events: none;
-    z-index: 4;
-  }
-  .gacha-corner-tl { top: 6px; left: 6px; border-top: 2px solid #fbbf24; border-left: 2px solid #fbbf24; }
-  .gacha-corner-tr { top: 6px; right: 6px; border-top: 2px solid #00f0ff; border-right: 2px solid #00f0ff; }
-  .gacha-corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid #00f0ff; border-left: 2px solid #00f0ff; }
-  .gacha-corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #fbbf24; border-right: 2px solid #fbbf24; }
-
-  @keyframes gachaAuraPulse {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 0.85; transform: scale(1.02); }
-  }
-  .gacha-aura-overlay {
-    animation: gachaAuraPulse 4s ease-in-out infinite;
   }
 
   @keyframes npcPatrol1 {
@@ -1278,7 +1351,7 @@ function LegendaryGachaCanvas({ gender, stage }) {
     ctx.closePath();
     ctx.fill();
 
-    // Ojos Violeta-Índigo como en 1000272220.jpg y 1000272221.jpg
+    // Ojos Violeta-Índigo
     const drawVioletAnimeEye = (ex, isLeft) => {
       ctx.save();
       ctx.fillStyle = '#ffffff';
@@ -1536,7 +1609,7 @@ function LegendaryGachaCanvas({ gender, stage }) {
 }
 
 // ============================================================================
-// TARJETA LEGENDARY GACHA CHARACTER + EVOLUCIÓN INFINITA
+// TARJETA ANIME FANTASY RPG CHARACTER + EVOLUCIÓN INFINITA
 // ============================================================================
 function JrpgFantasyPortrait({
   hunterClass,
@@ -1552,14 +1625,13 @@ function JrpgFantasyPortrait({
   const cls = hunterClass?.cls || {
     name: 'Centinela Infinito',
     weaponType: 'sword',
-    accentColor: '#00f0ff',
+    accentColor: '#00eaff',
     passiveName: 'Muralla Inquebrantable (Infinito)',
     passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
   };
   const stage = classEvolution.stage;
   const isFemale = gender === 'female';
 
-  // Lista ordenada de rutas candidatas en /public/ (incluye nombres originales de tus 2 imágenes)
   const candidateSources = isFemale
     ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg', '/1000272221.png']
     : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg', '/1000272220.png'];
@@ -1576,216 +1648,209 @@ function JrpgFantasyPortrait({
   const starCount = Math.min(6, Math.max(4, 3 + stage));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      <div className="gacha-card-outer">
-        <div className="gacha-card-inner">
-          <div className="gacha-corner-tl" />
-          <div className="gacha-corner-tr" />
-          <div className="gacha-corner-bl" />
-          <div className="gacha-corner-br" />
-
-          {/* BARRA SUPERIOR: NV • ETAPA + CONTROLES DE GÉNERO Y BASE GACHA */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '6px',
-            marginBottom: '10px',
-            position: 'relative',
-            zIndex: 5
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className="sys-badge" style={{
-                background: 'linear-gradient(90deg, rgba(251,191,36,0.24), rgba(0,240,255,0.16))',
-                color: '#fde047',
-                border: '1px solid rgba(251, 191, 36, 0.75)',
-                fontFamily: 'Orbitron, sans-serif',
-                fontSize: '10px'
-              }}>
-                NV. {level} • ETAPA {stage}
-              </span>
-              <span style={{ color: '#fbbf24', fontSize: '11px', letterSpacing: '1px', textShadow: '0 0 8px rgba(251,191,36,0.8)' }}>
-                {'★'.repeat(starCount)}
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <label
-                className="sys-btn"
-                title="Cargar ilustración base (1000272220.jpg / 1000272221.jpg)"
-                style={{
-                  padding: '5px 10px',
-                  fontSize: '9px',
-                  background: 'rgba(251, 191, 36, 0.16)',
-                  border: '1px solid rgba(251, 191, 36, 0.65)',
-                  color: '#fde047',
-                  borderRadius: '999px',
-                  cursor: 'pointer'
-                }}
-              >
-                <ImageIcon size={11} color="#fbbf24" /> BASE GACHA
-                <input
-                  type="file"
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  onChange={(e) => onUploadGachaArt && onUploadGachaArt(e, gender)}
-                />
-              </label>
-
-              <button
-                type="button"
-                onClick={onToggleGender}
-                className="sys-btn"
-                style={{
-                  padding: '5px 11px',
-                  fontSize: '10px',
-                  background: 'rgba(0, 240, 255, 0.16)',
-                  border: '1px solid rgba(0, 240, 255, 0.6)',
-                  color: '#e0f2fe',
-                  borderRadius: '999px'
-                }}
-              >
-                <UserCheck size={12} color="#00f0ff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
-              </button>
-            </div>
+    <div className="cinematic-entry" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* TARJETA LEGENDARIA DEL AVATAR */}
+      <div className="rpg-card legendary" style={{ padding: '16px' }}>
+        {/* CABECERA DE NIVEL, ESTRELLAS Y BOTONES RPG */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '8px',
+          marginBottom: '12px',
+          position: 'relative',
+          zIndex: 5
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="sys-badge" style={{
+              background: 'rgba(11, 21, 48, 0.9)',
+              color: 'var(--neon-gold)',
+              border: '1px solid var(--neon-gold)',
+              fontFamily: 'Orbitron, sans-serif',
+              fontSize: '10px',
+              boxShadow: '0 0 10px rgba(255, 212, 90, 0.35)'
+            }}>
+              NV. {level} • ETAPA {stage}
+            </span>
+            <span
+              className="neon-glow-gold"
+              style={{ color: 'var(--neon-gold)', fontSize: '12px', letterSpacing: '1.5px' }}
+            >
+              {'★'.repeat(starCount)}
+            </span>
           </div>
 
-          {/* CONTENEDOR DE ILUSTRACIÓN LEGENDARY GACHA */}
-          <div style={{
-            borderRadius: '13px',
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <label
+              className="rpg-button"
+              title="Cargar ilustración personalizada desde galería"
+              style={{ borderColor: 'var(--neon-gold)', boxShadow: '0 0 12px rgba(255, 212, 90, 0.35)' }}
+            >
+              <ImageIcon size={12} color="#ffd45a" /> BASE GACHA
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(e) => onUploadGachaArt && onUploadGachaArt(e, gender)}
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={onToggleGender}
+              className="rpg-button"
+            >
+              <UserCheck size={12} color="#00eaff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
+            </button>
+          </div>
+        </div>
+
+        {/* CONTENEDOR CON PULSO DE ENERGÍA CINEMATOGRÁFICO */}
+        <div
+          className="energy-effect"
+          style={{
+            borderRadius: '16px',
             overflow: 'hidden',
             position: 'relative',
-            border: '1px solid rgba(251, 191, 36, 0.45)',
-            boxShadow: 'inset 0 0 28px rgba(0, 240, 255, 0.2)'
-          }}>
-            {activeImageSrc ? (
-              <img
-                src={activeImageSrc}
-                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Legendary Gacha`}
-                onError={() => !uploadedSrc && setCandidateIdx((prev) => prev + 1)}
-                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
-              />
-            ) : (
-              <LegendaryGachaCanvas
-                gender={gender}
-                stage={stage}
-              />
-            )}
-
-            <div
-              className="gacha-aura-overlay"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                pointerEvents: 'none',
-                background: 'radial-gradient(circle at 20% 25%, rgba(0,240,255,0.14) 0%, transparent 45%), radial-gradient(circle at 80% 20%, rgba(251,191,36,0.14) 0%, transparent 45%)'
-              }}
+            border: '1.5px solid var(--neon-blue)',
+            background: 'var(--bg-card)'
+          }}
+        >
+          {activeImageSrc ? (
+            <img
+              src={activeImageSrc}
+              alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
+              onError={() => !uploadedSrc && setCandidateIdx((prev) => prev + 1)}
+              style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
             />
+          ) : (
+            <LegendaryGachaCanvas
+              gender={gender}
+              stage={stage}
+            />
+          )}
 
-            {/* PLACA INFERIOR DE CLASE Y SELLO CIRCULAR DE GRADO */}
-            <div style={{
+          {/* HALO DE ENERGÍA NEÓN PÚRPURA / AZUL / ROSA */}
+          <div
+            style={{
               position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background: 'linear-gradient(0deg, rgba(3,5,12,0.98) 0%, rgba(3,5,12,0.86) 62%, transparent 100%)',
-              padding: '38px 14px 12px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              gap: '10px'
-            }}>
-              <div style={{ flex: 1, textAlign: 'center', paddingLeft: '40px' }}>
-                <div style={{
+              inset: 0,
+              pointerEvents: 'none',
+              background:
+                'radial-gradient(circle at 20% 25%, rgba(0, 234, 255, 0.16) 0%, transparent 45%),' +
+                'radial-gradient(circle at 80% 20%, rgba(150, 60, 255, 0.18) 0%, transparent 48%),' +
+                'radial-gradient(circle at 50% 85%, rgba(255, 62, 157, 0.12) 0%, transparent 50%)'
+            }}
+          />
+
+          {/* PLACA INFERIOR DE CLASE DESPERTADA Y SELLO DE GRADO */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: 'linear-gradient(0deg, rgba(5, 8, 23, 0.98) 0%, rgba(11, 21, 48, 0.88) 62%, transparent 100%)',
+            padding: '40px 14px 14px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            gap: '10px'
+          }}>
+            <div style={{ flex: 1, textAlign: 'center', paddingLeft: '44px' }}>
+              <div
+                className="neon-glow"
+                style={{
                   fontSize: '9px',
                   fontFamily: 'Orbitron, sans-serif',
-                  color: '#00f0ff',
-                  letterSpacing: '0.16em',
-                  marginBottom: '2px'
-                }}>
-                  LEGENDARY AWAKENED CLASS
-                </div>
-                <div className="font-souls" style={{
-                  fontSize: '16px',
+                  color: 'var(--neon-blue)',
+                  letterSpacing: '0.18em',
+                  marginBottom: '3px'
+                }}
+              >
+                LEGENDARY AWAKENED CLASS
+              </div>
+              <div
+                className="font-souls neon-glow-gold"
+                style={{
+                  fontSize: '17px',
                   fontWeight: 900,
-                  color: '#ffffff',
-                  letterSpacing: '0.09em',
-                  textShadow: '0 2px 14px rgba(251, 191, 36, 0.55)'
-                }}>
-                  {classEvolution.title.toUpperCase()}
-                </div>
-                <div style={{ fontSize: '12px', color: '#fde047', fontWeight: 700, marginTop: '2px' }}>
-                  {classEvolution.bonus}
-                </div>
+                  color: 'var(--text-main)',
+                  letterSpacing: '0.09em'
+                }}
+              >
+                {classEvolution.title.toUpperCase()}
               </div>
+              <div style={{ fontSize: '12px', color: 'var(--neon-gold)', fontWeight: 700, marginTop: '2px' }}>
+                {classEvolution.bonus}
+              </div>
+            </div>
 
-              <div style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(251,191,36,0.24) 0%, rgba(4,7,18,0.96) 76%)',
-                border: '2px solid #fbbf24',
-                boxShadow: '0 0 18px rgba(0, 240, 255, 0.45), inset 0 0 10px rgba(251, 191, 36, 0.4)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <span style={{ fontSize: '8px', color: '#00f0ff', fontWeight: 800 }}>GRADO</span>
-                <span className="font-hud" style={{ fontSize: '16px', fontWeight: 900, color: '#ffffff', lineHeight: 1.1 }}>
-                  {hunterGrade}
-                </span>
-              </div>
+            <div style={{
+              width: '58px',
+              height: '58px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(150, 60, 255, 0.28) 0%, rgba(5, 8, 23, 0.96) 76%)',
+              border: '2px solid var(--neon-gold)',
+              boxShadow: '0 0 18px rgba(0, 234, 255, 0.5), inset 0 0 10px rgba(255, 212, 90, 0.45)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <span style={{ fontSize: '8px', color: 'var(--neon-blue)', fontWeight: 800 }}>GRADO</span>
+              <span className="font-hud neon-glow-gold" style={{ fontSize: '17px', fontWeight: 900, color: 'var(--text-main)', lineHeight: 1.1 }}>
+                {hunterGrade}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* PANEL INFERIOR: EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA */}
-      <div className="sys-window" style={{ padding: '16px', borderColor: 'rgba(251, 191, 36, 0.45)' }}>
+      {/* PANEL DE EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA */}
+      <div className="rpg-card" style={{ padding: '16px', borderColor: 'var(--neon-purple)', boxShadow: '0 0 16px rgba(150, 60, 255, 0.3)' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
           marginBottom: '12px'
         }}>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #fbbf24)' }} />
-          <h2 className="font-souls" style={{ fontSize: '14px', color: '#fde047', fontWeight: 800, textAlign: 'center' }}>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--neon-gold))' }} />
+          <h2 className="font-souls neon-glow-gold" style={{ fontSize: '14px', color: 'var(--neon-gold)', fontWeight: 800, textAlign: 'center' }}>
             EVOLUCIÓN DE CLASE INFINITA (NV. {level})
           </h2>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #fbbf24, transparent)' }} />
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--neon-gold), transparent)' }} />
         </div>
 
         <div style={{
           padding: '14px',
-          borderRadius: '12px',
-          background: 'radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.14) 0%, rgba(5, 9, 20, 0.94) 80%)',
-          border: '1px solid rgba(0, 240, 255, 0.52)',
-          boxShadow: 'inset 0 0 18px rgba(0, 240, 255, 0.12)'
+          borderRadius: '14px',
+          background: 'radial-gradient(circle at 50% 0%, rgba(0, 234, 255, 0.15) 0%, rgba(5, 8, 23, 0.94) 80%)',
+          border: '1px solid var(--neon-blue)',
+          boxShadow: 'inset 0 0 18px rgba(0, 234, 255, 0.14)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span className="sys-badge" style={{
-              background: 'rgba(0, 240, 255, 0.14)',
-              color: '#7dd3fc',
-              border: '1px solid rgba(0, 240, 255, 0.4)'
+              background: 'rgba(150, 60, 255, 0.2)',
+              color: '#e9d5ff',
+              border: '1px solid var(--neon-purple)'
             }}>
               PASIVA ÚNICA
             </span>
             <span className="sys-badge" style={{
-              background: 'rgba(251, 191, 36, 0.18)',
-              color: '#fde047',
-              border: '1px solid rgba(251, 191, 36, 0.6)'
+              background: 'rgba(255, 212, 90, 0.18)',
+              color: 'var(--neon-gold)',
+              border: '1px solid var(--neon-gold)'
             }}>
               +{passiveClassBonus} PWR
             </span>
           </div>
 
-          <div className="font-souls" style={{
+          <div className="font-souls neon-glow" style={{
             fontSize: '16px',
             fontWeight: 900,
-            color: '#ffffff',
+            color: 'var(--text-main)',
             textAlign: 'center',
             marginBottom: '6px',
             letterSpacing: '0.07em'
@@ -1795,7 +1860,7 @@ function JrpgFantasyPortrait({
 
           <p style={{
             fontSize: '13px',
-            color: '#cbd5e1',
+            color: 'var(--text-secondary)',
             textAlign: 'center',
             fontStyle: 'italic',
             lineHeight: 1.45
@@ -3137,7 +3202,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 ¿ESTÁS LISTO PARA INICIAR DESDE 0 COMO CAZADOR?
               </h2>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: 1.5 }}>
-                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se desplegará tu tarjeta <strong>Legendary Gacha Character</strong> con iluminación Neon Blue & Gold.
+                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se desplegará tu tarjeta <strong>Anime Fantasy RPG</strong> con iluminación Neon Blue & Gold.
               </p>
               <button className="sys-btn sys-btn-gold" style={{ padding: '16px', fontSize: '13px' }} onClick={awakenHunter}>
                 <Zap size={18} /> SÍ, COMENZAR DESDE 0
@@ -3150,7 +3215,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   }
 
   // ==========================================================================
-  // INTERFAZ PRINCIPAL DEL SISTEMA (LEGENDARY GACHA RPG HUD)
+  // INTERFAZ PRINCIPAL DEL SISTEMA (ANIME FANTASY RPG HUD)
   // ==========================================================================
   return (
     <div className="sys-container">
@@ -3293,7 +3358,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       </div>
 
       {/* ====================================================================
-          MÓDULO 3: LEGENDARY GACHA CHARACTER ART + EVOLUCIÓN INFINITA
+          MÓDULO 3: ANIME FANTASY RPG CHARACTER ART + EVOLUCIÓN INFINITA
          ==================================================================== */}
       {activeTab === 'avatar' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
