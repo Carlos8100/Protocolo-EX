@@ -6,20 +6,21 @@ import {
   ChevronRight, Sword, Clock, Save, Check,
   UserCheck, Users, MapPin, Play, BookOpen, Plus, Crosshair,
   LogIn, KeyRound, Mail, UserPlus, Settings, Trash2,
-  Heart, Building2, Send, RotateCcw
+  Heart, Building2, Send, RotateCcw, Image as ImageIcon
 } from 'lucide-react';
 
 // ============================================================================
-// ESTILOS INTEGRADOS (HOLOGRAPHIC ANIME HUD + VISUAL NOVEL + CITY 2D)
+// ESTILOS INTEGRADOS (LEGENDARY GACHA RPG HUD + NEON BLUE & GOLD LIGHTING)
 // ============================================================================
 const SYSTEM_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
   :root {
-    --bg-void: #04060e;
-    --bg-panel: rgba(10, 15, 30, 0.94);
+    --bg-void: #03050c;
+    --bg-panel: rgba(9, 14, 28, 0.94);
     --cyan-glow: #00f0ff;
-    --gold-rank: #d4af37;
+    --gold-rank: #fbbf24;
+    --gold-deep: #b45309;
     --crimson-vein: #be123c;
     --emerald-ok: #10b981;
     --rose-love: #fb7185;
@@ -36,9 +37,9 @@ const SYSTEM_CSS = `
   body {
     background-color: var(--bg-void);
     background-image:
-      radial-gradient(circle at 20% 10%, rgba(59, 130, 246, 0.14) 0%, transparent 45%),
-      radial-gradient(circle at 80% 85%, rgba(168, 85, 247, 0.14) 0%, transparent 48%),
-      linear-gradient(180deg, #03050c 0%, #080d1d 100%);
+      radial-gradient(circle at 18% 12%, rgba(0, 240, 255, 0.14) 0%, transparent 45%),
+      radial-gradient(circle at 82% 85%, rgba(251, 191, 36, 0.12) 0%, transparent 48%),
+      linear-gradient(180deg, #02040a 0%, #070c1b 100%);
     color: var(--text-main);
     font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
     min-height: 100vh;
@@ -66,7 +67,7 @@ const SYSTEM_CSS = `
     backdrop-filter: blur(14px);
     border: 1px solid rgba(0, 240, 255, 0.28);
     box-shadow:
-      0 10px 34px rgba(0, 0, 0, 0.78),
+      0 10px 34px rgba(0, 0, 0, 0.8),
       inset 0 0 24px rgba(0, 240, 255, 0.06);
     border-radius: 14px;
     position: relative;
@@ -108,9 +109,9 @@ const SYSTEM_CSS = `
   }
 
   .sys-btn-gold {
-    background: linear-gradient(135deg, #92400e 0%, #d4af37 100%);
+    background: linear-gradient(135deg, #92400e 0%, #fbbf24 100%);
     color: #090d16;
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.42);
   }
 
   .sys-btn-love {
@@ -140,7 +141,7 @@ const SYSTEM_CSS = `
   .sys-input, .sys-select, .sys-textarea {
     width: 100%;
     background: rgba(4, 6, 12, 0.92);
-    border: 1px solid rgba(212, 175, 55, 0.28);
+    border: 1px solid rgba(251, 191, 36, 0.32);
     border-radius: 9px;
     padding: 10px 13px;
     color: #f8fafc;
@@ -153,7 +154,7 @@ const SYSTEM_CSS = `
 
   .sys-input:focus, .sys-select:focus, .sys-textarea:focus {
     border-color: var(--cyan-glow);
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.22);
   }
 
   .sys-badge {
@@ -193,7 +194,7 @@ const SYSTEM_CSS = `
   }
 
   .nav-tab.active {
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.28) 0%, rgba(15, 23, 42, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.28) 0%, rgba(15, 23, 42, 0.96) 100%);
     border-color: #fbbf24;
     color: #fff;
     box-shadow: 0 0 18px rgba(251, 191, 36, 0.38), inset 0 0 12px rgba(251, 191, 36, 0.16);
@@ -234,7 +235,7 @@ const SYSTEM_CSS = `
     z-index: 9999;
     background: rgba(6, 10, 20, 0.97);
     border: 1px solid var(--gold-rank);
-    box-shadow: 0 0 24px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 24px rgba(251, 191, 36, 0.42);
     padding: 12px 18px;
     border-radius: 11px;
     display: flex;
@@ -252,24 +253,44 @@ const SYSTEM_CSS = `
     to { opacity: 1; transform: translate(-50%, 0); }
   }
 
-  /* MARCO NEÓN CIAN-VIOLETA-MAGENTA IDÉNTICO A LA PRIMERA IMAGEN */
-  .anime-holo-outer {
+  /* MARCO LEGENDARY GACHA NEON BLUE & GOLD */
+  .gacha-card-outer {
     position: relative;
-    border-radius: 18px;
-    padding: 2.5px;
-    background: linear-gradient(135deg, #00f0ff 0%, #3b82f6 42%, #9333ea 74%, #ec4899 100%);
+    border-radius: 20px;
+    padding: 3px;
+    background: linear-gradient(135deg, #00f0ff 0%, #2563eb 35%, #fbbf24 70%, #f59e0b 100%);
     box-shadow:
-      0 0 26px rgba(0, 240, 255, 0.32),
-      0 0 36px rgba(168, 85, 247, 0.24),
-      0 14px 36px rgba(0, 0, 0, 0.9);
+      0 0 30px rgba(0, 240, 255, 0.36),
+      0 0 38px rgba(251, 191, 36, 0.28),
+      0 18px 42px rgba(0, 0, 0, 0.92);
   }
 
-  .anime-holo-inner {
-    background: radial-gradient(circle at 50% 35%, #111836 0%, #050814 100%);
-    border-radius: 16px;
+  .gacha-card-inner {
+    background: radial-gradient(circle at 50% 30%, #0d1734 0%, #040711 100%);
+    border-radius: 17px;
     padding: 12px;
     position: relative;
     overflow: hidden;
+  }
+
+  .gacha-corner-tl, .gacha-corner-tr, .gacha-corner-bl, .gacha-corner-br {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .gacha-corner-tl { top: 6px; left: 6px; border-top: 2px solid #fbbf24; border-left: 2px solid #fbbf24; }
+  .gacha-corner-tr { top: 6px; right: 6px; border-top: 2px solid #00f0ff; border-right: 2px solid #00f0ff; }
+  .gacha-corner-bl { bottom: 6px; left: 6px; border-bottom: 2px solid #00f0ff; border-left: 2px solid #00f0ff; }
+  .gacha-corner-br { bottom: 6px; right: 6px; border-bottom: 2px solid #fbbf24; border-right: 2px solid #fbbf24; }
+
+  @keyframes gachaAuraPulse {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.03); }
+  }
+  .gacha-aura-overlay {
+    animation: gachaAuraPulse 4s ease-in-out infinite;
   }
 
   @keyframes npcPatrol1 {
@@ -325,7 +346,7 @@ const RANKS = [
   { name: 'Hierro', tier: 4, color: '#cbd5e1' },
   { name: 'Bronce', tier: 5, color: '#c2410c' },
   { name: 'Plata', tier: 6, color: '#e2e8f0' },
-  { name: 'Oro', tier: 7, color: '#d4af37' },
+  { name: 'Oro', tier: 7, color: '#fbbf24' },
   { name: 'Platino', tier: 8, color: '#2dd4bf' },
   { name: 'Esmeralda', tier: 9, color: '#10b981' },
   { name: 'Diamante', tier: 10, color: '#38bdf8' },
@@ -431,7 +452,7 @@ const CLASS_AFFINITIES = [
   { name: 'del Vacío', accent: '#a855f7', resonance: 'Resonancia Abisal: +18% daño contra jefes de acto.' },
   { name: 'de Obsidiana', accent: '#94a3b8', resonance: 'Resonancia Férrea: +35 Defensa neural permanente.' },
   { name: 'de Tormenta', accent: '#00f0ff', resonance: 'Resonancia Eléctrica: +14% velocidad en duelos PvP.' },
-  { name: 'del Eclipse', accent: '#d4af37', resonance: 'Resonancia Dual: Equilibra ataque y defensa (+10% ambos).' },
+  { name: 'del Eclipse', accent: '#fbbf24', resonance: 'Resonancia Dual: Equilibra ataque y defensa (+10% ambos).' },
   { name: 'Astral', accent: '#818cf8', resonance: 'Resonancia Estelar: Mejora las recompensas de historia.' },
   { name: 'Espectral', accent: '#2dd4bf', resonance: 'Resonancia Etérea: Reduce la penalización por fatiga.' },
   { name: 'de Acero Pálido', accent: '#cbd5e1', resonance: 'Resonancia Metálica: Escala +10% con el peso levantado.' },
@@ -649,9 +670,9 @@ const CITY_BUILDINGS_CATALOG = [
 ];
 
 const RACES_POOL = [
-  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#7c3aed' },
-  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#4f46e5' },
-  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#e11d48' },
+  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#3b82f6' },
+  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#00f0ff' },
+  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#fbbf24' },
   { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#00f0ff' },
   { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b' },
   { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8' },
@@ -666,7 +687,6 @@ const HOME_EQUIPMENT_OPTIONS = [
   'Barra recta y discos'
 ];
 
-// INICIALIZACIÓN DESDE 0 EN TODAS LAS CARGAS
 const ZERO_LIFTS = {
   'Press Banca': { weight: 0, reps: 0, date: 'Sin registrar' },
   'Sentadilla Trasera': { weight: 0, reps: 0, date: 'Sin registrar' },
@@ -815,687 +835,578 @@ function generateCharacterAIReply(char, userMsg, memoryList, context) {
 }
 
 // ============================================================================
-// MOTOR DE ILUSTRACIÓN ANIME / MANHWA HD (IDÉNTICO A LA PRIMERA IMAGEN)
+// MOTOR PROCEDURAL LEGENDARY GACHA (NEON BLUE + GOLD LIGHTING & ARCANE CIRCLES)
 // ============================================================================
-function AnimeHunterCanvas({ gender, accentColor, eyeColor, weaponType, stage }) {
+function LegendaryGachaCanvas({ gender, weaponType, stage }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const W = 680;
-    const H = 760;
+    const W = 720;
+    const H = 860;
     const isFemale = gender === 'female';
-    const cyan = accentColor || '#00f0ff';
-    const irisCol = eyeColor || '#6d28d9';
+    const neonBlue = '#00f0ff';
+    const royalGold = '#fbbf24';
 
     ctx.clearRect(0, 0, W, H);
 
-    // ------------------------------------------------------------------------
-    // 1. FONDO CÓSMICO OSCURO Y NEBULOSA AZUL / VIOLETA LUMINOSA
-    // ------------------------------------------------------------------------
-    const bgGrad = ctx.createRadialGradient(320, 290, 40, 340, 380, 520);
-    bgGrad.addColorStop(0, '#1e1b4b');
-    bgGrad.addColorStop(0.45, '#0c132d');
-    bgGrad.addColorStop(1, '#04060e');
-    ctx.fillStyle = bgGrad;
+    // 1. ATMÓSFERA ÉPICA DE ALTA FANTASÍA (NEON BLUE IZQUIERDA + GOLD DERECHA)
+    const skyGrad = ctx.createRadialGradient(340, 320, 30, 360, 420, 580);
+    skyGrad.addColorStop(0, '#13244c');
+    skyGrad.addColorStop(0.45, '#081026');
+    skyGrad.addColorStop(1, '#02040a');
+    ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Nubes de energía cósmica detrás del héroe
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
 
-    const nebula1 = ctx.createRadialGradient(210, 320, 10, 210, 320, 230);
-    nebula1.addColorStop(0, 'rgba(37, 99, 235, 0.34)');
-    nebula1.addColorStop(0.5, 'rgba(109, 40, 217, 0.16)');
-    nebula1.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = nebula1;
+    // Iluminación ambiental Neon Blue (lado izquierdo)
+    const blueGlow = ctx.createRadialGradient(170, 340, 10, 170, 340, 320);
+    blueGlow.addColorStop(0, 'rgba(0, 240, 255, 0.36)');
+    blueGlow.addColorStop(0.55, 'rgba(37, 99, 235, 0.16)');
+    blueGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = blueGlow;
     ctx.fillRect(0, 0, W, H);
 
-    const nebula2 = ctx.createRadialGradient(470, 310, 10, 470, 310, 240);
-    nebula2.addColorStop(0, 'rgba(0, 240, 255, 0.32)');
-    nebula2.addColorStop(0.5, 'rgba(59, 130, 246, 0.16)');
-    nebula2.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = nebula2;
+    // Iluminación ambiental Gold (lado derecho / halo divino)
+    const goldGlow = ctx.createRadialGradient(500, 290, 10, 500, 290, 340);
+    goldGlow.addColorStop(0, 'rgba(251, 191, 36, 0.34)');
+    goldGlow.addColorStop(0.5, 'rgba(217, 119, 6, 0.14)');
+    goldGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = goldGlow;
     ctx.fillRect(0, 0, W, H);
 
-    // Partículas de maná flotantes y destellos estelares
-    const motes = [
-      [78, 140, 3, '#00f0ff'], [125, 290, 2, '#ffffff'], [64, 460, 3.5, '#38bdf8'],
-      [148, 560, 2.5, '#a855f7'], [590, 130, 3, '#00f0ff'], [625, 275, 2.2, '#ffffff'],
-      [585, 430, 3.5, '#00f0ff'], [612, 540, 2.5, '#38bdf8'], [235, 92, 2.2, '#93c5fd'],
-      [415, 86, 2.5, '#00f0ff'], [480, 195, 2, '#ffffff'], [165, 205, 2.4, '#60a5fa']
-    ];
-    motes.forEach(([mx, my, mr, mc]) => {
-      ctx.save();
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = mc;
-      ctx.fillStyle = mc;
+    // Rayos volumétricos diagonales (God-rays)
+    const rayGrad = ctx.createLinearGradient(580, 40, 220, 580);
+    rayGrad.addColorStop(0, 'rgba(251, 191, 36, 0.18)');
+    rayGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.08)');
+    rayGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = rayGrad;
+    ctx.beginPath();
+    ctx.moveTo(470, 0);
+    ctx.lineTo(720, 0);
+    ctx.lineTo(380, 680);
+    ctx.lineTo(140, 680);
+    ctx.closePath();
+    ctx.fill();
+
+    // 2. CÍRCULO MÁGICO ARCANO GIRATORIO DETRÁS DEL PERSONAJE
+    const magicCx = 325;
+    const magicCy = 320;
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.42)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(magicCx, magicCy, 215, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.48)';
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath();
+    ctx.arc(magicCx, magicCy, 196, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Estrella rúnica inscrita en el círculo mágico
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.24)';
+    ctx.lineWidth = 1.5;
+    for (let r = 0; r < 2; r++) {
       ctx.beginPath();
-      ctx.arc(mx, my, mr, 0, Math.PI * 2);
+      for (let i = 0; i <= 4; i++) {
+        const ang = (i * Math.PI) / 2 + (r * Math.PI) / 4;
+        const px = magicCx + Math.cos(ang) * 195;
+        const py = magicCy + Math.sin(ang) * 195;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    // Partículas de maná doradas y azul neón
+    const embers = [
+      [82, 160, 3.2, neonBlue], [132, 310, 2.6, royalGold], [68, 490, 3.8, neonBlue],
+      [165, 620, 2.8, royalGold], [635, 145, 3.4, royalGold], [662, 315, 2.6, neonBlue],
+      [620, 480, 3.8, royalGold], [648, 610, 3, neonBlue], [240, 95, 2.6, royalGold],
+      [445, 92, 3, neonBlue], [510, 215, 2.4, '#ffffff'], [185, 215, 2.6, neonBlue]
+    ];
+    embers.forEach(([ex, ey, er, ec]) => {
+      ctx.save();
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = ec;
+      ctx.fillStyle = ec;
+      ctx.beginPath();
+      ctx.arc(ex, ey, er, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
     ctx.restore();
 
-    const cx = 310; // Eje central del personaje (ligeramente a la izquierda para dar espacio a la espada)
+    const cx = 325;
 
-    // ------------------------------------------------------------------------
-    // 2. CAPA CARMESÍ REAL ONDEANTE (SOBRE EL HOMBRO IZQUIERDO)
-    // ------------------------------------------------------------------------
+    // 3. CAPA REAL CARMESÍ Y ORO CON PLIEGUES CINEMATOGRÁFICOS
     ctx.save();
-    const capeGrad = ctx.createLinearGradient(60, 340, 260, 720);
-    capeGrad.addColorStop(0, '#9f1239');
-    capeGrad.addColorStop(0.45, '#6b0f26');
-    capeGrad.addColorStop(1, '#2a050f');
+    const capeGrad = ctx.createLinearGradient(50, 360, 280, 820);
+    capeGrad.addColorStop(0, '#be123c');
+    capeGrad.addColorStop(0.5, '#7f1d1d');
+    capeGrad.addColorStop(1, '#29060e');
     ctx.fillStyle = capeGrad;
     ctx.beginPath();
-    ctx.moveTo(cx - 118, 342);
-    ctx.bezierCurveTo(cx - 210, 405, 65, 535, 28, 700);
-    ctx.lineTo(cx + 120, 720);
-    ctx.lineTo(cx + 100, 355);
+    ctx.moveTo(cx - 125, 375);
+    ctx.bezierCurveTo(cx - 230, 440, 55, 600, 22, 810);
+    ctx.lineTo(cx + 135, 820);
+    ctx.lineTo(cx + 115, 385);
     ctx.closePath();
     ctx.fill();
 
-    // Pliegues profundos de la capa
-    ctx.fillStyle = 'rgba(20, 3, 8, 0.55)';
+    // Ribete dorado en la capa
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(cx - 125, 360);
-    ctx.bezierCurveTo(cx - 175, 450, 110, 570, 82, 705);
-    ctx.lineTo(cx - 45, 710);
-    ctx.bezierCurveTo(cx - 80, 560, cx - 105, 450, cx - 105, 360);
-    ctx.closePath();
-    ctx.fill();
-
-    // Brillo de borde (Rim-light) en la capa
-    ctx.strokeStyle = 'rgba(244, 63, 94, 0.55)';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(cx - 118, 342);
-    ctx.bezierCurveTo(cx - 210, 405, 65, 535, 28, 700);
+    ctx.moveTo(cx - 125, 375);
+    ctx.bezierCurveTo(cx - 230, 440, 55, 600, 22, 810);
     ctx.stroke();
     ctx.restore();
 
-    // ------------------------------------------------------------------------
-    // 3. CABELLO TRASERO (LARGO FLUIDO EN FEMENINO / CAPA DE NUCA EN MASCULINO)
-    // ------------------------------------------------------------------------
+    // 4. CABELLO TRASERO ORGÁNICO (CURVAS SUAVES SIN PICOS GEOMÉTRICOS)
     ctx.save();
-    const hairDarkGrad = ctx.createLinearGradient(cx, 110, cx, 520);
-    hairDarkGrad.addColorStop(0, '#090d18');
-    hairDarkGrad.addColorStop(0.6, '#050811');
-    hairDarkGrad.addColorStop(1, '#0f172a');
-    ctx.fillStyle = hairDarkGrad;
+    const backHairGrad = ctx.createLinearGradient(cx, 120, cx, 620);
+    backHairGrad.addColorStop(0, '#070b16');
+    backHairGrad.addColorStop(0.6, '#0d152a');
+    backHairGrad.addColorStop(1, '#172554');
+    ctx.fillStyle = backHairGrad;
 
     if (isFemale) {
       ctx.beginPath();
-      ctx.moveTo(cx - 82, 175);
-      ctx.bezierCurveTo(cx - 125, 290, cx - 135, 440, cx - 105, 575);
-      ctx.lineTo(cx + 105, 575);
-      ctx.bezierCurveTo(cx + 135, 440, cx + 125, 290, cx + 82, 175);
+      ctx.moveTo(cx - 86, 195);
+      ctx.bezierCurveTo(cx - 140, 320, cx - 150, 500, cx - 115, 660);
+      ctx.lineTo(cx + 115, 660);
+      ctx.bezierCurveTo(cx + 150, 500, cx + 140, 320, cx + 86, 195);
       ctx.closePath();
       ctx.fill();
     } else {
       ctx.beginPath();
-      ctx.moveTo(cx - 72, 195);
-      ctx.lineTo(cx - 86, 290);
-      ctx.lineTo(cx - 52, 276);
-      ctx.lineTo(cx, 288);
-      ctx.lineTo(cx + 52, 276);
-      ctx.lineTo(cx + 86, 290);
-      ctx.lineTo(cx + 72, 195);
+      ctx.moveTo(cx - 76, 210);
+      ctx.bezierCurveTo(cx - 96, 260, cx - 94, 305, cx - 76, 326);
+      ctx.quadraticCurveTo(cx, 310, cx + 76, 326);
+      ctx.bezierCurveTo(cx + 94, 305, cx + 96, 260, cx + 76, 210);
       ctx.closePath();
       ctx.fill();
     }
     ctx.restore();
 
-    // ------------------------------------------------------------------------
-    // 4. ARMADURA DE PLACAS OSCURA CON CIRCUITOS LUMINOSOS CIAN
-    // ------------------------------------------------------------------------
+    // 5. ARMADURA DE OBSIDIANA CON FILIGRANA DORADA Y RUNAS NEON BLUE
     ctx.save();
-    const armorGrad = ctx.createLinearGradient(cx - 130, 320, cx + 130, 680);
-    armorGrad.addColorStop(0, '#131c31');
-    armorGrad.addColorStop(0.45, '#080c17');
-    armorGrad.addColorStop(1, '#03050a');
+    const plateGrad = ctx.createLinearGradient(cx - 140, 350, cx + 140, 780);
+    plateGrad.addColorStop(0, '#16213e');
+    plateGrad.addColorStop(0.45, '#090e1d');
+    plateGrad.addColorStop(1, '#04060d');
 
-    // Torso principal
-    ctx.fillStyle = armorGrad;
+    ctx.fillStyle = plateGrad;
     ctx.beginPath();
     if (isFemale) {
-      ctx.moveTo(cx - 95, 338);
-      ctx.lineTo(cx + 95, 338);
-      ctx.lineTo(cx + 72, 495);
-      ctx.lineTo(cx + 92, 690);
-      ctx.lineTo(cx - 92, 690);
-      ctx.lineTo(cx - 72, 495);
+      ctx.moveTo(cx - 102, 370);
+      ctx.lineTo(cx + 102, 370);
+      ctx.lineTo(cx + 76, 545);
+      ctx.lineTo(cx + 98, 790);
+      ctx.lineTo(cx - 98, 790);
+      ctx.lineTo(cx - 76, 545);
     } else {
-      ctx.moveTo(cx - 112, 334);
-      ctx.lineTo(cx + 112, 334);
-      ctx.lineTo(cx + 84, 505);
-      ctx.lineTo(cx + 102, 690);
-      ctx.lineTo(cx - 102, 690);
-      ctx.lineTo(cx - 84, 505);
+      ctx.moveTo(cx - 122, 366);
+      ctx.lineTo(cx + 122, 366);
+      ctx.lineTo(cx + 90, 555);
+      ctx.lineTo(cx + 112, 790);
+      ctx.lineTo(cx - 112, 790);
+      ctx.lineTo(cx - 90, 555);
     }
     ctx.closePath();
     ctx.fill();
 
-    // Cuello alto blindado de la armadura
-    ctx.fillStyle = '#070b14';
+    // Cuello alto blindado con borde dorado
+    ctx.fillStyle = '#070b16';
     ctx.beginPath();
-    ctx.moveTo(cx - 46, 304);
-    ctx.lineTo(cx - 58, 344);
-    ctx.lineTo(cx, 362);
-    ctx.lineTo(cx + 58, 344);
-    ctx.lineTo(cx + 46, 304);
-    ctx.lineTo(cx + 28, 316);
-    ctx.lineTo(cx, 322);
-    ctx.lineTo(cx - 28, 316);
+    ctx.moveTo(cx - 50, 330);
+    ctx.lineTo(cx - 64, 376);
+    ctx.lineTo(cx, 398);
+    ctx.lineTo(cx + 64, 376);
+    ctx.lineTo(cx + 50, 330);
+    ctx.lineTo(cx, 350);
     ctx.closePath();
     ctx.fill();
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 2.6;
+    ctx.stroke();
 
-    // Líneas de energía cian en la armadura
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = cyan;
-    ctx.strokeStyle = cyan;
+    // Circuitos Neon Blue internos
+    ctx.shadowBlur = 16;
+    ctx.shadowColor = neonBlue;
+    ctx.strokeStyle = neonBlue;
     ctx.lineWidth = 2.4;
-
-    // Borde del cuello alto
     ctx.beginPath();
-    ctx.moveTo(cx - 46, 304);
-    ctx.lineTo(cx - 58, 344);
-    ctx.lineTo(cx, 362);
-    ctx.lineTo(cx + 58, 344);
-    ctx.lineTo(cx + 46, 304);
+    ctx.moveTo(cx - 94, 405);
+    ctx.lineTo(cx - 46, 448);
+    ctx.moveTo(cx + 94, 405);
+    ctx.lineTo(cx + 46, 448);
+    ctx.moveTo(cx - 78, 560);
+    ctx.lineTo(cx - 34, 595);
+    ctx.moveTo(cx + 78, 560);
+    ctx.lineTo(cx + 34, 595);
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
-    // Líneas pectorales y abdominales
-    ctx.beginPath();
-    ctx.moveTo(cx - 88, 365);
-    ctx.lineTo(cx - 42, 405);
-    ctx.moveTo(cx + 88, 365);
-    ctx.lineTo(cx + 42, 405);
-    ctx.moveTo(cx - 72, 505);
-    ctx.lineTo(cx - 32, 535);
-    ctx.moveTo(cx + 72, 505);
-    ctx.lineTo(cx + 32, 535);
-    ctx.stroke();
+    // Hombreras Esculpidas con Filigrana Dorada y Rim-Light Azul Neón
+    const drawPauldron = (side) => {
+      const s = side; // -1 izq, +1 der
+      ctx.save();
+      const pGrad = ctx.createLinearGradient(cx + s * 80, 340, cx + s * 185, 450);
+      pGrad.addColorStop(0, '#1e293b');
+      pGrad.addColorStop(0.5, '#090e1c');
+      pGrad.addColorStop(1, '#040711');
+      ctx.fillStyle = pGrad;
 
-    // Brazos blindados
-    ctx.fillStyle = '#070b15';
-    // Brazo izquierdo
-    ctx.beginPath();
-    ctx.moveTo(cx - 135, 392);
-    ctx.lineTo(cx - 168, 630);
-    ctx.lineTo(cx - 115, 635);
-    ctx.lineTo(cx - 92, 410);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + s * 80, 372);
+      ctx.bezierCurveTo(cx + s * 135, 335, cx + s * 185, 360, cx + s * 192, 430);
+      ctx.lineTo(cx + s * 102, 446);
+      ctx.closePath();
+      ctx.fill();
 
-    // Brazo derecho
-    ctx.beginPath();
-    ctx.moveTo(cx + 135, 392);
-    ctx.lineTo(cx + 165, 630);
-    ctx.lineTo(cx + 112, 635);
-    ctx.lineTo(cx + 92, 410);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+      // Filigrana de oro en el borde exterior
+      ctx.strokeStyle = royalGold;
+      ctx.lineWidth = 3;
+      ctx.stroke();
 
-    // HOMBRERAS ANGULARES MULTI-PLACA (COMO EN LA PRIMERA IMAGEN)
-    // Hombrera Izquierda
-    ctx.fillStyle = '#090e1c';
-    ctx.beginPath();
-    ctx.moveTo(cx - 165, 355);
-    ctx.quadraticCurveTo(cx - 132, 312, cx - 76, 342);
-    ctx.lineTo(cx - 94, 406);
-    ctx.lineTo(cx - 172, 394);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+      // Línea interna Neon Blue
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = neonBlue;
+      ctx.strokeStyle = neonBlue;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + s * 92, 392);
+      ctx.quadraticCurveTo(cx + s * 142, 368, cx + s * 175, 415);
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawPauldron(-1);
+    drawPauldron(1);
 
-    // Placa interna de hombrera izquierda
-    ctx.beginPath();
-    ctx.moveTo(cx - 155, 372);
-    ctx.quadraticCurveTo(cx - 126, 338, cx - 84, 362);
-    ctx.stroke();
-
-    // Hombrera Derecha
-    ctx.beginPath();
-    ctx.moveTo(cx + 165, 355);
-    ctx.quadraticCurveTo(cx + 132, 312, cx + 76, 342);
-    ctx.lineTo(cx + 94, 406);
-    ctx.lineTo(cx + 172, 394);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Placa interna de hombrera derecha
-    ctx.beginPath();
-    ctx.moveTo(cx + 155, 372);
-    ctx.quadraticCurveTo(cx + 126, 338, cx + 84, 362);
-    ctx.stroke();
-
-    // ------------------------------------------------------------------------
-    // 5. NÚCLEO RÚNICO CENTRAL EN FORMA DE DIAMANTE (PECHO)
-    // ------------------------------------------------------------------------
-    const coreY = 452;
-    ctx.shadowBlur = 24;
-    ctx.shadowColor = cyan;
-    ctx.fillStyle = '#041e28';
+    // Núcleo Pectoral Diamante Dorado y Azul Neón
+    const coreY = 496;
+    ctx.shadowBlur = 26;
+    ctx.shadowColor = neonBlue;
+    ctx.fillStyle = '#041b29';
+    ctx.strokeStyle = royalGold;
     ctx.lineWidth = 3.5;
     ctx.beginPath();
-    ctx.moveTo(cx, coreY - 42);
-    ctx.lineTo(cx + 36, coreY);
-    ctx.lineTo(cx, coreY + 42);
-    ctx.lineTo(cx - 36, coreY);
+    ctx.moveTo(cx, coreY - 46);
+    ctx.lineTo(cx + 38, coreY);
+    ctx.lineTo(cx, coreY + 46);
+    ctx.lineTo(cx - 38, coreY);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
-    // Diamante interior brillante
-    const coreInnerGrad = ctx.createRadialGradient(cx, coreY, 2, cx, coreY, 22);
-    coreInnerGrad.addColorStop(0, '#ffffff');
-    coreInnerGrad.addColorStop(0.5, cyan);
-    coreInnerGrad.addColorStop(1, '#0284c7');
-    ctx.fillStyle = coreInnerGrad;
+    const gemGrad = ctx.createRadialGradient(cx, coreY, 2, cx, coreY, 24);
+    gemGrad.addColorStop(0, '#ffffff');
+    gemGrad.addColorStop(0.45, neonBlue);
+    gemGrad.addColorStop(1, '#0284c7');
+    ctx.fillStyle = gemGrad;
     ctx.beginPath();
-    ctx.moveTo(cx, coreY - 21);
-    ctx.lineTo(cx + 18, coreY);
-    ctx.lineTo(cx, coreY + 21);
-    ctx.lineTo(cx - 18, coreY);
+    ctx.moveTo(cx, coreY - 23);
+    ctx.lineTo(cx + 19, coreY);
+    ctx.lineTo(cx, coreY + 23);
+    ctx.lineTo(cx - 19, coreY);
     ctx.closePath();
     ctx.fill();
     ctx.restore();
 
-    // ------------------------------------------------------------------------
-    // 6. CUELLO Y ROSTRO ANIME ESTILIZADO (SOMBRADO CEL-SHADING REAL)
-    // ------------------------------------------------------------------------
+    // 6. ROSTRO ANIME CINEMATOGRÁFICO CON SOMBREADO SUAVE Y RIM LIGHTING
     ctx.save();
-    // Cuello
-    const neckGrad = ctx.createLinearGradient(cx, 285, cx, 340);
-    neckGrad.addColorStop(0, '#e5b8a2');
-    neckGrad.addColorStop(0.4, '#ffedd5');
+    const neckGrad = ctx.createLinearGradient(cx, 305, cx, 368);
+    neckGrad.addColorStop(0, '#dfa98e');
+    neckGrad.addColorStop(0.45, '#ffedd5');
     neckGrad.addColorStop(1, '#fed7aa');
     ctx.fillStyle = neckGrad;
     ctx.beginPath();
-    ctx.moveTo(cx - 21, 286);
-    ctx.lineTo(cx + 21, 286);
-    ctx.lineTo(cx + 25, 338);
-    ctx.lineTo(cx - 25, 338);
+    ctx.moveTo(cx - 22, 306);
+    ctx.lineTo(cx + 22, 306);
+    ctx.lineTo(cx + 26, 368);
+    ctx.lineTo(cx - 26, 368);
     ctx.closePath();
     ctx.fill();
 
-    // Sombra triangular bajo la barbilla
-    ctx.fillStyle = 'rgba(180, 105, 80, 0.32)';
-    ctx.beginPath();
-    ctx.moveTo(cx - 21, 290);
-    ctx.lineTo(cx + 21, 290);
-    ctx.lineTo(cx, 314);
-    ctx.closePath();
-    ctx.fill();
-
-    // Contorno facial anime (mentón afilado estilo manhwa)
-    const faceGrad = ctx.createLinearGradient(cx, 155, cx, 305);
-    faceGrad.addColorStop(0, '#ffedd5');
-    faceGrad.addColorStop(0.75, '#fed7aa');
-    faceGrad.addColorStop(1, '#f8c39c');
+    // Contorno facial estilizado
+    const faceGrad = ctx.createLinearGradient(cx - 60, 175, cx + 60, 325);
+    faceGrad.addColorStop(0, '#ffe4d0');
+    faceGrad.addColorStop(0.55, '#ffedd5');
+    faceGrad.addColorStop(1, '#f7be97');
     ctx.fillStyle = faceGrad;
 
     ctx.beginPath();
     if (isFemale) {
-      ctx.moveTo(cx - 56, 200);
-      ctx.bezierCurveTo(cx - 58, 252, cx - 42, 284, cx, 300);
-      ctx.bezierCurveTo(cx + 42, 284, cx + 58, 252, cx + 56, 200);
-      ctx.bezierCurveTo(cx + 56, 152, cx + 32, 138, cx, 138);
-      ctx.bezierCurveTo(cx - 32, 138, cx - 56, 152, cx - 56, 200);
+      ctx.moveTo(cx - 58, 218);
+      ctx.bezierCurveTo(cx - 60, 272, cx - 42, 306, cx, 322);
+      ctx.bezierCurveTo(cx + 42, 306, cx + 60, 272, cx + 58, 218);
+      ctx.bezierCurveTo(cx + 58, 168, cx + 34, 152, cx, 152);
+      ctx.bezierCurveTo(cx - 34, 152, cx - 58, 168, cx - 58, 218);
     } else {
-      ctx.moveTo(cx - 59, 198);
-      ctx.bezierCurveTo(cx - 60, 254, cx - 44, 287, cx, 304);
-      ctx.bezierCurveTo(cx + 44, 287, cx + 60, 254, cx + 59, 198);
-      ctx.bezierCurveTo(cx + 59, 150, cx + 34, 136, cx, 136);
-      ctx.bezierCurveTo(cx - 34, 136, cx - 59, 150, cx - 59, 198);
+      ctx.moveTo(cx - 61, 216);
+      ctx.bezierCurveTo(cx - 62, 274, cx - 45, 309, cx, 326);
+      ctx.bezierCurveTo(cx + 45, 309, cx + 62, 274, cx + 61, 216);
+      ctx.bezierCurveTo(cx + 61, 166, cx + 36, 150, cx, 150);
+      ctx.bezierCurveTo(cx - 36, 150, cx - 61, 166, cx - 61, 216);
     }
     ctx.closePath();
     ctx.fill();
 
-    // Sombra suave proyectada por el flequillo en la frente
-    ctx.fillStyle = 'rgba(180, 110, 85, 0.18)';
+    // Rim-light dorado en el borde derecho del rostro y azul neón en el izquierdo
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.55)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.ellipse(cx, 196, 52, 22, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(cx - 58, 222);
+    ctx.bezierCurveTo(cx - 60, 272, cx - 42, 306, cx - 4, 324);
+    ctx.stroke();
 
-    // Orejas
-    ctx.fillStyle = '#fed7aa';
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
     ctx.beginPath();
-    ctx.ellipse(cx - 58, 232, 6, 14, -0.12, 0, Math.PI * 2);
-    ctx.ellipse(cx + 58, 232, 6, 14, 0.12, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(cx + 58, 222);
+    ctx.bezierCurveTo(cx + 60, 272, cx + 42, 306, cx + 4, 324);
+    ctx.stroke();
 
-    // OJOS ANIME DE ALTA DEFINICIÓN (IRIS DEGRADADO + DESTELLOS)
-    const drawAnimeEye = (ex, isLeft) => {
+    // Ojos Anime Gacha de Alta Definición
+    const drawGachaEye = (ex, isLeft) => {
       ctx.save();
-      // Esclerótica blanca con ligera sombra superior
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(ex - 16, 234);
-      ctx.quadraticCurveTo(ex, 222, ex + 16, 234);
-      ctx.quadraticCurveTo(ex, 245, ex - 16, 234);
+      ctx.moveTo(ex - 17, 254);
+      ctx.quadraticCurveTo(ex, 241, ex + 17, 254);
+      ctx.quadraticCurveTo(ex, 266, ex - 17, 254);
       ctx.closePath();
       ctx.fill();
 
-      // Iris degradado (Violeta/Índigo o color de clase)
-      const irisGrad = ctx.createLinearGradient(ex, 225, ex, 243);
-      irisGrad.addColorStop(0, '#1e1b4b');
-      irisGrad.addColorStop(0.5, irisCol);
-      irisGrad.addColorStop(1, '#a855f7');
+      // Iris con degradado zafiro -> azul neón -> dorado
+      const irisGrad = ctx.createLinearGradient(ex, 244, ex, 264);
+      irisGrad.addColorStop(0, '#0f172a');
+      irisGrad.addColorStop(0.45, '#0284c7');
+      irisGrad.addColorStop(0.82, neonBlue);
+      irisGrad.addColorStop(1, '#fde047');
       ctx.fillStyle = irisGrad;
       ctx.beginPath();
-      ctx.ellipse(ex, 234, 8.5, 9.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, 254, 9, 9.8, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pupila oscura
-      ctx.fillStyle = '#050814';
+      ctx.fillStyle = '#030712';
       ctx.beginPath();
-      ctx.ellipse(ex, 234, 4, 4.6, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, 254, 4.2, 4.8, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Destello principal blanco nítido
+      // Catchlights brillantes
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(ex - 3.2, 230.5, 2.8, 0, Math.PI * 2);
-      ctx.arc(ex + 3.2, 237, 1.4, 0, Math.PI * 2);
+      ctx.arc(ex - 3.4, 250, 3, 0, Math.PI * 2);
+      ctx.arc(ex + 3.5, 257, 1.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pestaña superior gruesa y definida estilo manhwa
-      ctx.strokeStyle = '#070a14';
-      ctx.lineWidth = 3.8;
+      // Pestaña superior estilizada
+      ctx.strokeStyle = '#060913';
+      ctx.lineWidth = 4;
       ctx.lineCap = 'round';
       ctx.beginPath();
       if (isLeft) {
-        ctx.moveTo(ex - 18, 232);
-        ctx.quadraticCurveTo(ex - 2, 220, ex + 16, 233);
+        ctx.moveTo(ex - 20, 252);
+        ctx.quadraticCurveTo(ex - 2, 239, ex + 17, 253);
       } else {
-        ctx.moveTo(ex - 16, 233);
-        ctx.quadraticCurveTo(ex + 2, 220, ex + 18, 232);
+        ctx.moveTo(ex - 17, 253);
+        ctx.quadraticCurveTo(ex + 2, 239, ex + 20, 252);
       }
       ctx.stroke();
 
-      // Ceja firme y expresiva
+      // Ceja expresiva
       ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2.6;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
       if (isLeft) {
-        ctx.moveTo(ex - 18, 216);
-        ctx.lineTo(ex + 14, 221);
+        ctx.moveTo(ex - 19, 234);
+        ctx.lineTo(ex + 14, 240);
       } else {
-        ctx.moveTo(ex - 14, 221);
-        ctx.lineTo(ex + 18, 216);
+        ctx.moveTo(ex - 14, 240);
+        ctx.lineTo(ex + 19, 234);
       }
       ctx.stroke();
       ctx.restore();
     };
 
-    drawAnimeEye(cx - 28, true);
-    drawAnimeEye(cx + 28, false);
+    drawGachaEye(cx - 29, true);
+    drawGachaEye(cx + 29, false);
 
-    // Rubor sutil en modo femenino
-    if (isFemale) {
-      ctx.fillStyle = 'rgba(251, 113, 133, 0.28)';
-      ctx.beginPath();
-      ctx.ellipse(cx - 34, 252, 9, 4, 0, 0, Math.PI * 2);
-      ctx.ellipse(cx + 34, 252, 9, 4, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Nariz minimalista anime y sonrisa confiada
+    // Nariz y expresión confiada
     ctx.strokeStyle = '#c27d5e';
     ctx.lineWidth = 1.8;
-    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(cx - 1, 248);
-    ctx.lineTo(cx - 3, 259);
-    ctx.lineTo(cx + 2, 261);
+    ctx.moveTo(cx - 1, 268);
+    ctx.lineTo(cx - 3, 280);
+    ctx.lineTo(cx + 2, 282);
     ctx.stroke();
 
     ctx.strokeStyle = '#7c2d12';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(cx - 13, 276);
-    ctx.quadraticCurveTo(cx, 282, cx + 14, 275);
+    ctx.moveTo(cx - 13, 297);
+    ctx.quadraticCurveTo(cx, 303, cx + 14, 296);
     ctx.stroke();
     ctx.restore();
 
-    // ------------------------------------------------------------------------
-    // 7. CABELLO FRONTAL ANIME DETALLADO CON REFLEJOS AZUL/CIAN
-    // ------------------------------------------------------------------------
+    // 7. CABELLO FRONTAL CON CURVAS BEZIER FLUIDAS Y REFLEJOS NEON BLUE + GOLD
     ctx.save();
-    const frontHairGrad = ctx.createLinearGradient(cx, 115, cx, 245);
-    frontHairGrad.addColorStop(0, '#070a13');
-    frontHairGrad.addColorStop(0.7, '#0c1222');
-    frontHairGrad.addColorStop(1, '#162038');
-    ctx.fillStyle = frontHairGrad;
+    const hairFrontGrad = ctx.createLinearGradient(cx - 75, 125, cx + 75, 265);
+    hairFrontGrad.addColorStop(0, '#070b15');
+    hairFrontGrad.addColorStop(0.55, '#0f172a');
+    hairFrontGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = hairFrontGrad;
 
-    if (isFemale) {
-      ctx.beginPath();
-      ctx.moveTo(cx - 72, 220);
-      ctx.bezierCurveTo(cx - 76, 145, cx - 38, 120, cx, 120);
-      ctx.bezierCurveTo(cx + 38, 120, cx + 76, 145, cx + 72, 220);
-      // Mechones laterales largos enmarcando el rostro
-      ctx.lineTo(cx + 68, 315);
-      ctx.lineTo(cx + 54, 240);
-      ctx.lineTo(cx + 42, 198);
-      ctx.lineTo(cx + 26, 228);
-      ctx.lineTo(cx + 12, 194);
-      ctx.lineTo(cx, 230);
-      ctx.lineTo(cx - 14, 192);
-      ctx.lineTo(cx - 28, 226);
-      ctx.lineTo(cx - 42, 198);
-      ctx.lineTo(cx - 54, 240);
-      ctx.lineTo(cx - 68, 315);
-      ctx.closePath();
-      ctx.fill();
-    } else {
-      // Mechones puntiagudos estilo Sung Jin-Woo / Protagonista Manhwa (Imagen 1)
-      ctx.beginPath();
-      ctx.moveTo(cx - 66, 222);
-      ctx.lineTo(cx - 78, 178);
-      ctx.lineTo(cx - 60, 184);
-      ctx.lineTo(cx - 66, 138);
-      ctx.lineTo(cx - 42, 156);
-      ctx.lineTo(cx - 28, 116);
-      ctx.lineTo(cx - 8, 146);
-      ctx.lineTo(cx + 12, 112);
-      ctx.lineTo(cx + 28, 148);
-      ctx.lineTo(cx + 54, 128);
-      ctx.lineTo(cx + 52, 168);
-      ctx.lineTo(cx + 76, 164);
-      ctx.lineTo(cx + 66, 222);
-      // Puntas del flequillo sobre los ojos
-      ctx.lineTo(cx + 54, 196);
-      ctx.lineTo(cx + 44, 232);
-      ctx.lineTo(cx + 28, 192);
-      ctx.lineTo(cx + 14, 234);
-      ctx.lineTo(cx, 190);
-      ctx.lineTo(cx - 16, 232);
-      ctx.lineTo(cx - 30, 190);
-      ctx.lineTo(cx - 44, 228);
-      ctx.lineTo(cx - 54, 196);
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // Reflejo de luz azul/cian sobre el cabello
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.42)';
-    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(cx - 42, 164);
-    ctx.quadraticCurveTo(cx, 150, cx + 42, 164);
+    ctx.moveTo(cx - 72, 242);
+    ctx.bezierCurveTo(cx - 86, 175, cx - 44, 126, cx, 126);
+    ctx.bezierCurveTo(cx + 44, 126, cx + 86, 175, cx + 72, 242);
+    // Mechones orgánicos fluidos (curvas bezier, nunca triángulos rectos)
+    ctx.quadraticCurveTo(cx + 66, 212, cx + 56, 204);
+    ctx.quadraticCurveTo(cx + 52, 236, cx + 44, 250);
+    ctx.quadraticCurveTo(cx + 38, 220, cx + 28, 202);
+    ctx.quadraticCurveTo(cx + 22, 238, cx + 12, 254);
+    ctx.quadraticCurveTo(cx + 6, 218, cx - 2, 200);
+    ctx.quadraticCurveTo(cx - 10, 236, cx - 20, 252);
+    ctx.quadraticCurveTo(cx - 26, 218, cx - 36, 202);
+    ctx.quadraticCurveTo(cx - 44, 234, cx - 54, 248);
+    ctx.quadraticCurveTo(cx - 62, 216, cx - 72, 242);
+    ctx.closePath();
+    ctx.fill();
+
+    // Brillo especular doble en el cabello (Neon Blue izquierda, Gold derecha)
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.55)';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(cx - 48, 178);
+    ctx.quadraticCurveTo(cx - 16, 162, cx + 4, 170);
     ctx.stroke();
 
-    // Corona astral dorada si alcanza Etapa >= 3
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(cx + 12, 170);
+    ctx.quadraticCurveTo(cx + 34, 162, cx + 52, 180);
+    ctx.stroke();
+
     if (stage >= 3) {
-      ctx.shadowBlur = 14;
-      ctx.shadowColor = '#fbbf24';
-      ctx.strokeStyle = '#fbbf24';
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = royalGold;
+      ctx.strokeStyle = royalGold;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(cx - 46, 138);
-      ctx.lineTo(cx - 24, 112);
-      ctx.lineTo(cx, 128);
-      ctx.lineTo(cx + 24, 112);
-      ctx.lineTo(cx + 46, 138);
+      ctx.moveTo(cx - 46, 146);
+      ctx.lineTo(cx - 24, 118);
+      ctx.lineTo(cx, 136);
+      ctx.lineTo(cx + 24, 118);
+      ctx.lineTo(cx + 46, 146);
       ctx.stroke();
     }
     ctx.restore();
 
-    // ------------------------------------------------------------------------
-    // 8. ARMA MÁGICA RESPLANDECIENTE CON ESTELAS DE ENERGÍA (DERECHA)
-    // ------------------------------------------------------------------------
-    const sx = 532;
+    // 8. ARMA LEGENDARIA CON ENERGÍA NEON BLUE + GOLD (DERECHA)
+    const sx = 568;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
 
-    // Resplandor ambiental vertical del arma
-    const weaponAura = ctx.createRadialGradient(sx, 330, 10, sx, 330, 180);
+    const weaponAura = ctx.createRadialGradient(sx, 360, 12, sx, 360, 200);
     weaponAura.addColorStop(0, 'rgba(0, 240, 255, 0.55)');
-    weaponAura.addColorStop(0.5, 'rgba(59, 130, 246, 0.22)');
+    weaponAura.addColorStop(0.5, 'rgba(251, 191, 36, 0.25)');
     weaponAura.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = weaponAura;
-    ctx.fillRect(350, 80, 330, 560);
+    ctx.fillRect(360, 80, 360, 680);
 
-    // Hoja luminosa de energía cian y núcleo blanco puro
+    // Hoja / Báculo radiante
+    const bladeGrad = ctx.createLinearGradient(sx - 18, 110, sx + 18, 570);
+    bladeGrad.addColorStop(0, '#ffffff');
+    bladeGrad.addColorStop(0.45, neonBlue);
+    bladeGrad.addColorStop(1, royalGold);
+    ctx.fillStyle = bladeGrad;
     ctx.shadowBlur = 28;
-    ctx.shadowColor = cyan;
+    ctx.shadowColor = neonBlue;
 
-    if (weaponType === 'staff') {
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.moveTo(sx, 145);
-      ctx.lineTo(sx, 670);
-      ctx.stroke();
-
-      ctx.strokeStyle = cyan;
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(sx, 125, 24, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(sx, 125, 11, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (weaponType === 'spear') {
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.moveTo(sx, 175);
-      ctx.lineTo(sx, 670);
-      ctx.stroke();
-
-      ctx.fillStyle = cyan;
-      ctx.beginPath();
-      ctx.moveTo(sx, 85);
-      ctx.lineTo(sx + 20, 180);
-      ctx.lineTo(sx, 164);
-      ctx.lineTo(sx - 20, 180);
-      ctx.closePath();
-      ctx.fill();
-    } else {
-      // Espada de Energía Cian (Idéntica a la Primera Imagen)
-      const bladeGrad = ctx.createLinearGradient(sx - 16, 110, sx + 16, 515);
-      bladeGrad.addColorStop(0, '#ffffff');
-      bladeGrad.addColorStop(0.5, cyan);
-      bladeGrad.addColorStop(1, '#0284c7');
-      ctx.fillStyle = bladeGrad;
-
-      ctx.beginPath();
-      ctx.moveTo(sx, 102);
-      ctx.lineTo(sx + 15, 152);
-      ctx.lineTo(sx + 12, 515);
-      ctx.lineTo(sx - 12, 515);
-      ctx.lineTo(sx - 15, 152);
-      ctx.closePath();
-      ctx.fill();
-
-      // Núcleo blanco incandescente central
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 4.5;
-      ctx.beginPath();
-      ctx.moveTo(sx, 122);
-      ctx.lineTo(sx, 510);
-      ctx.stroke();
-    }
-
-    // Estelas espirales de energía envolviendo la hoja
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(sx - 34, 195);
-    ctx.bezierCurveTo(sx + 46, 235, sx - 44, 310, sx + 38, 365);
-    ctx.bezierCurveTo(sx - 30, 415, sx + 34, 460, sx - 18, 495);
-    ctx.stroke();
+    ctx.moveTo(sx, 108);
+    ctx.lineTo(sx + 16, 166);
+    ctx.lineTo(sx + 13, 565);
+    ctx.lineTo(sx - 13, 565);
+    ctx.lineTo(sx - 16, 166);
+    ctx.closePath();
+    ctx.fill();
 
-    ctx.strokeStyle = cyan;
+    // Estelas espirales duales (una Neon Blue, otra Royal Gold)
+    ctx.strokeStyle = neonBlue;
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(sx + 34, 165);
-    ctx.bezierCurveTo(sx - 44, 240, sx + 48, 325, sx - 36, 405);
+    ctx.moveTo(sx - 38, 210);
+    ctx.bezierCurveTo(sx + 52, 260, sx - 48, 345, sx + 42, 415);
+    ctx.bezierCurveTo(sx - 34, 475, sx + 38, 520, sx - 20, 560);
+    ctx.stroke();
+
+    ctx.shadowColor = royalGold;
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(sx + 38, 180);
+    ctx.bezierCurveTo(sx - 48, 265, sx + 52, 360, sx - 40, 455);
     ctx.stroke();
     ctx.restore();
 
-    // Guarda dorada ornamentada y empuñadura (en modo normal para nitidez metálica)
-    if (weaponType !== 'staff' && weaponType !== 'spear') {
-      ctx.save();
-      const goldGrad = ctx.createLinearGradient(sx - 44, 512, sx + 44, 532);
-      goldGrad.addColorStop(0, '#92400e');
-      goldGrad.addColorStop(0.5, '#fde047');
-      goldGrad.addColorStop(1, '#92400e');
-      ctx.fillStyle = goldGrad;
-      ctx.beginPath();
-      ctx.moveTo(sx - 46, 514);
-      ctx.lineTo(sx + 46, 514);
-      ctx.lineTo(sx + 36, 530);
-      ctx.lineTo(sx - 36, 530);
-      ctx.closePath();
-      ctx.fill();
+    // Guarda Dorada Ornamentada
+    ctx.save();
+    const guardGrad = ctx.createLinearGradient(sx - 50, 562, sx + 50, 586);
+    guardGrad.addColorStop(0, '#92400e');
+    guardGrad.addColorStop(0.5, '#fde047');
+    guardGrad.addColorStop(1, '#92400e');
+    ctx.fillStyle = guardGrad;
+    ctx.beginPath();
+    ctx.moveTo(sx - 52, 564);
+    ctx.lineTo(sx + 52, 564);
+    ctx.lineTo(sx + 38, 584);
+    ctx.lineTo(sx - 38, 584);
+    ctx.closePath();
+    ctx.fill();
 
-      // Empuñadura
-      ctx.fillStyle = '#0f172a';
-      ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 2;
-      ctx.fillRect(sx - 8, 530, 16, 62);
-      ctx.strokeRect(sx - 8, 530, 16, 62);
-
-      // Pomo con gema cian
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(sx, 600, 11, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = cyan;
-      ctx.beginPath();
-      ctx.arc(sx, 600, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-  }, [gender, accentColor, eyeColor, weaponType, stage]);
+    ctx.fillStyle = '#090e1d';
+    ctx.strokeStyle = royalGold;
+    ctx.lineWidth = 2.2;
+    ctx.fillRect(sx - 9, 584, 18, 72);
+    ctx.strokeRect(sx - 9, 584, 18, 72);
+    ctx.restore();
+  }, [gender, weaponType, stage]);
 
   return (
     <canvas
       ref={canvasRef}
-      width={680}
-      height={760}
+      width={720}
+      height={860}
       style={{ width: '100%', height: 'auto', display: 'block' }}
     />
   );
 }
 
 // ============================================================================
-// TARJETA COMPLETA DEL CAZADOR + PANEL EVOLUCIÓN INFINITA (ESTILO IMAGEN 1)
+// TARJETA LEGENDARY GACHA CHARACTER + EVOLUCIÓN INFINITA
 // ============================================================================
-function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, gender, onToggleGender, passiveClassBonus }) {
-  const race = hunterClass?.race || RACES_POOL[0];
+function JrpgFantasyPortrait({
+  hunterClass,
+  hunterGrade,
+  level,
+  classEvolution,
+  gender,
+  onToggleGender,
+  passiveClassBonus,
+  customGachaArt,
+  onUploadGachaArt
+}) {
   const cls = hunterClass?.cls || {
     name: 'Centinela Infinito',
     weaponType: 'sword',
@@ -1505,83 +1416,157 @@ function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, 
   };
   const stage = classEvolution.stage;
   const isFemale = gender === 'female';
+  const [staticFallbackFailed, setStaticFallbackFailed] = useState(false);
+
+  useEffect(() => {
+    setStaticFallbackFailed(false);
+  }, [gender]);
+
+  const uploadedSrc = customGachaArt?.[gender] || null;
+  const staticPath = isFemale ? '/avatar-female.png' : '/avatar-male.png';
+  const activeImageSrc = uploadedSrc || (!staticFallbackFailed ? staticPath : null);
+  const starCount = Math.min(6, Math.max(4, 3 + stage));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-      {/* TARJETA CON BORDE NEÓN CIAN-VIOLETA-MAGENTA */}
-      <div className="anime-holo-outer">
-        <div className="anime-holo-inner">
-          {/* BARRA SUPERIOR: NV • ETAPA Y SELECTOR DE GÉNERO */}
+      {/* TARJETA LEGENDARY GACHA CON NEON BLUE & GOLD LIGHTING */}
+      <div className="gacha-card-outer">
+        <div className="gacha-card-inner">
+          <div className="gacha-corner-tl" />
+          <div className="gacha-corner-tr" />
+          <div className="gacha-corner-bl" />
+          <div className="gacha-corner-br" />
+
+          {/* BARRA SUPERIOR: NV • ETAPA + CONTROLES DE GÉNERO Y ARTE GACHA */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '8px',
-            marginBottom: '10px'
+            flexWrap: 'wrap',
+            gap: '6px',
+            marginBottom: '10px',
+            position: 'relative',
+            zIndex: 5
           }}>
-            <span className="sys-badge" style={{
-              background: 'rgba(212, 175, 55, 0.18)',
-              color: '#fde047',
-              border: '1px solid rgba(251, 191, 36, 0.65)',
-              fontFamily: 'Orbitron, sans-serif',
-              fontSize: '10px'
-            }}>
-              NV. {level} • ETAPA {stage}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="sys-badge" style={{
+                background: 'linear-gradient(90deg, rgba(251,191,36,0.24), rgba(0,240,255,0.16))',
+                color: '#fde047',
+                border: '1px solid rgba(251, 191, 36, 0.75)',
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: '10px'
+              }}>
+                NV. {level} • ETAPA {stage}
+              </span>
+              <span style={{ color: '#fbbf24', fontSize: '11px', letterSpacing: '1px', textShadow: '0 0 8px rgba(251,191,36,0.8)' }}>
+                {'★'.repeat(starCount)}
+              </span>
+            </div>
 
-            <button
-              type="button"
-              onClick={onToggleGender}
-              className="sys-btn"
-              style={{
-                padding: '5px 12px',
-                fontSize: '10px',
-                background: 'rgba(14, 116, 144, 0.25)',
-                border: '1px solid rgba(0, 240, 255, 0.55)',
-                color: '#e0f2fe',
-                borderRadius: '999px'
-              }}
-            >
-              <UserCheck size={12} color="#00f0ff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <label
+                className="sys-btn"
+                title="Sube la ilustración Gacha generada desde tu galería"
+                style={{
+                  padding: '5px 10px',
+                  fontSize: '9px',
+                  background: 'rgba(251, 191, 36, 0.16)',
+                  border: '1px solid rgba(251, 191, 36, 0.65)',
+                  color: '#fde047',
+                  borderRadius: '999px',
+                  cursor: 'pointer'
+                }}
+              >
+                <ImageIcon size={11} color="#fbbf24" /> ARTE GACHA
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={(e) => onUploadGachaArt && onUploadGachaArt(e, gender)}
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={onToggleGender}
+                className="sys-btn"
+                style={{
+                  padding: '5px 11px',
+                  fontSize: '10px',
+                  background: 'rgba(0, 240, 255, 0.16)',
+                  border: '1px solid rgba(0, 240, 255, 0.6)',
+                  color: '#e0f2fe',
+                  borderRadius: '999px'
+                }}
+              >
+                <UserCheck size={12} color="#00f0ff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
+              </button>
+            </div>
           </div>
 
-          {/* LIENZO DE RETRATO ANIME/MANHWA HD */}
+          {/* CONTENEDOR DE ILUSTRACIÓN LEGENDARY GACHA */}
           <div style={{
-            borderRadius: '12px',
+            borderRadius: '13px',
             overflow: 'hidden',
             position: 'relative',
-            border: '1px solid rgba(0, 240, 255, 0.35)',
-            boxShadow: 'inset 0 0 24px rgba(0, 240, 255, 0.16)'
+            border: '1px solid rgba(251, 191, 36, 0.45)',
+            boxShadow: 'inset 0 0 28px rgba(0, 240, 255, 0.2)'
           }}>
-            <AnimeHunterCanvas
-              gender={gender}
-              accentColor={cls.accentColor || '#00f0ff'}
-              eyeColor={race.eyeColor || '#6d28d9'}
-              weaponType={cls.weaponType || 'sword'}
-              stage={stage}
+            {activeImageSrc ? (
+              <img
+                src={activeImageSrc}
+                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Gacha`}
+                onError={() => !uploadedSrc && setStaticFallbackFailed(true)}
+                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
+              />
+            ) : (
+              <LegendaryGachaCanvas
+                gender={gender}
+                weaponType={cls.weaponType || 'sword'}
+                stage={stage}
+              />
+            )}
+
+            {/* RESPLANDOR ATMOSFÉRICO NEON BLUE & GOLD SOBRE EL RETRATO */}
+            <div
+              className="gacha-aura-overlay"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                background: 'radial-gradient(circle at 20% 25%, rgba(0,240,255,0.16) 0%, transparent 45%), radial-gradient(circle at 80% 20%, rgba(251,191,36,0.16) 0%, transparent 45%)'
+              }}
             />
 
-            {/* TÍTULO DE CLASE Y SELLO DE GRADO SUPERPUESTOS EN LA BASE */}
+            {/* PLACA INFERIOR DE CLASE Y SELLO CIRCULAR DE GRADO */}
             <div style={{
               position: 'absolute',
               bottom: 0,
               left: 0,
               right: 0,
-              background: 'linear-gradient(0deg, rgba(4,6,14,0.98) 0%, rgba(4,6,14,0.82) 62%, transparent 100%)',
-              padding: '32px 14px 12px',
+              background: 'linear-gradient(0deg, rgba(3,5,12,0.98) 0%, rgba(3,5,12,0.86) 62%, transparent 100%)',
+              padding: '38px 14px 12px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'flex-end',
               gap: '10px'
             }}>
-              <div style={{ flex: 1, textAlign: 'center', paddingLeft: '36px' }}>
+              <div style={{ flex: 1, textAlign: 'center', paddingLeft: '40px' }}>
+                <div style={{
+                  fontSize: '9px',
+                  fontFamily: 'Orbitron, sans-serif',
+                  color: '#00f0ff',
+                  letterSpacing: '0.16em',
+                  marginBottom: '2px'
+                }}>
+                  LEGENDARY AWAKENED CLASS
+                </div>
                 <div className="font-souls" style={{
                   fontSize: '16px',
                   fontWeight: 900,
                   color: '#ffffff',
                   letterSpacing: '0.09em',
-                  textShadow: '0 2px 12px rgba(0, 240, 255, 0.45)'
+                  textShadow: '0 2px 14px rgba(251, 191, 36, 0.55)'
                 }}>
                   {classEvolution.title.toUpperCase()}
                 </div>
@@ -1590,22 +1575,22 @@ function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, 
                 </div>
               </div>
 
-              {/* SELLO CIRCULAR DE GRADO */}
+              {/* SELLO CIRCULAR DE GRADO CON DOBLE ARO DORADO Y CIAN */}
               <div style={{
-                width: '54px',
-                height: '54px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(0,240,255,0.22) 0%, rgba(5,8,20,0.96) 76%)',
-                border: '1.8px solid #00f0ff',
-                boxShadow: '0 0 16px rgba(0, 240, 255, 0.45)',
+                background: 'radial-gradient(circle, rgba(251,191,36,0.24) 0%, rgba(4,7,18,0.96) 76%)',
+                border: '2px solid #fbbf24',
+                boxShadow: '0 0 18px rgba(0, 240, 255, 0.45), inset 0 0 10px rgba(251, 191, 36, 0.4)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <span style={{ fontSize: '8px', color: '#7dd3fc', fontWeight: 800 }}>GRADO</span>
-                <span className="font-hud" style={{ fontSize: '15px', fontWeight: 900, color: '#ffffff', lineHeight: 1.1 }}>
+                <span style={{ fontSize: '8px', color: '#00f0ff', fontWeight: 800 }}>GRADO</span>
+                <span className="font-hud" style={{ fontSize: '16px', fontWeight: 900, color: '#ffffff', lineHeight: 1.1 }}>
                   {hunterGrade}
                 </span>
               </div>
@@ -1614,26 +1599,26 @@ function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, 
         </div>
       </div>
 
-      {/* PANEL INFERIOR: EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA (ESTILO IMAGEN 1) */}
-      <div className="sys-window" style={{ padding: '16px', borderColor: 'rgba(56, 189, 248, 0.42)' }}>
+      {/* PANEL INFERIOR: EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA */}
+      <div className="sys-window" style={{ padding: '16px', borderColor: 'rgba(251, 191, 36, 0.45)' }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
           marginBottom: '12px'
         }}>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #d4af37)' }} />
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #fbbf24)' }} />
           <h2 className="font-souls" style={{ fontSize: '14px', color: '#fde047', fontWeight: 800, textAlign: 'center' }}>
             EVOLUCIÓN DE CLASE INFINITA (NV. {level})
           </h2>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #d4af37, transparent)' }} />
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #fbbf24, transparent)' }} />
         </div>
 
         <div style={{
           padding: '14px',
           borderRadius: '12px',
           background: 'radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.14) 0%, rgba(5, 9, 20, 0.94) 80%)',
-          border: '1px solid rgba(0, 240, 255, 0.5)',
+          border: '1px solid rgba(0, 240, 255, 0.52)',
           boxShadow: 'inset 0 0 18px rgba(0, 240, 255, 0.12)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -1645,9 +1630,9 @@ function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, 
               PASIVA ÚNICA
             </span>
             <span className="sys-badge" style={{
-              background: 'rgba(14, 116, 144, 0.3)',
-              color: '#ffffff',
-              border: '1px solid rgba(0, 240, 255, 0.55)'
+              background: 'rgba(251, 191, 36, 0.18)',
+              color: '#fde047',
+              border: '1px solid rgba(251, 191, 36, 0.6)'
             }}>
               +{passiveClassBonus} PWR
             </span>
@@ -1782,7 +1767,7 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
     <div style={{
       borderRadius: '12px',
       overflow: 'hidden',
-      border: '2px solid rgba(212, 175, 55, 0.5)',
+      border: '2px solid rgba(251, 191, 36, 0.5)',
       background: '#060a14',
       marginBottom: '14px',
       position: 'relative'
@@ -1798,7 +1783,7 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
         zIndex: 2,
         pointerEvents: 'none'
       }}>
-        <span className="sys-badge" style={{ background: 'rgba(4,6,12,0.85)', color: '#fde047', border: '1px solid #d4af37' }}>
+        <span className="sys-badge" style={{ background: 'rgba(4,6,12,0.85)', color: '#fde047', border: '1px solid #fbbf24' }}>
           MAPA 2D EN VIVO • {cityName.toUpperCase()}
         </span>
         <span className="sys-badge" style={{ background: 'rgba(4,6,12,0.85)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
@@ -1825,8 +1810,8 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
         <rect x="0" y="168" width="540" height="26" fill="#334155" />
 
         <g>
-          <rect x="232" y="92" width="76" height="54" fill="#1e293b" stroke="#d4af37" strokeWidth="2" />
-          <polygon points="226,92 270,64 314,92" fill="#991b1b" stroke="#d4af37" strokeWidth="1.5" />
+          <rect x="232" y="92" width="76" height="54" fill="#1e293b" stroke="#fbbf24" strokeWidth="2" />
+          <polygon points="226,92 270,64 314,92" fill="#991b1b" stroke="#fbbf24" strokeWidth="1.5" />
           <rect x="261" y="120" width="18" height="26" fill="#090d16" />
           <text x="270" y="58" textAnchor="middle" fill="#fde047" fontSize="9" fontWeight="bold">AYUNTAMIENTO</text>
         </g>
@@ -1879,7 +1864,7 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
               style={{ cursor: 'pointer' }}
               onClick={() => onSelectCharacter(char.id)}
             >
-              <circle cx={char.mapX} cy={char.mapY - 28} r="10" fill="#090d16" stroke={isSelected ? '#fb7185' : '#d4af37'} strokeWidth="1.5" />
+              <circle cx={char.mapX} cy={char.mapY - 28} r="10" fill="#090d16" stroke={isSelected ? '#fb7185' : '#fbbf24'} strokeWidth="1.5" />
               <text x={char.mapX} y={char.mapY - 25} textAnchor="middle" fill={isSelected ? '#fb7185' : '#fde047'} fontSize="8" fontWeight="bold">
                 {isSelected ? '♥' : '!'}
               </text>
@@ -1924,13 +1909,13 @@ function ExerciseAnimationModal({ exercise, onClose }) {
         <h3 className="font-souls" style={{ fontSize: '18px', color: '#fff', marginTop: '8px' }}>
           {exercise.name}
         </h3>
-        <p style={{ fontSize: '12px', color: '#d4af37', marginBottom: '12px' }}>
+        <p style={{ fontSize: '12px', color: '#fbbf24', marginBottom: '12px' }}>
           {exercise.sets} • {exercise.focus}
         </p>
 
         <div style={{
           background: 'radial-gradient(circle at 50% 50%, #111827 0%, #05070d 100%)',
-          border: '1px solid rgba(212, 175, 55, 0.4)',
+          border: '1px solid rgba(251, 191, 36, 0.4)',
           borderRadius: '12px',
           padding: '14px',
           marginBottom: '12px'
@@ -1946,7 +1931,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
                 <circle cx="62" cy="92" r="9" fill="#00f0ff" />
                 <rect x="74" y="92" width="75" height="9" rx="4" fill="#cbd5e1" />
                 <g className="bio-press">
-                  <line x1="105" y1="92" x2="105" y2="62" stroke="#d4af37" strokeWidth="4" strokeLinecap="round" />
+                  <line x1="105" y1="92" x2="105" y2="62" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
                   <line x1="75" y1="62" x2="135" y2="62" stroke="#f8fafc" strokeWidth="3" />
                   <circle cx="75" cy="62" r="8" fill="#be123c" />
                   <circle cx="135" cy="62" r="8" fill="#be123c" />
@@ -1959,7 +1944,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
                 <g className="bio-squat">
                   <circle cx="110" cy="40" r="10" fill="#00f0ff" />
                   <line x1="110" y1="52" x2="110" y2="92" stroke="#cbd5e1" strokeWidth="6" strokeLinecap="round" />
-                  <line x1="72" y1="56" x2="148" y2="56" stroke="#d4af37" strokeWidth="3.5" />
+                  <line x1="72" y1="56" x2="148" y2="56" stroke="#fbbf24" strokeWidth="3.5" />
                   <circle cx="72" cy="56" r="8" fill="#be123c" />
                   <circle cx="148" cy="56" r="8" fill="#be123c" />
                   <line x1="110" y1="92" x2="94" y2="130" stroke="#94a3b8" strokeWidth="5" strokeLinecap="round" />
@@ -1970,7 +1955,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
 
             {animType === 'pull' && (
               <g>
-                <line x1="50" y1="22" x2="170" y2="22" stroke="#d4af37" strokeWidth="4" strokeLinecap="round" />
+                <line x1="50" y1="22" x2="170" y2="22" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
                 <g className="bio-pull">
                   <circle cx="110" cy="46" r="9" fill="#00f0ff" />
                   <line x1="110" y1="56" x2="110" y2="96" stroke="#cbd5e1" strokeWidth="6" strokeLinecap="round" />
@@ -2022,7 +2007,7 @@ function AuthPortal({ onAuthenticated }) {
     setLoading(true);
     try {
       const passHash = await hashSecret(passwordInput);
-      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v11') || '{}');
+      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v12') || '{}');
 
       if (authMode === 'register') {
         if (usersDb[cleanEmail]) {
@@ -2038,7 +2023,7 @@ function AuthPortal({ onAuthenticated }) {
           createdAt: new Date().toISOString()
         };
         usersDb[cleanEmail] = newAccount;
-        localStorage.setItem('pex_users_registry_v11', JSON.stringify(usersDb));
+        localStorage.setItem('pex_users_registry_v12', JSON.stringify(usersDb));
         onAuthenticated(newAccount);
       } else {
         const existing = usersDb[cleanEmail];
@@ -2095,7 +2080,7 @@ function AuthPortal({ onAuthenticated }) {
         <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {authMode === 'register' && (
             <div>
-              <label style={{ fontSize: '11px', color: '#d4af37', fontWeight: 700 }}>NOMBRE CLAVE DE CAZADOR</label>
+              <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>NOMBRE CLAVE DE CAZADOR</label>
               <input
                 className="sys-input"
                 placeholder="Ej: ORIGEN / AKIRA"
@@ -2106,7 +2091,7 @@ function AuthPortal({ onAuthenticated }) {
           )}
 
           <div>
-            <label style={{ fontSize: '11px', color: '#d4af37', fontWeight: 700 }}>
+            <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>
               <Mail size={12} style={{ display: 'inline', marginRight: '4px' }} />
               CORREO ELECTRÓNICO O USUARIO
             </label>
@@ -2121,7 +2106,7 @@ function AuthPortal({ onAuthenticated }) {
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: '#d4af37', fontWeight: 700 }}>
+            <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>
               <KeyRound size={12} style={{ display: 'inline', marginRight: '4px' }} />
               CONTRASEÑA DE ACCESO
             </label>
@@ -2170,7 +2155,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('pex_permanent_session_v11');
+      const saved = localStorage.getItem('pex_permanent_session_v12');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -2179,15 +2164,15 @@ export default function App() {
 
   const handleAuthenticated = (account) => {
     setCurrentUser(account);
-    localStorage.setItem('pex_permanent_session_v11', JSON.stringify(account));
+    localStorage.setItem('pex_permanent_session_v12', JSON.stringify(account));
   };
 
   const handleDeleteAccount = (emailToDelete) => {
-    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v11') || '{}');
+    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v12') || '{}');
     delete usersDb[emailToDelete];
-    localStorage.setItem('pex_users_registry_v11', JSON.stringify(usersDb));
-    localStorage.removeItem(`pex_user_data_v11_${emailToDelete}`);
-    localStorage.removeItem('pex_permanent_session_v11');
+    localStorage.setItem('pex_users_registry_v12', JSON.stringify(usersDb));
+    localStorage.removeItem(`pex_user_data_v12_${emailToDelete}`);
+    localStorage.removeItem('pex_permanent_session_v12');
     setCurrentUser(null);
   };
 
@@ -2208,7 +2193,7 @@ export default function App() {
 // ESPACIO DE TRABAJO DEL CAZADOR (TODO INICIA ESTRICTAMENTE DESDE 0)
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
-  const storageKey = `pex_user_data_v11_${currentUser.email}`;
+  const storageKey = `pex_user_data_v12_${currentUser.email}`;
 
   const loadUserState = () => {
     try {
@@ -2246,10 +2231,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     censoredPreview: null,
   });
 
+  const [customGachaArt, setCustomGachaArt] = useState(() => initialData?.customGachaArt || { male: null, female: null });
   const [hunterClass, setHunterClass] = useState(() => initialData?.hunterClass || null);
   const [savedLifts, setSavedLifts] = useState(() => initialData?.savedLifts || ZERO_LIFTS);
 
-  // CONTADORES INICIADOS STRICTAMENTE DESDE 0
   const [lp, setLp] = useState(() => initialData?.lp ?? 0);
   const [exp, setExp] = useState(() => initialData?.exp ?? 0);
   const [streak, setStreak] = useState(() => initialData?.streak ?? 0);
@@ -2325,28 +2310,53 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   }, [hunterGrade, awakened]);
 
   useEffect(() => {
-    const payload = {
-      awakened,
-      profile,
-      hunterClass,
-      savedLifts,
-      lp,
-      exp,
-      streak,
-      unlockedInventory,
-      completedChapters,
-      cityName,
-      builtBuildings,
-      characterStates,
-      friends,
-      quests,
-      nextWeekQueue,
-      sleepLog,
-      yearlyRecap,
-    };
-    localStorage.setItem(storageKey, JSON.stringify(payload));
+    try {
+      const payload = {
+        awakened,
+        profile,
+        customGachaArt,
+        hunterClass,
+        savedLifts,
+        lp,
+        exp,
+        streak,
+        unlockedInventory,
+        completedChapters,
+        cityName,
+        builtBuildings,
+        characterStates,
+        friends,
+        quests,
+        nextWeekQueue,
+        sleepLog,
+        yearlyRecap,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    } catch {
+      // Si el almacenamiento local excede cuota por imágenes muy grandes, guardar sin customGachaArt
+      const fallbackPayload = {
+        awakened,
+        profile,
+        hunterClass,
+        savedLifts,
+        lp,
+        exp,
+        streak,
+        unlockedInventory,
+        completedChapters,
+        cityName,
+        builtBuildings,
+        characterStates,
+        friends,
+        quests,
+        nextWeekQueue,
+        sleepLog,
+        yearlyRecap,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
+    }
   }, [
-    storageKey, awakened, profile, hunterClass, savedLifts,
+    storageKey, awakened, profile, customGachaArt, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
     friends, quests, nextWeekQueue, sleepLog, yearlyRecap
@@ -2357,7 +2367,30 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setTimeout(() => setToast(null), 4600);
   };
 
-  // FUNCIÓN PARA REINICIAR TODO EL PROGRESO ESTRICTAMENTE A 0
+  // CARGA Y COMPRESIÓN LIGERA DE ARTE GACHA DESDE GALERÍA
+  const handleUploadGachaArt = (e, targetGender) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        const maxW = 720;
+        const scale = Math.min(1, maxW / img.width);
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        const compressedUrl = c.toDataURL('image/jpeg', 0.88);
+        setCustomGachaArt((prev) => ({ ...prev, [targetGender]: compressedUrl }));
+        triggerToast(`¡Arte Gacha ${targetGender === 'female' ? 'Femenino' : 'Masculino'} equipado con éxito!`);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const resetProgressToZero = () => {
     setLp(0);
     setExp(0);
@@ -2604,10 +2637,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
         ctx.fillStyle = '#04060b';
         ctx.fillRect(65, 12, 110, 58);
-        ctx.strokeStyle = '#d4af37';
+        ctx.strokeStyle = '#fbbf24';
         ctx.lineWidth = 2;
         ctx.strokeRect(65, 12, 110, 58);
-        ctx.fillStyle = '#d4af37';
+        ctx.fillStyle = '#fbbf24';
         ctx.font = 'bold 10px monospace';
         ctx.fillText('ROSTRO CENSURADO', 71, 40);
         ctx.fillText('AES-256 LOCAL', 82, 54);
@@ -2653,7 +2686,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const initGrade = computeHunterGradeData(initialLifts, profile.weightKg).currentStd.grade;
     prevGradeRef.current = initGrade;
 
-    // TODO EMPIEZA ESTRICTAMENTE EN 0 AL DESPERTAR
     setHunterClass(assigned);
     setLp(0);
     setExp(0);
@@ -2701,7 +2733,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         <canvas ref={canvasRef} style={{ display: 'none' }} />
         {toast && (
           <div className="toast-alert">
-            <Sparkles size={18} color="#d4af37" />
+            <Sparkles size={18} color="#fbbf24" />
             <span>{toast}</span>
           </div>
         )}
@@ -2712,7 +2744,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.15)', color: '#d4af37', border: '1px solid #d4af37' }}>
+            <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid #fbbf24' }}>
               [ALERTA DEL SISTEMA // INICIO DESDE 0]
             </span>
             <h1 className="font-souls" style={{ fontSize: '25px', marginTop: '10px', color: '#fff' }}>
@@ -2722,14 +2754,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               Paso {surveyStep} de 5 — Calibración inicial del Cazador
             </p>
             <div className="progress-track" style={{ marginTop: '12px' }}>
-              <div className="progress-fill" style={{ width: `${surveyStep * 20}%`, background: 'linear-gradient(90deg, #be123c, #d4af37)' }} />
+              <div className="progress-fill" style={{ width: `${surveyStep * 20}%`, background: 'linear-gradient(90deg, #00f0ff, #fbbf24)' }} />
             </div>
           </div>
 
           {surveyStep === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>NOMBRE CLAVE DEL CAZADOR</label>
+                <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>NOMBRE CLAVE DEL CAZADOR</label>
                 <input
                   className="sys-input"
                   value={profile.hunterName}
@@ -2738,14 +2770,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
               <div className="grid-2">
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>GÉNERO DEL AVATAR</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>GÉNERO DEL AVATAR</label>
                   <select className="sys-select" value={profile.gender} onChange={(e) => setProfile({ ...profile, gender: e.target.value })}>
                     <option value="male">Masculino</option>
                     <option value="female">Femenino</option>
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>OBJETIVO PRINCIPAL</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>OBJETIVO PRINCIPAL</label>
                   <select className="sys-select" value={profile.goal} onChange={(e) => setProfile({ ...profile, goal: e.target.value })}>
                     <option>Hipertrofia y Estética</option>
                     <option>Fuerza Máxima (Powerlifting)</option>
@@ -2781,7 +2813,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>LESIONES O MOLESTIAS ARTICULARES A CUIDAR</label>
+                <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>LESIONES O MOLESTIAS ARTICULARES A CUIDAR</label>
                 <input
                   className="sys-input"
                   placeholder="Ej: Ninguna, hombro derecho, zona lumbar..."
@@ -2797,7 +2829,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
           {surveyStep === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>
+              <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>
                 SELECCIONA TU EQUIPAMIENTO DISPONIBLE
               </label>
 
@@ -2813,8 +2845,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     style={{
                       padding: '12px',
                       borderRadius: '10px',
-                      background: profile.equipmentMode === opt.id ? 'rgba(212,175,55,0.16)' : 'rgba(4,6,12,0.85)',
-                      border: `1px solid ${profile.equipmentMode === opt.id ? '#d4af37' : 'rgba(148,163,184,0.25)'}`,
+                      background: profile.equipmentMode === opt.id ? 'rgba(251,191,36,0.16)' : 'rgba(4,6,12,0.85)',
+                      border: `1px solid ${profile.equipmentMode === opt.id ? '#fbbf24' : 'rgba(148,163,184,0.25)'}`,
                       cursor: 'pointer'
                     }}
                   >
@@ -2868,21 +2900,21 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="grid-2">
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>EDAD (AÑOS)</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>EDAD (AÑOS)</label>
                   <input type="number" className="sys-input" value={profile.age} onChange={(e) => setProfile({ ...profile, age: e.target.value })} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>PESO CORPORAL (KG)</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>PESO CORPORAL (KG)</label>
                   <input type="number" className="sys-input" value={profile.weightKg} onChange={(e) => setProfile({ ...profile, weightKg: e.target.value })} />
                 </div>
               </div>
               <div className="grid-2">
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>ALTURA (CM)</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>ALTURA (CM)</label>
                   <input type="number" className="sys-input" value={profile.heightCm} onChange={(e) => setProfile({ ...profile, heightCm: e.target.value })} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>EXPERIENCIA (MESES — 0 SI EMPIEZAS)</label>
+                  <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>EXPERIENCIA (MESES — 0 SI EMPIEZAS)</label>
                   <input type="number" className="sys-input" value={profile.experienceMonths} onChange={(e) => setProfile({ ...profile, experienceMonths: e.target.value })} />
                 </div>
               </div>
@@ -2927,13 +2959,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </p>
 
               <label style={{
-                border: '2px dashed rgba(212,175,55,0.45)',
+                border: '2px dashed rgba(251,191,36,0.45)',
                 borderRadius: '14px',
                 padding: '22px 14px',
                 cursor: 'pointer',
-                background: 'rgba(212,175,55,0.05)'
+                background: 'rgba(251,191,36,0.05)'
               }}>
-                <Camera size={32} color="#d4af37" style={{ margin: '0 auto 8px' }} />
+                <Camera size={32} color="#fbbf24" style={{ margin: '0 auto 8px' }} />
                 <div style={{ fontWeight: 700, color: '#fff' }}>SELECCIONAR FOTO DE CUERPO COMPLETO</div>
                 <div style={{ fontSize: '12px', color: '#94a3b8' }}>Censura facial local instantánea</div>
                 <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleSecurePhotoUpload(e, 'onboarding')} />
@@ -2941,7 +2973,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
               {profile.censoredPreview && (
                 <div style={{ margin: '0 auto' }}>
-                  <img src={profile.censoredPreview} alt="Escaneo seguro" style={{ width: '130px', borderRadius: '10px', border: '1px solid #d4af37' }} />
+                  <img src={profile.censoredPreview} alt="Escaneo seguro" style={{ width: '130px', borderRadius: '10px', border: '1px solid #fbbf24' }} />
                   <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>✓ Biometría verificada y protegida</div>
                 </div>
               )}
@@ -2957,12 +2989,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
           {surveyStep === 5 && (
             <div style={{ textAlign: 'center', padding: '14px 4px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              <Shield size={54} color="#d4af37" style={{ margin: '0 auto' }} />
-              <h2 className="font-souls" style={{ fontSize: '21px', color: '#d4af37', lineHeight: 1.3 }}>
+              <Shield size={54} color="#fbbf24" style={{ margin: '0 auto' }} />
+              <h2 className="font-souls" style={{ fontSize: '21px', color: '#fbbf24', lineHeight: 1.3 }}>
                 ¿ESTÁS LISTO PARA INICIAR DESDE 0 COMO CAZADOR?
               </h2>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: 1.5 }}>
-                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se generará tu retrato estilo Anime/Manhwa junto a tu <strong>Clase aleatoria con pasiva única</strong>.
+                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se desplegará tu tarjeta <strong>Legendary Gacha Character</strong> con iluminación Neon Blue & Gold.
               </p>
               <button className="sys-btn sys-btn-gold" style={{ padding: '16px', fontSize: '13px' }} onClick={awakenHunter}>
                 <Zap size={18} /> SÍ, COMENZAR DESDE 0
@@ -2975,7 +3007,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   }
 
   // ==========================================================================
-  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD ANIME / MANHWA COMPLETO)
+  // INTERFAZ PRINCIPAL DEL SISTEMA (LEGENDARY GACHA RPG HUD)
   // ==========================================================================
   return (
     <div className="sys-container">
@@ -2984,7 +3016,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
       {toast && (
         <div className="toast-alert">
-          <Zap size={18} color="#d4af37" />
+          <Zap size={18} color="#fbbf24" />
           <span>{toast}</span>
         </div>
       )}
@@ -3015,7 +3047,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.16)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
                 NIVEL {level} (∞)
               </span>
-              <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.16)', color: '#d4af37', border: '1px solid #d4af37' }}>
+              <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.16)', color: '#fbbf24', border: '1px solid #fbbf24' }}>
                 GRADO DE CAZADOR: {hunterGrade}
               </span>
               <span className="sys-badge" style={{ background: 'rgba(234,88,12,0.2)', color: '#fdba74', border: '1px solid #ea580c' }}>
@@ -3043,7 +3075,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
 
-        {/* BARRAS DE PROGRESO DE RANGO Y EXP DE CLASE (IDÉNTICAS A LA PRIMERA IMAGEN) */}
+        {/* BARRAS DE PROGRESO DE RANGO Y EXP DE CLASE */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '12px' }}>
           <div>
             <div style={{ fontSize: '10px', color: '#fde047', fontWeight: 700, marginBottom: '4px', textAlign: 'center' }}>
@@ -3064,7 +3096,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </div>
       </div>
 
-      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS (IDÉNTICO A LA PRIMERA IMAGEN) */}
+      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS */}
       <div className="nav-tabs">
         <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
           <Trophy size={16} color="#fbbf24" />
@@ -3118,7 +3150,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       </div>
 
       {/* ====================================================================
-          MÓDULO 3 (VISTA DESTACADA): RETRATO ANIME/MANHWA HD + EVOLUCIÓN INFINITA
+          MÓDULO 3: LEGENDARY GACHA CHARACTER ART + EVOLUCIÓN INFINITA
          ==================================================================== */}
       {activeTab === 'avatar' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -3131,6 +3163,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               gender={profile.gender || 'male'}
               onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
               passiveClassBonus={passiveClassBonus}
+              customGachaArt={customGachaArt}
+              onUploadGachaArt={handleUploadGachaArt}
             />
           </div>
 
@@ -3156,7 +3190,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
 
           <div className="sys-window" style={{ padding: '18px' }}>
-            <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
+            <h3 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '12px' }}>
               HABILIDADES Y EQUIPAMIENTO DESBLOQUEADOS ({unlockedInventory.length})
             </h3>
             {unlockedInventory.length === 0 ? (
@@ -3172,7 +3206,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       padding: '12px',
                       borderRadius: '10px',
                       background: 'rgba(4,6,12,0.85)',
-                      border: `1px solid ${item.type.includes('Habilidad') ? '#00f0ff' : '#d4af37'}`,
+                      border: `1px solid ${item.type.includes('Habilidad') ? '#00f0ff' : '#fbbf24'}`,
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center'
@@ -3180,7 +3214,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   >
                     <div>
                       <span className="sys-badge" style={{
-                        background: item.type.includes('Habilidad') ? 'rgba(0,240,255,0.16)' : 'rgba(212,175,55,0.16)',
+                        background: item.type.includes('Habilidad') ? 'rgba(0,240,255,0.16)' : 'rgba(251,191,36,0.16)',
                         color: item.type.includes('Habilidad') ? '#00f0ff' : '#fde047',
                         marginBottom: '4px'
                       }}>
@@ -3206,7 +3240,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       {activeTab === 'quests' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
-            <h2 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
+            <h2 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '12px' }}>
               MISIONES DIARIAS (SUMA RACHA, EXP, LP Y RECOMPENSAS)
             </h2>
 
@@ -3252,8 +3286,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       </div>
                     </div>
                     <span className="sys-badge" style={{
-                      background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(225,29,72,0.2)' : 'rgba(212,175,55,0.15)',
-                      color: q.status === 'completed' ? '#6ee7b7' : q.status === 'failed' ? '#fda4af' : '#d4af37'
+                      background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(225,29,72,0.2)' : 'rgba(251,191,36,0.15)',
+                      color: q.status === 'completed' ? '#6ee7b7' : q.status === 'failed' ? '#fda4af' : '#fbbf24'
                     }}>
                       {q.status === 'completed' ? 'CUMPLIDA' : q.status === 'failed' ? 'FALLIDA' : 'EN CURSO'}
                     </span>
@@ -3445,7 +3479,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             )}
 
-            <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.3)', marginBottom: '14px' }}>
+            <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.3)', marginBottom: '14px' }}>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#fde047', marginBottom: '4px' }}>
                 ESTRUCTURA DEL MESOCICLO ({activeRoutinePlan.modeLabel}):
               </div>
@@ -3472,7 +3506,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 >
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{ex.name}</div>
-                    <div style={{ fontSize: '12px', color: '#d4af37' }}>{ex.sets} • {ex.focus}</div>
+                    <div style={{ fontSize: '12px', color: '#fbbf24' }}>{ex.sets} • {ex.focus}</div>
                   </div>
                   <button
                     className="sys-btn sys-btn-primary"
@@ -3531,7 +3565,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               <div style={{ marginTop: '12px', padding: '12px', borderRadius: '10px', background: 'rgba(16,185,129,0.12)', border: '1px solid #10b981', fontSize: '13px' }}>
                 <div style={{ fontWeight: 700, color: '#6ee7b7' }}>RESULTADO: {scanReport.score}</div>
                 <p style={{ marginTop: '4px', color: '#e2e8f0' }}>{scanReport.finding}</p>
-                <p style={{ marginTop: '4px', color: '#d4af37' }}>Ajuste sugerido: {scanReport.fix}</p>
+                <p style={{ marginTop: '4px', color: '#fbbf24' }}>Ajuste sugerido: {scanReport.fix}</p>
               </div>
             )}
           </div>
@@ -3582,13 +3616,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       borderRadius: '12px',
                       background: 'rgba(4,6,12,0.88)',
                       opacity: prevCleared ? 1 : 0.6,
-                      border: `1px solid ${cleared ? '#10b981' : !prevCleared ? 'rgba(148,163,184,0.2)' : canChallenge ? 'rgba(212,175,55,0.45)' : 'rgba(225,29,72,0.35)'}`
+                      border: `1px solid ${cleared ? '#10b981' : !prevCleared ? 'rgba(148,163,184,0.2)' : canChallenge ? 'rgba(251,191,36,0.45)' : 'rgba(225,29,72,0.35)'}`
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b' }}>{ch.act}</span>
                       <span className="sys-badge" style={{
-                        background: cleared ? 'rgba(16,185,129,0.2)' : !prevCleared ? 'rgba(148,163,184,0.15)' : 'rgba(212,175,55,0.15)',
+                        background: cleared ? 'rgba(16,185,129,0.2)' : !prevCleared ? 'rgba(148,163,184,0.15)' : 'rgba(251,191,36,0.15)',
                         color: cleared ? '#6ee7b7' : !prevCleared ? '#94a3b8' : '#fde047'
                       }}>
                         {cleared
@@ -3669,7 +3703,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       {activeTab === 'city_vn' && (
         !cityUnlocked ? (
           <div className="sys-window" style={{ padding: '28px 20px', textAlign: 'center' }}>
-            <Lock size={44} color="#d4af37" style={{ margin: '0 auto 12px' }} />
+            <Lock size={44} color="#fbbf24" style={{ margin: '0 auto 12px' }} />
             <h2 className="font-souls" style={{ fontSize: '20px', color: '#fff', marginBottom: '8px' }}>
               CIUDAD 2D Y NOVELA VISUAL BLOQUEADAS
             </h2>
@@ -3684,11 +3718,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="sys-window" style={{ padding: '18px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-                <h2 className="font-souls" style={{ fontSize: '16px', color: '#d4af37' }}>
+                <h2 className="font-souls" style={{ fontSize: '16px', color: '#fbbf24' }}>
                   <Building2 size={16} style={{ display: 'inline', marginRight: '6px' }} />
                   CIUDAD 2D DEL CAZADOR: {cityName.toUpperCase()}
                 </h2>
-                <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.16)', color: '#fde047' }}>
+                <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.16)', color: '#fde047' }}>
                   EDIFICIOS 2D: {builtBuildings.length}/{CITY_BUILDINGS_CATALOG.length}
                 </span>
               </div>
@@ -3710,7 +3744,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 onSelectCharacter={(id) => setSelectedCharId(id)}
               />
 
-              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.35)', marginBottom: '14px' }}>
+              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.35)', marginBottom: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, color: '#fde047', marginBottom: '6px' }}>
                   RUMORES EN LAS CALLES DE {cityName.toUpperCase()}:
                 </div>
@@ -3840,7 +3874,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         style={{ padding: '7px 10px', fontSize: '10px' }}
                         onClick={() => handleSendVisualNovelMessage('Contarte sobre mi entrenamiento y marcas de hoy', 6)}
                       >
-                        <Dumbbell size={12} color="#d4af37" /> CHARLAR DE ENTRENO (+6)
+                        <Dumbbell size={12} color="#fbbf24" /> CHARLAR DE ENTRENO (+6)
                       </button>
                       <button
                         className="sys-btn sys-btn-love"
@@ -3888,7 +3922,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
             <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
               <MapPin size={13} style={{ display: 'inline', color: '#00f0ff', marginRight: '4px' }} />
-              Ubicación actual: <strong>{userCoords.label}</strong> • Tu código: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
+              Ubicación actual: <strong>{userCoords.label}</strong> • Tu código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
             </div>
 
             <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(244,63,94,0.3)', marginBottom: '14px' }}>
@@ -4105,8 +4139,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     style={{
                       padding: '12px',
                       borderRadius: '10px',
-                      background: isSelected ? 'rgba(212,175,55,0.12)' : 'rgba(4,6,12,0.85)',
-                      border: `1px solid ${isSelected ? '#d4af37' : 'rgba(148,163,184,0.2)'}`,
+                      background: isSelected ? 'rgba(251,191,36,0.12)' : 'rgba(4,6,12,0.85)',
+                      border: `1px solid ${isSelected ? '#fbbf24' : 'rgba(148,163,184,0.2)'}`,
                       cursor: 'pointer',
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -4121,7 +4155,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', fontWeight: 700 }}>{ex1rm} KG</div>
-                      <div style={{ fontSize: '11px', color: '#d4af37', fontWeight: 700 }}>{exRel}x BW</div>
+                      <div style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>{exRel}x BW</div>
                     </div>
                   </div>
                 );
@@ -4167,7 +4201,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
 
           <div className="sys-window" style={{ padding: '18px' }}>
-            <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '10px' }}>
+            <h3 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '10px' }}>
               RECOPILACIÓN ANUAL DE EVOLUCIÓN
             </h3>
             {yearlyRecap.length === 0 ? (
@@ -4181,7 +4215,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     <div>
                       <strong style={{ color: '#fff' }}>{item.quarter}</strong> — <span style={{ color: '#94a3b8', fontSize: '13px' }}>{item.note}</span>
                     </div>
-                    <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.2)', color: '#d4af37' }}>
+                    <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.2)', color: '#fbbf24' }}>
                       GRADO {item.grade} ({item.weight})
                     </span>
                   </div>
@@ -4284,7 +4318,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
               <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
-                Cuenta activa: <strong>{currentUser.email}</strong> • Código: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
+                Cuenta activa: <strong>{currentUser.email}</strong> • Código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
               </div>
               <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
                 <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
