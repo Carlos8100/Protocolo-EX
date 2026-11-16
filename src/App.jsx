@@ -6,18 +6,18 @@ import {
   ChevronRight, Sword, Clock, Save, Check,
   UserCheck, Users, MapPin, Play, BookOpen, Plus, Crosshair,
   LogIn, KeyRound, Mail, UserPlus, Settings, Trash2,
-  Heart, Building2, Send
+  Heart, Building2, Send, RotateCcw
 } from 'lucide-react';
 
 // ============================================================================
-// ESTILOS INTEGRADOS (HOLOGRAPHIC SYSTEM + ANIME JRPG + VISUAL NOVEL + CITY 2D)
+// ESTILOS INTEGRADOS (HOLOGRAPHIC ANIME HUD + VISUAL NOVEL + CITY 2D)
 // ============================================================================
 const SYSTEM_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
 
   :root {
-    --bg-void: #05070d;
-    --bg-panel: rgba(11, 16, 30, 0.92);
+    --bg-void: #04060e;
+    --bg-panel: rgba(10, 15, 30, 0.94);
     --cyan-glow: #00f0ff;
     --gold-rank: #d4af37;
     --crimson-vein: #be123c;
@@ -36,9 +36,9 @@ const SYSTEM_CSS = `
   body {
     background-color: var(--bg-void);
     background-image:
-      radial-gradient(circle at 18% 12%, rgba(212, 175, 55, 0.11) 0%, transparent 42%),
-      radial-gradient(circle at 82% 85%, rgba(0, 240, 255, 0.11) 0%, transparent 45%),
-      linear-gradient(180deg, #04060b 0%, #090e1c 100%);
+      radial-gradient(circle at 20% 10%, rgba(59, 130, 246, 0.14) 0%, transparent 45%),
+      radial-gradient(circle at 80% 85%, rgba(168, 85, 247, 0.14) 0%, transparent 48%),
+      linear-gradient(180deg, #03050c 0%, #080d1d 100%);
     color: var(--text-main);
     font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
     min-height: 100vh;
@@ -56,18 +56,18 @@ const SYSTEM_CSS = `
   }
 
   .sys-container {
-    max-width: 1020px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 16px 14px 96px;
+    padding: 14px 12px 96px;
   }
 
   .sys-window {
     background: var(--bg-panel);
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(0, 240, 255, 0.26);
+    border: 1px solid rgba(0, 240, 255, 0.28);
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.7),
-      inset 0 0 24px rgba(0, 240, 255, 0.05);
+      0 10px 34px rgba(0, 0, 0, 0.78),
+      inset 0 0 24px rgba(0, 240, 255, 0.06);
     border-radius: 14px;
     position: relative;
     overflow: hidden;
@@ -120,7 +120,7 @@ const SYSTEM_CSS = `
   }
 
   .sys-btn-ghost {
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(15, 23, 42, 0.88);
     border-color: rgba(148, 163, 184, 0.28);
     color: var(--text-main);
   }
@@ -139,7 +139,7 @@ const SYSTEM_CSS = `
 
   .sys-input, .sys-select, .sys-textarea {
     width: 100%;
-    background: rgba(4, 6, 12, 0.9);
+    background: rgba(4, 6, 12, 0.92);
     border: 1px solid rgba(212, 175, 55, 0.28);
     border-radius: 9px;
     padding: 10px 13px;
@@ -175,15 +175,9 @@ const SYSTEM_CSS = `
     margin-bottom: 16px;
   }
 
-  @media (min-width: 820px) {
-    .nav-tabs {
-      grid-template-columns: repeat(10, 1fr);
-    }
-  }
-
   .nav-tab {
-    background: rgba(11, 16, 30, 0.78);
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(11, 16, 32, 0.88);
+    border: 1px solid rgba(56, 189, 248, 0.22);
     border-radius: 11px;
     padding: 9px 4px;
     color: var(--text-dim);
@@ -199,18 +193,18 @@ const SYSTEM_CSS = `
   }
 
   .nav-tab.active {
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.24) 0%, rgba(11, 16, 30, 0.96) 100%);
-    border-color: var(--gold-rank);
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.28) 0%, rgba(15, 23, 42, 0.96) 100%);
+    border-color: #fbbf24;
     color: #fff;
-    box-shadow: 0 0 16px rgba(212, 175, 55, 0.28);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.38), inset 0 0 12px rgba(251, 191, 36, 0.16);
   }
 
   .progress-track {
     width: 100%;
-    height: 9px;
+    height: 8px;
     background: rgba(4, 6, 12, 0.95);
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
   }
 
@@ -258,37 +252,24 @@ const SYSTEM_CSS = `
     to { opacity: 1; transform: translate(-50%, 0); }
   }
 
-  @keyframes shimmerBorder {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  .jrpg-card-frame {
+  /* MARCO NEÓN CIAN-VIOLETA-MAGENTA IDÉNTICO A LA PRIMERA IMAGEN */
+  .anime-holo-outer {
     position: relative;
+    border-radius: 18px;
+    padding: 2.5px;
+    background: linear-gradient(135deg, #00f0ff 0%, #3b82f6 42%, #9333ea 74%, #ec4899 100%);
+    box-shadow:
+      0 0 26px rgba(0, 240, 255, 0.32),
+      0 0 36px rgba(168, 85, 247, 0.24),
+      0 14px 36px rgba(0, 0, 0, 0.9);
+  }
+
+  .anime-holo-inner {
+    background: radial-gradient(circle at 50% 35%, #111836 0%, #050814 100%);
     border-radius: 16px;
-    padding: 2px;
-    background: linear-gradient(135deg, #00f0ff, #3b82f6, #d4af37, #00f0ff);
-    background-size: 300% 300%;
-    animation: shimmerBorder 6s ease infinite;
-    box-shadow: 0 0 28px rgba(0, 240, 255, 0.24), 0 12px 36px rgba(0, 0, 0, 0.9);
-  }
-
-  @keyframes heroFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-4px); }
-  }
-  .jrpg-breathe {
-    animation: heroFloat 3.6s ease-in-out infinite;
-  }
-
-  @keyframes manaPulse {
-    0%, 100% { opacity: 0.55; transform: scale(1); }
-    50% { opacity: 0.95; transform: scale(1.03); }
-  }
-  .mana-pulse {
-    animation: manaPulse 2.8s ease-in-out infinite;
-    transform-origin: center;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
   }
 
   @keyframes npcPatrol1 {
@@ -340,10 +321,10 @@ const RANKS = [
   { name: 'Tierra', tier: 0, color: '#92400e' },
   { name: 'Madera', tier: 1, color: '#4d7c0f' },
   { name: 'Piedra', tier: 2, color: '#64748b' },
-  { name: 'Carbón', tier: 3, color: '#475569' },
-  { name: 'Hierro', tier: 4, color: '#9ca3af' },
+  { name: 'Carbón', tier: 3, color: '#94a3b8' },
+  { name: 'Hierro', tier: 4, color: '#cbd5e1' },
   { name: 'Bronce', tier: 5, color: '#c2410c' },
-  { name: 'Plata', tier: 6, color: '#cbd5e1' },
+  { name: 'Plata', tier: 6, color: '#e2e8f0' },
   { name: 'Oro', tier: 7, color: '#d4af37' },
   { name: 'Platino', tier: 8, color: '#2dd4bf' },
   { name: 'Esmeralda', tier: 9, color: '#10b981' },
@@ -355,7 +336,7 @@ const RANKS = [
 ];
 
 const HUNTER_GRADE_STANDARDS = [
-  { grade: 'F', minComposite: 0.0, benchReq: 0.50, squatReq: 0.65, deadliftReq: 0.80, desc: 'Iniciado / Adaptación neural inicial' },
+  { grade: 'F', minComposite: 0.0, benchReq: 0.0, squatReq: 0.0, deadliftReq: 0.0, desc: 'Iniciado / Punto de partida desde 0' },
   { grade: 'E', minComposite: 0.70, benchReq: 0.65, squatReq: 0.85, deadliftReq: 1.00, desc: 'Novato consolidado' },
   { grade: 'D', minComposite: 0.90, benchReq: 0.80, squatReq: 1.05, deadliftReq: 1.25, desc: 'Base atlética funcional' },
   { grade: 'C', minComposite: 1.12, benchReq: 1.00, squatReq: 1.25, deadliftReq: 1.50, desc: 'Intermedio sólido (1x BW en Banca)' },
@@ -368,6 +349,12 @@ const HUNTER_GRADE_STANDARDS = [
 ];
 
 const CLASS_ARCHETYPES = [
+  {
+    base: 'Centinela',
+    weaponType: 'sword',
+    passiveTitle: 'Muralla Inquebrantable',
+    passiveRule: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
+  },
   {
     base: 'Espadachín',
     weaponType: 'sword',
@@ -417,12 +404,6 @@ const CLASS_ARCHETYPES = [
     passiveRule: 'Inflige +24% de daño adicional contra monstruos de rango superior en el Modo Historia.'
   },
   {
-    base: 'Centinela',
-    weaponType: 'shield_sword',
-    passiveTitle: 'Muralla Inquebrantable',
-    passiveRule: 'Reduce a la mitad el desgaste y otorga +40 de defensa base permanente.'
-  },
-  {
     base: 'Duelista',
     weaponType: 'sword',
     passiveTitle: 'Estocada de Precisión Chirúrgica',
@@ -443,6 +424,7 @@ const CLASS_ARCHETYPES = [
 ];
 
 const CLASS_AFFINITIES = [
+  { name: 'Infinito', accent: '#00f0ff', resonance: 'Resonancia Sin Límites: Escala +5 puntos de poder por cada nivel.' },
   { name: 'de Ceniza', accent: '#f97316', resonance: 'Resonancia Ígnea: +12% Poder al mantener racha activa.' },
   { name: 'Carmesí', accent: '#e11d48', resonance: 'Resonancia Vital: +15% eficiencia en cargas máximas.' },
   { name: 'Celestial', accent: '#38bdf8', resonance: 'Resonancia Astral: +15% EXP en misiones diarias.' },
@@ -456,7 +438,6 @@ const CLASS_AFFINITIES = [
   { name: 'del Crepúsculo', accent: '#fb7185', resonance: 'Resonancia Crepuscular: +15% afinidad en diálogos.' },
   { name: 'Primordial', accent: '#fbbf24', resonance: 'Resonancia Ancestral: +20% poder de pasiva base.' },
   { name: 'de Sangre Real', accent: '#be123c', resonance: 'Resonancia Dinástica: +25 LP adicionales por victoria.' },
-  { name: 'Infinito', accent: '#00f0ff', resonance: 'Resonancia Sin Límites: Escala +5 puntos de poder por cada nivel.' },
 ];
 
 function generateRandomInfiniteClass(seedNumber) {
@@ -475,8 +456,8 @@ function generateRandomInfiniteClass(seedNumber) {
 }
 
 function getInfiniteClassEvolution(baseClassName, level) {
-  const safeBase = baseClassName || 'Cazador Despertado';
-  if (level < 5) return { stage: 1, title: `${safeBase} [Rango I]`, bonus: '+5% Poder Base', nextLvl: 5 };
+  const safeBase = baseClassName || 'Centinela Infinito';
+  if (level < 5) return { stage: 1, title: `${safeBase} Iniciado [Rango I]`, bonus: '+5% Poder Base', nextLvl: 5 };
   if (level < 12) return { stage: 2, title: `${safeBase} Veterano [Rango II]`, bonus: '+15% Poder & Pasiva', nextLvl: 12 };
   if (level < 25) return { stage: 3, title: `Maestro ${safeBase} [Rango III]`, bonus: '+30% Maestría de Clase', nextLvl: 25 };
   if (level < 45) return { stage: 4, title: `Gran ${safeBase} Trascendente [Rango IV]`, bonus: '+55% Soberanía de Acero', nextLvl: 45 };
@@ -499,7 +480,6 @@ const DAILY_REWARD_POOL = [
   { id: 'gear_crown', type: 'Equipamiento', name: 'Coraza del Monarca Eterno', power: 110, desc: 'Armadura legendaria de placas doradas.' },
 ];
 
-// CAPÍTULOS SECUENCIALES DE LA HISTORIA PVE
 const PVE_STORY_CHAPTERS = [
   {
     id: 'act1_ch1',
@@ -507,9 +487,9 @@ const PVE_STORY_CHAPTERS = [
     prevId: null,
     act: 'Acto I: Las Ruinas de Ceniza',
     chapter: 'Capítulo 1 — El Umbral del Hierro',
-    reqPower: 180,
+    reqPower: 60,
     enemy: 'Centinela Oxidado de la Grieta',
-    lore: 'Tras despertar como Cazador, cruzas el puente de piedra y rescatas a Lyra, una herrera rúnica atrapada junto a la forja antigua. Al superar este capítulo fundas tu Ciudad 2D.',
+    lore: 'Tras despertar como Cazador desde cero, cruzas el puente de piedra y rescatas a Lyra, una herrera rúnica atrapada junto a la forja antigua. Al superar este capítulo fundas tu Ciudad 2D.',
     rewardType: 'Habilidad Especial',
     rewardName: 'Voluntad de Hierro (Pasiva +20 DEF)',
     unlockCharacterId: 'lyra',
@@ -522,7 +502,7 @@ const PVE_STORY_CHAPTERS = [
     prevId: 'act1_ch1',
     act: 'Acto I: Las Ruinas de Ceniza',
     chapter: 'Capítulo 2 — El Bosque de los Ecos',
-    reqPower: 260,
+    reqPower: 160,
     enemy: 'Acechador Sombrío de Fenrir',
     lore: 'Entre la niebla lunar, Kaelen, el explorador de las sombras, une fuerzas contigo y llega a patrullar los alrededores de tu ciudad.',
     rewardType: 'Equipamiento de Historia',
@@ -537,7 +517,7 @@ const PVE_STORY_CHAPTERS = [
     prevId: 'act1_ch2',
     act: 'Acto II: La Ciudadela Carmesí',
     chapter: 'Capítulo 3 — La Guardia del Bastión',
-    reqPower: 360,
+    reqPower: 280,
     enemy: 'Comandante Valkiria Caída',
     lore: 'Tras purificar su armadura maldita en un duelo honorable, Seraphina jura lealtad y se instala en la plaza de tu ciudad.',
     rewardType: 'Habilidad Especial',
@@ -552,7 +532,7 @@ const PVE_STORY_CHAPTERS = [
     prevId: 'act2_ch1',
     act: 'Acto II: La Ciudadela Carmesí',
     chapter: 'Capítulo 4 — El Altar del Eclipse',
-    reqPower: 480,
+    reqPower: 420,
     enemy: 'Archidemonio Revenant Malakor',
     lore: 'En la biblioteca sellada del Altar conoces a Isolde, oráculo de las estrellas que viaja a tu ciudad para estudiar tu evolución sin límites.',
     rewardType: 'Reliquia Única de Historia',
@@ -567,7 +547,7 @@ const PVE_STORY_CHAPTERS = [
     prevId: 'act2_ch2',
     act: 'Acto III: El Santuario Celestial',
     chapter: 'Capítulo 5 — Juicio de los Antiguos',
-    reqPower: 640,
+    reqPower: 600,
     enemy: 'Serafín de Acero Astral',
     lore: 'Ascendiendo sobre las nubes, los guardianes celestiales evalúan si tu evolución de clase merece el título de Soberano.',
     rewardType: 'Habilidad Suprema',
@@ -669,12 +649,12 @@ const CITY_BUILDINGS_CATALOG = [
 ];
 
 const RACES_POOL = [
-  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0f172a', eyeColor: '#d4af37' },
-  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#4c0519', eyeColor: '#fb7185' },
-  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#cbd5e1', eyeColor: '#00f0ff' },
-  { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#451a03', eyeColor: '#f59e0b' },
-  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#e2e8f0', eyeColor: '#38bdf8' },
-  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#090d16', eyeColor: '#a855f7' },
+  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#7c3aed' },
+  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#4f46e5' },
+  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#e11d48' },
+  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#00f0ff' },
+  { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b' },
+  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8' },
 ];
 
 const HOME_EQUIPMENT_OPTIONS = [
@@ -686,14 +666,25 @@ const HOME_EQUIPMENT_OPTIONS = [
   'Barra recta y discos'
 ];
 
-const DEFAULT_LIFTS = {
-  'Press Banca': { weight: 80, reps: 5, date: 'Inicial' },
-  'Sentadilla Trasera': { weight: 105, reps: 5, date: 'Inicial' },
-  'Peso Muerto Convencional': { weight: 130, reps: 5, date: 'Inicial' },
-  'Press Militar': { weight: 50, reps: 6, date: 'Inicial' },
-  'Remo con Barra': { weight: 75, reps: 8, date: 'Inicial' },
-  'Dominadas Lastradas (Total)': { weight: 90, reps: 6, date: 'Inicial' },
+// INICIALIZACIÓN DESDE 0 EN TODAS LAS CARGAS
+const ZERO_LIFTS = {
+  'Press Banca': { weight: 0, reps: 0, date: 'Sin registrar' },
+  'Sentadilla Trasera': { weight: 0, reps: 0, date: 'Sin registrar' },
+  'Peso Muerto Convencional': { weight: 0, reps: 0, date: 'Sin registrar' },
+  'Press Militar': { weight: 0, reps: 0, date: 'Sin registrar' },
+  'Remo con Barra': { weight: 0, reps: 0, date: 'Sin registrar' },
+  'Dominadas Lastradas (Total)': { weight: 0, reps: 0, date: 'Sin registrar' },
 };
+
+const ZERO_SLEEP_LOG = [
+  { day: 'Lun', hours: 0 },
+  { day: 'Mar', hours: 0 },
+  { day: 'Mié', hours: 0 },
+  { day: 'Jue', hours: 0 },
+  { day: 'Vie', hours: 0 },
+  { day: 'Sáb', hours: 0 },
+  { day: 'Dom', hours: 0 },
+];
 
 function getRankFromLP(lp) {
   const safeLP = Math.max(0, Math.min(8999, lp));
@@ -711,14 +702,15 @@ function getRankFromLP(lp) {
 }
 
 function calcEpley1RM(weight, reps) {
-  if (!weight || weight <= 0) return 0;
+  if (!weight || weight <= 0 || !reps || reps <= 0) return 0;
   if (reps <= 1) return Math.round(weight);
   return Math.round(weight * (1 + reps / 30));
 }
 
 function getEffectiveExercise1RM(exName, weight, reps, bodyWeight) {
   const w = Number(weight) || 0;
-  const r = Number(reps) || 1;
+  const r = Number(reps) || 0;
+  if (w <= 0 || r <= 0) return 0;
   const bw = Math.max(40, Number(bodyWeight) || 75);
   if (exName.toLowerCase().includes('dominada') && w < bw * 0.75) {
     return calcEpley1RM(bw + w, r);
@@ -728,9 +720,9 @@ function getEffectiveExercise1RM(exName, weight, reps, bodyWeight) {
 
 function computeHunterGradeData(liftsObj, weightKg) {
   const bw = Math.max(40, Number(weightKg) || 75);
-  const bench1RM = getEffectiveExercise1RM('Press Banca', liftsObj['Press Banca']?.weight || 0, liftsObj['Press Banca']?.reps || 1, bw);
-  const squat1RM = getEffectiveExercise1RM('Sentadilla Trasera', liftsObj['Sentadilla Trasera']?.weight || 0, liftsObj['Sentadilla Trasera']?.reps || 1, bw);
-  const deadlift1RM = getEffectiveExercise1RM('Peso Muerto Convencional', liftsObj['Peso Muerto Convencional']?.weight || 0, liftsObj['Peso Muerto Convencional']?.reps || 1, bw);
+  const bench1RM = getEffectiveExercise1RM('Press Banca', liftsObj['Press Banca']?.weight || 0, liftsObj['Press Banca']?.reps || 0, bw);
+  const squat1RM = getEffectiveExercise1RM('Sentadilla Trasera', liftsObj['Sentadilla Trasera']?.weight || 0, liftsObj['Sentadilla Trasera']?.reps || 0, bw);
+  const deadlift1RM = getEffectiveExercise1RM('Peso Muerto Convencional', liftsObj['Peso Muerto Convencional']?.weight || 0, liftsObj['Peso Muerto Convencional']?.reps || 0, bw);
 
   const benchRatio = bench1RM / bw;
   const squatRatio = squat1RM / bw;
@@ -738,7 +730,7 @@ function computeHunterGradeData(liftsObj, weightKg) {
   const compositeRelStrength = (benchRatio + squatRatio + deadliftRatio) / 3;
 
   let currentIdx = 0;
-  for (let i = HUNTER_GRADE_STANDARDS.length - 1; i >= 0; i--) {
+  for (let i = HUNTER_GRADE_STANDARDS.length - 1; i >= 1; i--) {
     const std = HUNTER_GRADE_STANDARDS[i];
     const reqBenchKg = Math.round(std.benchReq * bw);
     const reqSquatKg = Math.round(std.squatReq * bw);
@@ -823,442 +815,864 @@ function generateCharacterAIReply(char, userMsg, memoryList, context) {
 }
 
 // ============================================================================
-// MOTOR GRÁFICO ANIME / MANHWA DE ALTA DEFINICIÓN (ESTILO SEGUNDA IMAGEN)
+// MOTOR DE ILUSTRACIÓN ANIME / MANHWA HD (IDÉNTICO A LA PRIMERA IMAGEN)
 // ============================================================================
-function JrpgFantasyPortrait({ hunterClass, rankInfo, hunterGrade, level, classEvolution, gender, onToggleGender }) {
-  const race = hunterClass?.race || RACES_POOL[5];
-  const cls = hunterClass?.cls || { name: 'Centinela Infinito', weaponType: 'shield_sword', accentColor: '#00f0ff' };
-  const stage = classEvolution.stage;
-  const accent = cls.accentColor || '#00f0ff';
+function AnimeHunterCanvas({ gender, accentColor, eyeColor, weaponType, stage }) {
+  const canvasRef = useRef(null);
 
-  const hairCol = race.hairColor || '#090d16';
-  const eyeCol = race.eyeColor || '#8b5cf6';
-  const goldTrim = stage >= 3 ? '#fbbf24' : '#d4af37';
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = 680;
+    const H = 760;
+    const isFemale = gender === 'female';
+    const cyan = accentColor || '#00f0ff';
+    const irisCol = eyeColor || '#6d28d9';
+
+    ctx.clearRect(0, 0, W, H);
+
+    // ------------------------------------------------------------------------
+    // 1. FONDO CÓSMICO OSCURO Y NEBULOSA AZUL / VIOLETA LUMINOSA
+    // ------------------------------------------------------------------------
+    const bgGrad = ctx.createRadialGradient(320, 290, 40, 340, 380, 520);
+    bgGrad.addColorStop(0, '#1e1b4b');
+    bgGrad.addColorStop(0.45, '#0c132d');
+    bgGrad.addColorStop(1, '#04060e');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Nubes de energía cósmica detrás del héroe
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+
+    const nebula1 = ctx.createRadialGradient(210, 320, 10, 210, 320, 230);
+    nebula1.addColorStop(0, 'rgba(37, 99, 235, 0.34)');
+    nebula1.addColorStop(0.5, 'rgba(109, 40, 217, 0.16)');
+    nebula1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = nebula1;
+    ctx.fillRect(0, 0, W, H);
+
+    const nebula2 = ctx.createRadialGradient(470, 310, 10, 470, 310, 240);
+    nebula2.addColorStop(0, 'rgba(0, 240, 255, 0.32)');
+    nebula2.addColorStop(0.5, 'rgba(59, 130, 246, 0.16)');
+    nebula2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = nebula2;
+    ctx.fillRect(0, 0, W, H);
+
+    // Partículas de maná flotantes y destellos estelares
+    const motes = [
+      [78, 140, 3, '#00f0ff'], [125, 290, 2, '#ffffff'], [64, 460, 3.5, '#38bdf8'],
+      [148, 560, 2.5, '#a855f7'], [590, 130, 3, '#00f0ff'], [625, 275, 2.2, '#ffffff'],
+      [585, 430, 3.5, '#00f0ff'], [612, 540, 2.5, '#38bdf8'], [235, 92, 2.2, '#93c5fd'],
+      [415, 86, 2.5, '#00f0ff'], [480, 195, 2, '#ffffff'], [165, 205, 2.4, '#60a5fa']
+    ];
+    motes.forEach(([mx, my, mr, mc]) => {
+      ctx.save();
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = mc;
+      ctx.fillStyle = mc;
+      ctx.beginPath();
+      ctx.arc(mx, my, mr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    ctx.restore();
+
+    const cx = 310; // Eje central del personaje (ligeramente a la izquierda para dar espacio a la espada)
+
+    // ------------------------------------------------------------------------
+    // 2. CAPA CARMESÍ REAL ONDEANTE (SOBRE EL HOMBRO IZQUIERDO)
+    // ------------------------------------------------------------------------
+    ctx.save();
+    const capeGrad = ctx.createLinearGradient(60, 340, 260, 720);
+    capeGrad.addColorStop(0, '#9f1239');
+    capeGrad.addColorStop(0.45, '#6b0f26');
+    capeGrad.addColorStop(1, '#2a050f');
+    ctx.fillStyle = capeGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - 118, 342);
+    ctx.bezierCurveTo(cx - 210, 405, 65, 535, 28, 700);
+    ctx.lineTo(cx + 120, 720);
+    ctx.lineTo(cx + 100, 355);
+    ctx.closePath();
+    ctx.fill();
+
+    // Pliegues profundos de la capa
+    ctx.fillStyle = 'rgba(20, 3, 8, 0.55)';
+    ctx.beginPath();
+    ctx.moveTo(cx - 125, 360);
+    ctx.bezierCurveTo(cx - 175, 450, 110, 570, 82, 705);
+    ctx.lineTo(cx - 45, 710);
+    ctx.bezierCurveTo(cx - 80, 560, cx - 105, 450, cx - 105, 360);
+    ctx.closePath();
+    ctx.fill();
+
+    // Brillo de borde (Rim-light) en la capa
+    ctx.strokeStyle = 'rgba(244, 63, 94, 0.55)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 118, 342);
+    ctx.bezierCurveTo(cx - 210, 405, 65, 535, 28, 700);
+    ctx.stroke();
+    ctx.restore();
+
+    // ------------------------------------------------------------------------
+    // 3. CABELLO TRASERO (LARGO FLUIDO EN FEMENINO / CAPA DE NUCA EN MASCULINO)
+    // ------------------------------------------------------------------------
+    ctx.save();
+    const hairDarkGrad = ctx.createLinearGradient(cx, 110, cx, 520);
+    hairDarkGrad.addColorStop(0, '#090d18');
+    hairDarkGrad.addColorStop(0.6, '#050811');
+    hairDarkGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = hairDarkGrad;
+
+    if (isFemale) {
+      ctx.beginPath();
+      ctx.moveTo(cx - 82, 175);
+      ctx.bezierCurveTo(cx - 125, 290, cx - 135, 440, cx - 105, 575);
+      ctx.lineTo(cx + 105, 575);
+      ctx.bezierCurveTo(cx + 135, 440, cx + 125, 290, cx + 82, 175);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(cx - 72, 195);
+      ctx.lineTo(cx - 86, 290);
+      ctx.lineTo(cx - 52, 276);
+      ctx.lineTo(cx, 288);
+      ctx.lineTo(cx + 52, 276);
+      ctx.lineTo(cx + 86, 290);
+      ctx.lineTo(cx + 72, 195);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // ------------------------------------------------------------------------
+    // 4. ARMADURA DE PLACAS OSCURA CON CIRCUITOS LUMINOSOS CIAN
+    // ------------------------------------------------------------------------
+    ctx.save();
+    const armorGrad = ctx.createLinearGradient(cx - 130, 320, cx + 130, 680);
+    armorGrad.addColorStop(0, '#131c31');
+    armorGrad.addColorStop(0.45, '#080c17');
+    armorGrad.addColorStop(1, '#03050a');
+
+    // Torso principal
+    ctx.fillStyle = armorGrad;
+    ctx.beginPath();
+    if (isFemale) {
+      ctx.moveTo(cx - 95, 338);
+      ctx.lineTo(cx + 95, 338);
+      ctx.lineTo(cx + 72, 495);
+      ctx.lineTo(cx + 92, 690);
+      ctx.lineTo(cx - 92, 690);
+      ctx.lineTo(cx - 72, 495);
+    } else {
+      ctx.moveTo(cx - 112, 334);
+      ctx.lineTo(cx + 112, 334);
+      ctx.lineTo(cx + 84, 505);
+      ctx.lineTo(cx + 102, 690);
+      ctx.lineTo(cx - 102, 690);
+      ctx.lineTo(cx - 84, 505);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Cuello alto blindado de la armadura
+    ctx.fillStyle = '#070b14';
+    ctx.beginPath();
+    ctx.moveTo(cx - 46, 304);
+    ctx.lineTo(cx - 58, 344);
+    ctx.lineTo(cx, 362);
+    ctx.lineTo(cx + 58, 344);
+    ctx.lineTo(cx + 46, 304);
+    ctx.lineTo(cx + 28, 316);
+    ctx.lineTo(cx, 322);
+    ctx.lineTo(cx - 28, 316);
+    ctx.closePath();
+    ctx.fill();
+
+    // Líneas de energía cian en la armadura
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = cyan;
+    ctx.strokeStyle = cyan;
+    ctx.lineWidth = 2.4;
+
+    // Borde del cuello alto
+    ctx.beginPath();
+    ctx.moveTo(cx - 46, 304);
+    ctx.lineTo(cx - 58, 344);
+    ctx.lineTo(cx, 362);
+    ctx.lineTo(cx + 58, 344);
+    ctx.lineTo(cx + 46, 304);
+    ctx.stroke();
+
+    // Líneas pectorales y abdominales
+    ctx.beginPath();
+    ctx.moveTo(cx - 88, 365);
+    ctx.lineTo(cx - 42, 405);
+    ctx.moveTo(cx + 88, 365);
+    ctx.lineTo(cx + 42, 405);
+    ctx.moveTo(cx - 72, 505);
+    ctx.lineTo(cx - 32, 535);
+    ctx.moveTo(cx + 72, 505);
+    ctx.lineTo(cx + 32, 535);
+    ctx.stroke();
+
+    // Brazos blindados
+    ctx.fillStyle = '#070b15';
+    // Brazo izquierdo
+    ctx.beginPath();
+    ctx.moveTo(cx - 135, 392);
+    ctx.lineTo(cx - 168, 630);
+    ctx.lineTo(cx - 115, 635);
+    ctx.lineTo(cx - 92, 410);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Brazo derecho
+    ctx.beginPath();
+    ctx.moveTo(cx + 135, 392);
+    ctx.lineTo(cx + 165, 630);
+    ctx.lineTo(cx + 112, 635);
+    ctx.lineTo(cx + 92, 410);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // HOMBRERAS ANGULARES MULTI-PLACA (COMO EN LA PRIMERA IMAGEN)
+    // Hombrera Izquierda
+    ctx.fillStyle = '#090e1c';
+    ctx.beginPath();
+    ctx.moveTo(cx - 165, 355);
+    ctx.quadraticCurveTo(cx - 132, 312, cx - 76, 342);
+    ctx.lineTo(cx - 94, 406);
+    ctx.lineTo(cx - 172, 394);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Placa interna de hombrera izquierda
+    ctx.beginPath();
+    ctx.moveTo(cx - 155, 372);
+    ctx.quadraticCurveTo(cx - 126, 338, cx - 84, 362);
+    ctx.stroke();
+
+    // Hombrera Derecha
+    ctx.beginPath();
+    ctx.moveTo(cx + 165, 355);
+    ctx.quadraticCurveTo(cx + 132, 312, cx + 76, 342);
+    ctx.lineTo(cx + 94, 406);
+    ctx.lineTo(cx + 172, 394);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Placa interna de hombrera derecha
+    ctx.beginPath();
+    ctx.moveTo(cx + 155, 372);
+    ctx.quadraticCurveTo(cx + 126, 338, cx + 84, 362);
+    ctx.stroke();
+
+    // ------------------------------------------------------------------------
+    // 5. NÚCLEO RÚNICO CENTRAL EN FORMA DE DIAMANTE (PECHO)
+    // ------------------------------------------------------------------------
+    const coreY = 452;
+    ctx.shadowBlur = 24;
+    ctx.shadowColor = cyan;
+    ctx.fillStyle = '#041e28';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, coreY - 42);
+    ctx.lineTo(cx + 36, coreY);
+    ctx.lineTo(cx, coreY + 42);
+    ctx.lineTo(cx - 36, coreY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Diamante interior brillante
+    const coreInnerGrad = ctx.createRadialGradient(cx, coreY, 2, cx, coreY, 22);
+    coreInnerGrad.addColorStop(0, '#ffffff');
+    coreInnerGrad.addColorStop(0.5, cyan);
+    coreInnerGrad.addColorStop(1, '#0284c7');
+    ctx.fillStyle = coreInnerGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx, coreY - 21);
+    ctx.lineTo(cx + 18, coreY);
+    ctx.lineTo(cx, coreY + 21);
+    ctx.lineTo(cx - 18, coreY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // ------------------------------------------------------------------------
+    // 6. CUELLO Y ROSTRO ANIME ESTILIZADO (SOMBRADO CEL-SHADING REAL)
+    // ------------------------------------------------------------------------
+    ctx.save();
+    // Cuello
+    const neckGrad = ctx.createLinearGradient(cx, 285, cx, 340);
+    neckGrad.addColorStop(0, '#e5b8a2');
+    neckGrad.addColorStop(0.4, '#ffedd5');
+    neckGrad.addColorStop(1, '#fed7aa');
+    ctx.fillStyle = neckGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - 21, 286);
+    ctx.lineTo(cx + 21, 286);
+    ctx.lineTo(cx + 25, 338);
+    ctx.lineTo(cx - 25, 338);
+    ctx.closePath();
+    ctx.fill();
+
+    // Sombra triangular bajo la barbilla
+    ctx.fillStyle = 'rgba(180, 105, 80, 0.32)';
+    ctx.beginPath();
+    ctx.moveTo(cx - 21, 290);
+    ctx.lineTo(cx + 21, 290);
+    ctx.lineTo(cx, 314);
+    ctx.closePath();
+    ctx.fill();
+
+    // Contorno facial anime (mentón afilado estilo manhwa)
+    const faceGrad = ctx.createLinearGradient(cx, 155, cx, 305);
+    faceGrad.addColorStop(0, '#ffedd5');
+    faceGrad.addColorStop(0.75, '#fed7aa');
+    faceGrad.addColorStop(1, '#f8c39c');
+    ctx.fillStyle = faceGrad;
+
+    ctx.beginPath();
+    if (isFemale) {
+      ctx.moveTo(cx - 56, 200);
+      ctx.bezierCurveTo(cx - 58, 252, cx - 42, 284, cx, 300);
+      ctx.bezierCurveTo(cx + 42, 284, cx + 58, 252, cx + 56, 200);
+      ctx.bezierCurveTo(cx + 56, 152, cx + 32, 138, cx, 138);
+      ctx.bezierCurveTo(cx - 32, 138, cx - 56, 152, cx - 56, 200);
+    } else {
+      ctx.moveTo(cx - 59, 198);
+      ctx.bezierCurveTo(cx - 60, 254, cx - 44, 287, cx, 304);
+      ctx.bezierCurveTo(cx + 44, 287, cx + 60, 254, cx + 59, 198);
+      ctx.bezierCurveTo(cx + 59, 150, cx + 34, 136, cx, 136);
+      ctx.bezierCurveTo(cx - 34, 136, cx - 59, 150, cx - 59, 198);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // Sombra suave proyectada por el flequillo en la frente
+    ctx.fillStyle = 'rgba(180, 110, 85, 0.18)';
+    ctx.beginPath();
+    ctx.ellipse(cx, 196, 52, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Orejas
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.ellipse(cx - 58, 232, 6, 14, -0.12, 0, Math.PI * 2);
+    ctx.ellipse(cx + 58, 232, 6, 14, 0.12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // OJOS ANIME DE ALTA DEFINICIÓN (IRIS DEGRADADO + DESTELLOS)
+    const drawAnimeEye = (ex, isLeft) => {
+      ctx.save();
+      // Esclerótica blanca con ligera sombra superior
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(ex - 16, 234);
+      ctx.quadraticCurveTo(ex, 222, ex + 16, 234);
+      ctx.quadraticCurveTo(ex, 245, ex - 16, 234);
+      ctx.closePath();
+      ctx.fill();
+
+      // Iris degradado (Violeta/Índigo o color de clase)
+      const irisGrad = ctx.createLinearGradient(ex, 225, ex, 243);
+      irisGrad.addColorStop(0, '#1e1b4b');
+      irisGrad.addColorStop(0.5, irisCol);
+      irisGrad.addColorStop(1, '#a855f7');
+      ctx.fillStyle = irisGrad;
+      ctx.beginPath();
+      ctx.ellipse(ex, 234, 8.5, 9.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pupila oscura
+      ctx.fillStyle = '#050814';
+      ctx.beginPath();
+      ctx.ellipse(ex, 234, 4, 4.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Destello principal blanco nítido
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(ex - 3.2, 230.5, 2.8, 0, Math.PI * 2);
+      ctx.arc(ex + 3.2, 237, 1.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pestaña superior gruesa y definida estilo manhwa
+      ctx.strokeStyle = '#070a14';
+      ctx.lineWidth = 3.8;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (isLeft) {
+        ctx.moveTo(ex - 18, 232);
+        ctx.quadraticCurveTo(ex - 2, 220, ex + 16, 233);
+      } else {
+        ctx.moveTo(ex - 16, 233);
+        ctx.quadraticCurveTo(ex + 2, 220, ex + 18, 232);
+      }
+      ctx.stroke();
+
+      // Ceja firme y expresiva
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      if (isLeft) {
+        ctx.moveTo(ex - 18, 216);
+        ctx.lineTo(ex + 14, 221);
+      } else {
+        ctx.moveTo(ex - 14, 221);
+        ctx.lineTo(ex + 18, 216);
+      }
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    drawAnimeEye(cx - 28, true);
+    drawAnimeEye(cx + 28, false);
+
+    // Rubor sutil en modo femenino
+    if (isFemale) {
+      ctx.fillStyle = 'rgba(251, 113, 133, 0.28)';
+      ctx.beginPath();
+      ctx.ellipse(cx - 34, 252, 9, 4, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx + 34, 252, 9, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Nariz minimalista anime y sonrisa confiada
+    ctx.strokeStyle = '#c27d5e';
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 1, 248);
+    ctx.lineTo(cx - 3, 259);
+    ctx.lineTo(cx + 2, 261);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#7c2d12';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 13, 276);
+    ctx.quadraticCurveTo(cx, 282, cx + 14, 275);
+    ctx.stroke();
+    ctx.restore();
+
+    // ------------------------------------------------------------------------
+    // 7. CABELLO FRONTAL ANIME DETALLADO CON REFLEJOS AZUL/CIAN
+    // ------------------------------------------------------------------------
+    ctx.save();
+    const frontHairGrad = ctx.createLinearGradient(cx, 115, cx, 245);
+    frontHairGrad.addColorStop(0, '#070a13');
+    frontHairGrad.addColorStop(0.7, '#0c1222');
+    frontHairGrad.addColorStop(1, '#162038');
+    ctx.fillStyle = frontHairGrad;
+
+    if (isFemale) {
+      ctx.beginPath();
+      ctx.moveTo(cx - 72, 220);
+      ctx.bezierCurveTo(cx - 76, 145, cx - 38, 120, cx, 120);
+      ctx.bezierCurveTo(cx + 38, 120, cx + 76, 145, cx + 72, 220);
+      // Mechones laterales largos enmarcando el rostro
+      ctx.lineTo(cx + 68, 315);
+      ctx.lineTo(cx + 54, 240);
+      ctx.lineTo(cx + 42, 198);
+      ctx.lineTo(cx + 26, 228);
+      ctx.lineTo(cx + 12, 194);
+      ctx.lineTo(cx, 230);
+      ctx.lineTo(cx - 14, 192);
+      ctx.lineTo(cx - 28, 226);
+      ctx.lineTo(cx - 42, 198);
+      ctx.lineTo(cx - 54, 240);
+      ctx.lineTo(cx - 68, 315);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      // Mechones puntiagudos estilo Sung Jin-Woo / Protagonista Manhwa (Imagen 1)
+      ctx.beginPath();
+      ctx.moveTo(cx - 66, 222);
+      ctx.lineTo(cx - 78, 178);
+      ctx.lineTo(cx - 60, 184);
+      ctx.lineTo(cx - 66, 138);
+      ctx.lineTo(cx - 42, 156);
+      ctx.lineTo(cx - 28, 116);
+      ctx.lineTo(cx - 8, 146);
+      ctx.lineTo(cx + 12, 112);
+      ctx.lineTo(cx + 28, 148);
+      ctx.lineTo(cx + 54, 128);
+      ctx.lineTo(cx + 52, 168);
+      ctx.lineTo(cx + 76, 164);
+      ctx.lineTo(cx + 66, 222);
+      // Puntas del flequillo sobre los ojos
+      ctx.lineTo(cx + 54, 196);
+      ctx.lineTo(cx + 44, 232);
+      ctx.lineTo(cx + 28, 192);
+      ctx.lineTo(cx + 14, 234);
+      ctx.lineTo(cx, 190);
+      ctx.lineTo(cx - 16, 232);
+      ctx.lineTo(cx - 30, 190);
+      ctx.lineTo(cx - 44, 228);
+      ctx.lineTo(cx - 54, 196);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Reflejo de luz azul/cian sobre el cabello
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.42)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 42, 164);
+    ctx.quadraticCurveTo(cx, 150, cx + 42, 164);
+    ctx.stroke();
+
+    // Corona astral dorada si alcanza Etapa >= 3
+    if (stage >= 3) {
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = '#fbbf24';
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx - 46, 138);
+      ctx.lineTo(cx - 24, 112);
+      ctx.lineTo(cx, 128);
+      ctx.lineTo(cx + 24, 112);
+      ctx.lineTo(cx + 46, 138);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // ------------------------------------------------------------------------
+    // 8. ARMA MÁGICA RESPLANDECIENTE CON ESTELAS DE ENERGÍA (DERECHA)
+    // ------------------------------------------------------------------------
+    const sx = 532;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+
+    // Resplandor ambiental vertical del arma
+    const weaponAura = ctx.createRadialGradient(sx, 330, 10, sx, 330, 180);
+    weaponAura.addColorStop(0, 'rgba(0, 240, 255, 0.55)');
+    weaponAura.addColorStop(0.5, 'rgba(59, 130, 246, 0.22)');
+    weaponAura.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = weaponAura;
+    ctx.fillRect(350, 80, 330, 560);
+
+    // Hoja luminosa de energía cian y núcleo blanco puro
+    ctx.shadowBlur = 28;
+    ctx.shadowColor = cyan;
+
+    if (weaponType === 'staff') {
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(sx, 145);
+      ctx.lineTo(sx, 670);
+      ctx.stroke();
+
+      ctx.strokeStyle = cyan;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(sx, 125, 24, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(sx, 125, 11, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (weaponType === 'spear') {
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(sx, 175);
+      ctx.lineTo(sx, 670);
+      ctx.stroke();
+
+      ctx.fillStyle = cyan;
+      ctx.beginPath();
+      ctx.moveTo(sx, 85);
+      ctx.lineTo(sx + 20, 180);
+      ctx.lineTo(sx, 164);
+      ctx.lineTo(sx - 20, 180);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      // Espada de Energía Cian (Idéntica a la Primera Imagen)
+      const bladeGrad = ctx.createLinearGradient(sx - 16, 110, sx + 16, 515);
+      bladeGrad.addColorStop(0, '#ffffff');
+      bladeGrad.addColorStop(0.5, cyan);
+      bladeGrad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = bladeGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(sx, 102);
+      ctx.lineTo(sx + 15, 152);
+      ctx.lineTo(sx + 12, 515);
+      ctx.lineTo(sx - 12, 515);
+      ctx.lineTo(sx - 15, 152);
+      ctx.closePath();
+      ctx.fill();
+
+      // Núcleo blanco incandescente central
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(sx, 122);
+      ctx.lineTo(sx, 510);
+      ctx.stroke();
+    }
+
+    // Estelas espirales de energía envolviendo la hoja
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(sx - 34, 195);
+    ctx.bezierCurveTo(sx + 46, 235, sx - 44, 310, sx + 38, 365);
+    ctx.bezierCurveTo(sx - 30, 415, sx + 34, 460, sx - 18, 495);
+    ctx.stroke();
+
+    ctx.strokeStyle = cyan;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(sx + 34, 165);
+    ctx.bezierCurveTo(sx - 44, 240, sx + 48, 325, sx - 36, 405);
+    ctx.stroke();
+    ctx.restore();
+
+    // Guarda dorada ornamentada y empuñadura (en modo normal para nitidez metálica)
+    if (weaponType !== 'staff' && weaponType !== 'spear') {
+      ctx.save();
+      const goldGrad = ctx.createLinearGradient(sx - 44, 512, sx + 44, 532);
+      goldGrad.addColorStop(0, '#92400e');
+      goldGrad.addColorStop(0.5, '#fde047');
+      goldGrad.addColorStop(1, '#92400e');
+      ctx.fillStyle = goldGrad;
+      ctx.beginPath();
+      ctx.moveTo(sx - 46, 514);
+      ctx.lineTo(sx + 46, 514);
+      ctx.lineTo(sx + 36, 530);
+      ctx.lineTo(sx - 36, 530);
+      ctx.closePath();
+      ctx.fill();
+
+      // Empuñadura
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.fillRect(sx - 8, 530, 16, 62);
+      ctx.strokeRect(sx - 8, 530, 16, 62);
+
+      // Pomo con gema cian
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(sx, 600, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = cyan;
+      ctx.beginPath();
+      ctx.arc(sx, 600, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }, [gender, accentColor, eyeColor, weaponType, stage]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={680}
+      height={760}
+      style={{ width: '100%', height: 'auto', display: 'block' }}
+    />
+  );
+}
+
+// ============================================================================
+// TARJETA COMPLETA DEL CAZADOR + PANEL EVOLUCIÓN INFINITA (ESTILO IMAGEN 1)
+// ============================================================================
+function JrpgFantasyPortrait({ hunterClass, hunterGrade, level, classEvolution, gender, onToggleGender, passiveClassBonus }) {
+  const race = hunterClass?.race || RACES_POOL[0];
+  const cls = hunterClass?.cls || {
+    name: 'Centinela Infinito',
+    weaponType: 'sword',
+    accentColor: '#00f0ff',
+    passiveName: 'Muralla Inquebrantable (Infinito)',
+    passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
+  };
+  const stage = classEvolution.stage;
   const isFemale = gender === 'female';
 
   return (
-    <div className="jrpg-card-frame">
-      <div style={{
-        background: '#050812',
-        borderRadius: '14px',
-        padding: '14px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* CABECERA SUPERIOR DE TARJETA */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-          <span className="sys-badge" style={{ background: 'rgba(212, 175, 55, 0.18)', color: '#fde047', border: '1px solid rgba(212, 175, 55, 0.55)' }}>
-            NV. {level} • ETAPA {stage}
-          </span>
-          <button
-            className="sys-btn sys-btn-ghost"
-            style={{ padding: '4px 10px', fontSize: '10px', borderColor: 'rgba(0,240,255,0.4)' }}
-            onClick={onToggleGender}
-          >
-            <UserCheck size={12} color="#00f0ff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
-          </button>
-        </div>
-
-        {/* LIENZO DE RETRATO ANIME ÉPICO */}
-        <div style={{
-          width: '100%',
-          maxWidth: '340px',
-          aspectRatio: '5 / 6',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          position: 'relative',
-          border: `1.5px solid ${accent}`,
-          boxShadow: `0 0 24px ${accent}44, inset 0 0 24px rgba(0, 240, 255, 0.15)`,
-          background: '#040711'
-        }}>
-          <svg viewBox="0 0 340 400" width="100%" height="100%" style={{ display: 'block' }}>
-            <defs>
-              {/* Fondo Cósmico Profundo */}
-              <radialGradient id="animeCosmicBg" cx="50%" cy="35%" r="70%">
-                <stop offset="0%" stopColor="#1e1b4b" />
-                <stop offset="48%" stopColor="#0f172a" />
-                <stop offset="100%" stopColor="#04060d" />
-              </radialGradient>
-
-              {/* Aura detrás del personaje */}
-              <radialGradient id="heroAuraGlow" cx="50%" cy="45%" r="48%">
-                <stop offset="0%" stopColor={accent} stopOpacity="0.34" />
-                <stop offset="55%" stopColor="#3b82f6" stopOpacity="0.14" />
-                <stop offset="100%" stopColor="#04060d" stopOpacity="0" />
-              </radialGradient>
-
-              {/* Degradado de Armadura Oscura */}
-              <linearGradient id="darkArmorGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#161f33" />
-                <stop offset="50%" stopColor="#090d16" />
-                <stop offset="100%" stopColor="#04060c" />
-              </linearGradient>
-
-              {/* Degradado de Capa Carmesí Real */}
-              <linearGradient id="crimsonCapeGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#991b1b" />
-                <stop offset="60%" stopColor="#650d1b" />
-                <stop offset="100%" stopColor="#31060d" />
-              </linearGradient>
-
-              {/* Brillo del Arma Mágica */}
-              <linearGradient id="magicBladeGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ffffff" />
-                <stop offset="35%" stopColor={accent} />
-                <stop offset="100%" stopColor="#0284c7" />
-              </linearGradient>
-
-              {/* Sombreado Cel-Shading de Piel */}
-              <linearGradient id="animeSkinGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ffedd5" />
-                <stop offset="82%" stopColor="#fed7aa" />
-                <stop offset="100%" stopColor="#fdba74" />
-              </linearGradient>
-
-              {/* Filtro de Resplandor Neón */}
-              <filter id="cyanNeonBlur" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="5" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-
-            {/* 1. FONDO CÓSMICO Y NEBULOSA AZUL/VIOLETA */}
-            <rect width="340" height="400" fill="url(#animeCosmicBg)" />
-            <circle cx="170" cy="175" r="155" fill="url(#heroAuraGlow)" className="mana-pulse" />
-
-            {/* Nebulosas de energía en fondo */}
-            <ellipse cx="95" cy="145" rx="55" ry="90" fill="#3b82f6" opacity="0.12" filter="url(#cyanNeonBlur)" />
-            <ellipse cx="255" cy="155" rx="60" ry="95" fill={accent} opacity="0.14" filter="url(#cyanNeonBlur)" />
-
-            {/* Partículas de Maná Flotantes */}
-            <circle cx="48" cy="82" r="2" fill="#00f0ff" opacity="0.85" />
-            <circle cx="78" cy="168" r="1.5" fill="#ffffff" opacity="0.75" />
-            <circle cx="38" cy="245" r="2.2" fill={accent} opacity="0.8" />
-            <circle cx="295" cy="72" r="1.8" fill="#fde047" opacity="0.85" />
-            <circle cx="308" cy="215" r="2.2" fill="#00f0ff" opacity="0.9" />
-            <circle cx="282" cy="295" r="1.6" fill="#ffffff" opacity="0.7" />
-            <circle cx="112" cy="48" r="1.5" fill={accent} opacity="0.8" />
-
-            {/* 2. PERSONAJE ANIME CON ANIMACIÓN DE RESPIRACIÓN */}
-            <g className="jrpg-breathe">
-              {/* CAPA CARMESÍ ONDEANTE AL VIENTO (IZQUIERDA Y TRASERA) */}
-              <path
-                d="M115 154 C72 185, 34 252, 16 335 L145 345 L235 345 C228 265, 222 195, 212 154 Z"
-                fill="url(#crimsonCapeGrad)"
-              />
-              {/* Pliegues oscuros internos de la capa */}
-              <path
-                d="M108 164 C78 210, 58 275, 44 338 L92 340 C102 275, 114 215, 124 166 Z"
-                fill="#3b0710"
-                opacity="0.7"
-              />
-              <path
-                d="M115 154 C72 185, 34 252, 16 335"
-                fill="none"
-                stroke="#f43f5e"
-                strokeWidth="1.5"
-                opacity="0.65"
-              />
-
-              {/* CABELLO TRASERO (LARGO FLUIDO SI ES FEMENINO, NUCA ESTILIZADA SI ES MASCULINO) */}
-              {isFemale ? (
-                <g>
-                  <path
-                    d="M124 90 C104 145, 96 225, 108 295 L232 295 C244 225, 236 145, 216 90 Z"
-                    fill={hairCol}
-                  />
-                  <path
-                    d="M114 130 C104 185, 102 240, 112 288"
-                    fill="none"
-                    stroke={accent}
-                    strokeWidth="1.2"
-                    opacity="0.4"
-                  />
-                </g>
-              ) : (
-                <path
-                  d="M132 95 L122 146 L142 138 L170 144 L198 138 L218 146 L208 95 Z"
-                  fill={hairCol}
-                />
-              )}
-
-              {/* TORSO Y CORAZA DE ARMADURA NEGRA CON LÍNEAS NEÓN */}
-              <path
-                d={isFemale
-                  ? 'M126 154 L214 154 L200 226 L212 315 L128 315 L140 226 Z'
-                  : 'M116 152 L224 152 L208 232 L216 318 L124 318 L132 232 Z'}
-                fill="url(#darkArmorGrad)"
-                stroke={accent}
-                strokeWidth="1.6"
-              />
-
-              {/* Placas pectorales y líneas de circuito energético */}
-              {isFemale ? (
-                <g>
-                  <path d="M134 166 Q152 192 170 176 Q188 192 206 166" fill="none" stroke={accent} strokeWidth="1.5" opacity="0.8" />
-                  <path d="M142 226 L170 242 L198 226" fill="none" stroke="#334155" strokeWidth="1.5" />
-                </g>
-              ) : (
-                <g>
-                  <path d="M128 164 L152 184 L170 174 L188 184 L212 164" fill="none" stroke={accent} strokeWidth="1.4" opacity="0.75" />
-                  <path d="M136 232 L170 246 L204 232" fill="none" stroke="#334155" strokeWidth="1.5" />
-                </g>
-              )}
-
-              {/* NÚCLEO RÚNICO CENTRAL EN FORMA DE DIAMANTE (COMO EN LA IMAGEN 2) */}
-              <g filter="url(#cyanNeonBlur)">
-                <polygon
-                  points="170,180 189,204 170,228 151,204"
-                  fill="#041e26"
-                  stroke={accent}
-                  strokeWidth="2.4"
-                />
-                <polygon
-                  points="170,191 180,204 170,217 160,204"
-                  fill={accent}
-                  opacity="0.9"
-                />
-              </g>
-
-              {/* HOMBRERAS ANGULARES BLINDADAS CON BORDE LUMINOSO */}
-              {/* Hombrera Izquierda */}
-              <g>
-                <path
-                  d="M94 158 Q116 134 140 156 L130 186 L90 178 Z"
-                  fill="#0f172a"
-                  stroke={accent}
-                  strokeWidth="1.8"
-                />
-                <path
-                  d="M98 166 Q116 148 134 164"
-                  fill="none"
-                  stroke={goldTrim}
-                  strokeWidth="1.4"
-                />
-              </g>
-
-              {/* Hombrera Derecha */}
-              <g>
-                <path
-                  d="M246 158 Q224 134 200 156 L210 186 L250 178 Z"
-                  fill="#0f172a"
-                  stroke={accent}
-                  strokeWidth="1.8"
-                />
-                <path
-                  d="M242 166 Q224 148 206 164"
-                  fill="none"
-                  stroke={goldTrim}
-                  strokeWidth="1.4"
-                />
-              </g>
-
-              {/* BRAZOS CON RIBETE LUMINOSO */}
-              <path
-                d={isFemale ? 'M96 180 L84 268 L108 272 L124 188 Z' : 'M92 178 L78 272 L106 276 L124 188 Z'}
-                fill="#090d16"
-                stroke={accent}
-                strokeWidth="1.4"
-              />
-              <path
-                d={isFemale ? 'M244 180 L256 268 L232 272 L216 188 Z' : 'M248 178 L262 272 L234 276 L216 188 Z'}
-                fill="#090d16"
-                stroke={accent}
-                strokeWidth="1.4"
-              />
-
-              {/* CUELLO Y SOMBRA DE BARBILLA */}
-              <path d="M159 132 L181 132 L184 156 L156 156 Z" fill="url(#animeSkinGrad)" />
-              <polygon points="159,134 181,134 170,145" fill="#ea580c" opacity="0.22" />
-
-              {/* ROSTRO ANIME ESTILIZADO (MANDÍBULA DEFINIDA Y PROPORCIONES DE MANHWA) */}
-              <path
-                d={isFemale
-                  ? 'M138 92 C138 122, 150 136, 170 140 C190 136, 202 122, 202 92 C202 64, 188 56, 170 56 C152 56, 138 64, 138 92 Z'
-                  : 'M136 90 C136 122, 148 137, 170 142 C192 137, 204 122, 204 90 C204 62, 189 54, 170 54 C151 54, 136 62, 136 90 Z'}
-                fill="url(#animeSkinGrad)"
-              />
-
-              {/* Orejas */}
-              <path d="M137 98 Q131 104 138 113" fill="#fed7aa" stroke="#fdba74" strokeWidth="1" />
-              <path d="M203 98 Q209 104 202 113" fill="#fed7aa" stroke="#fdba74" strokeWidth="1" />
-
-              {/* OJOS ESTILO ANIME CON IRIS DETALLADO Y DESTELLOS */}
-              {/* Ojo Izquierdo */}
-              <g>
-                <ellipse cx="154" cy="105" rx="7.5" ry="6" fill="#ffffff" />
-                <ellipse cx="154.5" cy="105" rx="5.2" ry="5.6" fill={eyeCol} />
-                <circle cx="154.5" cy="105" r="2.4" fill="#090d16" />
-                <circle cx="152.5" cy="102.8" r="2" fill="#ffffff" />
-                <circle cx="156.5" cy="107" r="1" fill="#ffffff" opacity="0.85" />
-                <path d="M145 101 Q154 96 163 102" fill="none" stroke="#090d16" strokeWidth="2.4" strokeLinecap="round" />
-              </g>
-
-              {/* Ojo Derecho */}
-              <g>
-                <ellipse cx="186" cy="105" rx="7.5" ry="6" fill="#ffffff" />
-                <ellipse cx="185.5" cy="105" rx="5.2" ry="5.6" fill={eyeCol} />
-                <circle cx="185.5" cy="105" r="2.4" fill="#090d16" />
-                <circle cx="183.5" cy="102.8" r="2" fill="#ffffff" />
-                <circle cx="187.5" cy="107" r="1" fill="#ffffff" opacity="0.85" />
-                <path d="M177 102 Q186 96 195 101" fill="none" stroke="#090d16" strokeWidth="2.4" strokeLinecap="round" />
-              </g>
-
-              {/* Cejas expresivas */}
-              <path d="M144 93 L162 96" stroke={hairCol} strokeWidth="2.2" strokeLinecap="round" />
-              <path d="M196 93 L178 96" stroke={hairCol} strokeWidth="2.2" strokeLinecap="round" />
-
-              {/* Nariz y sonrisa confiada estilo protagonista */}
-              <path d="M169 112 L168 118 L171 119" fill="none" stroke="#d97706" strokeWidth="1.3" strokeLinecap="round" />
-              {isFemale && (
-                <>
-                  <ellipse cx="147" cy="115" rx="4.5" ry="2" fill="#fb7185" opacity="0.35" />
-                  <ellipse cx="193" cy="115" rx="4.5" ry="2" fill="#fb7185" opacity="0.35" />
-                </>
-              )}
-              <path d="M163 126 Q170 130 177 126" fill="none" stroke="#9a3412" strokeWidth="1.7" strokeLinecap="round" />
-
-              {/* CABELLO FRONTAL ANIME ESTILIZADO (MASCULINO VS FEMENINO) */}
-              {isFemale ? (
-                <g>
-                  {/* Volumen superior y mechones laterales enmarcando mejillas */}
-                  <path
-                    d="M132 96 C130 56, 152 44, 170 44 C188 44, 210 56, 208 96 L202 136 L195 104 L186 86 L176 102 L170 84 L162 103 L152 86 L144 105 L138 136 Z"
-                    fill={hairCol}
-                  />
-                  {/* Reflejos de luz en el flequillo */}
-                  <path
-                    d="M148 64 Q170 58 192 64"
-                    fill="none"
-                    stroke={accent}
-                    strokeWidth="1.5"
-                    opacity="0.55"
-                  />
-                </g>
-              ) : (
-                <g>
-                  {/* Mechones puntiagudos estilo manhwa/anime de acción */}
-                  <path
-                    d="M132 98 L126 74 L136 78 L134 54 L148 66 L156 44 L168 62 L178 42 L188 64 L202 52 L200 76 L212 72 L206 98 L198 84 L192 102 L182 82 L173 104 L166 80 L156 102 L148 82 L140 100 Z"
-                    fill={hairCol}
-                  />
-                  {/* Brillos sutiles en el cabello */}
-                  <path
-                    d="M145 68 L156 54 L166 68 L178 52 L190 68"
-                    fill="none"
-                    stroke="#38bdf8"
-                    strokeWidth="1.2"
-                    opacity="0.45"
-                  />
-                </g>
-              )}
-
-              {/* DIADEMA / CORONA ASTRAL EN ETAPAS AVANZADAS (ETAPA >= 3) */}
-              {stage >= 3 && (
-                <g filter="url(#cyanNeonBlur)">
-                  <path d="M144 54 L156 40 L170 50 L184 40 L196 54" fill="none" stroke={goldTrim} strokeWidth="2.5" />
-                  <circle cx="170" cy="46" r="3" fill={accent} />
-                </g>
-              )}
-
-              {/* 3. ARMA MÁGICA RESPLANDECIENTE CON ESTELAS DE ENERGÍA (DERECHA) */}
-              <g>
-                {/* Aura vertical del arma */}
-                <ellipse cx="272" cy="160" rx="18" ry="110" fill={accent} opacity="0.22" filter="url(#cyanNeonBlur)" />
-
-                {cls.weaponType === 'staff' ? (
-                  <g>
-                    <line x1="272" y1="58" x2="272" y2="335" stroke={goldTrim} strokeWidth="4.5" strokeLinecap="round" />
-                    <circle cx="272" cy="52" r="14" fill="none" stroke={accent} strokeWidth="2.5" filter="url(#cyanNeonBlur)" />
-                    <circle cx="272" cy="52" r="7" fill="#ffffff" />
-                  </g>
-                ) : cls.weaponType === 'spear' ? (
-                  <g>
-                    <line x1="272" y1="68" x2="272" y2="338" stroke={goldTrim} strokeWidth="4" strokeLinecap="round" />
-                    <polygon points="272,28 261,72 272,64 283,72" fill="url(#magicBladeGrad)" filter="url(#cyanNeonBlur)" />
-                  </g>
-                ) : (
-                  /* Espada Rúnica / Espadón Luminoso (Como en la Imagen 2) */
-                  <g>
-                    {/* Hoja brillante con núcleo blanco */}
-                    <polygon
-                      points="272,42 279,66 277,255 267,255 265,66"
-                      fill="url(#magicBladeGrad)"
-                      filter="url(#cyanNeonBlur)"
-                    />
-                    <line x1="272" y1="54" x2="272" y2="250" stroke="#ffffff" strokeWidth="2.2" />
-                    {/* Guarda dorada ornamentada */}
-                    <polygon points="252,255 292,255 286,263 258,263" fill={goldTrim} />
-                    {/* Empuñadura y pomo */}
-                    <rect x="268" y="263" width="8" height="28" rx="2" fill="#1e293b" stroke={goldTrim} strokeWidth="1" />
-                    <circle cx="272" cy="295" r="5" fill={accent} />
-                  </g>
-                )}
-
-                {/* Estelas espirales de energía alrededor del arma */}
-                <path
-                  d="M254 95 C292 115, 248 155, 290 185 C255 210, 288 235, 260 250"
-                  fill="none"
-                  stroke="#ffffff"
-                  strokeWidth="1.6"
-                  opacity="0.8"
-                  filter="url(#cyanNeonBlur)"
-                />
-                <path
-                  d="M288 80 C252 115, 295 160, 254 195"
-                  fill="none"
-                  stroke={accent}
-                  strokeWidth="2"
-                  opacity="0.85"
-                />
-                <circle cx="256" cy="112" r="2.5" fill="#ffffff" />
-                <circle cx="289" cy="148" r="2" fill={accent} />
-                <circle cx="258" cy="205" r="2.5" fill="#ffffff" />
-              </g>
-            </g>
-          </svg>
-
-          {/* SUPERPOSICIÓN DE TÍTULO Y RANGO EN LA BASE DEL RETRATO (ESTILO IMAGEN 2) */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      {/* TARJETA CON BORDE NEÓN CIAN-VIOLETA-MAGENTA */}
+      <div className="anime-holo-outer">
+        <div className="anime-holo-inner">
+          {/* BARRA SUPERIOR: NV • ETAPA Y SELECTOR DE GÉNERO */}
           <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'linear-gradient(0deg, rgba(4,7,17,0.98) 0%, rgba(4,7,17,0.85) 68%, transparent 100%)',
-            padding: '26px 12px 12px',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: '8px'
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '10px'
           }}>
-            <div style={{ flex: 1 }}>
-              <div className="font-souls" style={{ fontSize: '14px', fontWeight: 900, color: '#fff', textShadow: '0 2px 10px rgba(0,240,255,0.4)' }}>
-                {classEvolution.title}
-              </div>
-              <div style={{ fontSize: '11px', color: '#fde047', fontWeight: 700, marginTop: '2px' }}>
-                {classEvolution.bonus}
-              </div>
-            </div>
-            <div style={{
-              width: '54px',
-              height: '54px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(0,240,255,0.22) 0%, rgba(4,7,17,0.95) 75%)',
-              border: '1.5px solid #00f0ff',
-              boxShadow: '0 0 14px rgba(0,240,255,0.4)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
+            <span className="sys-badge" style={{
+              background: 'rgba(212, 175, 55, 0.18)',
+              color: '#fde047',
+              border: '1px solid rgba(251, 191, 36, 0.65)',
+              fontFamily: 'Orbitron, sans-serif',
+              fontSize: '10px'
             }}>
-              <span style={{ fontSize: '8px', color: '#00f0ff', fontWeight: 800, letterSpacing: '0.05em' }}>GRADO</span>
-              <span className="font-hud" style={{ fontSize: '15px', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>{hunterGrade}</span>
+              NV. {level} • ETAPA {stage}
+            </span>
+
+            <button
+              type="button"
+              onClick={onToggleGender}
+              className="sys-btn"
+              style={{
+                padding: '5px 12px',
+                fontSize: '10px',
+                background: 'rgba(14, 116, 144, 0.25)',
+                border: '1px solid rgba(0, 240, 255, 0.55)',
+                color: '#e0f2fe',
+                borderRadius: '999px'
+              }}
+            >
+              <UserCheck size={12} color="#00f0ff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
+            </button>
+          </div>
+
+          {/* LIENZO DE RETRATO ANIME/MANHWA HD */}
+          <div style={{
+            borderRadius: '12px',
+            overflow: 'hidden',
+            position: 'relative',
+            border: '1px solid rgba(0, 240, 255, 0.35)',
+            boxShadow: 'inset 0 0 24px rgba(0, 240, 255, 0.16)'
+          }}>
+            <AnimeHunterCanvas
+              gender={gender}
+              accentColor={cls.accentColor || '#00f0ff'}
+              eyeColor={race.eyeColor || '#6d28d9'}
+              weaponType={cls.weaponType || 'sword'}
+              stage={stage}
+            />
+
+            {/* TÍTULO DE CLASE Y SELLO DE GRADO SUPERPUESTOS EN LA BASE */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: 'linear-gradient(0deg, rgba(4,6,14,0.98) 0%, rgba(4,6,14,0.82) 62%, transparent 100%)',
+              padding: '32px 14px 12px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              gap: '10px'
+            }}>
+              <div style={{ flex: 1, textAlign: 'center', paddingLeft: '36px' }}>
+                <div className="font-souls" style={{
+                  fontSize: '16px',
+                  fontWeight: 900,
+                  color: '#ffffff',
+                  letterSpacing: '0.09em',
+                  textShadow: '0 2px 12px rgba(0, 240, 255, 0.45)'
+                }}>
+                  {classEvolution.title.toUpperCase()}
+                </div>
+                <div style={{ fontSize: '12px', color: '#fde047', fontWeight: 700, marginTop: '2px' }}>
+                  {classEvolution.bonus}
+                </div>
+              </div>
+
+              {/* SELLO CIRCULAR DE GRADO */}
+              <div style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(0,240,255,0.22) 0%, rgba(5,8,20,0.96) 76%)',
+                border: '1.8px solid #00f0ff',
+                boxShadow: '0 0 16px rgba(0, 240, 255, 0.45)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <span style={{ fontSize: '8px', color: '#7dd3fc', fontWeight: 800 }}>GRADO</span>
+                <span className="font-hud" style={{ fontSize: '15px', fontWeight: 900, color: '#ffffff', lineHeight: 1.1 }}>
+                  {hunterGrade}
+                </span>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* PANEL INFERIOR: EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA (ESTILO IMAGEN 1) */}
+      <div className="sys-window" style={{ padding: '16px', borderColor: 'rgba(56, 189, 248, 0.42)' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          marginBottom: '12px'
+        }}>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, #d4af37)' }} />
+          <h2 className="font-souls" style={{ fontSize: '14px', color: '#fde047', fontWeight: 800, textAlign: 'center' }}>
+            EVOLUCIÓN DE CLASE INFINITA (NV. {level})
+          </h2>
+          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, #d4af37, transparent)' }} />
+        </div>
+
+        <div style={{
+          padding: '14px',
+          borderRadius: '12px',
+          background: 'radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.14) 0%, rgba(5, 9, 20, 0.94) 80%)',
+          border: '1px solid rgba(0, 240, 255, 0.5)',
+          boxShadow: 'inset 0 0 18px rgba(0, 240, 255, 0.12)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span className="sys-badge" style={{
+              background: 'rgba(0, 240, 255, 0.14)',
+              color: '#7dd3fc',
+              border: '1px solid rgba(0, 240, 255, 0.4)'
+            }}>
+              PASIVA ÚNICA
+            </span>
+            <span className="sys-badge" style={{
+              background: 'rgba(14, 116, 144, 0.3)',
+              color: '#ffffff',
+              border: '1px solid rgba(0, 240, 255, 0.55)'
+            }}>
+              +{passiveClassBonus} PWR
+            </span>
+          </div>
+
+          <div className="font-souls" style={{
+            fontSize: '16px',
+            fontWeight: 900,
+            color: '#ffffff',
+            textAlign: 'center',
+            marginBottom: '6px',
+            letterSpacing: '0.07em'
+          }}>
+            {(cls.passiveName || 'Muralla Inquebrantable (Infinito)').toUpperCase()}
+          </div>
+
+          <p style={{
+            fontSize: '13px',
+            color: '#cbd5e1',
+            textAlign: 'center',
+            fontStyle: 'italic',
+            lineHeight: 1.45
+          }}>
+            {cls.passiveDesc}
+          </p>
         </div>
       </div>
     </div>
@@ -1266,7 +1680,7 @@ function JrpgFantasyPortrait({ hunterClass, rankInfo, hunterGrade, level, classE
 }
 
 // ============================================================================
-// RETRATO ANIME DE ALTA CALIDAD PARA PERSONAJES DE NOVELA VISUAL
+// RETRATO ANIME PARA PERSONAJES DE NOVELA VISUAL
 // ============================================================================
 function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, affectionPoints }) {
   return (
@@ -1296,75 +1710,48 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
         <rect width="300" height="340" fill={`url(#vnCosmic_${char.id})`} />
         <circle cx="150" cy="145" r="115" fill={char.glowColor || '#fb7185'} opacity="0.16" />
 
-        {/* Partículas románticas / mágicas */}
-        <circle cx="52" cy="68" r="2" fill="#fda4af" opacity="0.8" />
-        <circle cx="248" cy="84" r="2.2" fill={char.trimColor} opacity="0.85" />
-        <circle cx="235" cy="215" r="1.8" fill="#ffffff" opacity="0.7" />
-        <circle cx="66" cy="225" r="2" fill="#fb7185" opacity="0.75" />
+        <path
+          d="M102 86 C86 155, 88 225, 98 285 L202 285 C212 225, 214 155, 198 86 Z"
+          fill={char.hairColor}
+        />
+        <path
+          d="M106 152 L194 152 L212 300 L88 300 Z"
+          fill={char.outfitColor}
+          stroke={char.trimColor}
+          strokeWidth="2"
+        />
+        <path d="M132 152 L150 186 L168 152" fill="#ffedd5" stroke={char.trimColor} strokeWidth="2" />
+        <polygon points="150,194 160,208 150,222 140,208" fill={char.glowColor || '#fb7185'} opacity="0.85" />
 
-        <g className="jrpg-breathe">
-          {/* Cabello trasero largo con volumen */}
-          <path
-            d="M102 86 C86 155, 88 225, 98 285 L202 285 C212 225, 214 155, 198 86 Z"
-            fill={char.hairColor}
-          />
+        <rect x="140" y="130" width="20" height="24" rx="5" fill={`url(#vnSkin_${char.id})`} />
+        <path
+          d="M120 92 C120 122, 132 136, 150 140 C168 136, 180 122, 180 92 C180 64, 166 56, 150 56 C134 56, 120 64, 120 92 Z"
+          fill={`url(#vnSkin_${char.id})`}
+        />
 
-          {/* Vestimenta / Armadura ligera estilizada */}
-          <path
-            d="M106 152 L194 152 L212 300 L88 300 Z"
-            fill={char.outfitColor}
-            stroke={char.trimColor}
-            strokeWidth="2"
-          />
-          {/* Escote y detalles ornamentales */}
-          <path d="M132 152 L150 186 L168 152" fill="#ffedd5" stroke={char.trimColor} strokeWidth="2" />
-          <polygon points="150,194 160,208 150,222 140,208" fill={char.glowColor || '#fb7185'} opacity="0.85" />
-
-          {/* Hombreras elegantes */}
-          <path d="M90 156 Q108 140 124 156 L116 176 L88 170 Z" fill={char.outfitColor} stroke={char.trimColor} strokeWidth="1.6" />
-          <path d="M210 156 Q192 140 176 156 L184 176 L212 170 Z" fill={char.outfitColor} stroke={char.trimColor} strokeWidth="1.6" />
-
-          {/* Cuello y Rostro Anime */}
-          <rect x="140" y="130" width="20" height="24" rx="5" fill={`url(#vnSkin_${char.id})`} />
-          <path
-            d="M120 92 C120 122, 132 136, 150 140 C168 136, 180 122, 180 92 C180 64, 166 56, 150 56 C134 56, 120 64, 120 92 Z"
-            fill={`url(#vnSkin_${char.id})`}
-          />
-
-          {/* Ojos Anime Detallados */}
-          <g>
-            <ellipse cx="136" cy="105" rx="6.8" ry="5.8" fill="#ffffff" />
-            <ellipse cx="136.5" cy="105" rx="4.8" ry="5.4" fill={char.eyeColor} />
-            <circle cx="136.5" cy="105" r="2.2" fill="#090d16" />
-            <circle cx="134.8" cy="103" r="1.8" fill="#ffffff" />
-            <path d="M128 100 Q136 95 144 101" fill="none" stroke="#090d16" strokeWidth="2.2" strokeLinecap="round" />
-          </g>
-          <g>
-            <ellipse cx="164" cy="105" rx="6.8" ry="5.8" fill="#ffffff" />
-            <ellipse cx="163.5" cy="105" rx="4.8" ry="5.4" fill={char.eyeColor} />
-            <circle cx="163.5" cy="105" r="2.2" fill="#090d16" />
-            <circle cx="161.8" cy="103" r="1.8" fill="#ffffff" />
-            <path d="M156 101 Q164 95 172 100" fill="none" stroke="#090d16" strokeWidth="2.2" strokeLinecap="round" />
-          </g>
-
-          {/* Rubor y sonrisa cálida */}
-          <ellipse cx="130" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
-          <ellipse cx="170" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
-          <path d="M144 124 Q150 129 156 124" fill="none" stroke="#be123c" strokeWidth="1.8" strokeLinecap="round" />
-
-          {/* Flequillo y mechones laterales */}
-          <path
-            d="M116 94 C115 58, 134 46, 150 46 C166 46, 185 58, 184 94 L178 132 L171 100 L163 84 L154 100 L150 82 L144 100 L135 84 L128 102 L122 132 Z"
-            fill={char.hairColor}
-          />
-          <path
-            d="M130 66 Q150 60 170 66"
-            fill="none"
-            stroke={char.hairHighlight || '#ffffff'}
-            strokeWidth="1.5"
-            opacity="0.55"
-          />
+        <g>
+          <ellipse cx="136" cy="105" rx="6.8" ry="5.8" fill="#ffffff" />
+          <ellipse cx="136.5" cy="105" rx="4.8" ry="5.4" fill={char.eyeColor} />
+          <circle cx="136.5" cy="105" r="2.2" fill="#090d16" />
+          <circle cx="134.8" cy="103" r="1.8" fill="#ffffff" />
+          <path d="M128 100 Q136 95 144 101" fill="none" stroke="#090d16" strokeWidth="2.2" strokeLinecap="round" />
         </g>
+        <g>
+          <ellipse cx="164" cy="105" rx="6.8" ry="5.8" fill="#ffffff" />
+          <ellipse cx="163.5" cy="105" rx="4.8" ry="5.4" fill={char.eyeColor} />
+          <circle cx="163.5" cy="105" r="2.2" fill="#090d16" />
+          <circle cx="161.8" cy="103" r="1.8" fill="#ffffff" />
+          <path d="M156 101 Q164 95 172 100" fill="none" stroke="#090d16" strokeWidth="2.2" strokeLinecap="round" />
+        </g>
+
+        <ellipse cx="130" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
+        <ellipse cx="170" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
+        <path d="M144 124 Q150 129 156 124" fill="none" stroke="#be123c" strokeWidth="1.8" strokeLinecap="round" />
+
+        <path
+          d="M116 94 C115 58, 134 46, 150 46 C166 46, 185 58, 184 94 L178 132 L171 100 L163 84 L154 100 L150 82 L144 100 L135 84 L128 102 L122 132 Z"
+          fill={char.hairColor}
+        />
       </svg>
 
       <div style={{
@@ -1388,7 +1775,7 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
 }
 
 // ============================================================================
-// MAPA 2D INTERACTIVO DE LA CIUDAD CON EDIFICIOS Y PERSONAJES DESBLOQUEADOS
+// MAPA 2D INTERACTIVO DE LA CIUDAD
 // ============================================================================
 function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selectedCharId, onSelectCharacter }) {
   return (
@@ -1436,10 +1823,7 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
 
         <rect x="0" y="142" width="540" height="88" fill="#142318" />
         <rect x="0" y="168" width="540" height="26" fill="#334155" />
-        <line x1="0" y1="168" x2="540" y2="168" stroke="#64748b" strokeWidth="1.5" strokeDasharray="8 6" />
-        <line x1="0" y1="194" x2="540" y2="194" stroke="#64748b" strokeWidth="1.5" strokeDasharray="8 6" />
 
-        {/* Ciudadela Central */}
         <g>
           <rect x="232" y="92" width="76" height="54" fill="#1e293b" stroke="#d4af37" strokeWidth="2" />
           <polygon points="226,92 270,64 314,92" fill="#991b1b" stroke="#d4af37" strokeWidth="1.5" />
@@ -1451,8 +1835,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           <g>
             <rect x="68" y="106" width="64" height="40" fill="#292524" stroke="#f97316" strokeWidth="1.8" />
             <polygon points="64,106 100,84 136,106" fill="#7c2d12" />
-            <rect x="114" y="74" width="10" height="22" fill="#44403c" />
-            <circle cx="119" cy="68" r="5" fill="#fb923c" opacity="0.6" />
             <text x="100" y="79" textAnchor="middle" fill="#fdba74" fontSize="8" fontWeight="bold">FORJA</text>
           </g>
         )}
@@ -1461,8 +1843,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           <g>
             <rect x="150" y="104" width="66" height="42" fill="#3f2e21" stroke="#fbbf24" strokeWidth="1.8" />
             <polygon points="146,104 183,82 220,104" fill="#92400e" />
-            <rect x="162" y="116" width="12" height="12" fill="#fde047" />
-            <rect x="192" y="116" width="12" height="12" fill="#fde047" />
             <text x="183" y="77" textAnchor="middle" fill="#fde047" fontSize="8" fontWeight="bold">TABERNA</text>
           </g>
         )}
@@ -1486,8 +1866,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
         {builtBuildings.includes('garden') && (
           <g>
             <circle cx="486" cy="134" r="16" fill="#065f46" stroke="#fb7185" strokeWidth="1.8" />
-            <circle cx="480" cy="130" r="3" fill="#fb7185" />
-            <circle cx="492" cy="132" r="3" fill="#fda4af" />
             <text x="486" y="113" textAnchor="middle" fill="#fda4af" fontSize="8" fontWeight="bold">JARDÍN ♥</text>
           </g>
         )}
@@ -1644,7 +2022,7 @@ function AuthPortal({ onAuthenticated }) {
     setLoading(true);
     try {
       const passHash = await hashSecret(passwordInput);
-      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v10') || '{}');
+      const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v11') || '{}');
 
       if (authMode === 'register') {
         if (usersDb[cleanEmail]) {
@@ -1660,7 +2038,7 @@ function AuthPortal({ onAuthenticated }) {
           createdAt: new Date().toISOString()
         };
         usersDb[cleanEmail] = newAccount;
-        localStorage.setItem('pex_users_registry_v10', JSON.stringify(usersDb));
+        localStorage.setItem('pex_users_registry_v11', JSON.stringify(usersDb));
         onAuthenticated(newAccount);
       } else {
         const existing = usersDb[cleanEmail];
@@ -1693,7 +2071,7 @@ function AuthPortal({ onAuthenticated }) {
             PROTOCOLO EX
           </h1>
           <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
-            Tu sesión permanecerá abierta automáticamente aunque cierres la app
+            Inicia desde 0 y conserva tu progreso automáticamente
           </p>
         </div>
 
@@ -1720,7 +2098,7 @@ function AuthPortal({ onAuthenticated }) {
               <label style={{ fontSize: '11px', color: '#d4af37', fontWeight: 700 }}>NOMBRE CLAVE DE CAZADOR</label>
               <input
                 className="sys-input"
-                placeholder="Ej: SUNG_JINWOO / AKIRA"
+                placeholder="Ej: ORIGEN / AKIRA"
                 value={hunterTagInput}
                 onChange={(e) => setHunterTagInput(e.target.value)}
               />
@@ -1792,7 +2170,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('pex_permanent_session_v10');
+      const saved = localStorage.getItem('pex_permanent_session_v11');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -1801,15 +2179,15 @@ export default function App() {
 
   const handleAuthenticated = (account) => {
     setCurrentUser(account);
-    localStorage.setItem('pex_permanent_session_v10', JSON.stringify(account));
+    localStorage.setItem('pex_permanent_session_v11', JSON.stringify(account));
   };
 
   const handleDeleteAccount = (emailToDelete) => {
-    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v10') || '{}');
+    const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v11') || '{}');
     delete usersDb[emailToDelete];
-    localStorage.setItem('pex_users_registry_v10', JSON.stringify(usersDb));
-    localStorage.removeItem(`pex_user_data_v10_${emailToDelete}`);
-    localStorage.removeItem('pex_permanent_session_v10');
+    localStorage.setItem('pex_users_registry_v11', JSON.stringify(usersDb));
+    localStorage.removeItem(`pex_user_data_v11_${emailToDelete}`);
+    localStorage.removeItem('pex_permanent_session_v11');
     setCurrentUser(null);
   };
 
@@ -1827,10 +2205,10 @@ export default function App() {
 }
 
 // ============================================================================
-// ESPACIO DE TRABAJO DEL CAZADOR (AISLADO POR USUARIO Y PERSISTENTE)
+// ESPACIO DE TRABAJO DEL CAZADOR (TODO INICIA ESTRICTAMENTE DESDE 0)
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
-  const storageKey = `pex_user_data_v10_${currentUser.email}`;
+  const storageKey = `pex_user_data_v11_${currentUser.email}`;
 
   const loadUserState = () => {
     try {
@@ -1848,99 +2226,84 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
   const [profile, setProfile] = useState(() => initialData?.profile || {
     hunterName: currentUser.hunterName || 'CAZADOR_01',
-    hunterCode: currentUser.hunterCode || '#PEX-8100',
+    hunterCode: currentUser.hunterCode || '#PEX-1000',
     gender: 'male',
     goal: 'Hipertrofia y Estética',
     routineDurationMonths: 2,
     daysPerWeek: 4,
     injuries: 'Ninguna',
     equipmentMode: 'all_gym',
-    ownedHomeEquipment: ['Mancuernas ajustables', 'Barra de dominadas'],
-    experienceMonths: 8,
+    ownedHomeEquipment: [],
+    experienceMonths: 0,
     age: 22,
     weightKg: 75,
     heightCm: 176,
-    benchKg: 80,
-    squatKg: 105,
-    deadliftKg: 130,
-    pushupsMax: 30,
+    benchKg: 0,
+    squatKg: 0,
+    deadliftKg: 0,
+    pushupsMax: 0,
     photoScanned: false,
     censoredPreview: null,
   });
 
   const [hunterClass, setHunterClass] = useState(() => initialData?.hunterClass || null);
-  const [savedLifts, setSavedLifts] = useState(() => initialData?.savedLifts || DEFAULT_LIFTS);
-  const [lp, setLp] = useState(() => initialData?.lp ?? 1840);
-  const [exp, setExp] = useState(() => initialData?.exp ?? 420);
-  const [streak, setStreak] = useState(() => initialData?.streak ?? 5);
+  const [savedLifts, setSavedLifts] = useState(() => initialData?.savedLifts || ZERO_LIFTS);
 
-  const [unlockedInventory, setUnlockedInventory] = useState(() => initialData?.unlockedInventory || [DAILY_REWARD_POOL[0], DAILY_REWARD_POOL[1]]);
+  // CONTADORES INICIADOS STRICTAMENTE DESDE 0
+  const [lp, setLp] = useState(() => initialData?.lp ?? 0);
+  const [exp, setExp] = useState(() => initialData?.exp ?? 0);
+  const [streak, setStreak] = useState(() => initialData?.streak ?? 0);
+
+  const [unlockedInventory, setUnlockedInventory] = useState(() => initialData?.unlockedInventory || []);
   const [completedChapters, setCompletedChapters] = useState(() => initialData?.completedChapters || []);
   const [pveBattleLog, setPveBattleLog] = useState(null);
 
   const [cityName, setCityName] = useState(() => initialData?.cityName || 'Bastión de Ceniza');
-  const [builtBuildings, setBuiltBuildings] = useState(() => initialData?.builtBuildings || ['forge']);
+  const [builtBuildings, setBuiltBuildings] = useState(() => initialData?.builtBuildings || []);
   const [selectedCharId, setSelectedCharId] = useState('lyra');
   const [characterStates, setCharacterStates] = useState(() => initialData?.characterStates || {
-    lyra: { affection: 25, memories: ['Nos conocimos en las Ruinas de Ceniza junto a la forja antigua.'], lastReply: '¡Por fin llegas! Estaba templando acero en la forja de nuestra nueva ciudad y todos comentan tus levantamientos.' },
-    kaelen: { affection: 15, memories: ['Patrullamos juntos el Bosque de los Ecos.'], lastReply: 'Vengo de patrullar los bosques que rodean la muralla. Tu presencia aquí mantiene a raya a las bestias de la grieta.' },
-    seraphina: { affection: 20, memories: ['Juré lealtad a tu ciudad tras nuestro duelo honorable.'], lastReply: 'Mi espada ahora protege este asentamiento. Dime, Cazador... ¿entrenaste hoy con la misma intensidad de siempre?' },
-    isolde: { affection: 30, memories: ['Observé el brillo de tu clase infinita en el Altar del Eclipse.'], lastReply: 'Las estrellas sobre nuestra ciudad brillan distinto desde que superaste tus marcas... Estaba esperando hablar contigo.' },
+    lyra: { affection: 0, memories: [], lastReply: STORY_CHARACTERS[0].intro },
+    kaelen: { affection: 0, memories: [], lastReply: STORY_CHARACTERS[1].intro },
+    seraphina: { affection: 0, memories: [], lastReply: STORY_CHARACTERS[2].intro },
+    isolde: { affection: 0, memories: [], lastReply: STORY_CHARACTERS[3].intro },
   });
   const [chatInput, setChatInput] = useState('');
   const [confirmDeleteText, setConfirmDeleteText] = useState('');
 
   const [userCoords, setUserCoords] = useState({ lat: -34.0981, lon: -59.0286, label: 'Zárate, Buenos Aires (GPS Activo)' });
-  const [friends, setFriends] = useState(() => initialData?.friends || [
-    { id: 1, name: 'VALKIRIA_SOL', code: '#PEX-4412', level: 8, grade: 'B', power: 340, lat: -34.1632, lon: -58.9592, city: 'Campana' },
-    { id: 2, name: 'TITAN_MARCOS', code: '#PEX-9021', level: 14, grade: 'A', power: 460, lat: -34.5612, lon: -59.1189, city: 'Luján' },
-  ]);
+  const [friends, setFriends] = useState(() => initialData?.friends || []);
   const [newFriendName, setNewFriendName] = useState('');
   const [newFriendCode, setNewFriendCode] = useState('');
-  const [newFriendDistKm, setNewFriendDistKm] = useState(12);
+  const [newFriendDistKm, setNewFriendDistKm] = useState(5);
   const [pvpLog, setPvpLog] = useState(null);
 
-  const [activeTab, setActiveTab] = useState('quests');
+  const [activeTab, setActiveTab] = useState('avatar');
   const [toast, setToast] = useState(null);
   const [animModalEx, setAnimModalEx] = useState(null);
 
   const [quests, setQuests] = useState(() => initialData?.quests || [
-    { id: 1, title: 'Press Banca: 4x8 con 80 kg declarados', env: 'Gimnasio', lp: 45, exp: 95, status: 'pending' },
-    { id: 2, title: 'Correr 5 km ritmo constante al aire libre', env: 'Exterior', lp: 40, exp: 85, status: 'pending' },
-    { id: 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'completed' },
+    { id: 1, title: 'Completar primera sesión de entrenamiento del plan', env: 'Entreno', lp: 45, exp: 100, status: 'pending' },
+    { id: 2, title: 'Registrar tus marcas base en la pestaña Cargas', env: 'Sistema', lp: 35, exp: 60, status: 'pending' },
+    { id: 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending' },
   ]);
-  const [nextWeekQueue, setNextWeekQueue] = useState(() => initialData?.nextWeekQueue || [
-    { id: 101, title: 'Sentadilla Profunda 4x6 (115 kg) - Reto recuperable', lp: 50, exp: 110 }
-  ]);
+  const [nextWeekQueue, setNextWeekQueue] = useState(() => initialData?.nextWeekQueue || []);
   const [newQuestTitle, setNewQuestTitle] = useState('');
   const [justifyModalId, setJustifyModalId] = useState(null);
-  const [justifyReason, setJustifyReason] = useState('Tormenta / Lluvia intensa');
+  const [justifyReason, setJustifyReason] = useState('Lluvia intensa / Tormenta');
 
   const [selectedExercise, setSelectedExercise] = useState('Press Banca');
-  const [liftWeightInput, setLiftWeightInput] = useState(savedLifts['Press Banca']?.weight || 80);
-  const [liftRepsInput, setLiftRepsInput] = useState(savedLifts['Press Banca']?.reps || 5);
+  const [liftWeightInput, setLiftWeightInput] = useState(savedLifts['Press Banca']?.weight || 0);
+  const [liftRepsInput, setLiftRepsInput] = useState(savedLifts['Press Banca']?.reps || 0);
 
-  const [daysUntilEval] = useState(64);
+  const [daysUntilEval] = useState(90);
   const [vaultPhotos, setVaultPhotos] = useState({ front: null, back: null });
-  const [yearlyRecap] = useState([
-    { quarter: 'Q1 (Inicio)', grade: 'D', weight: '71 kg', note: 'Despertar del Sistema. Base estructural.' },
-    { quarter: 'Q2 (3 Meses)', grade: 'C', weight: '73.5 kg', note: '+18% fuerza relativa y mejora postural.' },
-    { quarter: 'Q3 (Actual)', grade: 'B', weight: '75 kg', note: 'Densidad muscular y simetría escapular.' },
-  ]);
+  const [yearlyRecap, setYearlyRecap] = useState(() => initialData?.yearlyRecap || []);
 
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
 
-  const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || [
-    { day: 'Lun', hours: 7.5 },
-    { day: 'Mar', hours: 7.0 },
-    { day: 'Mié', hours: 8.0 },
-    { day: 'Jue', hours: 6.5 },
-    { day: 'Vie', hours: 7.5 },
-    { day: 'Sáb', hours: 8.5 },
-    { day: 'Dom', hours: 7.5 },
-  ]);
-  const [todaySleep, setTodaySleep] = useState(7.5);
+  const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
+  const [todaySleep, setTodaySleep] = useState(0);
 
   const canvasRef = useRef(null);
 
@@ -1979,13 +2342,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       quests,
       nextWeekQueue,
       sleepLog,
+      yearlyRecap,
     };
     localStorage.setItem(storageKey, JSON.stringify(payload));
   }, [
     storageKey, awakened, profile, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
-    friends, quests, nextWeekQueue, sleepLog
+    friends, quests, nextWeekQueue, sleepLog, yearlyRecap
   ]);
 
   const triggerToast = (msg) => {
@@ -1993,11 +2357,38 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setTimeout(() => setToast(null), 4600);
   };
 
+  // FUNCIÓN PARA REINICIAR TODO EL PROGRESO ESTRICTAMENTE A 0
+  const resetProgressToZero = () => {
+    setLp(0);
+    setExp(0);
+    setStreak(0);
+    setSavedLifts(ZERO_LIFTS);
+    setLiftWeightInput(0);
+    setLiftRepsInput(0);
+    setUnlockedInventory([]);
+    setCompletedChapters([]);
+    setBuiltBuildings([]);
+    setFriends([]);
+    setNextWeekQueue([]);
+    setSleepLog(ZERO_SLEEP_LOG);
+    setTodaySleep(0);
+    setYearlyRecap([]);
+    setPveBattleLog(null);
+    setPvpLog(null);
+    setQuests([
+      { id: Date.now() + 1, title: 'Completar primera sesión de entrenamiento del plan', env: 'Entreno', lp: 45, exp: 100, status: 'pending' },
+      { id: Date.now() + 2, title: 'Registrar tus marcas base en la pestaña Cargas', env: 'Sistema', lp: 35, exp: 60, status: 'pending' },
+      { id: Date.now() + 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending' },
+    ]);
+    prevGradeRef.current = 'F';
+    triggerToast('[SISTEMA REINICIADO] Todos tus stats, racha (0d), nivel (1), LP (0) y cargas volvieron a 0.');
+  };
+
   const level = Math.max(1, Math.floor(exp / 100) + 1);
   const expInLevel = exp % 100;
   const classEvolution = getInfiniteClassEvolution(hunterClass?.cls?.name, level);
 
-  const passiveClassBonus = 30 + level * 6 + builtBuildings.length * 12;
+  const passiveClassBonus = 30 + (level - 1) * 6 + builtBuildings.length * 12;
   const gearBonusPower = unlockedInventory.reduce((acc, item) => acc + (item.power || 0), 0);
   const hunterCombatPower = Math.round(
     (gradeData.bench1RM + gradeData.squat1RM + gradeData.deadlift1RM) * 0.45 +
@@ -2007,17 +2398,17 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   );
 
   const townRumors = [
-    `En la ${builtBuildings.includes('tavern') ? 'Taberna del Crepúsculo' : 'plaza'} todos comentan que ${profile.hunterName} levantó ${gradeData.bench1RM} kg en Press Banca y ${gradeData.squat1RM} kg en Sentadilla.`,
-    `Los guardias de ${cityName} afirman que tu Grado de Cazador ${hunterGrade} (${gradeData.compositeRelStrength.toFixed(2)}x peso corporal) intimida a cualquier invasor.`,
+    `En la ${builtBuildings.includes('tavern') ? 'Taberna del Crepúsculo' : 'plaza'} comentan que ${profile.hunterName} inicia su leyenda desde cero con ${gradeData.bench1RM} kg en Banca.`,
+    `Los guardias de ${cityName} observan tu progreso en Grado de Cazador ${hunterGrade}.`,
     completedChapters.length > 0
       ? `Los bardos cantan sobre cómo derrotaste a ${PVE_STORY_CHAPTERS[Math.min(PVE_STORY_CHAPTERS.length - 1, completedChapters.length - 1)].enemy} en la campaña.`
       : `Se rumorea que en las Ruinas de Ceniza aguarda un Centinela que pondrá a prueba tu clase (${hunterClass?.cls?.name}).`,
-    `Los mercaderes admiran tu racha disciplinada de ${streak} días consecutivos sin rendirte.`
+    `Tu racha disciplinada actual es de ${streak} días.`
   ];
 
   const unlockedCharacters = STORY_CHARACTERS.filter((c) => completedChapters.includes(c.unlockChapter));
   const activeChar = unlockedCharacters.find((c) => c.id === selectedCharId) || unlockedCharacters[0] || STORY_CHARACTERS[0];
-  const activeCharState = characterStates[activeChar.id] || { affection: 10, memories: [], lastReply: activeChar.intro };
+  const activeCharState = characterStates[activeChar.id] || { affection: 0, memories: [], lastReply: activeChar.intro };
   const activeRel = getRelationshipLabel(activeCharState.affection);
 
   const handleSendVisualNovelMessage = (customPromptText = null, affectionGain = 4) => {
@@ -2038,7 +2429,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         cityName,
         clearedCount: completedChapters.length,
         affection: activeCharState.affection,
-        clsName: hunterClass?.cls?.name || 'Cazador'
+        clsName: hunterClass?.cls?.name || 'Centinela Infinito'
       }
     );
 
@@ -2144,14 +2535,19 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       setLiftWeightInput(existing.weight);
       setLiftRepsInput(existing.reps);
     } else {
-      setLiftWeightInput(60);
-      setLiftRepsInput(8);
+      setLiftWeightInput(0);
+      setLiftRepsInput(0);
     }
   };
 
   const handleSaveExerciseLoad = () => {
-    const w = Math.max(1, Number(liftWeightInput));
-    const r = Math.max(1, Number(liftRepsInput));
+    const w = Math.max(0, Number(liftWeightInput));
+    const r = Math.max(0, Number(liftRepsInput));
+
+    if (w <= 0 || r <= 0) {
+      triggerToast('[ALERTA] Ingresa un peso y repeticiones mayores a 0 para registrar tu marca.');
+      return;
+    }
 
     const prevRecord = savedLifts[selectedExercise];
     const prev1RM = prevRecord
@@ -2160,8 +2556,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const new1RM = getEffectiveExercise1RM(selectedExercise, w, r, profile.weightKg);
 
     const kgGain = Math.max(0, new1RM - prev1RM);
-    const gainedExp = 35 + kgGain * 15;
-    const gainedLp = 15 + kgGain * 5;
+    const gainedExp = 35 + kgGain * 10;
+    const gainedLp = 15 + kgGain * 4;
 
     const updated = {
       ...savedLifts,
@@ -2187,9 +2583,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       prevGradeRef.current = nextGrade;
       triggerToast(`¡ASCENSO AUTOMÁTICO A GRADO ${nextGrade} Y NIVEL ${nextLevel}! (+${gainedExp} EXP por récord de ${new1RM} kg)`);
     } else if (nextLevel > prevLevel) {
-      triggerToast(`¡SUBIDA DE NIVEL AUTOMÁTICA! Nv. ${prevLevel} → Nv. ${nextLevel} (+${gainedExp} EXP, +${kgGain} kg de récord)`);
+      triggerToast(`¡SUBIDA DE NIVEL AUTOMÁTICA! Nv. ${prevLevel} → Nv. ${nextLevel} (+${gainedExp} EXP)`);
     } else {
-      triggerToast(`[SISTEMA] ${selectedExercise} actualizado (${new1RM} kg 1RM) • +${gainedExp} EXP y +${gainedLp} LP.`);
+      triggerToast(`[SISTEMA] ${selectedExercise} registrado (${new1RM} kg 1RM) • +${gainedExp} EXP y +${gainedLp} LP.`);
     }
   };
 
@@ -2231,35 +2627,43 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   };
 
   const awakenHunter = () => {
+    const bW = Math.max(0, Number(profile.benchKg) || 0);
+    const sW = Math.max(0, Number(profile.squatKg) || 0);
+    const dW = Math.max(0, Number(profile.deadliftKg) || 0);
+
     const initialLifts = {
-      ...savedLifts,
-      'Press Banca': { weight: Number(profile.benchKg) || 60, reps: 5, date: 'Despertar' },
-      'Sentadilla Trasera': { weight: Number(profile.squatKg) || 80, reps: 5, date: 'Despertar' },
-      'Peso Muerto Convencional': { weight: Number(profile.deadliftKg) || 100, reps: 5, date: 'Despertar' },
+      ...ZERO_LIFTS,
+      'Press Banca': { weight: bW, reps: bW > 0 ? 5 : 0, date: bW > 0 ? 'Despertar' : 'Sin registrar' },
+      'Sentadilla Trasera': { weight: sW, reps: sW > 0 ? 5 : 0, date: sW > 0 ? 'Despertar' : 'Sin registrar' },
+      'Peso Muerto Convencional': { weight: dW, reps: dW > 0 ? 5 : 0, date: dW > 0 ? 'Despertar' : 'Sin registrar' },
     };
     setSavedLifts(initialLifts);
-    setLiftWeightInput(initialLifts['Press Banca'].weight);
-    setLiftRepsInput(5);
+    setLiftWeightInput(bW);
+    setLiftRepsInput(bW > 0 ? 5 : 0);
 
     const seed =
       Number(profile.weightKg) * 17 +
       Number(profile.heightCm) * 11 +
-      Number(profile.benchKg || profile.pushupsMax) * 23 +
       Math.floor(Math.random() * 9973);
 
     const chosenRace = RACES_POOL[seed % RACES_POOL.length];
     const chosenCls = generateRandomInfiniteClass(seed + Date.now());
-
-    const baseLP = Math.min(2400, 300 + Number(profile.experienceMonths) * 65 + Number(profile.benchKg) * 4);
     const assigned = { race: chosenRace, cls: chosenCls, assignedAt: new Date().toLocaleDateString() };
 
     const initGrade = computeHunterGradeData(initialLifts, profile.weightKg).currentStd.grade;
     prevGradeRef.current = initGrade;
 
+    // TODO EMPIEZA ESTRICTAMENTE EN 0 AL DESPERTAR
     setHunterClass(assigned);
-    setLp(baseLP);
+    setLp(0);
+    setExp(0);
+    setStreak(0);
+    setUnlockedInventory([]);
+    setCompletedChapters([]);
+    setSleepLog(ZERO_SLEEP_LOG);
     setAwakened(true);
-    triggerToast(`¡DESPERTAR COMPLETADO! Clase aleatoria: ${chosenCls.name} • Pasiva: ${chosenCls.passiveName}`);
+    setActiveTab('avatar');
+    triggerToast(`¡DESPERTAR INICIADO DESDE 0! Clase: ${chosenCls.name} • Pasiva: ${chosenCls.passiveName}`);
   };
 
   const requestGpsLocation = () => {
@@ -2289,7 +2693,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const currentExRatio = (currentEx1RM / gradeData.bw).toFixed(2);
 
   // ==========================================================================
-  // PANTALLA 1: ENCUESTA ÚNICA DE DESPERTAR (SOLO LA PRIMERA VEZ DE LA CUENTA)
+  // PANTALLA 1: ENCUESTA ÚNICA DE DESPERTAR (TODO PARTE DESDE 0)
   // ==========================================================================
   if (!awakened) {
     return (
@@ -2309,13 +2713,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.15)', color: '#d4af37', border: '1px solid #d4af37' }}>
-              [ALERTA DEL SISTEMA // CALIBRACIÓN ÚNICA]
+              [ALERTA DEL SISTEMA // INICIO DESDE 0]
             </span>
             <h1 className="font-souls" style={{ fontSize: '25px', marginTop: '10px', color: '#fff' }}>
               PROTOCOLO EX
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>
-              Paso {surveyStep} de 5 — Personalización biométrica y diseño de rutina
+              Paso {surveyStep} de 5 — Calibración inicial del Cazador
             </p>
             <div className="progress-track" style={{ marginTop: '12px' }}>
               <div className="progress-fill" style={{ width: `${surveyStep * 20}%`, background: 'linear-gradient(90deg, #be123c, #d4af37)' }} />
@@ -2334,7 +2738,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
               <div className="grid-2">
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>GÉNERO</label>
+                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>GÉNERO DEL AVATAR</label>
                   <select className="sys-select" value={profile.gender} onChange={(e) => setProfile({ ...profile, gender: e.target.value })}>
                     <option value="male">Masculino</option>
                     <option value="female">Femenino</option>
@@ -2478,7 +2882,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <input type="number" className="sys-input" value={profile.heightCm} onChange={(e) => setProfile({ ...profile, heightCm: e.target.value })} />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>EXPERIENCIA (MESES)</label>
+                  <label style={{ fontSize: '12px', color: '#d4af37', fontWeight: 700 }}>EXPERIENCIA (MESES — 0 SI EMPIEZAS)</label>
                   <input type="number" className="sys-input" value={profile.experienceMonths} onChange={(e) => setProfile({ ...profile, experienceMonths: e.target.value })} />
                 </div>
               </div>
@@ -2487,16 +2891,16 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <>
                   <div className="grid-2">
                     <div>
-                      <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PRESS BANCA 5 REPS (KG)</label>
+                      <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PRESS BANCA 5 REPS (KG — OPCIONAL)</label>
                       <input type="number" className="sys-input" value={profile.benchKg} onChange={(e) => setProfile({ ...profile, benchKg: e.target.value })} />
                     </div>
                     <div>
-                      <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>SENTADILLA 5 REPS (KG)</label>
+                      <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>SENTADILLA 5 REPS (KG — OPCIONAL)</label>
                       <input type="number" className="sys-input" value={profile.squatKg} onChange={(e) => setProfile({ ...profile, squatKg: e.target.value })} />
                     </div>
                   </div>
                   <div>
-                    <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PESO MUERTO 5 REPS (KG)</label>
+                    <label style={{ fontSize: '12px', color: '#00f0ff', fontWeight: 700 }}>PESO MUERTO 5 REPS (KG — OPCIONAL)</label>
                     <input type="number" className="sys-input" value={profile.deadliftKg} onChange={(e) => setProfile({ ...profile, deadliftKg: e.target.value })} />
                   </div>
                 </>
@@ -2519,7 +2923,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           {surveyStep === 4 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'center' }}>
               <p style={{ fontSize: '14px', color: '#cbd5e1' }}>
-                Subí una foto de cuerpo completo para calcular tu biotipo y sellar tu <strong>Clase aleatoria con pasiva única</strong>. El Sistema censura tu rostro localmente antes de procesarla.
+                Subí una foto de cuerpo completo para sellar tu <strong>Clase aleatoria con pasiva única</strong>. El Sistema censura tu rostro localmente antes de procesarla.
               </p>
 
               <label style={{
@@ -2555,13 +2959,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <div style={{ textAlign: 'center', padding: '14px 4px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <Shield size={54} color="#d4af37" style={{ margin: '0 auto' }} />
               <h2 className="font-souls" style={{ fontSize: '21px', color: '#d4af37', lineHeight: 1.3 }}>
-                ¿ESTÁS LISTO PARA CONVERTIRTE EN CAZADOR?
+                ¿ESTÁS LISTO PARA INICIAR DESDE 0 COMO CAZADOR?
               </h2>
               <p style={{ fontSize: '14px', color: '#cbd5e1', lineHeight: 1.5 }}>
-                Se generará tu <strong>rutina personalizada de {profile.routineDurationMonths} {profile.routineDurationMonths === 1 ? 'mes' : 'meses'}</strong>, tu <strong>Grado de Cazador ({hunterGrade})</strong> y una <strong>Clase aleatoria con habilidad pasiva única</strong>.
+                Comenzarás en <strong>Nivel 1</strong>, <strong>Racha 0 días</strong>, <strong>0 LP (Tierra 6)</strong> y se generará tu retrato estilo Anime/Manhwa junto a tu <strong>Clase aleatoria con pasiva única</strong>.
               </p>
               <button className="sys-btn sys-btn-gold" style={{ padding: '16px', fontSize: '13px' }} onClick={awakenHunter}>
-                <Zap size={18} /> SÍ, ACEPTAR EL DESPERTAR
+                <Zap size={18} /> SÍ, COMENZAR DESDE 0
               </button>
             </div>
           )}
@@ -2571,7 +2975,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   }
 
   // ==========================================================================
-  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD DE CAZADOR COMPLETO)
+  // INTERFAZ PRINCIPAL DEL SISTEMA (HUD ANIME / MANHWA COMPLETO)
   // ==========================================================================
   return (
     <div className="sys-container">
@@ -2585,7 +2989,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </div>
       )}
 
-      {/* INDICADOR DE SESIÓN PERMANENTE */}
+      {/* BARRA DE SESIÓN PERMANENTE */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -2593,8 +2997,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         padding: '6px 12px',
         marginBottom: '10px',
         borderRadius: '10px',
-        background: 'rgba(11, 16, 30, 0.85)',
-        border: '1px solid rgba(16, 185, 129, 0.28)',
+        background: 'rgba(10, 15, 30, 0.9)',
+        border: '1px solid rgba(16, 185, 129, 0.3)',
         fontSize: '11px'
       }}>
         <span style={{ color: '#cbd5e1' }}>
@@ -2603,9 +3007,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         <span style={{ color: '#94a3b8' }}>Guardado automático</span>
       </div>
 
-      {/* CABECERA DE ESTADO CON NIVEL INFINITO Y GRADO DE CAZADOR */}
-      <div className="sys-window" style={{ padding: '18px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+      {/* CABECERA DE ESTADO DEL CAZADOR (DESDE 0) */}
+      <div className="sys-window" style={{ padding: '16px', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
               <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.16)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
@@ -2621,11 +3025,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 PODER: {hunterCombatPower}
               </span>
             </div>
-            <h1 className="font-souls" style={{ fontSize: '22px', marginTop: '6px', color: '#fff' }}>
+            <h1 className="font-souls" style={{ fontSize: '21px', marginTop: '6px', color: '#fff' }}>
               {profile.hunterName} <span style={{ fontSize: '12px', color: '#94a3b8' }}>({profile.hunterCode})</span>
             </h1>
             <div style={{ fontSize: '13px', color: '#fde047', fontWeight: 700 }}>
-              {classEvolution.title} • Pasiva Única: {hunterClass?.cls?.passiveName || 'Soberanía'}
+              {classEvolution.title} • Pasiva Única: {hunterClass?.cls?.passiveName || 'Muralla Inquebrantable (Infinito)'}
             </div>
           </div>
 
@@ -2639,15 +3043,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+        {/* BARRAS DE PROGRESO DE RANGO Y EXP DE CLASE (IDÉNTICAS A LA PRIMERA IMAGEN) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '12px' }}>
           <div>
-            <div style={{ fontSize: '10px', color: '#d4af37', marginBottom: '3px' }}>PROGRESO DE RANGO ({rankInfo.currentDivLP}/100 LP)</div>
+            <div style={{ fontSize: '10px', color: '#fde047', fontWeight: 700, marginBottom: '4px', textAlign: 'center' }}>
+              PROGRESO DE RANGO ({rankInfo.currentDivLP}/100 LP)
+            </div>
             <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${rankInfo.currentDivLP}%`, background: `linear-gradient(90deg, ${rankInfo.color}, #d4af37)` }} />
+              <div className="progress-fill" style={{ width: `${rankInfo.currentDivLP}%`, background: 'linear-gradient(90deg, #b45309, #fbbf24)' }} />
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '10px', color: '#00f0ff', marginBottom: '3px' }}>EXP DE EVOLUCIÓN DE CLASE ({expInLevel}/100 EXP)</div>
+            <div style={{ fontSize: '10px', color: '#7dd3fc', fontWeight: 700, marginBottom: '4px', textAlign: 'center' }}>
+              EXP DE CLASE ({expInLevel}/100 EXP)
+            </div>
             <div className="progress-track">
               <div className="progress-fill" style={{ width: `${expInLevel}%`, background: 'linear-gradient(90deg, #0284c7, #00f0ff)' }} />
             </div>
@@ -2655,15 +3064,15 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </div>
       </div>
 
-      {/* MENÚ DE NAVEGACIÓN DE 10 MÓDULOS */}
+      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS (IDÉNTICO A LA PRIMERA IMAGEN) */}
       <div className="nav-tabs">
         <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
-          <Trophy size={16} color="#d4af37" />
+          <Trophy size={16} color="#fbbf24" />
           <span>Misiones</span>
         </button>
         <button className={`nav-tab ${activeTab === 'routines' ? 'active' : ''}`} onClick={() => setActiveTab('routines')}>
           <Cpu size={16} color="#10b981" />
-          <span>Rutina & Anim</span>
+          <span>Rutina</span>
         </button>
         <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
           <Sword size={16} color="#00f0ff" />
@@ -2675,7 +3084,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </button>
         <button
           className={`nav-tab ${activeTab === 'city_vn' ? 'active' : ''}`}
-          style={{ opacity: cityUnlocked ? 1 : 0.65 }}
+          style={{ opacity: cityUnlocked ? 1 : 0.72 }}
           onClick={() => {
             if (!cityUnlocked) {
               triggerToast('🔒 Completa el Capítulo 1 de Historia PvE para fundar tu Ciudad 2D y desbloquear la Novela Visual.');
@@ -2688,7 +3097,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </button>
         <button className={`nav-tab ${activeTab === 'pvp' ? 'active' : ''}`} onClick={() => setActiveTab('pvp')}>
           <Users size={16} color="#f43f5e" />
-          <span>Amigos & PvP</span>
+          <span>PvP</span>
         </button>
         <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
           <Dumbbell size={16} color="#e11d48" />
@@ -2709,19 +3118,102 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       </div>
 
       {/* ====================================================================
+          MÓDULO 3 (VISTA DESTACADA): RETRATO ANIME/MANHWA HD + EVOLUCIÓN INFINITA
+         ==================================================================== */}
+      {activeTab === 'avatar' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ maxWidth: '520px', width: '100%', margin: '0 auto' }}>
+            <JrpgFantasyPortrait
+              hunterClass={hunterClass}
+              hunterGrade={hunterGrade}
+              level={level}
+              classEvolution={classEvolution}
+              gender={profile.gender || 'male'}
+              onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
+              passiveClassBonus={passiveClassBonus}
+            />
+          </div>
+
+          <div className="sys-window" style={{ padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#00f0ff' }}>
+                PROGRESO DE EVOLUCIÓN Y GRADO DE CAZADOR ({hunterGrade})
+              </span>
+              <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                Siguiente etapa de clase en Nivel {classEvolution.nextLvl}
+              </span>
+            </div>
+
+            {hunterGrade !== 'EX' ? (
+              <div style={{ fontSize: '12px', color: '#e2e8f0' }}>
+                Próximo ascenso automático a <strong>Grado {gradeData.nextStd.grade}</strong> al lograr: Banca <strong>{Math.round(gradeData.nextStd.benchReq * gradeData.bw)}kg</strong> • Sentadilla <strong>{Math.round(gradeData.nextStd.squatReq * gradeData.bw)}kg</strong> • P. Muerto <strong>{Math.round(gradeData.nextStd.deadliftReq * gradeData.bw)}kg</strong>
+              </div>
+            ) : (
+              <div style={{ fontSize: '12px', color: '#fde047' }}>
+                ¡Has alcanzado el Grado de Cazador EX máximo!
+              </div>
+            )}
+          </div>
+
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
+              HABILIDADES Y EQUIPAMIENTO DESBLOQUEADOS ({unlockedInventory.length})
+            </h3>
+            {unlockedInventory.length === 0 ? (
+              <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                Aún no tienes equipamiento ni habilidades extra (empezaste desde 0). Completa misiones diarias o capítulos de Historia PvE para obtenerlos.
+              </p>
+            ) : (
+              <div className="grid-2">
+                {unlockedInventory.map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '10px',
+                      background: 'rgba(4,6,12,0.85)',
+                      border: `1px solid ${item.type.includes('Habilidad') ? '#00f0ff' : '#d4af37'}`,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <span className="sys-badge" style={{
+                        background: item.type.includes('Habilidad') ? 'rgba(0,240,255,0.16)' : 'rgba(212,175,55,0.16)',
+                        color: item.type.includes('Habilidad') ? '#00f0ff' : '#fde047',
+                        marginBottom: '4px'
+                      }}>
+                        {item.type}
+                      </span>
+                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>{item.name}</div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>{item.desc}</div>
+                    </div>
+                    <div className="font-hud" style={{ fontSize: '13px', color: '#10b981', fontWeight: 700 }}>
+                      +{item.power} PWR
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================================
           MÓDULO 1: MISIONES DIARIAS
          ==================================================================== */}
       {activeTab === 'quests' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
-              MISIONES DIARIAS (OTORGAN EXP, HABILIDADES O EQUIPAMIENTO)
+              MISIONES DIARIAS (SUMA RACHA, EXP, LP Y RECOMPENSAS)
             </h2>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <input
                 className="sys-input"
-                placeholder="Declarar misión de hoy (ej. Sentadilla 4x6 con 120 kg)..."
+                placeholder="Declarar misión de hoy (ej. Press Banca 4x8)..."
                 value={newQuestTitle}
                 onChange={(e) => setNewQuestTitle(e.target.value)}
               />
@@ -2784,9 +3276,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           if (lockedDrops.length > 0) {
                             const won = lockedDrops[Math.floor(Math.random() * lockedDrops.length)];
                             setUnlockedInventory([...unlockedInventory, won]);
-                            triggerToast(`¡MISIÓN CUMPLIDA! +${q.exp || 85} EXP y obtuviste [${won.type}]: ${won.name}`);
+                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.exp || 85} EXP y obtuviste [${won.type}]: ${won.name}`);
                           } else {
-                            triggerToast(`¡MISIÓN CUMPLIDA! +${q.lp} LP y +${q.exp || 85} EXP para evolución de clase.`);
+                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.lp} LP y +${q.exp || 85} EXP.`);
                           }
                         }}
                       >
@@ -2799,7 +3291,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         onClick={() => {
                           setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'failed' } : item));
                           setNextWeekQueue([...nextWeekQueue, { id: Date.now(), title: `${q.title} (Retoma Semanal)`, lp: q.lp, exp: q.exp || 85 }]);
-                          triggerToast('[ALERTA] Misión fallida. Enviada a cola de retoma de la próxima semana.');
+                          triggerToast('[ALERTA] Misión fallida. Enviada a cola de retoma.');
                         }}
                       >
                         <XCircle size={14} /> NO LOGRADO
@@ -2927,7 +3419,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             {profile.equipmentMode === 'some_equip' && (
               <div style={{ marginBottom: '12px', padding: '10px', borderRadius: '10px', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.3)' }}>
                 <div style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 700, marginBottom: '6px' }}>
-                  EQUIPO EN CASA DECLARADO (TOCA PARA ACTIVAR/DESACTIVAR):
+                  EQUIPO EN CASA DECLARADO:
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {HOME_EQUIPMENT_OPTIONS.map((eq) => {
@@ -2960,11 +3452,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               {activeRoutinePlan.phases.map((ph, idx) => (
                 <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>• {ph}</div>
               ))}
-              {profile.injuries && profile.injuries !== 'Ninguna' && (
-                <div style={{ fontSize: '11px', color: '#fda4af', marginTop: '4px' }}>
-                  ⚠ Precaución articular activa: {profile.injuries}
-                </div>
-              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -3052,106 +3539,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 3: RETRATO ANIME/MANHWA, PASIVA ÚNICA DE CLASE E INVENTARIO
-         ==================================================================== */}
-      {activeTab === 'avatar' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="grid-2">
-            <JrpgFantasyPortrait
-              hunterClass={hunterClass}
-              rankInfo={rankInfo}
-              hunterGrade={hunterGrade}
-              level={level}
-              classEvolution={classEvolution}
-              gender={profile.gender || 'male'}
-              onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
-            />
-
-            <div className="sys-window" style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <h2 className="font-souls" style={{ fontSize: '16px', color: '#d4af37' }}>
-                EVOLUCIÓN DE CLASE INFINITA (NV. {level})
-              </h2>
-
-              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(0,240,255,0.08)', border: '1px solid #00f0ff', boxShadow: 'inset 0 0 18px rgba(0,240,255,0.1)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#00f0ff' }}>HABILIDAD PASIVA ÚNICA DE CLASE</span>
-                  <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.2)', color: '#fff', border: '1px solid rgba(0,240,255,0.4)' }}>+{passiveClassBonus} PWR</span>
-                </div>
-                <div className="font-souls" style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginTop: '4px' }}>
-                  {hunterClass?.cls?.passiveName || 'Soberanía Primordial'}
-                </div>
-                <p style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.4 }}>
-                  {hunterClass?.cls?.passiveDesc || 'Tu clase posee una afinidad única que escala infinitamente con tu fuerza real.'}
-                </p>
-              </div>
-
-              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(212,175,55,0.25)' }}>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>EVOLUCIÓN ACTUAL</div>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: '#fde047' }}>{classEvolution.title}</div>
-                <div style={{ fontSize: '12px', color: '#00f0ff', marginTop: '2px' }}>Bonificación activa: {classEvolution.bonus}</div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
-                  Siguiente evolución al alcanzar el <strong>Nivel {classEvolution.nextLvl}</strong>
-                </div>
-              </div>
-
-              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(190,18,60,0.08)', border: '1px solid rgba(190,18,60,0.35)' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af', marginBottom: '4px' }}>
-                  <Shield size={12} style={{ display: 'inline', marginRight: '4px' }} />
-                  GRADO DE CAZADOR: {hunterGrade} ({gradeData.compositeRelStrength.toFixed(2)}x BW — AUTO-ACTUALIZABLE)
-                </div>
-                {hunterGrade !== 'EX' ? (
-                  <div style={{ fontSize: '12px', color: '#e2e8f0' }}>
-                    Próximo ascenso automático a <strong>Grado {gradeData.nextStd.grade}</strong> al lograr: Banca <strong>{Math.round(gradeData.nextStd.benchReq * gradeData.bw)}kg</strong> • Sentadilla <strong>{Math.round(gradeData.nextStd.squatReq * gradeData.bw)}kg</strong> • P. Muerto <strong>{Math.round(gradeData.nextStd.deadliftReq * gradeData.bw)}kg</strong>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: '12px', color: '#fde047' }}>
-                    ¡Has alcanzado el Grado de Cazador EX máximo!
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="sys-window" style={{ padding: '18px' }}>
-            <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '12px' }}>
-              HABILIDADES Y EQUIPAMIENTO DESBLOQUEADOS ({unlockedInventory.length})
-            </h3>
-            <div className="grid-2">
-              {unlockedInventory.map((item, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '12px',
-                    borderRadius: '10px',
-                    background: 'rgba(4,6,12,0.85)',
-                    border: `1px solid ${item.type.includes('Habilidad') ? '#00f0ff' : '#d4af37'}`,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>
-                    <span className="sys-badge" style={{
-                      background: item.type.includes('Habilidad') ? 'rgba(0,240,255,0.16)' : 'rgba(212,175,55,0.16)',
-                      color: item.type.includes('Habilidad') ? '#00f0ff' : '#fde047',
-                      marginBottom: '4px'
-                    }}>
-                      {item.type}
-                    </span>
-                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>{item.name}</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>{item.desc}</div>
-                  </div>
-                  <div className="font-hud" style={{ fontSize: '13px', color: '#10b981', fontWeight: 700 }}>
-                    +{item.power} PWR
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ====================================================================
           MÓDULO 4: MODO HISTORIA PVE SECUENCIAL
          ==================================================================== */}
       {activeTab === 'pve' && (
@@ -3165,10 +3552,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 TU PODER DE COMBATE: {hunterCombatPower}
               </span>
             </div>
-
-            <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '14px' }}>
-              Avanza capítulo por capítulo. Al superar el <strong>Capítulo 1</strong> desbloquearás tu <strong>Ciudad 2D</strong> y el primer aliado en la <strong>Novela Visual</strong>.
-            </p>
 
             {pveBattleLog && (
               <div style={{
@@ -3240,7 +3623,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             setPveBattleLog({
                               victory: false,
                               title: `DERROTA ANTE ${ch.enemy.toUpperCase()}`,
-                              detail: `Tu poder actual (${hunterCombatPower}) es inferior al umbral (${ch.reqPower}). Mejora tus cargas o misiones para volver.`
+                              detail: `Tu poder actual (${hunterCombatPower}) es inferior al umbral (${ch.reqPower}).`
                             });
                             return;
                           }
@@ -3256,21 +3639,19 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             title: `¡VICTORIA EN ${ch.chapter.toUpperCase()}!`,
                             detail: ch.id === 'act1_ch1'
                               ? `Has derrotado a ${ch.enemy}, fundado tu Ciudad 2D y desbloqueado a Lyra en la Novela Visual.`
-                              : `Has derrotado a ${ch.enemy}, reclamado ${ch.rewardName} y desbloqueado el siguiente capítulo.`
+                              : `Has derrotado a ${ch.enemy} y reclamado ${ch.rewardName}.`
                           });
                           triggerToast(
                             ch.id === 'act1_ch1'
-                              ? '¡CIUDAD 2D Y NOVELA VISUAL DESBLOQUEADAS! Lyra se unió a tu asentamiento.'
-                              : `[HISTORIA PVE] ¡Capítulo ${ch.order} superado! Siguiente capítulo desbloqueado.`
+                              ? '¡CIUDAD 2D Y NOVELA VISUAL DESBLOQUEADAS!'
+                              : `[HISTORIA PVE] ¡Capítulo ${ch.order} superado!`
                           );
                         }}
                       >
                         {!prevCleared ? (
                           <><Lock size={14} /> COMPLETA EL CAPÍTULO {ch.order - 1} PRIMERO</>
-                        ) : canChallenge ? (
-                          <><Sword size={14} /> INICIAR COMBATE DE HISTORIA</>
                         ) : (
-                          <><Sword size={14} /> PODER INSUFICIENTE (INTENTAR)</>
+                          <><Sword size={14} /> INICIAR COMBATE DE HISTORIA</>
                         )}
                       </button>
                     )}
@@ -3283,7 +3664,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 5: CIUDAD PERSONALIZABLE 2D + NOVELA VISUAL VINCULADA A HISTORIA
+          MÓDULO 5: CIUDAD PERSONALIZABLE 2D + NOVELA VISUAL
          ==================================================================== */}
       {activeTab === 'city_vn' && (
         !cityUnlocked ? (
@@ -3293,7 +3674,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               CIUDAD 2D Y NOVELA VISUAL BLOQUEADAS
             </h2>
             <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '480px', margin: '0 auto 16px', lineHeight: 1.5 }}>
-              Debes completar el <strong>Capítulo 1 — El Umbral del Hierro</strong> en el Modo Historia PvE para fundar tu ciudad 2D, construir edificios y conocer a los personajes que se unan a ti.
+              Debes completar el <strong>Capítulo 1 — El Umbral del Hierro</strong> en el Modo Historia PvE para fundar tu ciudad 2D y conocer a los personajes.
             </p>
             <button className="sys-btn sys-btn-gold" onClick={() => setActiveTab('pve')}>
               <BookOpen size={15} /> IR AL CAPÍTULO 1 DE LA HISTORIA
@@ -3331,7 +3712,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
               <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.35)', marginBottom: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, color: '#fde047', marginBottom: '6px' }}>
-                  RUMORES EN LAS CALLES DE {cityName.toUpperCase()} (IRL + PROGRESO DE HISTORIA):
+                  RUMORES EN LAS CALLES DE {cityName.toUpperCase()}:
                 </div>
                 {townRumors.map((rumor, i) => (
                   <div key={i} style={{ fontSize: '12px', color: '#e2e8f0', marginBottom: '4px' }}>
@@ -3383,15 +3764,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
 
-            {/* NOVELA VISUAL */}
             <div className="sys-window" style={{ padding: '18px' }}>
               <h2 className="font-souls" style={{ fontSize: '16px', color: '#fb7185', marginBottom: '8px' }}>
                 <Heart size={16} style={{ display: 'inline', marginRight: '6px' }} />
-                NOVELA VISUAL — ALIADOS DESBLOQUEADOS EN HISTORIA ({unlockedCharacters.length}/{STORY_CHARACTERS.length})
+                NOVELA VISUAL — ALIADOS ({unlockedCharacters.length}/{STORY_CHARACTERS.length})
               </h2>
-              <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
-                Toca un personaje en el Mapa 2D o debajo para conversar. Avanza en los capítulos de Historia PvE para que nuevos aliados aparezcan en tu ciudad.
-              </p>
 
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
                 {STORY_CHARACTERS.map((char) => {
@@ -3446,9 +3823,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       <div style={{ fontSize: '10px', fontWeight: 700, color: '#00f0ff', marginBottom: '4px' }}>
                         MEMORIA PERSISTENTE DE {activeChar.name.toUpperCase()}:
                       </div>
-                      {(activeCharState.memories || []).map((mem, idx) => (
-                        <div key={idx} style={{ fontSize: '11px', color: '#cbd5e1' }}>• Recuerda: {mem}</div>
-                      ))}
+                      {(activeCharState.memories || []).length === 0 ? (
+                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>Sin recuerdos aún. Inicia una conversación.</div>
+                      ) : (
+                        (activeCharState.memories || []).map((mem, idx) => (
+                          <div key={idx} style={{ fontSize: '11px', color: '#cbd5e1' }}>• Recuerda: {mem}</div>
+                        ))
+                      )}
                     </div>
                   </div>
 
@@ -3468,18 +3849,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       >
                         <Heart size={12} /> CITA ROMÁNTICA (+12)
                       </button>
-                      {activeCharState.affection >= 70 && (
-                        <button
-                          className="sys-btn sys-btn-gold"
-                          style={{ padding: '7px 10px', fontSize: '10px' }}
-                          onClick={() => {
-                            handleSendVisualNovelMessage('Confesar mis sentimientos y pedirte ser mi pareja jurada', 20);
-                            triggerToast(`♥ ¡VÍNCULO JURADO! Has formalizado tu relación amorosa con ${activeChar.name}.`);
-                          }}
-                        >
-                          ♥ CONFESAR AMOR
-                        </button>
-                      )}
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px' }}>
@@ -3519,7 +3888,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
             <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
               <MapPin size={13} style={{ display: 'inline', color: '#00f0ff', marginRight: '4px' }} />
-              Ubicación actual: <strong>{userCoords.label}</strong> • Tu código de amigo: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
+              Ubicación actual: <strong>{userCoords.label}</strong> • Tu código: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
             </div>
 
             <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(244,63,94,0.3)', marginBottom: '14px' }}>
@@ -3562,9 +3931,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         id: Date.now(),
                         name: newFriendName,
                         code: newFriendCode || `#PEX-${Math.floor(1000 + Math.random() * 8999)}`,
-                        level: Math.max(1, level - 1),
+                        level: Math.max(1, level),
                         grade: hunterGrade,
-                        power: Math.round(hunterCombatPower * 0.92),
+                        power: Math.max(60, Math.round(hunterCombatPower * 0.92)),
                         lat: userCoords.lat + offsetDeg,
                         lon: userCoords.lon,
                         city: `${newFriendDistKm} km de distancia`
@@ -3595,81 +3964,87 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {friends.map((fr) => {
-                const distKm = getDistanceKm(userCoords.lat, userCoords.lon, fr.lat, fr.lon);
-                const inRange = distKm <= 30;
-                return (
-                  <div
-                    key={fr.id}
-                    style={{
-                      padding: '14px',
-                      borderRadius: '11px',
-                      background: 'rgba(4,6,12,0.88)',
-                      border: `1px solid ${inRange ? 'rgba(16,185,129,0.45)' : 'rgba(225,29,72,0.4)'}`,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '10px'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <strong style={{ fontSize: '15px', color: '#fff' }}>{fr.name}</strong>
-                        <span style={{ fontSize: '11px', color: '#94a3b8' }}>{fr.code}</span>
-                        <span className="sys-badge" style={{
-                          background: inRange ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
-                          color: inRange ? '#6ee7b7' : '#fda4af'
-                        }}>
-                          {distKm} km {inRange ? '(EN RANGO ≤30 KM)' : '(FUERA DE RANGO >30 KM)'}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '3px' }}>
-                        Nivel {fr.level} • Grado de Cazador {fr.grade} • Poder: {fr.power}
-                      </div>
-                    </div>
-
-                    <button
-                      className={`sys-btn ${inRange ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
-                      style={{ padding: '8px 12px', fontSize: '11px', opacity: inRange ? 1 : 0.6 }}
-                      onClick={() => {
-                        if (!inRange) {
-                          triggerToast(`[RADAR PVP] ${fr.name} está a ${distKm} km. El límite máximo para duelos PvP es 30 km.`);
-                          return;
-                        }
-                        const win = hunterCombatPower >= fr.power;
-                        if (win) {
-                          setLp((l) => l + 25);
-                          setExp((e) => e + 45);
-                        }
-                        setPvpLog({
-                          win,
-                          header: win ? `¡VICTORIA PVP CONTRA ${fr.name} (${distKm} KM)!` : `DERROTA PVP ANTE ${fr.name} (${distKm} KM)`,
-                          body: win
-                            ? `Tu poder (${hunterCombatPower}) superó al de tu amigo (${fr.power}). Ganaste +25 LP y +45 EXP.`
-                            : `El poder de ${fr.name} (${fr.power}) superó al tuyo (${hunterCombatPower}). Entrena y vuelve a desafiarlo.`
-                        });
+            {friends.length === 0 ? (
+              <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                Tu lista de amigos empieza en 0. Agrega un amigo arriba con su código `#PEX` para combatir dentro de un radio de 30 km.
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {friends.map((fr) => {
+                  const distKm = getDistanceKm(userCoords.lat, userCoords.lon, fr.lat, fr.lon);
+                  const inRange = distKm <= 30;
+                  return (
+                    <div
+                      key={fr.id}
+                      style={{
+                        padding: '14px',
+                        borderRadius: '11px',
+                        background: 'rgba(4,6,12,0.88)',
+                        border: `1px solid ${inRange ? 'rgba(16,185,129,0.45)' : 'rgba(225,29,72,0.4)'}`,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '10px'
                       }}
                     >
-                      <Sword size={14} /> {inRange ? 'DESAFIAR PVP' : 'FUERA DE 30 KM'}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <strong style={{ fontSize: '15px', color: '#fff' }}>{fr.name}</strong>
+                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{fr.code}</span>
+                          <span className="sys-badge" style={{
+                            background: inRange ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
+                            color: inRange ? '#6ee7b7' : '#fda4af'
+                          }}>
+                            {distKm} km {inRange ? '(EN RANGO ≤30 KM)' : '(FUERA DE RANGO >30 KM)'}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '3px' }}>
+                          Nivel {fr.level} • Grado de Cazador {fr.grade} • Poder: {fr.power}
+                        </div>
+                      </div>
+
+                      <button
+                        className={`sys-btn ${inRange ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
+                        style={{ padding: '8px 12px', fontSize: '11px', opacity: inRange ? 1 : 0.6 }}
+                        onClick={() => {
+                          if (!inRange) {
+                            triggerToast(`[RADAR PVP] ${fr.name} está a ${distKm} km. El límite máximo para duelos PvP es 30 km.`);
+                            return;
+                          }
+                          const win = hunterCombatPower >= fr.power;
+                          if (win) {
+                            setLp((l) => l + 25);
+                            setExp((e) => e + 45);
+                          }
+                          setPvpLog({
+                            win,
+                            header: win ? `¡VICTORIA PVP CONTRA ${fr.name} (${distKm} KM)!` : `DERROTA PVP ANTE ${fr.name} (${distKm} KM)`,
+                            body: win
+                              ? `Tu poder (${hunterCombatPower}) superó al de tu amigo (${fr.power}). Ganaste +25 LP y +45 EXP.`
+                              : `El poder de ${fr.name} (${fr.power}) superó al tuyo (${hunterCombatPower}).`
+                          });
+                        }}
+                      >
+                        <Sword size={14} /> {inRange ? 'DESAFIAR PVP' : 'FUERA DE 30 KM'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* ====================================================================
-          MÓDULO 7: CARGAS GUARDADAS (ACTUALIZA GRADO Y SUBE NIVEL AUTOMÁTICAMENTE)
+          MÓDULO 7: CARGAS GUARDADAS (DESDE 0 -> SUBE NIVEL Y GRADO AUTOMÁTICAMENTE)
          ==================================================================== */}
       {activeTab === 'strength' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#e11d48', marginBottom: '12px' }}>
-              REGISTRO DE CARGAS POR EJERCICIO (SUBE NIVEL Y GRADO DE CAZADOR AUTOMÁTICAMENTE)
+              REGISTRO DE CARGAS POR EJERCICIO (SUBE NIVEL Y GRADO AUTOMÁTICAMENTE)
             </h2>
 
             <div className="grid-2" style={{ marginBottom: '14px' }}>
@@ -3793,26 +4168,32 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
           <div className="sys-window" style={{ padding: '18px' }}>
             <h3 className="font-hud" style={{ fontSize: '14px', color: '#d4af37', marginBottom: '10px' }}>
-              RECOPILACIÓN ANUAL DE EVOLUCIÓN (Q1 → Q4)
+              RECOPILACIÓN ANUAL DE EVOLUCIÓN
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {yearlyRecap.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '10px', background: 'rgba(4,6,12,0.8)' }}>
-                  <div>
-                    <strong style={{ color: '#fff' }}>{item.quarter}</strong> — <span style={{ color: '#94a3b8', fontSize: '13px' }}>{item.note}</span>
+            {yearlyRecap.length === 0 ? (
+              <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                Historial trimestral en 0. Tus evaluaciones físicas aparecerán aquí conforme avances.
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {yearlyRecap.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '10px', background: 'rgba(4,6,12,0.8)' }}>
+                    <div>
+                      <strong style={{ color: '#fff' }}>{item.quarter}</strong> — <span style={{ color: '#94a3b8', fontSize: '13px' }}>{item.note}</span>
+                    </div>
+                    <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.2)', color: '#d4af37' }}>
+                      GRADO {item.grade} ({item.weight})
+                    </span>
                   </div>
-                  <span className="sys-badge" style={{ background: 'rgba(212,175,55,0.2)', color: '#d4af37' }}>
-                    GRADO {item.grade} ({item.weight})
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* ====================================================================
-          MÓDULO 9: CONTADOR DE HORAS DE SUEÑO Y RECUPERACIÓN SEMANAL
+          MÓDULO 9: CONTADOR DE HORAS DE SUEÑO (INICIA EN 0H)
          ==================================================================== */}
       {activeTab === 'sleep' && (
         <div className="sys-window" style={{ padding: '18px' }}>
@@ -3832,7 +4213,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           {!sleepOptimal && (
             <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(225,29,72,0.15)', border: '1px solid #e11d48', marginBottom: '14px', fontSize: '13px', color: '#fecdd3' }}>
               <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px' }} />
-              <strong>Deuda de sueño detectada:</strong> Dormir menos de 49 horas semanales reduce la síntesis proteica y la fuerza máxima hasta un 12%.
+              <strong>Registro en {totalSleep}h:</strong> Registra tus horas diarias de descanso para alcanzar la ventana óptima semanal de 49–63 horas.
             </div>
           )}
 
@@ -3840,7 +4221,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             {sleepLog.map((d, i) => (
               <div key={i} style={{ padding: '10px 4px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(56,189,248,0.3)' }}>
                 <div style={{ fontSize: '11px', color: '#94a3b8' }}>{d.day}</div>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: d.hours >= 7 ? '#38bdf8' : '#e11d48', marginTop: '4px' }}>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: d.hours >= 7 ? '#38bdf8' : '#94a3b8', marginTop: '4px' }}>
                   {d.hours}h
                 </div>
               </div>
@@ -3862,7 +4243,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 const updated = [...sleepLog];
                 updated[updated.length - 1].hours = todaySleep;
                 setSleepLog(updated);
-                triggerToast(`[SISTEMA] Sueño actualizado (${todaySleep}h). Recuperación recalculada.`);
+                triggerToast(`[SISTEMA] Sueño actualizado (${todaySleep}h).`);
               }}
             >
               <Clock size={15} /> REGISTRAR SUEÑO DE HOY
@@ -3872,13 +4253,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 10: CONFIGURACIÓN Y BORRADO PERMANENTE DE CUENTA
+          MÓDULO 10: CONFIGURACIÓN, REINICIO A 0 Y BORRADO DE CUENTA
          ==================================================================== */}
       {activeTab === 'settings' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', marginBottom: '12px' }}>
-              CONFIGURACIÓN DE CUENTA Y PARÁMETROS DEL CAZADOR
+              CONFIGURACIÓN DE CUENTA Y REINICIO DESDE 0
             </h2>
 
             <div className="grid-2" style={{ marginBottom: '14px' }}>
@@ -3891,7 +4272,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 />
               </div>
               <div>
-                <label style={{ fontSize: '11px', color: '#94a3b8' }}>PESO CORPORAL ACTUAL (KG — RECALCULA GRADO)</label>
+                <label style={{ fontSize: '11px', color: '#94a3b8' }}>PESO CORPORAL ACTUAL (KG)</label>
                 <input
                   type="number"
                   className="sys-input"
@@ -3901,8 +4282,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
 
-            <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
-              Cuenta activa permanente: <strong>{currentUser.email}</strong> • Código de Cazador: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
+              <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
+                Cuenta activa: <strong>{currentUser.email}</strong> • Código: <strong style={{ color: '#d4af37' }}>{profile.hunterCode}</strong>
+              </div>
+              <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
+                <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
+              </button>
             </div>
           </div>
 
@@ -3912,7 +4298,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               ZONA DE PELIGRO — BORRAR CUENTA DEFINITIVAMENTE
             </h3>
             <p style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '12px', lineHeight: 1.45 }}>
-              Tu sesión permanecerá siempre abierta automáticamente hasta que decidas borrar tu cuenta. Esta acción eliminará permanentemente tu cuenta (<strong>{currentUser.email}</strong>), tus cargas guardadas, tu clase, tu ciudad 2D y todas las memorias de personajes. Para confirmar, escribe <strong>BORRAR</strong> debajo:
+              Tu sesión permanecerá siempre abierta automáticamente hasta que decidas borrar tu cuenta. Esta acción eliminará permanentemente tu cuenta (<strong>{currentUser.email}</strong>). Para confirmar, escribe <strong>BORRAR</strong> debajo:
             </p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <input
