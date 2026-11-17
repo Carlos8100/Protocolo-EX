@@ -2137,6 +2137,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
   const [routineFileName, setRoutineFileName] = useState('');
+  const [routineLoadingMsg, setRoutineLoadingMsg] = useState('');
+  const [interactiveRoutineDoc, setInteractiveRoutineDoc] = useState(null);
   const [showGeneratedRoutine, setShowGeneratedRoutine] = useState(false);
 
   const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
@@ -2453,126 +2455,417 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     }
   );
 
+  const loadBrowserScript = (src) => {
+    if (typeof window === 'undefined') return Promise.reject(new Error('Sin entorno navegador'));
+    window.__pexScriptsCache = window.__pexScriptsCache || {};
+    if (window.__pexScriptsCache[src]) return window.__pexScriptsCache[src];
+    window.__pexScriptsCache[src] = new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing && existing.dataset.loaded === 'true') {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = () => {
+        script.dataset.loaded = 'true';
+        resolve();
+      };
+      script.onerror = () => {
+        delete window.__pexScriptsCache[src];
+        reject(new Error(`No se pudo cargar el lector externo: ${src}`));
+      };
+      document.head.appendChild(script);
+    });
+    return window.__pexScriptsCache[src];
+  };
+
+  const parseDelimitedRows = (raw, delimiter = ',') => {
+    const rows = [];
+    let currentRow = [];
+    let currentVal = '';
+    let inQuotes = false;
+    for (let i = 0; i < raw.length; i += 1) {
+      const ch = raw[i];
+      const next = raw[i + 1];
+      if (ch === '"') {
+        if (inQuotes && next === '"') {
+          currentVal += '"';
+          i += 1;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === delimiter && !inQuotes) {
+        currentRow.push(currentVal.trim());
+        currentVal = '';
+      } else if ((ch === '\n' || (ch === '\r' && next === '\n')) && !inQuotes) {
+        if (ch === '\r') i += 1;
+        currentRow.push(currentVal.trim());
+        if (currentRow.some((cell) => cell !== '')) rows.push(currentRow);
+        currentRow = [];
+        currentVal = '';
+      } else if (ch !== '\r') {
+        currentVal += ch;
+      }
+    }
+    currentRow.push(currentVal.trim());
+    if (currentRow.some((cell) => cell !== '')) rows.push(currentRow);
+    const maxCols = Math.max(3, ...rows.map((r) => r.length));
+    return rows.map((r) => {
+      const padded = [...r];
+      while (padded.length < maxCols) padded.push('');
+      return padded;
+    });
+  };
+
+  const stripRtfContent = (rtf) => {
+    return String(rtf || '')
+      .replace(/\{\\(?:fonttbl|colortbl|stylesheet|info|pict|object)[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/gi, ' ')
+      .replace(/\\par[d]?\b/gi, '\n')
+      .replace(/\\line\b/gi, '\n')
+      .replace(/\\tab\b/gi, '\t')
+      .replace(/\\'([0-9a-fA-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+      .replace(/\\[a-z]+-?\d* ?/gi, '')
+      .replace(/[{}]/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  };
+
+  const buildInteractiveDocLines = (rawText) => {
+    const rawLines = String(rawText || '')
+      .replace(/\r/g, '')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    return rawLines.map((text, idx) => {
+      const isHeader = /^(d[ií]a\s*\d+|semana\s*\d+|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|bloque|rutina|hoja:|m[oó]dulo|fase)/i.test(text);
+      const isExercise = /\d+\s*[x×]\s*\d+|series|reps|repeticiones|kg|rir|rpe|press|sentadilla|peso muerto|remo|dominada|curl|extensi[oó]n|plancha|fondos|zancada/i.test(text);
+      return {
+        id: `line_${Date.now()}_${idx}`,
+        text,
+        completed: false,
+        isHeader,
+        isExercise
+      };
+    });
+  };
+
+  const serializeSheetsToText = (sheets) => {
+    return (sheets || [])
+      .map((sh) => {
+        const body = (sh.rows || [])
+          .filter((r) => r.some((c) => String(c || '').trim() !== ''))
+          .map((r) => r.map((c) => String(c || '').trim()).filter(Boolean).join(' | '))
+          .join('\n');
+        return `HOJA: ${sh.name}\n${body}`;
+      })
+      .join('\n\n')
+      .trim();
+  };
+
+  const evaluateRoutineContent = (rawText, sourceName = 'Texto pegado') => {
+    const cleanText = String(rawText || '').replace(/\r/g, '').trim();
+    if (!cleanText) return null;
+
+    const lines = cleanText.split('\n').map((line) => line.trim()).filter(Boolean);
+    const prescriptionLines = lines.filter((line) => /\d+\s*[x×]\s*\d+/i.test(line));
+    const rirMentions = (cleanText.match(/RIR\s*\d+|RPE\s*\d+|repeticiones en reserva|al fallo/gi) || []).length;
+    const loadMentions = (cleanText.match(/\d+(?:[.,]\d+)?\s*(?:kg|lbs?|%\s*1rm)/gi) || []).length;
+    const progressionMentions = (cleanText.match(/semana\s*\d+|progresi[oó]n|sobrecarga|descarga|deload|bloque/gi) || []).length;
+    const recoveryMentions = (cleanText.match(/descanso|recuperaci[oó]n|sueño|deload|descarga|\d+\s*(?:seg|min)/gi) || []).length;
+    const daysMentions = (cleanText.match(/d[ií]a\s*[1-7]|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|upper|lower|push|pull|legs|full\s*body/gi) || []).length;
+
+    const findings = [];
+    const improvements = [];
+
+    if (prescriptionLines.length >= 4) {
+      findings.push(`Se identificaron ${prescriptionLines.length} prescripciones de series × repeticiones: el volumen semanal es cuantificable.`);
+    } else {
+      improvements.push('Faltan prescripciones explícitas de series × repeticiones (ej. 3 × 8-12) en varios ejercicios. Editá las filas o líneas arriba para completarlas.');
+    }
+
+    if (rirMentions > 0) {
+      findings.push(`Incluye ${rirMentions} referencia(s) a esfuerzo interno (RIR/RPE), clave para controlar la fatiga neural.`);
+    } else {
+      improvements.push('No se especifica RIR ni proximidad al fallo. Añadí RIR 1-3 en ejercicios compuestos para regular la intensidad.');
+    }
+
+    if (loadMentions > 0) {
+      findings.push(`Registra ${loadMentions} mención(es) de carga o porcentaje (%1RM / kg), facilitando la sobrecarga progresiva.`);
+    } else {
+      improvements.push('No figuran cargas objetivo en kg ni %1RM. Agregar una columna o nota de peso te permitirá medir el progreso real.');
+    }
+
+    if (progressionMentions > 0) {
+      findings.push('Contiene estructura por semanas, bloques o criterios de progresión/descarga.');
+    } else {
+      improvements.push('No se observa un esquema de progresión semanal ni semana de descarga (deload). Definí cómo subirán repeticiones o kilos.');
+    }
+
+    if (recoveryMentions > 0) {
+      findings.push('Contempla tiempos de descanso entre series o pautas de recuperación.');
+    } else {
+      improvements.push('Faltan tiempos de descanso entre series (ej. 2-3 min en básicos, 60-90 seg en accesorios).');
+    }
+
+    if (daysMentions > 0) {
+      findings.push('Presenta distribución organizada por días de entrenamiento o grupos musculares.');
+    } else {
+      improvements.push('No se distingue una división clara por días (Día 1, Día 2, Lunes, etc.). Agrupá los ejercicios por sesión.');
+    }
+
+    const scoreNum = Math.min(
+      100,
+      30 +
+        prescriptionLines.length * 4 +
+        rirMentions * 6 +
+        loadMentions * 4 +
+        progressionMentions * 6 +
+        recoveryMentions * 5 +
+        daysMentions * 3
+    );
+
+    return {
+      sourceName,
+      rawText: cleanText,
+      exerciseLines: prescriptionLines,
+      scoreNum,
+      score: `${scoreNum} / 100 (ÍNDICE ORIENTATIVO DE ESTRUCTURA)`,
+      finding: findings.length ? findings : ['Contenido leído correctamente, aunque aún posee pocos datos técnicos estructurados.'],
+      fix: improvements.length
+        ? improvements
+        : ['¡Excelente estructura! La rutina contempla volumen, esfuerzo (RIR), cargas, descansos y progresión semanal.']
+    };
+  };
+
+  const syncInteractiveSpreadsheet = (nextSheets, sourceName, nextActiveSheetIdx = 0, nextCheckedRows = {}) => {
+    const combinedText = serializeSheetsToText(nextSheets);
+    setCustomRoutineText(combinedText);
+    setInteractiveRoutineDoc({
+      fileName: sourceName,
+      fileType: 'spreadsheet',
+      sheets: nextSheets,
+      activeSheetIdx: Math.min(nextActiveSheetIdx, Math.max(0, nextSheets.length - 1)),
+      checkedRows: nextCheckedRows,
+      editMode: 'interactive'
+    });
+    const report = evaluateRoutineContent(combinedText, sourceName);
+    if (report) setScanReport(report);
+  };
+
+  const syncInteractiveDocumentLines = (nextDocLines, sourceName, editMode = 'interactive') => {
+    const combinedText = nextDocLines.map((l) => l.text).join('\n');
+    setCustomRoutineText(combinedText);
+    setInteractiveRoutineDoc({
+      fileName: sourceName,
+      fileType: 'document',
+      docLines: nextDocLines,
+      editMode
+    });
+    const report = evaluateRoutineContent(combinedText, sourceName);
+    if (report) setScanReport(report);
+  };
+
   const analyzeRoutineText = (rawText, sourceName = 'Texto pegado') => {
     const cleanText = String(rawText || '').replace(/\r/g, '').trim();
     if (!cleanText) {
       triggerToast('[ESCÁNER] No se encontró texto para analizar.');
       return;
     }
-    const lines = cleanText.split('\n').map((line) => line.trim()).filter(Boolean);
-    const prescriptionLines = lines.filter((line) => /\d+\s*[x×]\s*\d+/i.test(line));
-    const rirMentions = (cleanText.match(/RIR\s*\d+|repeticiones en reserva/gi) || []).length;
-    const progressionMentions = (cleanText.match(/semana\s*\d+|progresi[oó]n|sobrecarga|descarga|deload/gi) || []).length;
-    const recoveryMentions = (cleanText.match(/descanso|recuperaci[oó]n|sueño|deload|descarga/gi) || []).length;
-    const daysMentions = (cleanText.match(/d[ií]a\s*[1-7]|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo/gi) || []).length;
-    const findings = [];
-    const improvements = [];
-    if (prescriptionLines.length >= 4) findings.push(`Se identificaron ${prescriptionLines.length} líneas con series y repeticiones: hay una base cuantificable para revisar el volumen.`);
-    else improvements.push('Faltan prescripciones claras de series × repeticiones en varios ejercicios. Conviene escribirlas de forma explícita.');
-    if (rirMentions > 0) findings.push('La rutina incluye referencias a RIR, lo que permite regular la proximidad al fallo.');
-    else improvements.push('No se especifica RIR ni proximidad al fallo. Añadirlo ayudaría a controlar la fatiga y el esfuerzo.');
-    if (progressionMentions > 0) findings.push('Hay indicios de progresión o de organización por semanas.');
-    else improvements.push('No se detecta una progresión semanal clara. Definí cómo aumentan repeticiones, carga o series y cuándo descargar.');
-    if (recoveryMentions > 0) findings.push('Se menciona descanso, recuperación o descarga.');
-    else improvements.push('No aparecen pautas claras de recuperación o descarga. Incluí descansos y una estrategia para manejar la fatiga.');
-    if (daysMentions > 0) findings.push('Se detectó cierta organización por días de entrenamiento.');
-    else improvements.push('No se distingue claramente la distribución semanal. Separá los entrenamientos por día.');
-    if (prescriptionLines.length >= 8 && rirMentions > 0 && progressionMentions > 0 && recoveryMentions > 0) {
-      findings.push('La información disponible permite una evaluación más completa de estructura, esfuerzo y progresión.');
-    }
-    setScanReport({
-      sourceName,
-      rawText: cleanText,
-      exerciseLines: prescriptionLines,
-      score: `${Math.min(100, 35 + prescriptionLines.length * 4 + rirMentions * 5 + progressionMentions * 5 + recoveryMentions * 5 + daysMentions * 2)} / 100 (ÍNDICE ORIENTATIVO DE INFORMACIÓN)`,
-      finding: findings.length ? findings : ['Se pudo leer el contenido, pero faltan datos para valorar su estructura.'],
-      fix: improvements.length ? improvements : ['La estructura básica parece documentada. Para una crítica más precisa, añadí objetivo, experiencia, descansos, cargas/RIR y contexto de recuperación.']
-    });
-    triggerToast('[ESCÁNER] Rutina leída y evaluación orientativa generada.');
+    const docLines = buildInteractiveDocLines(cleanText);
+    syncInteractiveDocumentLines(docLines, sourceName, 'interactive');
+    triggerToast('[ESCÁNER] Rutina cargada en modo interactivo y evaluada abajo.');
   };
 
   const handleRoutineFileUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Se aceptan todos los formatos. El límite evita bloquear el navegador con archivos enormes.
-    const MAX_FILE_SIZE = 25 * 1024 * 1024;
+    const MAX_FILE_SIZE = 30 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      triggerToast('[ESCÁNER] El archivo supera el límite de 25 MB.');
+      triggerToast('[ESCÁNER] El archivo supera el límite de 30 MB.');
       event.target.value = '';
       return;
     }
 
     const extension = (file.name.split('.').pop() || '').toLowerCase();
-    const fileInfo = `Archivo: ${file.name}\nTipo MIME: ${file.type || 'no informado'}\nTamaño: ${(file.size / 1024).toFixed(1)} KB`;
     setRoutineFileName(file.name);
+    setRoutineLoadingMsg(`Procesando "${file.name}"...`);
 
     try {
-      let extractedText = '';
-      const textExtensions = ['txt', 'md', 'csv', 'tsv', 'json', 'xml', 'html', 'htm', 'log', 'rtf', 'yaml', 'yml', 'ini'];
-      const isTextFile = (file.type || '').startsWith('text/') || textExtensions.includes(extension);
+      // 1. PLANILLAS DE CÁLCULO (EXCEL .xlsx/.xls, .ods, .csv, .tsv)
+      if (['csv', 'tsv'].includes(extension)) {
+        const rawCsv = await file.text();
+        const delimiter = extension === 'tsv' ? '\t' : (rawCsv.includes(';') && !rawCsv.includes(',') ? ';' : ',');
+        const rows = parseDelimitedRows(rawCsv, delimiter);
+        const safeRows = rows.length ? rows : [['Ejercicio', 'Series × Reps', 'Peso / RIR', 'Notas']];
+        syncInteractiveSpreadsheet([{ name: file.name, rows: safeRows }], file.name, 0, {});
+        setRoutineLoadingMsg('');
+        triggerToast(`[EXCEL / CSV] Planilla "${file.name}" cargada en tabla interactiva.`);
+        event.target.value = '';
+        return;
+      }
 
-      if (isTextFile) {
-        extractedText = await file.text();
-      } else if (extension === 'pdf' && typeof window !== 'undefined' && window.pdfjsLib) {
+      if (['xlsx', 'xls', 'ods', 'numbers'].includes(extension)) {
+        if (!window.XLSX) {
+          setRoutineLoadingMsg('Cargando motor lector de Excel y planillas...');
+          await loadBrowserScript('https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js');
+        }
+        const buffer = await file.arrayBuffer();
+        const workbook = window.XLSX.read(buffer, { type: 'array' });
+        const sheets = workbook.SheetNames.map((sheetName) => {
+          const sheet = workbook.Sheets[sheetName];
+          const aoa = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+          const cleanRows = aoa
+            .map((r) => (Array.isArray(r) ? r.map((cell) => String(cell ?? '').trim()) : [String(r ?? '').trim()]))
+            .filter((r) => r.some((c) => c !== ''));
+          const maxCols = Math.max(3, ...cleanRows.map((r) => r.length));
+          const normalized = (cleanRows.length ? cleanRows : [['Ejercicio', 'Series × Reps', 'Peso / RIR']]).map((r) => {
+            const copy = [...r];
+            while (copy.length < maxCols) copy.push('');
+            return copy;
+          });
+          return { name: sheetName, rows: normalized };
+        });
+
+        if (sheets.length > 0) {
+          syncInteractiveSpreadsheet(sheets, file.name, 0, {});
+          setRoutineLoadingMsg('');
+          triggerToast(`[EXCEL] "${file.name}" (${sheets.length} hoja/s) listo para editar e interactuar.`);
+          event.target.value = '';
+          return;
+        }
+      }
+
+      // 2. DOCUMENTOS PDF (.pdf)
+      if (extension === 'pdf' || file.type === 'application/pdf') {
+        if (!window.pdfjsLib) {
+          setRoutineLoadingMsg('Cargando motor lector de PDF...');
+          await loadBrowserScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+        }
+        if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
         const pdfData = new Uint8Array(await file.arrayBuffer());
         const pdf = await window.pdfjsLib.getDocument({ data: pdfData }).promise;
-        const pages = [];
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          const page = await pdf.getPage(pageNumber);
+        const pageTexts = [];
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+          const page = await pdf.getPage(pageNum);
           const content = await page.getTextContent();
-          pages.push(content.items.map((item) => item.str || '').join(' '));
+          const lineBuckets = new Map();
+          content.items.forEach((item) => {
+            const str = String(item.str || '').trim();
+            if (!str) return;
+            const yKey = Math.round((item.transform?.[5] || 0) / 5);
+            if (!lineBuckets.has(yKey)) lineBuckets.set(yKey, []);
+            lineBuckets.get(yKey).push({ x: item.transform?.[4] || 0, str });
+          });
+          const sortedY = Array.from(lineBuckets.keys()).sort((a, b) => b - a);
+          const lines = sortedY.map((y) =>
+            lineBuckets
+              .get(y)
+              .sort((a, b) => a.x - b.x)
+              .map((entry) => entry.str)
+              .join(' ')
+          );
+          pageTexts.push(lines.join('\n'));
         }
-        extractedText = pages.join('\n\n');
-      } else if (['docx', 'doc'].includes(extension) && typeof window !== 'undefined' && window.mammoth) {
-        const result = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
-        extractedText = result.value || '';
-      } else if (['xlsx', 'xls', 'ods'].includes(extension) && typeof window !== 'undefined' && window.XLSX) {
-        const workbook = window.XLSX.read(await file.arrayBuffer(), { type: 'array' });
-        extractedText = workbook.SheetNames.map((sheetName) => {
-          const sheet = workbook.Sheets[sheetName];
-          return `HOJA: ${sheetName}\n${window.XLSX.utils.sheet_to_csv(sheet)}`;
-        }).join('\n\n');
+        const pdfText = pageTexts.join('\n\n').trim();
+        if (pdfText) {
+          const docLines = buildInteractiveDocLines(pdfText);
+          syncInteractiveDocumentLines(docLines, file.name, 'interactive');
+          setRoutineLoadingMsg('');
+          triggerToast(`[PDF] "${file.name}" (${pdf.numPages} pág.) convertido a rutina interactiva.`);
+          event.target.value = '';
+          return;
+        }
       }
 
-      if (extractedText.trim()) {
-        setCustomRoutineText(extractedText);
-        analyzeRoutineText(extractedText, file.name);
-        triggerToast(`[ESCÁNER] Se cargó ${file.name} y se extrajo su texto.`);
+      // 3. DOCUMENTOS WORD Y TEXTO ENRIQUECIDO (.docx, .doc, .odt, .rtf)
+      if (['docx', 'doc'].includes(extension)) {
+        let wordText = '';
+        try {
+          if (!window.mammoth) {
+            setRoutineLoadingMsg('Cargando motor lector de documentos Word...');
+            await loadBrowserScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js');
+          }
+          const result = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+          wordText = String(result.value || '').trim();
+        } catch {
+          const rawBuf = new Uint8Array(await file.arrayBuffer());
+          const decoded = new TextDecoder('latin1').decode(rawBuf);
+          const matches = decoded.match(/[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,;:×x()\-/]{12,}/g) || [];
+          wordText = matches.join('\n').trim();
+        }
+        if (wordText) {
+          const docLines = buildInteractiveDocLines(wordText);
+          syncInteractiveDocumentLines(docLines, file.name, 'interactive');
+          setRoutineLoadingMsg('');
+          triggerToast(`[DOCUMENTO WORD] "${file.name}" cargado en modo interactivo.`);
+          event.target.value = '';
+          return;
+        }
+      }
+
+      if (extension === 'odt') {
+        if (!window.JSZip) {
+          setRoutineLoadingMsg('Cargando motor lector de OpenDocument (.odt)...');
+          await loadBrowserScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+        }
+        const zip = await window.JSZip.loadAsync(await file.arrayBuffer());
+        const xmlFile = zip.file('content.xml');
+        if (xmlFile) {
+          const xmlStr = await xmlFile.async('string');
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlStr, 'application/xml');
+          const paragraphs = Array.from(xmlDoc.getElementsByTagName('*'))
+            .filter((el) => el.localName === 'p' || el.localName === 'h')
+            .map((el) => el.textContent.trim())
+            .filter(Boolean);
+          const odtText = paragraphs.join('\n');
+          if (odtText) {
+            syncInteractiveDocumentLines(buildInteractiveDocLines(odtText), file.name, 'interactive');
+            setRoutineLoadingMsg('');
+            triggerToast(`[ODT] Documento "${file.name}" cargado en modo interactivo.`);
+            event.target.value = '';
+            return;
+          }
+        }
+      }
+
+      if (extension === 'rtf') {
+        const rawRtf = await file.text();
+        const plainRtf = stripRtfContent(rawRtf);
+        if (plainRtf) {
+          syncInteractiveDocumentLines(buildInteractiveDocLines(plainRtf), file.name, 'interactive');
+          setRoutineLoadingMsg('');
+          triggerToast(`[RTF] Documento "${file.name}" cargado en modo interactivo.`);
+          event.target.value = '';
+          return;
+        }
+      }
+
+      // 4. CUALQUIER OTRO ARCHIVO DE TEXTO, MARKDOWN, HTML, JSON, XML, ETC.
+      const fallbackText = await file.text();
+      let cleanFallback = fallbackText;
+      if (['html', 'htm', 'xml'].includes(extension)) {
+        const docParsed = new DOMParser().parseFromString(fallbackText, 'text/html');
+        cleanFallback = docParsed.body?.innerText || docParsed.body?.textContent || fallbackText;
+      }
+      if (cleanFallback && cleanFallback.trim()) {
+        syncInteractiveDocumentLines(buildInteractiveDocLines(cleanFallback), file.name, 'interactive');
+        setRoutineLoadingMsg('');
+        triggerToast(`[ARCHIVO] "${file.name}" cargado en modo interactivo.`);
       } else {
-        const isImage = (file.type || '').startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic', 'heif'].includes(extension);
-        const isPdf = extension === 'pdf';
-        const explanation = isImage
-          ? 'La imagen se recibió correctamente, pero esta versión no tiene OCR integrado para leer automáticamente el texto de la captura. Podés conservar el archivo como referencia y pegar/transcribir el contenido en el cuadro.'
-          : isPdf
-            ? 'El PDF se recibió correctamente. Para extraer su texto automáticamente, la aplicación necesita tener PDF.js cargado (window.pdfjsLib). Si es un PDF escaneado, además necesita OCR.'
-            : ['doc', 'docx'].includes(extension)
-              ? 'El documento se recibió correctamente. Para leerlo automáticamente, la aplicación necesita tener Mammoth cargado (window.mammoth).'
-              : ['xls', 'xlsx', 'ods'].includes(extension)
-                ? 'La planilla se recibió correctamente. Para leerla automáticamente, la aplicación necesita tener SheetJS cargado (window.XLSX).'
-                : 'El archivo se recibió correctamente, pero este formato binario no tiene un lector compatible integrado. Podés pegar el texto de la rutina en el cuadro para analizarlo.';
-        setCustomRoutineText('');
-        setScanReport({
-          sourceName: file.name,
-          rawText: `${fileInfo}\n\n${explanation}`,
-          exerciseLines: [],
-          score: 'PENDIENTE (CONTENIDO NO EXTRAÍDO)',
-          finding: [`Se aceptó el archivo ${file.name}.`, 'El archivo quedó identificado por nombre, formato y tamaño.'],
-          fix: [explanation, 'Cuando el contenido esté disponible como texto, usá EXAMINAR RUTINA para recibir la evaluación de ejercicios, series, repeticiones, RIR y progresión.']
-        });
-        triggerToast('[ESCÁNER] Archivo recibido. La extracción depende del formato.');
+        setRoutineLoadingMsg('');
+        triggerToast('[ESCÁNER] No se detectó texto legible en el archivo. Podés pegarlo o escribirlo directamente.');
       }
     } catch (error) {
-      console.error('Error al procesar el archivo de rutina:', error);
-      setScanReport({
-        sourceName: file.name,
-        rawText: `${fileInfo}\n\nNo se pudo extraer el contenido del archivo.`,
-        exerciseLines: [],
-        score: 'NO DISPONIBLE',
-        finding: ['El archivo fue seleccionado, pero ocurrió un error durante la lectura.'],
-        fix: ['Probá con otro formato o pegá el texto de la rutina directamente en el cuadro.']
-      });
-      triggerToast('[ESCÁNER] No se pudo extraer el contenido del archivo.');
+      console.error('Error al procesar archivo:', error);
+      setRoutineLoadingMsg('');
+      triggerToast(`[ESCÁNER] Error al leer "${file.name}". Verificá que no esté protegido con contraseña.`);
     } finally {
       event.target.value = '';
     }
@@ -3584,45 +3877,536 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
 
           <div className="sys-window" style={{ padding: '18px' }}>
-            <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', marginBottom: '10px' }}>
-              ESCÁNER DE RUTINA PROPIA (CUALQUIER ARCHIVO O TEXTO)
-            </h2>
-            <textarea
-              className="sys-textarea"
-              rows={3}
-              placeholder="Pegá tu rutina o subí un archivo de cualquier formato. Se intentará extraer el texto según el tipo de archivo..."
-              value={customRoutineText}
-              onChange={(e) => setCustomRoutineText(e.target.value)}
-            />
-            <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
-              <button
-                className="sys-btn sys-btn-primary"
-                onClick={() => analyzeRoutineText(customRoutineText, routineFileName || 'Texto pegado')}
-              >
-                <Scan size={15} /> EXAMINAR RUTINA
-              </button>
-              <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
-                <FileText size={15} /> SUBIR CUALQUIER ARCHIVO
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+              <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff' }}>
+                LECTOR INTERACTIVO DE RUTINAS (WORD, EXCEL, PDF, CSV, TXT Y MÁS)
+              </h2>
+              {routineFileName && (
+                <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.16)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
+                  ARCHIVO: {routineFileName}
+                </span>
+              )}
+            </div>
+
+            <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '10px' }}>
+              Subí tu rutina en <strong>Excel (.xlsx, .xls, .csv, .ods)</strong>, <strong>Word (.docx, .doc, .odt, .rtf)</strong>, <strong>PDF (.pdf)</strong> o texto. Podrás editar celdas, marcar ejercicios completados o enviarlos a tus Misiones, y verás la <strong>crítica constructiva abajo</strong> actualizada al instante.
+            </p>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+              <label className="sys-btn sys-btn-gold" style={{ cursor: 'pointer' }}>
+                <Upload size={15} /> SUBIR ARCHIVO (WORD / EXCEL / PDF / OTROS)
                 <input
                   type="file"
-                  accept="*/*"
+                  accept=".pdf,.doc,.docx,.odt,.rtf,.xls,.xlsx,.ods,.csv,.tsv,.txt,.md,.json,.xml,.html,*/*"
                   style={{ display: 'none' }}
                   onChange={handleRoutineFileUpload}
                 />
               </label>
+              <button
+                type="button"
+                className="sys-btn sys-btn-primary"
+                onClick={() => analyzeRoutineText(customRoutineText, routineFileName || 'Rutina editada')}
+              >
+                <Scan size={15} /> ANALIZAR / ACTUALIZAR TEXTO
+              </button>
+              {interactiveRoutineDoc && (
+                <button
+                  type="button"
+                  className="sys-btn sys-btn-ghost"
+                  onClick={() => {
+                    setInteractiveRoutineDoc(null);
+                    setScanReport(null);
+                    setRoutineFileName('');
+                    setCustomRoutineText('');
+                  }}
+                >
+                  <Trash2 size={14} /> LIMPIAR VISOR
+                </button>
+              )}
             </div>
+
+            {routineLoadingMsg && (
+              <div style={{
+                padding: '10px 12px',
+                borderRadius: '10px',
+                background: 'rgba(0,240,255,0.12)',
+                border: '1px solid #00f0ff',
+                color: '#00f0ff',
+                fontSize: '12px',
+                fontWeight: 700,
+                marginBottom: '12px'
+              }}>
+                ⏳ {routineLoadingMsg}
+              </div>
+            )}
+
+            {!interactiveRoutineDoc && (
+              <textarea
+                className="sys-textarea"
+                rows={4}
+                placeholder="O pegá/escribí tu rutina acá (ej: Día 1 - Pecho y Espalda: Press Banca 4x8 @ 80kg RIR 2, Remo con Barra 4x10 RIR 2)..."
+                value={customRoutineText}
+                onChange={(e) => setCustomRoutineText(e.target.value)}
+              />
+            )}
+
+            {/* ==============================================================
+                1) ESPACIO INTERACTIVO DEL ARCHIVO SUBIDO (ARRIBA)
+               ============================================================== */}
+            {interactiveRoutineDoc && (
+              <div style={{
+                marginTop: '12px',
+                padding: '14px',
+                borderRadius: '12px',
+                background: 'rgba(5, 8, 23, 0.94)',
+                border: '1.5px solid rgba(0, 240, 255, 0.45)'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                  <div>
+                    <span className="sys-badge" style={{
+                      background: interactiveRoutineDoc.fileType === 'spreadsheet' ? 'rgba(16,185,129,0.2)' : 'rgba(150,60,255,0.22)',
+                      color: interactiveRoutineDoc.fileType === 'spreadsheet' ? '#6ee7b7' : '#e9d5ff',
+                      border: `1px solid ${interactiveRoutineDoc.fileType === 'spreadsheet' ? '#10b981' : '#a855f7'}`
+                    }}>
+                      {interactiveRoutineDoc.fileType === 'spreadsheet' ? 'PLANILLA DE CÁLCULO INTERACTIVA' : 'DOCUMENTO INTERACTIVO'}
+                    </span>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff', marginTop: '4px' }}>
+                      {interactiveRoutineDoc.fileName}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className={`sys-btn ${interactiveRoutineDoc.editMode === 'interactive' ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
+                      style={{ padding: '6px 10px', fontSize: '10px' }}
+                      onClick={() => setInteractiveRoutineDoc({ ...interactiveRoutineDoc, editMode: 'interactive' })}
+                    >
+                      VISTA INTERACTIVA
+                    </button>
+                    <button
+                      type="button"
+                      className={`sys-btn ${interactiveRoutineDoc.editMode === 'raw' ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
+                      style={{ padding: '6px 10px', fontSize: '10px' }}
+                      onClick={() => setInteractiveRoutineDoc({ ...interactiveRoutineDoc, editMode: 'raw' })}
+                    >
+                      TEXTO LIBRE
+                    </button>
+                  </div>
+                </div>
+
+                {/* MODO TEXTO LIBRE EDITABLE EN VIVO */}
+                {interactiveRoutineDoc.editMode === 'raw' ? (
+                  <div>
+                    <textarea
+                      className="sys-textarea"
+                      rows={9}
+                      value={customRoutineText}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setCustomRoutineText(val);
+                        const rep = evaluateRoutineContent(val, interactiveRoutineDoc.fileName);
+                        if (rep) setScanReport(rep);
+                      }}
+                    />
+                    <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-gold"
+                        style={{ padding: '7px 12px', fontSize: '10px' }}
+                        onClick={() => syncInteractiveDocumentLines(buildInteractiveDocLines(customRoutineText), interactiveRoutineDoc.fileName, 'interactive')}
+                      >
+                        <Check size={13} /> APLICAR CAMBIOS A LA VISTA INTERACTIVA
+                      </button>
+                    </div>
+                  </div>
+                ) : interactiveRoutineDoc.fileType === 'spreadsheet' ? (
+                  /* VISOR INTERACTIVO TIPO EXCEL / PLANILLA DE CÁLCULO */
+                  <div>
+                    {/* PESTAÑAS DE HOJAS DE EXCEL */}
+                    {interactiveRoutineDoc.sheets.length > 1 && (
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                        {interactiveRoutineDoc.sheets.map((sh, sIdx) => (
+                          <button
+                            key={`sheet_tab_${sIdx}`}
+                            type="button"
+                            className={`sys-btn ${interactiveRoutineDoc.activeSheetIdx === sIdx ? 'sys-btn-gold' : 'sys-btn-ghost'}`}
+                            style={{ padding: '6px 10px', fontSize: '10px' }}
+                            onClick={() => setInteractiveRoutineDoc({ ...interactiveRoutineDoc, activeSheetIdx: sIdx })}
+                          >
+                            {sh.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* BARRA DE HERRAMIENTAS DE PLANILLA */}
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-success"
+                        style={{ padding: '6px 10px', fontSize: '10px' }}
+                        onClick={() => {
+                          const sIdx = interactiveRoutineDoc.activeSheetIdx;
+                          const nextSheets = interactiveRoutineDoc.sheets.map((sh, idx) => {
+                            if (idx !== sIdx) return sh;
+                            const colCount = sh.rows[0]?.length || 3;
+                            return { ...sh, rows: [...sh.rows, Array(colCount).fill('')] };
+                          });
+                          syncInteractiveSpreadsheet(nextSheets, interactiveRoutineDoc.fileName, sIdx, interactiveRoutineDoc.checkedRows);
+                        }}
+                      >
+                        <Plus size={12} /> AGREGAR FILA
+                      </button>
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-ghost"
+                        style={{ padding: '6px 10px', fontSize: '10px' }}
+                        onClick={() => {
+                          const sIdx = interactiveRoutineDoc.activeSheetIdx;
+                          const nextSheets = interactiveRoutineDoc.sheets.map((sh, idx) => {
+                            if (idx !== sIdx) return sh;
+                            return { ...sh, rows: sh.rows.map((r, rI) => [...r, rI === 0 ? 'Notas / RIR' : '']) };
+                          });
+                          syncInteractiveSpreadsheet(nextSheets, interactiveRoutineDoc.fileName, sIdx, interactiveRoutineDoc.checkedRows);
+                        }}
+                      >
+                        <Plus size={12} /> AGREGAR COLUMNA
+                      </button>
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-ghost"
+                        style={{ padding: '6px 10px', fontSize: '10px' }}
+                        onClick={() => {
+                          const activeSh = interactiveRoutineDoc.sheets[interactiveRoutineDoc.activeSheetIdx];
+                          if (!activeSh) return;
+                          const csvContent = activeSh.rows
+                            .map((r) => r.map((cell) => `"${String(cell || '').replace(/"/g, '""')}"`).join(','))
+                            .join('\n');
+                          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${activeSh.name || 'rutina_editada'}.csv`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                          triggerToast('[EXCEL / CSV] Planilla actualizada descargada.');
+                        }}
+                      >
+                        <Save size={12} /> DESCARGAR CSV
+                      </button>
+                    </div>
+
+                    {/* TABLA EDITABLE CELDA POR CELDA */}
+                    {(() => {
+                      const sIdx = interactiveRoutineDoc.activeSheetIdx;
+                      const currentSheet = interactiveRoutineDoc.sheets[sIdx] || interactiveRoutineDoc.sheets[0];
+                      if (!currentSheet) return null;
+                      return (
+                        <div style={{ overflowX: 'auto', borderRadius: '10px', border: '1px solid rgba(0,240,255,0.28)' }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                            <tbody>
+                              {currentSheet.rows.map((row, rIdx) => {
+                                const rowKey = `${sIdx}_${rIdx}`;
+                                const isDone = Boolean(interactiveRoutineDoc.checkedRows?.[rowKey]);
+                                const isHeaderRow = rIdx === 0;
+                                return (
+                                  <tr
+                                    key={rowKey}
+                                    style={{
+                                      background: isHeaderRow
+                                        ? 'rgba(0, 234, 255, 0.14)'
+                                        : isDone
+                                        ? 'rgba(16, 185, 129, 0.14)'
+                                        : rIdx % 2 === 0
+                                        ? 'rgba(11, 21, 48, 0.65)'
+                                        : 'rgba(5, 8, 23, 0.85)',
+                                      borderBottom: '1px solid rgba(148, 163, 184, 0.16)'
+                                    }}
+                                  >
+                                    <td style={{ padding: '6px', textAlign: 'center', width: '36px' }}>
+                                      {!isHeaderRow && (
+                                        <button
+                                          type="button"
+                                          title="Marcar fila como completada"
+                                          onClick={() => {
+                                            const nextChecked = {
+                                              ...(interactiveRoutineDoc.checkedRows || {}),
+                                              [rowKey]: !isDone
+                                            };
+                                            setInteractiveRoutineDoc({ ...interactiveRoutineDoc, checkedRows: nextChecked });
+                                          }}
+                                          style={{
+                                            width: '22px',
+                                            height: '22px',
+                                            borderRadius: '6px',
+                                            border: `1px solid ${isDone ? '#10b981' : '#64748b'}`,
+                                            background: isDone ? '#10b981' : 'transparent',
+                                            color: isDone ? '#050817' : '#94a3b8',
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                          }}
+                                        >
+                                          <Check size={13} />
+                                        </button>
+                                      )}
+                                    </td>
+                                    {row.map((cellVal, cIdx) => (
+                                      <td key={`${rowKey}_${cIdx}`} style={{ padding: '4px', minWidth: '115px' }}>
+                                        <input
+                                          type="text"
+                                          value={cellVal}
+                                          placeholder={isHeaderRow ? `Columna ${cIdx + 1}` : 'Editar celda...'}
+                                          onChange={(e) => {
+                                            const nextVal = e.target.value;
+                                            const nextSheets = interactiveRoutineDoc.sheets.map((sh, idx) => {
+                                              if (idx !== sIdx) return sh;
+                                              const nextRows = sh.rows.map((r, ri) =>
+                                                ri === rIdx ? r.map((c, ci) => (ci === cIdx ? nextVal : c)) : r
+                                              );
+                                              return { ...sh, rows: nextRows };
+                                            });
+                                            syncInteractiveSpreadsheet(
+                                              nextSheets,
+                                              interactiveRoutineDoc.fileName,
+                                              sIdx,
+                                              interactiveRoutineDoc.checkedRows
+                                            );
+                                          }}
+                                          style={{
+                                            width: '100%',
+                                            background: 'transparent',
+                                            border: '1px solid transparent',
+                                            borderRadius: '6px',
+                                            padding: '5px 7px',
+                                            color: isHeaderRow ? '#fde047' : isDone ? '#6ee7b7' : '#f8fafc',
+                                            fontWeight: isHeaderRow ? 800 : 600,
+                                            fontSize: '12px',
+                                            textDecoration: isDone ? 'line-through' : 'none',
+                                            outline: 'none'
+                                          }}
+                                          onFocus={(e) => { e.target.style.borderColor = '#00eaff'; e.target.style.background = 'rgba(5,8,23,0.9)'; }}
+                                          onBlur={(e) => { e.target.style.borderColor = 'transparent'; e.target.style.background = 'transparent'; }}
+                                        />
+                                      </td>
+                                    ))}
+                                    <td style={{ padding: '4px 6px', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                                      {!isHeaderRow && row.some((c) => String(c || '').trim() !== '') && (
+                                        <button
+                                          type="button"
+                                          className="sys-btn sys-btn-ghost"
+                                          style={{ padding: '4px 8px', fontSize: '9px' }}
+                                          onClick={() => {
+                                            const summary = row.filter(Boolean).join(' • ');
+                                            setQuests([{ id: Date.now(), title: summary, env: 'Planilla', lp: 40, exp: 85, status: 'pending' }, ...quests]);
+                                            triggerToast(`[MISIONES] "${summary.slice(0, 42)}" enviado a Misiones Diarias.`);
+                                          }}
+                                        >
+                                          + MISIÓN
+                                        </button>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                ) : (
+                  /* VISOR INTERACTIVO DE DOCUMENTO / PDF / WORD / TEXTO */
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                        Completados: <strong style={{ color: '#6ee7b7' }}>{(interactiveRoutineDoc.docLines || []).filter((l) => l.completed).length}</strong> / {(interactiveRoutineDoc.docLines || []).length} bloques
+                      </span>
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-success"
+                        style={{ padding: '6px 10px', fontSize: '10px' }}
+                        onClick={() => {
+                          const nextLines = [
+                            ...(interactiveRoutineDoc.docLines || []),
+                            {
+                              id: `line_${Date.now()}`,
+                              text: 'Nuevo ejercicio 3 × 10 • RIR 2 • Descanso 90 seg',
+                              completed: false,
+                              isHeader: false,
+                              isExercise: true
+                            }
+                          ];
+                          syncInteractiveDocumentLines(nextLines, interactiveRoutineDoc.fileName, 'interactive');
+                        }}
+                      >
+                        <Plus size={12} /> AÑADIR LÍNEA / EJERCICIO
+                      </button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', maxHeight: '360px', overflowY: 'auto', paddingRight: '4px' }}>
+                      {(interactiveRoutineDoc.docLines || []).map((item, idx) => (
+                        <div
+                          key={item.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '8px 10px',
+                            borderRadius: '9px',
+                            background: item.isHeader
+                              ? 'rgba(0, 234, 255, 0.12)'
+                              : item.completed
+                              ? 'rgba(16, 185, 129, 0.14)'
+                              : 'rgba(11, 21, 48, 0.78)',
+                            border: `1px solid ${
+                              item.isHeader
+                                ? 'rgba(0, 234, 255, 0.45)'
+                                : item.completed
+                                ? '#10b981'
+                                : 'rgba(148, 163, 184, 0.2)'
+                            }`
+                          }}
+                        >
+                          {!item.isHeader && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextLines = interactiveRoutineDoc.docLines.map((l, i) =>
+                                  i === idx ? { ...l, completed: !l.completed } : l
+                                );
+                                setInteractiveRoutineDoc({ ...interactiveRoutineDoc, docLines: nextLines });
+                              }}
+                              style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '6px',
+                                border: `1px solid ${item.completed ? '#10b981' : '#64748b'}`,
+                                background: item.completed ? '#10b981' : 'transparent',
+                                color: item.completed ? '#050817' : '#94a3b8',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              <Check size={13} />
+                            </button>
+                          )}
+
+                          <input
+                            type="text"
+                            value={item.text}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const nextLines = interactiveRoutineDoc.docLines.map((l, i) =>
+                                i === idx ? { ...l, text: val } : l
+                              );
+                              syncInteractiveDocumentLines(nextLines, interactiveRoutineDoc.fileName, 'interactive');
+                            }}
+                            style={{
+                              flex: 1,
+                              background: 'transparent',
+                              border: 'none',
+                              color: item.isHeader ? '#fde047' : item.completed ? '#6ee7b7' : '#f8fafc',
+                              fontWeight: item.isHeader ? 800 : 600,
+                              fontSize: item.isHeader ? '13px' : '12.5px',
+                              textDecoration: item.completed ? 'line-through' : 'none',
+                              outline: 'none'
+                            }}
+                          />
+
+                          {!item.isHeader && (
+                            <button
+                              type="button"
+                              className="sys-btn sys-btn-ghost"
+                              style={{ padding: '4px 8px', fontSize: '9px', flexShrink: 0 }}
+                              onClick={() => {
+                                setQuests([{ id: Date.now(), title: item.text, env: 'Documento', lp: 40, exp: 85, status: 'pending' }, ...quests]);
+                                triggerToast(`[MISIONES] "${item.text.slice(0, 42)}" añadido a Misiones Diarias.`);
+                              }}
+                            >
+                              + MISIÓN
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ==============================================================
+                2) CRÍTICA CONSTRUCTIVA Y PUNTOS FUERTES (DEBAJO DEL ARCHIVO)
+               ============================================================== */}
             {scanReport && (
-              <div style={{ marginTop: '12px', padding: '14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.55)', fontSize: '13px' }}>
-                <div style={{ fontWeight: 700, color: '#6ee7b7' }}>EVALUACIÓN ORIENTATIVA: {scanReport.score}</div>
-                <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '4px' }}>Fuente: {scanReport.sourceName}. El índice mide la información detectada, no certifica que la rutina sea óptima.</div>
-                <h3 style={{ color: '#6ee7b7', marginTop: '12px', marginBottom: '5px' }}>PUNTOS FUERTES / DATOS DETECTADOS</h3>
-                {scanReport.finding.map((item, index) => <p key={`finding-${index}`} style={{ color: '#e2e8f0', marginTop: '4px' }}>• {item}</p>)}
-                <h3 style={{ color: '#fbbf24', marginTop: '12px', marginBottom: '5px' }}>CRÍTICA CONSTRUCTIVA Y MEJORAS</h3>
-                {scanReport.fix.map((item, index) => <p key={`fix-${index}`} style={{ color: '#fcd34d', marginTop: '4px' }}>• {item}</p>)}
-                <h3 style={{ color: '#00f0ff', marginTop: '12px', marginBottom: '5px' }}>RUTINA LEÍDA</h3>
-                <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: '260px', overflowY: 'auto', padding: '10px', borderRadius: '8px', background: 'rgba(4,6,12,0.8)', color: '#cbd5e1', fontFamily: 'inherit', fontSize: '12px' }}>{scanReport.rawText}</pre>
-                <h3 style={{ color: '#00f0ff', marginTop: '12px', marginBottom: '5px' }}>EJERCICIOS / SERIES × REPETICIONES DETECTADOS</h3>
-                {scanReport.exerciseLines.length ? scanReport.exerciseLines.map((item, index) => <p key={`exercise-${index}`} style={{ color: '#e2e8f0', marginTop: '3px' }}>• {item}</p>) : <p style={{ color: '#94a3b8' }}>No se detectaron formatos del tipo 3 × 8-12. Revisá el texto o agregá las prescripciones.</p>}
+              <div style={{
+                marginTop: '14px',
+                padding: '15px',
+                borderRadius: '12px',
+                background: 'linear-gradient(145deg, rgba(16, 27, 56, 0.92), rgba(5, 8, 23, 0.96))',
+                border: '1.5px solid rgba(251, 191, 36, 0.55)',
+                fontSize: '13px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <div className="font-hud" style={{ fontWeight: 800, color: '#fde047', fontSize: '13px' }}>
+                    EVALUACIÓN Y CRÍTICA CONSTRUCTIVA EN VIVO
+                  </div>
+                  <span className="sys-badge" style={{ background: 'rgba(16,185,129,0.2)', color: '#6ee7b7', border: '1px solid #10b981' }}>
+                    {scanReport.score}
+                  </span>
+                </div>
+                <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '4px' }}>
+                  Fuente: <strong>{scanReport.sourceName}</strong> • Esta crítica se actualiza automáticamente cada vez que editás el archivo arriba.
+                </div>
+
+                <div style={{ marginTop: '12px', padding: '10px 12px', borderRadius: '9px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
+                  <div style={{ fontWeight: 800, color: '#6ee7b7', fontSize: '12px', marginBottom: '4px' }}>
+                    ✓ PUNTOS FUERTES DETECTADOS
+                  </div>
+                  {scanReport.finding.map((item, index) => (
+                    <p key={`finding-${index}`} style={{ color: '#e2e8f0', marginTop: '4px', fontSize: '12.5px' }}>• {item}</p>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '9px', background: 'rgba(251, 191, 36, 0.09)', border: '1px solid rgba(251, 191, 36, 0.42)' }}>
+                  <div style={{ fontWeight: 800, color: '#fbbf24', fontSize: '12px', marginBottom: '4px' }}>
+                    ⚡ CRÍTICA CONSTRUCTIVA Y SUGERENCIAS DE MEJORA
+                  </div>
+                  {scanReport.fix.map((item, index) => (
+                    <p key={`fix-${index}`} style={{ color: '#fde68a', marginTop: '4px', fontSize: '12.5px' }}>• {item}</p>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '10px' }}>
+                  <div style={{ fontWeight: 700, color: '#00f0ff', fontSize: '11px', marginBottom: '4px' }}>
+                    PRESCRIPCIONES DETECTADAS ({scanReport.exerciseLines.length}):
+                  </div>
+                  {scanReport.exerciseLines.length ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {scanReport.exerciseLines.slice(0, 14).map((item, index) => (
+                        <span key={`ex_badge_${index}`} style={{
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: 'rgba(0,240,255,0.1)',
+                          border: '1px solid rgba(0,240,255,0.3)',
+                          color: '#e2e8f0',
+                          fontSize: '11px'
+                        }}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ color: '#94a3b8', fontSize: '12px' }}>
+                      Aún no se detectan prescripciones con formato <code>series × reps</code> (ej. <code>4 × 8</code>). Podés editar las líneas arriba para agregarlas.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
           </div>
