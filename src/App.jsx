@@ -8,7 +8,8 @@ import {
   LogIn, KeyRound, Mail, UserPlus, Settings, Trash2,
   Heart, Building2, Send, RotateCcw,
   Pause, Navigation, Activity,
-  Footprints, MessageSquareText, Ban, ShieldAlert
+  Footprints, MessageSquareText, Ban, ShieldAlert,
+  Menu, X, Palette, Gem, Crown, Star, Award, Compass
 } from 'lucide-react';
 
 // ============================================================================
@@ -27,6 +28,9 @@ const SYSTEM_CSS = `
     --neon-purple: #963cff;
     --neon-gold: #ffd45a;
     --neon-pink: #ff3e9d;
+    --neon-primary-rgb: var(--neon-primary-rgb);
+    --neon-secondary-rgb: var(--neon-secondary-rgb);
+    --neon-accent-rgb: var(--neon-accent-rgb);
 
     --text-main: #f4f6ff;
     --text-secondary: #aab9d5;
@@ -77,10 +81,10 @@ const SYSTEM_CSS = `
   .sys-window {
     background: linear-gradient(145deg, rgba(16, 27, 56, 0.94), rgba(6, 10, 25, 0.96));
     backdrop-filter: blur(14px);
-    border: 1px solid rgba(0, 234, 255, 0.32);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.32);
     box-shadow:
       0 10px 34px rgba(0, 0, 0, 0.82),
-      inset 0 0 24px rgba(0, 234, 255, 0.08);
+      inset 0 0 24px rgba(var(--neon-primary-rgb), 0.08);
     border-radius: 16px;
     position: relative;
     overflow: hidden;
@@ -102,8 +106,8 @@ const SYSTEM_CSS = `
     border-radius: 22px;
     padding: 20px;
     box-shadow:
-      0 0 12px #00eaff66,
-      inset 0 0 25px #00eaff18;
+      0 0 12px rgba(var(--neon-primary-rgb), 0.4),
+      inset 0 0 25px rgba(var(--neon-primary-rgb), 0.1);
     overflow: hidden;
   }
 
@@ -117,7 +121,7 @@ const SYSTEM_CSS = `
   .neon-glow-gold {
     text-shadow:
       0 0 8px var(--neon-gold),
-      0 0 20px rgba(255, 212, 90, 0.65);
+      0 0 20px rgba(var(--neon-accent-rgb), 0.65);
   }
 
   /* Botones RPG */
@@ -136,13 +140,13 @@ const SYSTEM_CSS = `
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow: 0 0 12px #00eaff55;
+    box-shadow: 0 0 12px rgba(var(--neon-primary-rgb), 0.34);
     transition: 0.3s ease;
   }
 
   .rpg-button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 25px #00eaffaa;
+    box-shadow: 0 0 25px rgba(var(--neon-primary-rgb), 0.68);
   }
 
   .rpg-button:active {
@@ -153,21 +157,21 @@ const SYSTEM_CSS = `
   .legendary {
     border: 2px solid var(--neon-gold);
     box-shadow:
-      0 0 12px #ffd45a88,
-      0 0 30px #ffd45a44,
-      inset 0 0 24px rgba(150, 60, 255, 0.16);
+      0 0 12px rgba(var(--neon-accent-rgb), 0.54),
+      0 0 30px rgba(var(--neon-accent-rgb), 0.28),
+      inset 0 0 24px rgba(var(--neon-secondary-rgb), 0.16);
   }
 
   /* Animación de energía */
   @keyframes energyPulse {
     0%, 100% {
       filter: brightness(1);
-      box-shadow: 0 0 10px #00eaff55;
+      box-shadow: 0 0 10px rgba(var(--neon-primary-rgb), 0.34);
     }
 
     50% {
       filter: brightness(1.16);
-      box-shadow: 0 0 28px #00eaffaa, 0 0 18px rgba(150, 60, 255, 0.45);
+      box-shadow: 0 0 28px rgba(var(--neon-primary-rgb), 0.68), 0 0 18px rgba(var(--neon-secondary-rgb), 0.45);
     }
   }
 
@@ -205,8 +209,8 @@ const SYSTEM_CSS = `
     z-index: -1;
     border-radius: 28px;
     background:
-      radial-gradient(circle at 15% 15%, rgba(0, 234, 255, 0.16), transparent 42%),
-      radial-gradient(circle at 85% 20%, rgba(150, 60, 255, 0.18), transparent 45%),
+      radial-gradient(circle at 15% 15%, rgba(var(--neon-primary-rgb), 0.16), transparent 42%),
+      radial-gradient(circle at 85% 20%, rgba(var(--neon-secondary-rgb), 0.18), transparent 45%),
       radial-gradient(circle at 50% 90%, rgba(255, 62, 157, 0.12), transparent 48%);
     filter: blur(12px);
     pointer-events: none;
@@ -258,13 +262,13 @@ const SYSTEM_CSS = `
     background: linear-gradient(135deg, #101b38 0%, #0284c7 100%);
     color: var(--text-main);
     border-color: var(--neon-blue);
-    box-shadow: 0 0 14px #00eaff55;
+    box-shadow: 0 0 14px rgba(var(--neon-primary-rgb), 0.34);
   }
 
   .sys-btn-gold {
     background: linear-gradient(135deg, #92400e 0%, var(--neon-gold) 100%);
     color: #050817;
-    box-shadow: 0 0 18px #ffd45a66;
+    box-shadow: 0 0 18px rgba(var(--neon-accent-rgb), 0.4);
   }
 
   .sys-btn-love {
@@ -294,7 +298,7 @@ const SYSTEM_CSS = `
   .sys-input, .sys-select, .sys-textarea {
     width: 100%;
     background: rgba(5, 8, 23, 0.92);
-    border: 1px solid rgba(0, 234, 255, 0.32);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.32);
     border-radius: 10px;
     padding: 10px 13px;
     color: var(--text-main);
@@ -307,7 +311,7 @@ const SYSTEM_CSS = `
 
   .sys-input:focus, .sys-select:focus, .sys-textarea:focus {
     border-color: var(--neon-blue);
-    box-shadow: 0 0 12px #00eaff44;
+    box-shadow: 0 0 12px rgba(var(--neon-primary-rgb), 0.28);
   }
 
   .sys-badge {
@@ -347,7 +351,7 @@ const SYSTEM_CSS = `
 
   .nav-tab {
     background: rgba(11, 21, 48, 0.88);
-    border: 1px solid rgba(0, 234, 255, 0.22);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.22);
     border-radius: 12px;
     padding: 9px 4px;
     color: var(--text-secondary);
@@ -363,10 +367,10 @@ const SYSTEM_CSS = `
   }
 
   .nav-tab.active {
-    background: linear-gradient(180deg, rgba(255, 212, 90, 0.24) 0%, rgba(16, 27, 56, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(var(--neon-accent-rgb), 0.24) 0%, rgba(16, 27, 56, 0.96) 100%);
     border-color: var(--neon-gold);
     color: #fff;
-    box-shadow: 0 0 16px #ffd45a55, inset 0 0 12px rgba(255, 212, 90, 0.16);
+    box-shadow: 0 0 16px rgba(var(--neon-accent-rgb), 0.34), inset 0 0 12px rgba(var(--neon-accent-rgb), 0.16);
   }
 
   .progress-track {
@@ -404,7 +408,7 @@ const SYSTEM_CSS = `
     z-index: 9999;
     background: rgba(11, 21, 48, 0.97);
     border: 1px solid var(--neon-gold);
-    box-shadow: 0 0 24px #ffd45a66;
+    box-shadow: 0 0 24px rgba(var(--neon-accent-rgb), 0.4);
     padding: 12px 18px;
     border-radius: 12px;
     display: flex;
@@ -448,6 +452,238 @@ const SYSTEM_CSS = `
   .bio-press { animation: animPress 2.2s ease-in-out infinite; }
   .bio-squat { animation: animSquat 2.4s ease-in-out infinite; transform-origin: bottom center; }
   .bio-pull  { animation: animPull 2.2s ease-in-out infinite; }
+
+  /* ==========================================================================
+     NUEVA INTERFAZ EQUILIBRADA (PANTALLA PRINCIPAL LIMPIA + MENÚ LATERAL)
+     ========================================================================== */
+  .pex-home-shell {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pex-topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 4px 56px;
+    margin-bottom: 4px;
+  }
+
+  .pex-menu-trigger {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(16, 27, 56, 0.95), rgba(6, 11, 28, 0.98));
+    border: 1.5px solid var(--neon-blue);
+    box-shadow:
+      0 0 14px rgba(var(--neon-primary-rgb), 0.35),
+      inset 0 0 12px rgba(var(--neon-primary-rgb), 0.14);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 20;
+  }
+
+  .pex-menu-trigger:hover {
+    transform: translateY(-50%) scale(1.04);
+    box-shadow:
+      0 0 22px rgba(var(--neon-primary-rgb), 0.6),
+      inset 0 0 14px rgba(var(--neon-primary-rgb), 0.22);
+  }
+
+  .pex-menu-trigger span {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--neon-blue);
+  }
+
+  .pex-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 5, 14, 0.74);
+    backdrop-filter: blur(8px);
+    z-index: 900;
+    animation: fadeInBackdrop 0.22s ease;
+  }
+
+  @keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .pex-drawer-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(315px, 85vw);
+    background: linear-gradient(165deg, rgba(12, 20, 44, 0.98) 0%, rgba(5, 8, 22, 0.99) 100%);
+    border-right: 1.5px solid rgba(var(--neon-primary-rgb), 0.45);
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.88), 0 0 24px rgba(var(--neon-primary-rgb), 0.2);
+    z-index: 910;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+    overflow-y: auto;
+    animation: slideInDrawer 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes slideInDrawer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  .pex-drawer-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: rgba(16, 27, 56, 0.55);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.16);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+
+  .pex-drawer-item:hover {
+    background: rgba(var(--neon-primary-rgb), 0.12);
+    border-color: rgba(var(--neon-primary-rgb), 0.45);
+    transform: translateX(3px);
+  }
+
+  .pex-drawer-item.active {
+    background: linear-gradient(90deg, rgba(var(--neon-primary-rgb), 0.22), rgba(var(--neon-secondary-rgb), 0.16));
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 14px rgba(var(--neon-primary-rgb), 0.25);
+    color: #fff;
+  }
+
+  .pex-ornate-panel {
+    position: relative;
+    background: linear-gradient(165deg, rgba(15, 25, 52, 0.9) 0%, rgba(6, 10, 24, 0.95) 100%);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.34);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.78),
+      inset 0 0 24px rgba(var(--neon-primary-rgb), 0.07);
+  }
+
+  .pex-ornate-panel::before,
+  .pex-ornate-panel::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--neon-gold);
+    border-style: solid;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+
+  .pex-ornate-panel::before {
+    top: 5px;
+    left: 5px;
+    border-width: 2px 0 0 2px;
+    border-top-left-radius: 8px;
+  }
+
+  .pex-ornate-panel::after {
+    top: 5px;
+    right: 5px;
+    border-width: 2px 2px 0 0;
+    border-top-right-radius: 8px;
+  }
+
+  .pex-ribbon-badge {
+    background: linear-gradient(90deg, rgba(8, 14, 34, 0.95) 0%, rgba(20, 32, 66, 0.96) 50%, rgba(8, 14, 34, 0.95) 100%);
+    border: 1px solid rgba(var(--neon-primary-rgb), 0.48);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75), inset 0 0 10px rgba(var(--neon-primary-rgb), 0.14);
+    padding: 5px 18px;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+  }
+
+  .pex-equip-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 9px;
+  }
+
+  .pex-equip-slot {
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(16, 26, 52, 0.92), rgba(7, 11, 25, 0.98));
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.75);
+  }
+
+  .pex-equip-slot:hover {
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .pex-equip-slot.unlocked {
+    border-color: var(--slot-border, var(--neon-blue));
+    box-shadow:
+      0 0 12px var(--slot-glow, rgba(var(--neon-primary-rgb), 0.35)),
+      inset 0 0 12px var(--slot-inner, rgba(var(--neon-primary-rgb), 0.16));
+  }
+
+  .pex-equip-slot.selected {
+    transform: scale(1.06);
+    outline: 2px solid var(--neon-gold);
+    outline-offset: 2px;
+  }
+
+  .pex-quest-checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(var(--neon-primary-rgb), 0.45);
+    background: rgba(6, 11, 26, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .pex-quest-checkbox.checked {
+    border-color: var(--neon-blue);
+    background: rgba(var(--neon-primary-rgb), 0.22);
+    box-shadow: 0 0 10px rgba(var(--neon-primary-rgb), 0.45);
+  }
 `;
 
 // ============================================================================
@@ -497,7 +733,6 @@ const HUNTER_GRADE_STANDARDS = [
   { grade: 'SSS', minComposite: 2.28, benchReq: 1.95, squatReq: 2.50, deadliftReq: 2.85, desc: 'Portento físico sobrehumano' },
   { grade: 'EX', minComposite: 2.50, benchReq: 2.15, squatReq: 2.75, deadliftReq: 3.10, desc: 'Cúspide humana absoluta' },
 ];
-
 
 const CLASS_ARCHETYPES = [
   {
@@ -851,6 +1086,7 @@ function getRankFromLP(lp) {
   };
 }
 
+
 function calcEpley1RM(weight, reps) {
   if (!weight || weight <= 0 || !reps || reps <= 0) return 0;
   if (reps <= 1) return Math.round(weight);
@@ -1177,7 +1413,7 @@ function JrpgFantasyPortrait({
     weaponType: 'sword',
     accentColor: '#00eaff',
     variantCode: 101,
-    passiveName: 'Muralla Inquebrantable (Infinito)',
+    passiveName: 'Muralla Inquebrantable',
     passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
   };
 
@@ -1196,6 +1432,7 @@ function JrpgFantasyPortrait({
   const [regenNonce, setRegenNonce] = useState(0);
   const [localFallbackIdx, setLocalFallbackIdx] = useState(0);
   const [styleIdx, setStyleIdx] = useState(0);
+  const [showPassiveDetails, setShowPassiveDetails] = useState(false);
 
   const localFallbacks = isFemale
     ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg']
@@ -1242,7 +1479,7 @@ function JrpgFantasyPortrait({
           }
           return;
         } catch {
-          // Si este motor falla o devuelve el cartel beige, pasa automáticamente al siguiente
+          // Si este motor falla, pasa automáticamente al siguiente
         }
       }
 
@@ -1261,285 +1498,343 @@ function JrpgFantasyPortrait({
 
   const activeStyle = GACHA_STYLES[styleIdx];
   const isStylized = styleIdx !== 0;
-  const starCount = Math.min(6, Math.max(4, 3 + stage));
   const fallbackSrc = localFallbackIdx < localFallbacks.length ? localFallbacks[localFallbackIdx] : null;
   const finalImgToRender = aiImageSrc || fallbackSrc;
 
   return (
-    <div className="cinematic-entry" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* TARJETA LEGENDARIA DEL AVATAR */}
-      <div className="rpg-card legendary" style={{ padding: '16px' }}>
-        {/* CABECERA DE NIVEL, ESTRELLAS Y BOTONES RPG */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '8px',
-          marginBottom: '12px',
+    <div className="cinematic-entry" style={{ position: 'relative', paddingBottom: '18px' }}>
+      {/* ESCENARIO ATMOSFÉRICO DE MEDIO CUERPO */}
+      <div
+        style={{
           position: 'relative',
-          zIndex: 5
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="sys-badge" style={{
-              background: 'rgba(11, 21, 48, 0.9)',
-              color: 'var(--neon-gold)',
-              border: '1px solid var(--neon-gold)',
-              fontFamily: 'Orbitron, sans-serif',
-              fontSize: '10px',
-              boxShadow: '0 0 10px rgba(255, 212, 90, 0.35)'
-            }}>
-              NV. {level} • ETAPA {stage}
-            </span>
-            <span
-              className="neon-glow-gold"
-              style={{ color: 'var(--neon-gold)', fontSize: '12px', letterSpacing: '1.5px' }}
-            >
-              {'★'.repeat(starCount)}
-            </span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
-              className="rpg-button"
-              style={{ borderColor: 'var(--neon-gold)', boxShadow: '0 0 12px rgba(255, 212, 90, 0.35)' }}
-            >
-              <Sparkles size={12} color="#ffd45a" /> ESTILIZAR ({activeStyle.label})
-            </button>
-            <button
-              type="button"
-              disabled={Boolean(aiStatus)}
-              onClick={() => {
-                try { localStorage.removeItem(cacheKey); } catch {}
-                setAiImageSrc(null);
-                setRegenNonce((n) => n + 1);
-              }}
-              className="rpg-button"
-              style={{ borderColor: 'var(--neon-purple)', opacity: aiStatus ? 0.6 : 1 }}
-            >
-              <RotateCcw size={12} color="#c084fc" /> {aiStatus ? 'GENERANDO...' : 'NUEVA IA'}
-            </button>
-            {isStylized && (
-              <button
-                type="button"
-                onClick={() => setStyleIdx(0)}
-                className="rpg-button"
-                style={{ borderColor: 'var(--neon-pink)', boxShadow: '0 0 12px rgba(255, 62, 157, 0.4)' }}
-              >
-                <RotateCcw size={12} color="#ff3e9d" /> ORIGINAL
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                setRegenNonce(0);
-                onToggleGender();
-              }}
-              className="rpg-button"
-            >
-              <UserCheck size={12} color="#00eaff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
-            </button>
-          </div>
-        </div>
-
-        {/* CONTENEDOR CON PULSO DE ENERGÍA E IMAGEN GENERADA POR IA */}
+          borderRadius: '20px',
+          overflow: 'hidden',
+          background:
+            'radial-gradient(circle at 50% 42%, rgba(var(--neon-secondary-rgb), 0.24) 0%, rgba(var(--neon-primary-rgb), 0.12) 38%, rgba(5, 8, 23, 0.98) 78%)',
+          border: '1px solid rgba(var(--neon-primary-rgb), 0.25)',
+          boxShadow:
+            '0 14px 36px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(var(--neon-secondary-rgb), 0.16)',
+        }}
+      >
+        {/* MARCO ORNAMENTAL DE FONDO DETRÁS DEL AVATAR */}
         <div
-          className="energy-effect"
           style={{
-            borderRadius: '16px',
-            overflow: 'hidden',
-            position: 'relative',
-            border: `1.5px solid ${activeStyle.borderColor}`,
-            background: 'radial-gradient(circle at 50% 35%, #1e2756 0%, #070a19 100%)',
-            minHeight: '420px'
+            position: 'absolute',
+            inset: '14px 28px 34px',
+            border: '1px solid rgba(var(--neon-primary-rgb), 0.28)',
+            borderRadius: '10px',
+            boxShadow: 'inset 0 0 22px rgba(var(--neon-primary-rgb), 0.08)',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+
+        {/* CONTROLES FLOTANTES COMPACTOS EN LA ESQUINA SUPERIOR DERECHA DEL AVATAR */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            zIndex: 8,
+            display: 'flex',
+            gap: '6px',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
           }}
         >
-          {aiStatus && (
-            <div style={{
+          <button
+            type="button"
+            title={`Filtro visual: ${activeStyle.label}`}
+            onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
+            style={{
+              background: 'rgba(6, 11, 28, 0.82)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
+              color: 'var(--neon-gold)',
+              borderRadius: '999px',
+              padding: '4px 9px',
+              fontSize: '10px',
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            <Sparkles size={11} /> {activeStyle.label}
+          </button>
+
+          <button
+            type="button"
+            title="Regenerar retrato con IA"
+            disabled={Boolean(aiStatus)}
+            onClick={() => {
+              try { localStorage.removeItem(cacheKey); } catch {}
+              setAiImageSrc(null);
+              setRegenNonce((n) => n + 1);
+            }}
+            style={{
+              background: 'rgba(6, 11, 28, 0.82)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(var(--neon-secondary-rgb), 0.55)',
+              color: '#e9d5ff',
+              borderRadius: '999px',
+              padding: '4px 9px',
+              fontSize: '10px',
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+              opacity: aiStatus ? 0.6 : 1,
+            }}
+          >
+            <RotateCcw size={11} /> {aiStatus ? 'IA...' : 'Nueva IA'}
+          </button>
+
+          {isStylized && (
+            <button
+              type="button"
+              onClick={() => setStyleIdx(0)}
+              style={{
+                background: 'rgba(6, 11, 28, 0.82)',
+                border: '1px solid var(--neon-pink)',
+                color: 'var(--neon-pink)',
+                borderRadius: '999px',
+                padding: '4px 8px',
+                fontSize: '10px',
+                fontFamily: 'Orbitron, sans-serif',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Reset
+            </button>
+          )}
+
+          <button
+            type="button"
+            title="Cambiar género del avatar"
+            onClick={() => {
+              setRegenNonce(0);
+              onToggleGender();
+            }}
+            style={{
+              background: 'rgba(6, 11, 28, 0.82)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
+              color: 'var(--neon-blue)',
+              borderRadius: '999px',
+              padding: '4px 9px',
+              fontSize: '10px',
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            <UserCheck size={11} /> {isFemale ? 'FEM' : 'MASC'}
+          </button>
+        </div>
+
+        {/* BADGE DE GRADO SUTIL ARRIBA A LA IZQUIERDA */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            zIndex: 8,
+            background: 'rgba(6, 11, 28, 0.82)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(var(--neon-accent-rgb), 0.5)',
+            borderRadius: '999px',
+            padding: '4px 10px',
+            fontSize: '10px',
+            fontFamily: 'Orbitron, sans-serif',
+            fontWeight: 800,
+            color: 'var(--neon-gold)',
+          }}
+        >
+          GRADO {hunterGrade} • ETAPA {stage}
+        </div>
+
+        {aiStatus && (
+          <div
+            style={{
               position: 'absolute',
-              top: '12px',
+              top: '44px',
               left: '50%',
               transform: 'translateX(-50%)',
-              zIndex: 6,
+              zIndex: 9,
               background: 'rgba(5, 8, 23, 0.92)',
               border: '1px solid var(--neon-blue)',
               borderRadius: '999px',
-              padding: '6px 14px',
+              padding: '5px 12px',
               fontSize: '11px',
               fontWeight: 700,
               color: 'var(--neon-blue)',
               whiteSpace: 'nowrap',
-              boxShadow: '0 0 16px rgba(0, 234, 255, 0.45)'
-            }}>
-              ⚡ {aiStatus}
-            </div>
-          )}
+            }}
+          >
+            ⚡ {aiStatus}
+          </div>
+        )}
 
-          <div style={{ filter: activeStyle.filter, transition: 'filter 0.45s ease' }}>
-            {finalImgToRender ? (
-              <img
-                src={finalImgToRender}
-                alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
-                onError={() => {
-                  if (aiImageSrc) setAiImageSrc(null);
-                  else setLocalFallbackIdx((prev) => prev + 1);
-                }}
-                style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
-              />
-            ) : (
-              <div style={{
-                minHeight: '420px',
+        {/* RETRATO DE MEDIO CUERPO */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            filter: activeStyle.filter,
+            transition: 'filter 0.45s ease',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}
+        >
+          {finalImgToRender ? (
+            <img
+              src={finalImgToRender}
+              alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
+              onError={() => {
+                if (aiImageSrc) setAiImageSrc(null);
+                else setLocalFallbackIdx((prev) => prev + 1);
+              }}
+              style={{
+                width: '100%',
+                height: '390px',
+                objectFit: 'cover',
+                objectPosition: 'top center',
+                display: 'block',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                height: '360px',
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '24px',
                 textAlign: 'center',
-                color: '#cbd5e1'
-              }}>
-                <Sparkles size={38} color="#00eaff" style={{ marginBottom: '10px' }} />
-                <div className="font-souls" style={{ fontSize: '15px', color: '#fff', marginBottom: '6px' }}>
-                  {aiStatus || 'ESPERANDO CONEXIÓN CON MOTOR IA'}
-                </div>
-                <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                  Presioná "NUEVA IA" para reintentar la invocación del personaje.
-                </div>
+                color: '#cbd5e1',
+              }}
+            >
+              <Sparkles size={36} color="var(--neon-blue)" style={{ marginBottom: '10px' }} />
+              <div className="font-souls" style={{ fontSize: '15px', color: '#fff', marginBottom: '6px' }}>
+                {aiStatus || 'ESPERANDO CONEXIÓN CON MOTOR IA'}
               </div>
-            )}
-          </div>
+              <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                Tocá "Nueva IA" arriba a la derecha para invocar el retrato de medio cuerpo.
+              </div>
+            </div>
+          )}
+        </div>
 
-          {/* HALO DE ENERGÍA NEÓN DINÁMICO SEGÚN ESTILO */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              pointerEvents: 'none',
-              background: activeStyle.auraOverlay,
-              transition: 'background 0.45s ease'
-            }}
-          />
+        {/* HALO DE ENERGÍA NEÓN Y PARTÍCULAS */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 3,
+            pointerEvents: 'none',
+            background: activeStyle.auraOverlay,
+            transition: 'background 0.45s ease',
+          }}
+        />
 
-          {/* PLACA INFERIOR DE CLASE DESPERTADA Y SELLO DE GRADO */}
-          <div style={{
+        {/* DESVANECIMIENTO INFERIOR PARA FUSIONAR EL MEDIO CUERPO CON EL FONDO */}
+        <div
+          style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            background: 'linear-gradient(0deg, rgba(5, 8, 23, 0.98) 0%, rgba(11, 21, 48, 0.88) 62%, transparent 100%)',
-            padding: '40px 14px 14px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: '10px'
-          }}>
-            <div style={{ flex: 1, textAlign: 'center', paddingLeft: '44px' }}>
-              <div
-                className="neon-glow"
-                style={{
-                  fontSize: '9px',
-                  fontFamily: 'Orbitron, sans-serif',
-                  color: 'var(--neon-blue)',
-                  letterSpacing: '0.18em',
-                  marginBottom: '3px'
-                }}
-              >
-                LEGENDARY AWAKENED CLASS
-              </div>
-              <div
-                className="font-souls neon-glow-gold"
-                style={{
-                  fontSize: '17px',
-                  fontWeight: 900,
-                  color: 'var(--text-main)',
-                  letterSpacing: '0.09em'
-                }}
-              >
-                {classEvolution.title.toUpperCase()}
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--neon-gold)', fontWeight: 700, marginTop: '2px' }}>
-                {classEvolution.bonus}
-              </div>
-            </div>
-            <div style={{
-              width: '58px',
-              height: '58px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(150, 60, 255, 0.28) 0%, rgba(5, 8, 23, 0.96) 76%)',
-              border: '2px solid var(--neon-gold)',
-              boxShadow: '0 0 18px rgba(0, 234, 255, 0.5), inset 0 0 10px rgba(255, 212, 90, 0.45)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              <span style={{ fontSize: '8px', color: 'var(--neon-blue)', fontWeight: 800 }}>GRADO</span>
-              <span className="font-hud neon-glow-gold" style={{ fontSize: '17px', fontWeight: 900, color: 'var(--text-main)', lineHeight: 1.1 }}>
-                {hunterGrade}
-              </span>
-            </div>
-          </div>
-        </div>
+            height: '115px',
+            zIndex: 4,
+            pointerEvents: 'none',
+            background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 23, 0.85) 60%, #050817 100%)',
+          }}
+        />
       </div>
 
-      {/* PANEL DE EVOLUCIÓN DE CLASE INFINITA Y PASIVA ÚNICA */}
-      <div className="rpg-card" style={{ padding: '16px', borderColor: 'var(--neon-purple)', boxShadow: '0 0 16px rgba(150, 60, 255, 0.3)' }}>
-        <div style={{
+      {/* CINTAS ESTILIZADAS DE CLASE Y PASIVA SUPERPUESTAS EN LA BASE DEL RETRATO */}
+      <div
+        onClick={() => setShowPassiveDetails((prev) => !prev)}
+        title="Toca para ver detalles de tu Pasiva Única"
+        style={{
+          position: 'relative',
+          zIndex: 7,
+          marginTop: '-34px',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          gap: '10px',
-          marginBottom: '12px'
-        }}>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, transparent, var(--neon-gold))' }} />
-          <h2 className="font-souls neon-glow-gold" style={{ fontSize: '14px', color: 'var(--neon-gold)', fontWeight: 800, textAlign: 'center' }}>
-            EVOLUCIÓN DE CLASE INFINITA (NV. {level})
-          </h2>
-          <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--neon-gold), transparent)' }} />
-        </div>
-        <div style={{
-          padding: '14px',
-          borderRadius: '14px',
-          background: 'radial-gradient(circle at 50% 0%, rgba(0, 234, 255, 0.15) 0%, rgba(5, 8, 23, 0.94) 80%)',
-          border: '1px solid var(--neon-blue)',
-          boxShadow: 'inset 0 0 18px rgba(0, 234, 255, 0.14)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span className="sys-badge" style={{
-              background: 'rgba(150, 60, 255, 0.2)',
-              color: '#e9d5ff',
-              border: '1px solid var(--neon-purple)'
-            }}>
-              PASIVA ÚNICA
-            </span>
-            <span className="sys-badge" style={{
-              background: 'rgba(255, 212, 90, 0.18)',
+          gap: '5px',
+          cursor: 'pointer',
+          padding: '0 12px',
+        }}
+      >
+        <div className="pex-ribbon-badge" style={{ minWidth: '235px', maxWidth: '92%' }}>
+          <span
+            className="font-hud"
+            style={{
+              fontSize: '11px',
+              fontWeight: 800,
               color: 'var(--neon-gold)',
-              border: '1px solid var(--neon-gold)'
-            }}>
-              +{passiveClassBonus} PWR
-            </span>
-          </div>
-          <div className="font-souls neon-glow" style={{
-            fontSize: '16px',
-            fontWeight: 900,
-            color: 'var(--text-main)',
-            textAlign: 'center',
-            marginBottom: '6px',
-            letterSpacing: '0.07em'
-          }}>
-            {(cls.passiveName || 'Muralla Inquebrantable (Infinito)').toUpperCase()}
-          </div>
-          <p style={{
-            fontSize: '13px',
-            color: 'var(--text-secondary)',
-            textAlign: 'center',
-            fontStyle: 'italic',
-            lineHeight: 1.45
-          }}>
-            {cls.passiveDesc}
-          </p>
+              letterSpacing: '0.09em',
+            }}
+          >
+            CLASE: {classEvolution.title.toUpperCase()}
+          </span>
         </div>
+
+        <div
+          className="pex-ribbon-badge"
+          style={{
+            minWidth: '265px',
+            maxWidth: '96%',
+            borderColor: 'rgba(var(--neon-secondary-rgb), 0.55)',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+              letterSpacing: '0.04em',
+            }}
+          >
+            <strong style={{ color: 'var(--neon-blue)' }}>PASIVA:</strong>{' '}
+            {cls.passiveName || 'Muralla Inquebrantable'}
+          </span>
+        </div>
+
+        {showPassiveDetails && (
+          <div
+            style={{
+              marginTop: '6px',
+              width: '100%',
+              padding: '12px 14px',
+              borderRadius: '12px',
+              background: 'rgba(11, 21, 48, 0.95)',
+              border: '1px solid rgba(var(--neon-primary-rgb), 0.35)',
+              textAlign: 'center',
+              fontSize: '12px',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <div style={{ color: 'var(--neon-gold)', fontWeight: 700, marginBottom: '4px' }}>
+              Bono Pasivo Activo: +{passiveClassBonus} PWR • {classEvolution.bonus}
+            </div>
+            <div>{cls.passiveDesc}</div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -2900,6 +3195,83 @@ function getCurrentWeekDaysSteps(activityLogs) {
   });
 }
 
+function normalizeSleepLogs(rawSleepLogs, legacySleepArray) {
+  const normalized = {};
+  if (rawSleepLogs && typeof rawSleepLogs === 'object' && !Array.isArray(rawSleepLogs)) {
+    Object.entries(rawSleepLogs).forEach(([iso, entry]) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+      const hrs = typeof entry === 'number' ? entry : Number(entry?.hours);
+      if (Number.isFinite(hrs) && hrs > 0) {
+        normalized[iso] = {
+          hours: Number(hrs.toFixed(1)),
+          note: typeof entry === 'object' && entry?.note ? String(entry.note) : '',
+          updatedAt: typeof entry === 'object' && entry?.updatedAt ? String(entry.updatedAt) : '',
+        };
+      }
+    });
+  }
+  if (Object.keys(normalized).length === 0 && Array.isArray(legacySleepArray)) {
+    const now = new Date();
+    const jsDay = now.getDay();
+    const diffToMonday = jsDay === 0 ? -6 : 1 - jsDay;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMonday);
+    legacySleepArray.forEach((item, idx) => {
+      const hrs = Number(item?.hours) || 0;
+      if (hrs > 0 && idx < 7) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + idx);
+        normalized[getLocalDateISO(d)] = {
+          hours: Number(hrs.toFixed(1)),
+          note: '',
+          updatedAt: '',
+        };
+      }
+    });
+  }
+  return normalized;
+}
+
+function getCurrentWeekSleepDays(sleepLogs) {
+  const LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  const FULL_LABELS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  const now = new Date();
+  const todayIso = getLocalDateISO(now);
+  const jsDay = now.getDay();
+  const diffToMonday = jsDay === 0 ? -6 : 1 - jsDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  return LABELS.map((label, idx) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + idx);
+    const iso = getLocalDateISO(d);
+    const rec = sleepLogs?.[iso];
+    const hours = rec ? Number(Number(rec.hours || 0).toFixed(1)) : 0;
+    return {
+      label,
+      fullLabel: FULL_LABELS[idx],
+      iso,
+      dayNum: d.getDate(),
+      shortDate: `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`,
+      hours,
+      note: rec?.note || '',
+      updatedAt: rec?.updatedAt || '',
+      isToday: iso === todayIso,
+    };
+  });
+}
+
+function formatSleepDateLabel(isoDate) {
+  if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return isoDate || '';
+  const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const d = new Date(`${isoDate}T12:00:00`);
+  const dayName = DAY_NAMES[d.getDay()] || '';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dayName} ${dd}/${mm}/${yyyy}`;
+}
+
 function IntegratedStepCounterPanel({
   todaySteps,
   stepGoal,
@@ -3193,6 +3565,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [chatInput, setChatInput] = useState('');
   const [confirmDeleteText, setConfirmDeleteText] = useState('');
 
+
   const [userCoords, setUserCoords] = useState({ lat: -34.0981, lon: -59.0286, label: 'Zárate, Buenos Aires (GPS Activo)' });
   const [friends, setFriends] = useState(() => initialData?.friends || []);
   const [newFriendName, setNewFriendName] = useState('');
@@ -3201,8 +3574,47 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [pvpLog, setPvpLog] = useState(null);
 
   const [activeTab, setActiveTab] = useState('avatar');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedSlotIdx, setSelectedSlotIdx] = useState(0);
   const [toast, setToast] = useState(null);
   const [animModalEx, setAnimModalEx] = useState(null);
+
+  const [neonTheme, setNeonTheme] = useState(() => {
+    if (initialData?.neonTheme) return initialData.neonTheme;
+    try {
+      const rawTheme = localStorage.getItem(`pex_neon_theme_v1_${currentUser.email}`);
+      if (rawTheme) return JSON.parse(rawTheme);
+    } catch {}
+    return {
+      primary: '#00eaff',
+      secondary: '#963cff',
+      accent: '#ffd45a',
+    };
+  });
+
+  useEffect(() => {
+    const hexToRgb = (hex) => {
+      const clean = (hex || '#00eaff').replace('#', '');
+      const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
+      const num = parseInt(full, 16);
+      if (Number.isNaN(num)) return '0, 234, 255';
+      return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+    };
+
+    const root = document.documentElement.style;
+    root.setProperty('--neon-blue', neonTheme.primary || '#00eaff');
+    root.setProperty('--cyan-glow', neonTheme.primary || '#00eaff');
+    root.setProperty('--neon-purple', neonTheme.secondary || '#963cff');
+    root.setProperty('--neon-gold', neonTheme.accent || '#ffd45a');
+    root.setProperty('--gold-rank', neonTheme.accent || '#ffd45a');
+    root.setProperty('--neon-primary-rgb', hexToRgb(neonTheme.primary || '#00eaff'));
+    root.setProperty('--neon-secondary-rgb', hexToRgb(neonTheme.secondary || '#963cff'));
+    root.setProperty('--neon-accent-rgb', hexToRgb(neonTheme.accent || '#ffd45a'));
+
+    try {
+      localStorage.setItem(`pex_neon_theme_v1_${currentUser.email}`, JSON.stringify(neonTheme));
+    } catch {}
+  }, [neonTheme, currentUser.email]);
 
   const [quests, setQuests] = useState(() =>
     initialData?.quests
@@ -3297,8 +3709,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [showGeneratedRoutine, setShowGeneratedRoutine] = useState(false);
   const [routineDayLogs, setRoutineDayLogs] = useState(() => initialData?.routineDayLogs || {});
 
-  const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
-  const [todaySleep, setTodaySleep] = useState(0);
+  const [sleepLogs, setSleepLogs] = useState(() =>
+    normalizeSleepLogs(initialData?.sleepLogs, initialData?.sleepLog)
+  );
+  const [selectedSleepDate, setSelectedSleepDate] = useState(() => getLocalDateISO());
+  const [sleepHoursInput, setSleepHoursInput] = useState(() => {
+    const initialMap = normalizeSleepLogs(initialData?.sleepLogs, initialData?.sleepLog);
+    const todayRec = initialMap[getLocalDateISO()];
+    return todayRec ? String(todayRec.hours) : '';
+  });
+  const [sleepNoteInput, setSleepNoteInput] = useState(() => {
+    const initialMap = normalizeSleepLogs(initialData?.sleepLogs, initialData?.sleepLog);
+    const todayRec = initialMap[getLocalDateISO()];
+    return todayRec?.note || '';
+  });
 
   const [activityLogs, setActivityLogs] = useState(() => initialData?.activityLogs || {});
   const [tracker, setTracker] = useState({
@@ -3499,7 +3923,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
   const cityUnlocked = completedChapters.includes('act1_ch1');
 
-
   useEffect(() => {
     if (awakened && prevGradeRef.current !== hunterGrade) {
       const oldIdx = HUNTER_GRADE_STANDARDS.findIndex((g) => g.grade === prevGradeRef.current);
@@ -3533,10 +3956,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         cancellationsRemaining,
         savedRoutineAnalysis,
         dailyStepGoal,
-        sleepLog,
+        sleepLogs,
+        sleepLog: getCurrentWeekSleepDays(sleepLogs).map(({ label, hours }) => ({ day: label, hours })),
         yearlyRecap,
         routineDayLogs,
         activityLogs,
+        neonTheme,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
@@ -3560,10 +3985,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         cancellationsRemaining,
         savedRoutineAnalysis,
         dailyStepGoal,
-        sleepLog,
+        sleepLogs,
+        sleepLog: getCurrentWeekSleepDays(sleepLogs).map(({ label, hours }) => ({ day: label, hours })),
         yearlyRecap,
         routineDayLogs,
         activityLogs,
+        neonTheme,
       };
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
@@ -3581,7 +4008,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
     friends, quests, nextWeekQueue, justificationHistory, cancellationsRemaining,
-    savedRoutineAnalysis, dailyStepGoal, sleepLog, yearlyRecap, routineDayLogs, activityLogs
+    savedRoutineAnalysis, dailyStepGoal, sleepLogs, yearlyRecap, routineDayLogs, activityLogs
   ]);
 
   const triggerToast = (msg) => {
@@ -3601,8 +4028,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setBuiltBuildings([]);
     setFriends([]);
     setNextWeekQueue([]);
-    setSleepLog(ZERO_SLEEP_LOG);
-    setTodaySleep(0);
+    setSleepLogs({});
+    setSelectedSleepDate(getLocalDateISO());
+    setSleepHoursInput('');
+    setSleepNoteInput('');
     setActivityLogs({});
     handleDiscardTracker(null);
     setYearlyRecap([]);
@@ -3620,6 +4049,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const level = Math.floor(exp / 100);
   const expInLevel = exp % 100;
   const classEvolution = getInfiniteClassEvolution(hunterClass?.cls?.name, level);
+
 
   const passiveClassBonus = 30 + level * 6 + builtBuildings.length * 12;
   const gearBonusPower = unlockedInventory.reduce((acc, item) => acc + (item.power || 0), 0);
@@ -4397,7 +4827,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setStreak(0);
     setUnlockedInventory([]);
     setCompletedChapters([]);
-    setSleepLog(ZERO_SLEEP_LOG);
+    setSleepLogs({});
+    setSelectedSleepDate(getLocalDateISO());
+    setSleepHoursInput('');
+    setSleepNoteInput('');
     setAwakened(true);
     setActiveTab('avatar');
     triggerToast(`¡DESPERTAR INICIADO DESDE 0! Clase: ${chosenCls.name} • Pasiva: ${chosenCls.passiveName}`);
@@ -4424,8 +4857,22 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   };
 
   const rankInfo = getRankFromLP(lp);
-  const totalSleep = sleepLog.reduce((acc, d) => acc + d.hours, 0);
+  const weekSleepDays = getCurrentWeekSleepDays(sleepLogs);
+  const totalSleep = Number(
+    weekSleepDays.reduce((acc, d) => acc + (Number(d.hours) || 0), 0).toFixed(1)
+  );
+  const loggedSleepDaysCount = weekSleepDays.filter((d) => d.hours > 0).length;
+  const avgSleepPerNight = loggedSleepDaysCount > 0 ? Number((totalSleep / loggedSleepDaysCount).toFixed(1)) : 0;
+  const optimalSleepDaysCount = weekSleepDays.filter((d) => d.hours >= 7 && d.hours <= 9).length;
   const sleepOptimal = totalSleep >= 49 && totalSleep <= 63;
+
+  const handleSelectSleepDate = (isoDate) => {
+    if (!isoDate) return;
+    setSelectedSleepDate(isoDate);
+    const existing = sleepLogs[isoDate];
+    setSleepHoursInput(existing ? String(existing.hours) : '');
+    setSleepNoteInput(existing?.note || '');
+  };
   const currentEx1RM = getEffectiveExercise1RM(selectedExercise, liftWeightInput, liftRepsInput, profile.weightKg);
   const currentExRatio = (currentEx1RM / gradeData.bw).toFixed(2);
 
@@ -4792,189 +5239,425 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </div>
       )}
 
-      {/* BARRA DE SESIÓN PERMANENTE */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '6px 12px',
-        marginBottom: '10px',
-        borderRadius: '10px',
-        background: 'rgba(10, 15, 30, 0.9)',
-        border: '1px solid rgba(16, 185, 129, 0.3)',
-        fontSize: '11px'
-      }}>
-        <span style={{ color: '#cbd5e1' }}>
-          <span style={{ color: '#10b981', fontWeight: 700 }}>● SESIÓN PERMANENTE ACTIVA:</span> {currentUser.email}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {tracker.isRunning && (
+      {/* ====================================================================
+          MENÚ LATERAL DESPLEGABLE (DRAWER OCULTO EN ESQUINA SUPERIOR IZQUIERDA)
+         ==================================================================== */}
+      {drawerOpen && (
+        <>
+          <div className="pex-drawer-backdrop" onClick={() => setDrawerOpen(false)} />
+          <aside className="pex-drawer-panel" aria-label="Menú principal del sistema">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div>
+                <div className="font-souls neon-glow-gold" style={{ fontSize: '16px', fontWeight: 900, color: 'var(--neon-gold)' }}>
+                  PROYECTO EX
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                  {profile.hunterName} ({profile.hunterCode})
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                style={{
+                  background: 'rgba(16, 27, 56, 0.9)',
+                  border: '1px solid rgba(var(--neon-primary-rgb), 0.4)',
+                  color: 'var(--text-main)',
+                  borderRadius: '10px',
+                  width: '34px',
+                  height: '34px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
+              PRINCIPAL
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'avatar' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('avatar'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Sword size={17} color="var(--neon-blue)" /> Cazador (Portada)
+                </span>
+                <span style={{ fontSize: '11px', color: 'var(--neon-gold)' }}>NV.{level}</span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'quests' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('quests'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Trophy size={17} color="var(--neon-gold)" /> Misiones & Historial
+                </span>
+                <span style={{ fontSize: '11px', color: 'var(--neon-blue)' }}>
+                  {quests.filter((q) => q.status === 'pending').length} pend.
+                </span>
+              </button>
+            </div>
+
+            <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
+              ENTRENAMIENTO & ACTIVIDAD
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'routines' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('routines'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Cpu size={17} color="#10b981" /> Rutina & Agenda
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'tracker' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('tracker'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Footprints size={17} color="var(--neon-blue)" /> Rastreador GPS & Pasos
+                </span>
+                <span style={{ fontSize: '11px', color: tracker.isRunning ? '#10b981' : 'var(--text-secondary)' }}>
+                  {tracker.isRunning ? '● ACTIVO' : `${(activityLogs[getLocalDateISO()]?.steps || 0).toLocaleString()}`}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'strength' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('strength'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Dumbbell size={17} color="#f43f5e" /> Cargas & Marcas 1RM
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'sleep' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('sleep'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Moon size={17} color="#38bdf8" /> Descanso & Sueño
+                </span>
+                <span style={{ fontSize: '11px', color: '#38bdf8' }}>{totalSleep}h</span>
+              </button>
+            </div>
+
+            <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
+              MODOS DE JUEGO
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'pve' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('pve'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <BookOpen size={17} color="#f59e0b" /> Historia PvE
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'city_vn' ? 'active' : ''}`}
+                onClick={() => {
+                  if (!cityUnlocked) {
+                    triggerToast('🔒 Completa el Capítulo 1 de Historia PvE para fundar tu Ciudad 2D y desbloquear la Novela Visual.');
+                  }
+                  setActiveTab('city_vn');
+                  setDrawerOpen(false);
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {cityUnlocked ? <Heart size={17} color="#fb7185" /> : <Lock size={17} color="#94a3b8" />}
+                  Ciudad 2D & Novela Visual
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'pvp' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('pvp'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Users size={17} color="#f43f5e" /> Arena PvP
+                </span>
+              </button>
+            </div>
+
+            <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
+              SISTEMA
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'vault' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('vault'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Shield size={17} color="var(--neon-purple)" /> Bóveda Física
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={`pex-drawer-item ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('settings'); setDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Settings size={17} color="var(--neon-gold)" /> Ajustes & Colores Neón
+                </span>
+              </button>
+            </div>
+
+            <div
+              style={{
+                marginTop: 'auto',
+                padding: '10px 12px',
+                borderRadius: '12px',
+                background: 'rgba(10, 15, 30, 0.9)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                fontSize: '11px',
+                color: '#cbd5e1',
+              }}
+            >
+              <div style={{ color: '#10b981', fontWeight: 700, marginBottom: '2px' }}>
+                ● SESIÓN PERMANENTE ACTIVA
+              </div>
+              <div style={{ wordBreak: 'break-all', color: '#94a3b8' }}>{currentUser.email}</div>
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* ====================================================================
+          CABECERA LIMPIA Y CENTRADA (BOTÓN MENÚ EN ESQUINA SUPERIOR IZQUIERDA)
+         ==================================================================== */}
+      <div className="pex-home-shell" style={{ marginBottom: '14px' }}>
+        <div className="pex-topbar">
+          <button
+            type="button"
+            className="pex-menu-trigger"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Abrir menú"
+          >
+            <Menu size={20} color="var(--neon-blue)" />
+            <span>MENÚ</span>
+            {tracker.isRunning && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '5px',
+                  right: '5px',
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: '#10b981',
+                  boxShadow: '0 0 8px #10b981',
+                }}
+              />
+            )}
+          </button>
+
+          <h1
+            className="font-souls neon-glow-gold"
+            style={{
+              fontSize: '23px',
+              fontWeight: 900,
+              color: 'var(--neon-gold)',
+              letterSpacing: '0.12em',
+              textAlign: 'center',
+            }}
+          >
+            PROYECTO EX
+          </h1>
+
+          {activeTab !== 'avatar' && (
             <button
               type="button"
               onClick={() => setActiveTab('avatar')}
               style={{
-                background: 'rgba(16, 185, 129, 0.2)',
-                border: '1px solid #10b981',
-                color: '#6ee7b7',
-                borderRadius: '999px',
-                padding: '2px 8px',
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(16, 27, 56, 0.9)',
+                border: '1px solid rgba(var(--neon-primary-rgb), 0.45)',
+                color: 'var(--neon-blue)',
+                borderRadius: '10px',
+                padding: '6px 9px',
                 fontSize: '10px',
+                fontFamily: 'Orbitron, sans-serif',
                 fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
-              ● {tracker.mode === 'bike' ? `${tracker.sessionDistanceKm.toFixed(2)} km` : `${tracker.sessionSteps} pasos`}
+              INICIO
             </button>
           )}
-          <span style={{ color: '#94a3b8' }}>Guardado automático</span>
-        </div>
-      </div>
-
-      {/* CABECERA DE ESTADO DEL CAZADOR (DESDE 0) */}
-      <div className="sys-window" style={{ padding: '16px', marginBottom: '14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span className="sys-badge" style={{ background: 'rgba(0,240,255,0.16)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
-                NIVEL {level} (∞)
-              </span>
-              <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.16)', color: '#fbbf24', border: '1px solid #fbbf24' }}>
-                GRADO DE CAZADOR: {hunterGrade}
-              </span>
-              <span className="sys-badge" style={{ background: 'rgba(234,88,12,0.2)', color: '#fdba74', border: '1px solid #ea580c' }}>
-                <Flame size={13} /> RACHA {streak}D
-              </span>
-              <span className="sys-badge" style={{ background: 'rgba(190,18,60,0.2)', color: '#fda4af', border: '1px solid #be123c' }}>
-                PODER: {hunterCombatPower}
-              </span>
-            </div>
-            <h1 className="font-souls" style={{ fontSize: '21px', marginTop: '6px', color: '#fff' }}>
-              {profile.hunterName} <span style={{ fontSize: '12px', color: '#94a3b8' }}>({profile.hunterCode})</span>
-            </h1>
-            <div style={{ fontSize: '13px', color: '#fde047', fontWeight: 700 }}>
-              {classEvolution.title} • Pasiva Única: {hunterClass?.cls?.passiveName || 'Muralla Inquebrantable (Infinito)'}
-            </div>
-          </div>
-
-          <div style={{ textAlign: 'right' }}>
-            <div className="font-hud" style={{ fontSize: '18px', fontWeight: 900, color: rankInfo.color }}>
-              {rankInfo.label.toUpperCase()}
-            </div>
-            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-              {rankInfo.totalLP} LP • EXP: {expInLevel}/100
-            </div>
-          </div>
         </div>
 
-        {/* BARRAS DE PROGRESO DE RANGO Y EXP DE CLASE */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '12px' }}>
-          <div>
-            <div style={{ fontSize: '10px', color: '#fde047', fontWeight: 700, marginBottom: '4px', textAlign: 'center' }}>
-              PROGRESO DE RANGO ({rankInfo.currentDivLP}/100 LP)
-            </div>
-            <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${rankInfo.currentDivLP}%`, background: 'linear-gradient(90deg, #b45309, #fbbf24)' }} />
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '10px', color: '#7dd3fc', fontWeight: 700, marginBottom: '4px', textAlign: 'center' }}>
-              EXP DE CLASE ({expInLevel}/100 EXP)
-            </div>
-            <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${expInLevel}%`, background: 'linear-gradient(90deg, #0284c7, #00f0ff)' }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS + CONTADOR DE PASOS INTEGRADO */}
-      <div className="hud-nav-steps-layout">
-        <div className="nav-tabs">
-          <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
-            <Trophy size={16} color="#fbbf24" />
-            <span>Misiones</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'routines' ? 'active' : ''}`} onClick={() => setActiveTab('routines')}>
-            <Cpu size={16} color="#10b981" />
-            <span>Rutina</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
-            <Sword size={16} color="#00f0ff" />
-            <span>Clase & Pasiva</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'pve' ? 'active' : ''}`} onClick={() => setActiveTab('pve')}>
-            <BookOpen size={16} color="#f59e0b" />
-            <span>Historia PvE</span>
-          </button>
-          <button
-            className={`nav-tab ${activeTab === 'city_vn' ? 'active' : ''}`}
-            style={{ opacity: cityUnlocked ? 1 : 0.72 }}
-            onClick={() => {
-              if (!cityUnlocked) {
-                triggerToast('🔒 Completa el Capítulo 1 de Historia PvE para fundar tu Ciudad 2D y desbloquear la Novela Visual.');
-              }
-              setActiveTab('city_vn');
+        {/* SUBTÍTULO DE NIVEL + BARRAS COMPACTAS LP Y EXP + RACHA / PC */}
+        <div style={{ padding: '0 6px' }}>
+          <div
+            className="font-hud"
+            style={{
+              textAlign: 'center',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+              letterSpacing: '0.1em',
+              marginBottom: '10px',
             }}
           >
-            {cityUnlocked ? <Heart size={16} color="#fb7185" /> : <Lock size={16} color="#94a3b8" />}
-            <span>{cityUnlocked ? 'Ciudad 2D' : 'Ciudad 🔒'}</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'pvp' ? 'active' : ''}`} onClick={() => setActiveTab('pvp')}>
-            <Users size={16} color="#f43f5e" />
-            <span>PvP</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
-            <Dumbbell size={16} color="#e11d48" />
-            <span>Cargas</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'vault' ? 'active' : ''}`} onClick={() => setActiveTab('vault')}>
-            <Lock size={16} color="#a855f7" />
-            <span>Bóveda</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'sleep' ? 'active' : ''}`} onClick={() => setActiveTab('sleep')}>
-            <Moon size={16} color="#38bdf8" />
-            <span>Sueño ({totalSleep}h)</span>
-          </button>
-          <button className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
-            <Settings size={16} color="#94a3b8" />
-            <span>Ajustes</span>
-          </button>
-        </div>
+            NIVEL {level} • {profile.hunterName} ({hunterGrade})
+          </div>
 
-        <IntegratedStepCounterPanel
-          todaySteps={activityLogs[getLocalDateISO()]?.steps || 0}
-          stepGoal={dailyStepGoal}
-          onChangeStepGoal={(nextGoal) => {
-            setDailyStepGoal(nextGoal);
-            triggerToast(`[PASOS] Meta diaria actualizada a ${nextGoal.toLocaleString('es-AR')} pasos.`);
-          }}
-          stepGoalClaimed={Boolean(activityLogs[getLocalDateISO()]?.stepGoalClaimed)}
-          walkRunKm={activityLogs[getLocalDateISO()]?.walkRunKm || 0}
-          activityLogs={activityLogs}
-          onQuickAddSteps={handleQuickAddDailySteps}
-          onResetTodaySteps={() => {
-            const todayKey = getLocalDateISO();
-            setActivityLogs((prev) => ({
-              ...prev,
-              [todayKey]: {
-                ...(prev[todayKey] || {}),
-                steps: 0,
-                walkRunKm: 0,
-                stepGoalClaimed: false,
-              },
-            }));
-            triggerToast('[PASOS] Contador de pasos de hoy reiniciado a 0.');
-          }}
-          onOpenFullTracker={() => setActiveTab('avatar')}
-        />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', alignItems: 'center', gap: '8px' }}>
+              <span className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                LP
+              </span>
+              <div
+                className="progress-track"
+                title={`${rankInfo.label.toUpperCase()} (${rankInfo.totalLP} LP • ${rankInfo.currentDivLP}/100 LP)`}
+                style={{ height: '9px', borderColor: 'rgba(244, 63, 94, 0.4)' }}
+              >
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${Math.max(4, rankInfo.currentDivLP)}%`,
+                    background: 'linear-gradient(90deg, #991b1b, #ef4444, #f97316)',
+                    boxShadow: '0 0 10px rgba(239, 68, 68, 0.65)',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', alignItems: 'center', gap: '8px' }}>
+              <span className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                EXP
+              </span>
+              <div
+                className="progress-track"
+                title={`Experiencia de Nivel: ${expInLevel}/100 EXP`}
+                style={{ height: '9px', borderColor: 'rgba(var(--neon-primary-rgb), 0.4)' }}
+              >
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${Math.max(4, expInLevel)}%`,
+                    background: 'linear-gradient(90deg, rgba(var(--neon-primary-rgb), 0.55), var(--neon-blue))',
+                    boxShadow: '0 0 12px rgba(var(--neon-primary-rgb), 0.75)',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '9px',
+              fontSize: '14px',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              Racha: <strong>{streak}</strong> <Flame size={15} color="#f97316" fill="#f97316" />
+            </span>
+            <span style={{ color: 'var(--text-secondary)' }}>
+              PC: <strong style={{ color: 'var(--text-main)' }}>{hunterCombatPower.toLocaleString('es-AR')}</strong>
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* ====================================================================
-          MÓDULO 3: ANIME FANTASY RPG CHARACTER ART + EVOLUCIÓN INFINITA
+          PANTALLA PRINCIPAL EQUILIBRADA: AVATAR MEDIO CUERPO + HABILIDADES/EQUIPO + MISIONES DIARIAS
          ==================================================================== */}
-      {activeTab === 'avatar' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="avatar-rpg-shell cinematic-entry" style={{ maxWidth: '520px', width: '100%', margin: '0 auto' }}>
+      {activeTab === 'avatar' && (() => {
+        const clsObj = hunterClass?.cls || {
+          name: 'Centinela Infinito',
+          passiveName: 'Muralla Inquebrantable',
+          passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
+        };
+
+        const innatePassiveSlot = {
+          id: 'innate_passive',
+          name: clsObj.passiveName || 'Pasiva Única',
+          type: 'Habilidad Pasiva',
+          desc: clsObj.passiveDesc || 'Pasiva de clase despertada.',
+          power: passiveClassBonus,
+          rarity: 'primary',
+        };
+
+        const combinedSlots = [innatePassiveSlot, ...unlockedInventory].slice(0, 10);
+        const totalSlotBoxes = Array.from({ length: 10 }, (_, idx) => combinedSlots[idx] || null);
+        const activeSlotItem = totalSlotBoxes[selectedSlotIdx] || null;
+
+        const renderSlotIcon = (item, idx) => {
+          if (!item) return null;
+          const lower = `${item.type || ''} ${item.name || ''}`.toLowerCase();
+          if (idx === 0 || lower.includes('pasiva') || lower.includes('aura')) {
+            return <Sparkles size={22} color="var(--neon-blue)" />;
+          }
+          if (lower.includes('espada') || lower.includes('filo') || lower.includes('daga') || lower.includes('arma')) {
+            return <Sword size={22} color="#34d399" />;
+          }
+          if (lower.includes('escudo') || lower.includes('armadura') || lower.includes('cota') || lower.includes('muralla')) {
+            return <Shield size={22} color="var(--neon-blue)" />;
+          }
+          if (lower.includes('anillo') || lower.includes('amuleto') || lower.includes('reliquia') || lower.includes('gema')) {
+            return <Gem size={22} color="var(--neon-purple)" />;
+          }
+          if (lower.includes('fuego') || lower.includes('llama') || lower.includes('ira')) {
+            return <Flame size={22} color="var(--neon-gold)" />;
+          }
+          return <Zap size={22} color="var(--neon-blue)" />;
+        };
+
+        const getSlotColors = (item, idx) => {
+          if (!item) return {};
+          if (idx === 0 || (item.type || '').toLowerCase().includes('habilidad')) {
+            return {
+              '--slot-border': 'var(--neon-blue)',
+              '--slot-glow': 'rgba(var(--neon-primary-rgb), 0.36)',
+              '--slot-inner': 'rgba(var(--neon-primary-rgb), 0.16)',
+            };
+          }
+          if ((item.power || 0) >= 60 || (item.type || '').toLowerCase().includes('reliquia')) {
+            return {
+              '--slot-border': 'var(--neon-purple)',
+              '--slot-glow': 'rgba(var(--neon-secondary-rgb), 0.42)',
+              '--slot-inner': 'rgba(var(--neon-secondary-rgb), 0.18)',
+            };
+          }
+          return {
+            '--slot-border': '#10b981',
+            '--slot-glow': 'rgba(16, 185, 129, 0.36)',
+            '--slot-inner': 'rgba(16, 185, 129, 0.16)',
+          };
+        };
+
+        const homeQuests = quests.slice(0, 5);
+
+        return (
+          <div className="pex-home-shell">
+            {/* 1. AVATAR DE MEDIO CUERPO CON CINTAS DE CLASE Y PASIVA */}
             <JrpgFantasyPortrait
               hunterClass={hunterClass}
               hunterGrade={hunterGrade}
@@ -4984,7 +5667,241 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
               passiveClassBonus={passiveClassBonus}
             />
+
+            {/* 2. PANEL ORNAMENTADO DE HABILIDADES Y EQUIPAMIENTO (2 FILAS x 5 RANURAS) */}
+            <div className="pex-ornate-panel">
+              <div
+                className="font-hud"
+                style={{
+                  textAlign: 'center',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  color: 'var(--text-main)',
+                  letterSpacing: '0.12em',
+                  marginBottom: '12px',
+                }}
+              >
+                HABILIDADES Y EQUIPAMIENTO
+              </div>
+
+              <div className="pex-equip-grid">
+                {totalSlotBoxes.map((item, idx) => {
+                  const isUnlocked = Boolean(item);
+                  const isSelected = selectedSlotIdx === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedSlotIdx(idx)}
+                      title={item ? `${item.name} (+${item.power} PWR)` : `Ranura ${idx + 1} vacía`}
+                      className={`pex-equip-slot ${isUnlocked ? 'unlocked' : ''} ${isSelected ? 'selected' : ''}`}
+                      style={getSlotColors(item, idx)}
+                    >
+                      {renderSlotIcon(item, idx)}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* INSPECTOR DE LA RANURA SELECCIONADA */}
+              <div
+                style={{
+                  marginTop: '12px',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  background: 'rgba(5, 8, 22, 0.82)',
+                  border: '1px solid rgba(var(--neon-primary-rgb), 0.22)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                {activeSlotItem ? (
+                  <>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>
+                          {activeSlotItem.name}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            fontFamily: 'Orbitron, sans-serif',
+                            padding: '2px 6px',
+                            borderRadius: '999px',
+                            background: 'rgba(var(--neon-primary-rgb), 0.14)',
+                            color: 'var(--neon-blue)',
+                            border: '1px solid rgba(var(--neon-primary-rgb), 0.35)',
+                          }}
+                        >
+                          {activeSlotItem.type}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        {activeSlotItem.desc}
+                      </div>
+                    </div>
+                    <div
+                      className="font-hud"
+                      style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', whiteSpace: 'nowrap' }}
+                    >
+                      +{activeSlotItem.power} PWR
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    Ranura #{selectedSlotIdx + 1} disponible • Completa misiones diarias o capítulos de Historia PvE para desbloquear equipo y habilidades.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 3. PANEL DE MISIONES DIARIAS EN PORTADA */}
+            <div className="pex-ornate-panel">
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '12px',
+                  padding: '0 4px',
+                }}
+              >
+                <span
+                  className="font-hud"
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    color: 'var(--neon-gold)',
+                    letterSpacing: '0.1em',
+                  }}
+                >
+                  MISIONES DIARIAS
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('quests')}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--neon-blue)',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Gestionar ({quests.length}) →
+                </button>
+              </div>
+
+              {homeQuests.length === 0 ? (
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textAlign: 'center', padding: '8px 0' }}>
+                  No hay misiones activas. Toca "Gestionar" para crear una nueva.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 4px' }}>
+                  {homeQuests.map((q) => {
+                    const isCompleted = q.status === 'completed';
+                    const isFailed = q.status === 'failed';
+                    return (
+                      <div
+                        key={q.id}
+                        onClick={() => {
+                          if (isCompleted || isFailed) return;
+                          setQuests(quests.map((item) => (item.id === q.id ? { ...item, status: 'completed' } : item)));
+                          setLp((prev) => prev + q.lp);
+                          setExp((prev) => prev + (q.exp || 85));
+                          setStreak((s) => s + 1);
+
+                          const lockedDrops = DAILY_REWARD_POOL.filter(
+                            (drop) => !unlockedInventory.some((owned) => owned.id === drop.id)
+                          );
+                          if (lockedDrops.length > 0) {
+                            const won = lockedDrops[Math.floor(Math.random() * lockedDrops.length)];
+                            setUnlockedInventory([...unlockedInventory, won]);
+                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.exp || 85} EXP y obtuviste [${won.type}]: ${won.name}`);
+                          } else {
+                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.lp} LP y +${q.exp || 85} EXP.`);
+                          }
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '10px',
+                          cursor: isCompleted || isFailed ? 'default' : 'pointer',
+                          padding: '4px 2px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '11px', minWidth: 0 }}>
+                          <div className={`pex-quest-checkbox ${isCompleted ? 'checked' : ''}`}>
+                            {isCompleted && <Check size={14} color="var(--neon-blue)" strokeWidth={3} />}
+                            {isFailed && <X size={14} color="#f43f5e" strokeWidth={3} />}
+                          </div>
+                          <span
+                            style={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              color: isCompleted ? 'var(--text-secondary)' : 'var(--text-main)',
+                              textDecoration: isCompleted ? 'line-through' : 'none',
+                              opacity: isCompleted ? 0.78 : 1,
+                            }}
+                          >
+                            {q.title}
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            color: isCompleted ? '#10b981' : 'var(--neon-blue)',
+                            fontWeight: 700,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {isCompleted ? '✓ Lista' : `+${q.exp || 85} EXP`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
+        );
+      })()}
+
+      {/* ====================================================================
+          MÓDULO DEDICADO: RASTREADOR DE PASOS, GPS Y ACTIVIDAD DIARIA (DESDE MENÚ)
+         ==================================================================== */}
+      {activeTab === 'tracker' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <IntegratedStepCounterPanel
+            todaySteps={activityLogs[getLocalDateISO()]?.steps || 0}
+            stepGoal={dailyStepGoal}
+            onChangeStepGoal={(nextGoal) => {
+              setDailyStepGoal(nextGoal);
+              triggerToast(`[PASOS] Meta diaria actualizada a ${nextGoal.toLocaleString('es-AR')} pasos.`);
+            }}
+            stepGoalClaimed={Boolean(activityLogs[getLocalDateISO()]?.stepGoalClaimed)}
+            walkRunKm={activityLogs[getLocalDateISO()]?.walkRunKm || 0}
+            activityLogs={activityLogs}
+            onQuickAddSteps={handleQuickAddDailySteps}
+            onResetTodaySteps={() => {
+              const todayKey = getLocalDateISO();
+              setActivityLogs((prev) => ({
+                ...prev,
+                [todayKey]: {
+                  ...(prev[todayKey] || {}),
+                  steps: 0,
+                  walkRunKm: 0,
+                  stepGoalClaimed: false,
+                },
+              }));
+              triggerToast('[PASOS] Contador de pasos de hoy reiniciado a 0.');
+            }}
+            onOpenFullTracker={() => setActiveTab('tracker')}
+          />
 
           <MovementTrackerModule
             profile={profile}
@@ -5001,70 +5918,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               triggerToast(toastMsg);
             }}
           />
-
-          <div className="sys-window" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#00f0ff' }}>
-                PROGRESO DE EVOLUCIÓN Y GRADO DE CAZADOR ({hunterGrade})
-              </span>
-              <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                Siguiente etapa de clase en Nivel {classEvolution.nextLvl}
-              </span>
-            </div>
-
-            {hunterGrade !== 'EX' ? (
-              <div style={{ fontSize: '12px', color: '#e2e8f0' }}>
-                Próximo ascenso automático a <strong>Grado {gradeData.nextStd.grade}</strong> al lograr: Banca <strong>{Math.round(gradeData.nextStd.benchReq * gradeData.bw)}kg</strong> • Sentadilla <strong>{Math.round(gradeData.nextStd.squatReq * gradeData.bw)}kg</strong> • P. Muerto <strong>{Math.round(gradeData.nextStd.deadliftReq * gradeData.bw)}kg</strong>
-              </div>
-            ) : (
-              <div style={{ fontSize: '12px', color: '#fde047' }}>
-                ¡Has alcanzado el Grado de Cazador EX máximo!
-              </div>
-            )}
-          </div>
-
-          <div className="sys-window" style={{ padding: '18px' }}>
-            <h3 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '12px' }}>
-              HABILIDADES Y EQUIPAMIENTO DESBLOQUEADOS ({unlockedInventory.length})
-            </h3>
-            {unlockedInventory.length === 0 ? (
-              <p style={{ fontSize: '13px', color: '#94a3b8' }}>
-                Aún no tienes equipamiento ni habilidades extra (empezaste desde 0). Completa misiones diarias o capítulos de Historia PvE para obtenerlos.
-              </p>
-            ) : (
-              <div className="grid-2">
-                {unlockedInventory.map((item, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      padding: '12px',
-                      borderRadius: '10px',
-                      background: 'rgba(4,6,12,0.85)',
-                      border: `1px solid ${item.type.includes('Habilidad') ? '#00f0ff' : '#fbbf24'}`,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <div>
-                      <span className="sys-badge" style={{
-                        background: item.type.includes('Habilidad') ? 'rgba(0,240,255,0.16)' : 'rgba(251,191,36,0.16)',
-                        color: item.type.includes('Habilidad') ? '#00f0ff' : '#fde047',
-                        marginBottom: '4px'
-                      }}>
-                        {item.type}
-                      </span>
-                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>{item.name}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>{item.desc}</div>
-                    </div>
-                    <div className="font-hud" style={{ fontSize: '13px', color: '#10b981', fontWeight: 700 }}>
-                      +{item.power} PWR
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       )}
 
@@ -5680,6 +6533,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             </div>
             )}
           </div>
+
 
           <div className="sys-window" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
@@ -6838,6 +7692,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
 
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', color: '#cbd5e1' }}>
                 1RM Efectivo en <strong>{selectedExercise}</strong>: <span style={{ color: '#00f0ff', fontWeight: 700 }}>{currentEx1RM} kg</span> ({currentExRatio}x peso corporal)
@@ -6947,64 +7802,496 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 9: CONTADOR DE HORAS DE SUEÑO (INICIA EN 0H)
+          MÓDULO 9: CONTADOR DE HORAS DE SUEÑO DÍA A DÍA + HISTORIAL PERSISTENTE
          ==================================================================== */}
-      {activeTab === 'sleep' && (
-        <div className="sys-window" style={{ padding: '18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-            <h2 className="font-hud" style={{ fontSize: '14px', color: '#38bdf8' }}>
-              RECUPERACIÓN NEURAL Y ACUMULACIÓN DE SUEÑO
-            </h2>
-            <span className="sys-badge" style={{
-              background: sleepOptimal ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
-              color: sleepOptimal ? '#6ee7b7' : '#fda4af',
-              border: `1px solid ${sleepOptimal ? '#10b981' : '#e11d48'}`
-            }}>
-              ACUMULADO: {totalSleep}H / META CIENTÍFICA: 49–63H
-            </span>
-          </div>
+      {activeTab === 'sleep' && (() => {
+        const todayIso = getLocalDateISO();
+        const isSelectedToday = selectedSleepDate === todayIso;
+        const allHistoryDates = Object.keys(sleepLogs).sort().reverse();
 
-          {!sleepOptimal && (
-            <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(225,29,72,0.15)', border: '1px solid #e11d48', marginBottom: '14px', fontSize: '13px', color: '#fecdd3' }}>
-              <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px' }} />
-              <strong>Registro en {totalSleep}h:</strong> Registra tus horas diarias de descanso para alcanzar la ventana óptima semanal de 49–63 horas.
-            </div>
-          )}
+        const handleSaveSleepEntry = () => {
+          const parsedHours = Number(String(sleepHoursInput).replace(',', '.'));
+          if (!Number.isFinite(parsedHours) || parsedHours <= 0 || parsedHours > 24) {
+            triggerToast('[SUEÑO] Ingresá una cantidad válida entre 0.5 y 24 horas.');
+            return;
+          }
+          const cleanHours = Number(parsedHours.toFixed(1));
+          const cleanNote = String(sleepNoteInput || '').trim();
+          const targetDate = selectedSleepDate || todayIso;
+          const alreadyExisted = Boolean(sleepLogs[targetDate]?.hours > 0);
+          const timeStamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', marginBottom: '16px', textAlign: 'center' }}>
-            {sleepLog.map((d, i) => (
-              <div key={i} style={{ padding: '10px 4px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(56,189,248,0.3)' }}>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>{d.day}</div>
-                <div style={{ fontSize: '15px', fontWeight: 700, color: d.hours >= 7 ? '#38bdf8' : '#94a3b8', marginTop: '4px' }}>
-                  {d.hours}h
+          setSleepLogs((prev) => ({
+            ...prev,
+            [targetDate]: {
+              hours: cleanHours,
+              note: cleanNote,
+              updatedAt: timeStamp,
+            },
+          }));
+
+          if (targetDate === todayIso && cleanHours >= 7.5) {
+            setQuests((prev) =>
+              prev.map((q) =>
+                q.status === 'pending' &&
+                q.isDaily &&
+                q.title.toLowerCase().includes('dormir')
+                  ? { ...q, status: 'completed' }
+                  : q
+              )
+            );
+          }
+
+          if (!alreadyExisted) {
+            setExp((prev) => prev + 15);
+            setLp((prev) => prev + 10);
+            triggerToast(
+              `[SUEÑO GUARDADO] ${formatSleepDateLabel(targetDate)}: ${cleanHours}h registradas (+15 EXP / +10 LP).`
+            );
+          } else {
+            triggerToast(
+              `[SUEÑO ACTUALIZADO] ${formatSleepDateLabel(targetDate)}: ${cleanHours}h guardadas.`
+            );
+          }
+        };
+
+        const handleDeleteSleepEntry = (isoToDelete) => {
+          setSleepLogs((prev) => {
+            const copy = { ...prev };
+            delete copy[isoToDelete];
+            return copy;
+          });
+          if (selectedSleepDate === isoToDelete) {
+            setSleepHoursInput('');
+            setSleepNoteInput('');
+          }
+          triggerToast(`[SUEÑO] Registro del ${formatSleepDateLabel(isoToDelete)} eliminado.`);
+        };
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* PANEL PRINCIPAL: SEMANA ACTUAL + FORMULARIO DE REGISTRO DÍA A DÍA */}
+            <div className="sys-window" style={{ padding: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                <h2 className="font-hud" style={{ fontSize: '14px', color: '#38bdf8' }}>
+                  RECUPERACIÓN NEURAL Y SUEÑO DÍA A DÍA
+                </h2>
+                <span
+                  className="sys-badge"
+                  style={{
+                    background: sleepOptimal ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
+                    color: sleepOptimal ? '#6ee7b7' : '#fda4af',
+                    border: `1px solid ${sleepOptimal ? '#10b981' : '#e11d48'}`,
+                  }}
+                >
+                  SEMANA: {totalSleep}H / META: 49–63H
+                </span>
+              </div>
+
+              {/* RESUMEN RÁPIDO DE MÉTRICAS SEMANALES */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '8px',
+                  marginBottom: '14px',
+                  textAlign: 'center',
+                }}
+              >
+                <div style={{ padding: '9px 6px', borderRadius: '10px', background: 'rgba(4,6,12,0.88)', border: '1px solid rgba(56,189,248,0.28)' }}>
+                  <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>ACUMULADO SEMANA</div>
+                  <div className="font-hud" style={{ fontSize: '16px', fontWeight: 800, color: '#38bdf8', marginTop: '2px' }}>
+                    {totalSleep}h
+                  </div>
+                </div>
+                <div style={{ padding: '9px 6px', borderRadius: '10px', background: 'rgba(4,6,12,0.88)', border: '1px solid rgba(251,191,36,0.28)' }}>
+                  <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>PROMEDIO / NOCHE</div>
+                  <div className="font-hud" style={{ fontSize: '16px', fontWeight: 800, color: '#fde047', marginTop: '2px' }}>
+                    {avgSleepPerNight}h
+                  </div>
+                </div>
+                <div style={{ padding: '9px 6px', borderRadius: '10px', background: 'rgba(4,6,12,0.88)', border: '1px solid rgba(16,185,129,0.28)' }}>
+                  <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>DÍAS ÓPTIMOS (7–9H)</div>
+                  <div className="font-hud" style={{ fontSize: '16px', fontWeight: 800, color: '#6ee7b7', marginTop: '2px' }}>
+                    {optimalSleepDaysCount}/7
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
 
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <input
-              type="number"
-              step="0.5"
-              className="sys-input"
-              style={{ maxWidth: '140px' }}
-              value={todaySleep}
-              onChange={(e) => setTodaySleep(Number(e.target.value))}
-            />
-            <button
-              className="sys-btn sys-btn-primary"
-              onClick={() => {
-                const updated = [...sleepLog];
-                updated[updated.length - 1].hours = todaySleep;
-                setSleepLog(updated);
-                triggerToast(`[SISTEMA] Sueño actualizado (${todaySleep}h).`);
-              }}
-            >
-              <Clock size={15} /> REGISTRAR SUEÑO DE HOY
-            </button>
+              {!sleepOptimal && (
+                <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(225,29,72,0.15)', border: '1px solid #e11d48', marginBottom: '14px', fontSize: '13px', color: '#fecdd3' }}>
+                  <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px' }} />
+                  <strong>Registro semanal en {totalSleep}h:</strong> Tocá cualquier día de la semana (Lun a Dom) para anotar tus horas de descanso y alcanzar la ventana óptima de 49–63 horas.
+                </div>
+              )}
+
+              {/* TARJETAS INTERACTIVAS DE LUNES A DOMINGO */}
+              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginBottom: '6px' }}>
+                SEMANA ACTUAL (TOCÁ UN DÍA PARA ANOTAR O EDITAR):
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px', marginBottom: '16px', textAlign: 'center' }}>
+                {weekSleepDays.map((d) => {
+                  const isSelected = d.iso === selectedSleepDate;
+                  const isOptimalDay = d.hours >= 7 && d.hours <= 9;
+                  const isLowDay = d.hours > 0 && d.hours < 7;
+                  return (
+                    <button
+                      key={d.iso}
+                      type="button"
+                      onClick={() => handleSelectSleepDate(d.iso)}
+                      style={{
+                        padding: '8px 2px',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        background: isSelected
+                          ? 'rgba(56, 189, 248, 0.22)'
+                          : d.isToday
+                          ? 'rgba(0, 234, 255, 0.12)'
+                          : 'rgba(4, 6, 12, 0.88)',
+                        border: isSelected
+                          ? '1.5px solid #fbbf24'
+                          : d.isToday
+                          ? '1.5px solid #38bdf8'
+                          : '1px solid rgba(56, 189, 248, 0.28)',
+                        boxShadow: isSelected ? '0 0 12px rgba(251, 191, 36, 0.35)' : 'none',
+                      }}
+                    >
+                      <div style={{ fontSize: '10px', fontWeight: 800, color: d.isToday ? '#38bdf8' : '#94a3b8' }}>
+                        {d.label}
+                      </div>
+                      <div style={{ fontSize: '9px', color: '#64748b', marginTop: '1px' }}>
+                        {d.dayNum}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: 800,
+                          color: isOptimalDay ? '#10b981' : isLowDay ? '#fbbf24' : d.hours > 9 ? '#38bdf8' : '#94a3b8',
+                          marginTop: '3px',
+                        }}
+                      >
+                        {d.hours}h
+                      </div>
+                      {d.isToday && (
+                        <div style={{ fontSize: '8px', fontWeight: 800, color: '#38bdf8', marginTop: '2px' }}>
+                          HOY
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* FORMULARIO PARA ANOTAR EL DÍA SELECCIONADO */}
+              <div
+                style={{
+                  padding: '14px',
+                  borderRadius: '12px',
+                  background: 'rgba(5, 8, 23, 0.92)',
+                  border: '1px solid rgba(56, 189, 248, 0.38)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#38bdf8', fontWeight: 800, letterSpacing: '0.06em' }}>
+                      ANOTAR DESCANSO DEL DÍA
+                    </div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#fff' }}>
+                      {formatSleepDateLabel(selectedSleepDate)}{' '}
+                      {isSelectedToday && (
+                        <span style={{ color: '#00f0ff', fontSize: '11px' }}>(HOY)</span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {!isSelectedToday && (
+                      <button
+                        type="button"
+                        className="sys-btn sys-btn-ghost"
+                        style={{ padding: '6px 10px', fontSize: '10px' }}
+                        onClick={() => handleSelectSleepDate(todayIso)}
+                      >
+                        IR A HOY
+                      </button>
+                    )}
+                    <input
+                      type="date"
+                      aria-label="Fecha de descanso"
+                      className="sys-input"
+                      style={{ padding: '6px 9px', fontSize: '12px', width: 'auto' }}
+                      value={selectedSleepDate}
+                      onChange={(e) => handleSelectSleepDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* BOTONES RÁPIDOS DE HORAS */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px' }}>
+                  {[6, 6.5, 7, 7.5, 8, 8.5, 9].map((preset) => {
+                    const activePreset = Number(sleepHoursInput) === preset;
+                    return (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setSleepHoursInput(String(preset))}
+                        style={{
+                          padding: '6px 2px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          background: activePreset ? 'rgba(56, 189, 248, 0.25)' : 'rgba(11, 21, 48, 0.85)',
+                          border: `1px solid ${activePreset ? '#38bdf8' : 'rgba(148, 163, 184, 0.25)'}`,
+                          color: activePreset ? '#fff' : '#cbd5e1',
+                        }}
+                      >
+                        {preset}h
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="24"
+                    placeholder="Horas (ej: 7.5)"
+                    className="sys-input"
+                    style={{ maxWidth: '140px' }}
+                    value={sleepHoursInput}
+                    onChange={(e) => setSleepHoursInput(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Nota opcional (ej: Sueño profundo, desperté con energía...)"
+                    className="sys-input"
+                    style={{ flex: '1 1 200px' }}
+                    value={sleepNoteInput}
+                    onChange={(e) => setSleepNoteInput(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  className="sys-btn sys-btn-primary"
+                  style={{ width: '100%', padding: '12px' }}
+                  onClick={handleSaveSleepEntry}
+                >
+                  <Clock size={15} />{' '}
+                  {isSelectedToday
+                    ? 'GUARDAR SUEÑO DE HOY'
+                    : `GUARDAR SUEÑO (${formatSleepDateLabel(selectedSleepDate).toUpperCase()})`}
+                </button>
+              </div>
+            </div>
+
+            {/* BLOQUE 2: RESUMEN DÍA A DÍA DE LA SEMANA ACTUAL */}
+            <div className="sys-window" style={{ padding: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
+                <h3 className="font-hud" style={{ fontSize: '13px', color: '#00f0ff' }}>
+                  DETALLE DÍA A DÍA — SEMANA ACTUAL
+                </h3>
+                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                  {loggedSleepDaysCount} de 7 días anotados
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                {weekSleepDays.map((d) => {
+                  const hasRecord = d.hours > 0;
+                  const statusLabel = !hasRecord
+                    ? 'Sin registrar'
+                    : d.hours >= 7 && d.hours <= 9
+                    ? 'Óptimo (7–9h)'
+                    : d.hours < 7
+                    ? 'Déficit (<7h)'
+                    : 'Extendido (>9h)';
+                  const statusColor = !hasRecord
+                    ? '#94a3b8'
+                    : d.hours >= 7 && d.hours <= 9
+                    ? '#6ee7b7'
+                    : d.hours < 7
+                    ? '#fde047'
+                    : '#7dd3fc';
+                  return (
+                    <div
+                      key={`day-row-${d.iso}`}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '9px 12px',
+                        borderRadius: '10px',
+                        background: d.isToday ? 'rgba(56, 189, 248, 0.1)' : 'rgba(4, 6, 12, 0.85)',
+                        border: `1px solid ${d.isToday ? 'rgba(56, 189, 248, 0.45)' : 'rgba(148, 163, 184, 0.16)'}`,
+                      }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                          <strong style={{ fontSize: '13px', color: '#fff' }}>
+                            {d.fullLabel} {d.shortDate}
+                          </strong>
+                          {d.isToday && (
+                            <span
+                              style={{
+                                fontSize: '9px',
+                                fontWeight: 800,
+                                padding: '1px 6px',
+                                borderRadius: '999px',
+                                background: 'rgba(0, 234, 255, 0.2)',
+                                color: '#00f0ff',
+                                border: '1px solid rgba(0, 234, 255, 0.45)',
+                              }}
+                            >
+                              HOY
+                            </span>
+                          )}
+                          <span style={{ fontSize: '11px', color: statusColor, fontWeight: 700 }}>
+                            • {statusLabel}
+                          </span>
+                        </div>
+                        {d.note && (
+                          <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+                            “{d.note}”
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                        <span
+                          className="font-hud"
+                          style={{
+                            fontSize: '14px',
+                            fontWeight: 800,
+                            color: hasRecord ? '#38bdf8' : '#64748b',
+                          }}
+                        >
+                          {hasRecord ? `${d.hours}h` : '—'}
+                        </span>
+                        <button
+                          type="button"
+                          className="sys-btn sys-btn-ghost"
+                          style={{ padding: '5px 9px', fontSize: '10px' }}
+                          onClick={() => handleSelectSleepDate(d.iso)}
+                        >
+                          {hasRecord ? 'Editar' : 'Anotar'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* BLOQUE 3: REGISTRO HISTÓRICO COMPLETO DE HORAS DE SUEÑO */}
+            <div className="sys-window" style={{ padding: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
+                <h3 className="font-hud" style={{ fontSize: '13px', color: '#fbbf24' }}>
+                  REGISTRO HISTÓRICO DE SUEÑO ({allHistoryDates.length})
+                </h3>
+                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                  Guardado automáticamente por fecha
+                </span>
+              </div>
+
+              {allHistoryDates.length === 0 ? (
+                <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                  Todavía no hay días registrados. Anotá tus horas arriba para que queden guardadas en tu historial.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+                  {allHistoryDates.map((iso) => {
+                    const item = sleepLogs[iso];
+                    const hrs = Number(item?.hours || 0);
+                    const isOpt = hrs >= 7 && hrs <= 9;
+                    return (
+                      <div
+                        key={`hist-${iso}`}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '10px 12px',
+                          borderRadius: '10px',
+                          background: 'rgba(5, 8, 23, 0.9)',
+                          border: '1px solid rgba(56, 189, 248, 0.24)',
+                        }}
+                      >
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <strong style={{ fontSize: '13px', color: '#f8fafc' }}>
+                              {formatSleepDateLabel(iso)}
+                            </strong>
+                            {iso === todayIso && (
+                              <span
+                                style={{
+                                  fontSize: '9px',
+                                  fontWeight: 800,
+                                  padding: '1px 6px',
+                                  borderRadius: '999px',
+                                  background: 'rgba(0, 234, 255, 0.18)',
+                                  color: '#00f0ff',
+                                }}
+                              >
+                                HOY
+                              </span>
+                            )}
+                            <span
+                              style={{
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                color: isOpt ? '#6ee7b7' : hrs < 7 ? '#fde047' : '#7dd3fc',
+                              }}
+                            >
+                              • {isOpt ? 'Óptimo' : hrs < 7 ? 'Bajo' : 'Extendido'}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+                            {item?.note ? `${item.note} • ` : ''}
+                            {item?.updatedAt ? `Registrado a las ${item.updatedAt}` : 'Guardado en sistema'}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                          <span
+                            className="font-hud"
+                            style={{ fontSize: '15px', fontWeight: 900, color: '#38bdf8', marginRight: '4px' }}
+                          >
+                            {hrs}h
+                          </span>
+                          <button
+                            type="button"
+                            className="sys-btn sys-btn-ghost"
+                            style={{ padding: '5px 8px', fontSize: '10px' }}
+                            onClick={() => handleSelectSleepDate(iso)}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            title="Eliminar registro"
+                            className="sys-btn sys-btn-danger"
+                            style={{ padding: '5px 8px', fontSize: '10px' }}
+                            onClick={() => handleDeleteSleepEntry(iso)}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ====================================================================
           MÓDULO 10: CONFIGURACIÓN, REINICIO A 0 Y BORRADO DE CUENTA
@@ -7043,6 +8330,157 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
                 <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
               </button>
+            </div>
+          </div>
+
+
+          {/* PERSONALIZACIÓN DE COLORES NEÓN A ELECCIÓN DEL USUARIO */}
+          <div className="sys-window" style={{ padding: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+              <h3 className="font-hud" style={{ fontSize: '14px', color: 'var(--neon-blue)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Palette size={16} color="var(--neon-blue)" /> PERSONALIZACIÓN DE COLORES NEÓN
+              </h3>
+              <button
+                type="button"
+                className="sys-btn sys-btn-ghost"
+                style={{ padding: '6px 12px', fontSize: '10px' }}
+                onClick={() => {
+                  setNeonTheme({ primary: '#00eaff', secondary: '#963cff', accent: '#ffd45a' });
+                  triggerToast('[ESTÉTICA] Colores neón restaurados al tema original.');
+                }}
+              >
+                <RotateCcw size={12} /> RESTAURAR ORIGINALES
+              </button>
+            </div>
+
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.45 }}>
+              Elegí cualquier color libremente usando los selectores o ingresando el código HEX. Todos los bordes, brillos, menús y barras de energía se actualizan al instante.
+            </p>
+
+            {/* SELECTORES DE COLOR LIBRE (INPUT TYPE="COLOR" + HEX) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-primary-rgb), 0.35)' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--neon-blue)', marginBottom: '6px' }}>
+                  NEÓN PRINCIPAL (BORDES, MENÚ Y EXP)
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="color"
+                    value={neonTheme.primary}
+                    onChange={(e) => setNeonTheme((prev) => ({ ...prev, primary: e.target.value }))}
+                    style={{ width: '46px', height: '38px', border: 'none', borderRadius: '8px', background: 'transparent', cursor: 'pointer' }}
+                  />
+                  <input
+                    type="text"
+                    className="sys-input"
+                    value={neonTheme.primary}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^#[0-9A-Fa-f]{0,6}$/.test(val)) {
+                        setNeonTheme((prev) => ({ ...prev, primary: val }));
+                      }
+                    }}
+                    style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '13px', padding: '8px 10px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-secondary-rgb), 0.35)' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--neon-purple)', marginBottom: '6px' }}>
+                  NEÓN SECUNDARIO (AURAS Y RELIQUIAS)
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="color"
+                    value={neonTheme.secondary}
+                    onChange={(e) => setNeonTheme((prev) => ({ ...prev, secondary: e.target.value }))}
+                    style={{ width: '46px', height: '38px', border: 'none', borderRadius: '8px', background: 'transparent', cursor: 'pointer' }}
+                  />
+                  <input
+                    type="text"
+                    className="sys-input"
+                    value={neonTheme.secondary}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^#[0-9A-Fa-f]{0,6}$/.test(val)) {
+                        setNeonTheme((prev) => ({ ...prev, secondary: val }));
+                      }
+                    }}
+                    style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '13px', padding: '8px 10px' }}
+                  />
+                </div>
+              </div>
+
+
+              <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-accent-rgb), 0.35)' }}>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--neon-gold)', marginBottom: '6px' }}>
+                  NEÓN ACENTO (TÍTULOS Y RANGOS)
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="color"
+                    value={neonTheme.accent}
+                    onChange={(e) => setNeonTheme((prev) => ({ ...prev, accent: e.target.value }))}
+                    style={{ width: '46px', height: '38px', border: 'none', borderRadius: '8px', background: 'transparent', cursor: 'pointer' }}
+                  />
+                  <input
+                    type="text"
+                    className="sys-input"
+                    value={neonTheme.accent}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^#[0-9A-Fa-f]{0,6}$/.test(val)) {
+                        setNeonTheme((prev) => ({ ...prev, accent: val }));
+                      }
+                    }}
+                    style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '13px', padding: '8px 10px' }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* TEMAS RÁPIDOS DE INSPIRACIÓN RPG */}
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 700, marginBottom: '8px' }}>
+              COMBINACIONES RÁPIDAS SUGERIDAS:
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                { name: 'Cian Monarca', primary: '#00eaff', secondary: '#963cff', accent: '#ffd45a' },
+                { name: 'Carmesí Berserker', primary: '#ff2a55', secondary: '#991b1b', accent: '#fbbf24' },
+                { name: 'Esmeralda Cazador', primary: '#10b981', secondary: '#059669', accent: '#fde047' },
+                { name: 'Violeta Sombra', primary: '#a855f7', secondary: '#4f46e5', accent: '#38bdf8' },
+                { name: 'Dorado Imperial', primary: '#f59e0b', secondary: '#b45309', accent: '#fef08a' },
+                { name: 'Rosa Cyber', primary: '#ff3e9d', secondary: '#8b5cf6', accent: '#00eaff' },
+              ].map((preset) => (
+                <button
+                  key={preset.name}
+                  type="button"
+                  onClick={() => {
+                    setNeonTheme({ primary: preset.primary, secondary: preset.secondary, accent: preset.accent });
+                    triggerToast(`[ESTÉTICA] Tema "${preset.name}" aplicado.`);
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    padding: '7px 11px',
+                    borderRadius: '10px',
+                    background: 'rgba(11, 21, 48, 0.9)',
+                    border: `1px solid ${preset.primary}`,
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', gap: '3px' }}>
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: preset.primary }} />
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: preset.secondary }} />
+                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: preset.accent }} />
+                  </span>
+                  {preset.name}
+                </button>
+              ))}
             </div>
           </div>
 
