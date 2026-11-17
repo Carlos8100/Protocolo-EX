@@ -2546,6 +2546,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
 
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
+  const [routineFileName, setRoutineFileName] = useState('');
 
   const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
   const [todaySleep, setTodaySleep] = useState(0);
@@ -2716,75 +2717,214 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   };
 
   const generatePersonalizedRoutine = () => {
-    const weeks = profile.routineDurationMonths === 1 ? '4 Semanas (Mesociclo de 1 Mes)' : '8 Semanas (Mesociclo de 2 Meses)';
+    const months = Number(profile.routineDurationMonths) === 1 ? 1 : 2;
+    const weeks = months === 1 ? 4 : 8;
+    const daysPerWeek = Math.min(6, Math.max(3, Number(profile.daysPerWeek) || 4));
     const mode = profile.equipmentMode;
     const owned = profile.ownedHomeEquipment || [];
+    const noEquipment = mode === 'no_equip';
+    const partialEquipment = mode === 'some_equip';
+    const hasDumbbells = owned.includes('Mancuernas ajustables') || owned.includes('Kettlebell / Pesa rusa');
+    const hasPullup = owned.includes('Barra de dominadas');
+    const hasBands = owned.includes('Bandas elásticas');
+    const goal = profile.goal || 'Hipertrofia y Estética';
+    const strengthGoal = goal === 'Fuerza Máxima (Powerlifting)';
+    const enduranceGoal = goal === 'Resistencia y Calistenia';
 
-    if (mode === 'no_equip') {
-      return {
-        horizon: weeks,
-        modeLabel: 'En Casa — Sin Nada de Equipo (Calistenia Pura)',
-        phases: profile.routineDurationMonths === 1
-          ? ['Sem 1-2: Control excéntrico y técnica estricta', 'Sem 3-4: Densidad metabólica y series al fallo técnico (RIR 1)']
-          : ['Sem 1-3: Base articular y volumen progresivo', 'Sem 4-6: Variantes unilaterales de alta tensión', 'Sem 7-8: Pico de resistencia y descarga final'],
-        exercises: [
-          { name: 'Flexiones Declinadas con Pausa', sets: '4x12-15 (RIR 1)', focus: 'Pectoral Superior y Tríceps', anim: 'press', cue: 'Pecho toca casi el suelo, codos a 45° del torso.' },
-          { name: 'Sentadilla Búlgara Peso Corporal', sets: '4x12 por pierna', focus: 'Cuádriceps y Glúteo', anim: 'squat', cue: 'Torso ligeramente inclinado, rodilla sigue la punta del pie.' },
-          { name: 'Remo Invertido bajo Mesa Firme', sets: '4x10-12', focus: 'Dorsal y Romboides', anim: 'pull', cue: 'Retrae escápulas antes de flexionar los codos.' },
-        ]
-      };
-    }
+    const ex = (name, focus, cue, anim = 'press', sets = 3, reps = '8-12') => ({
+      name, focus, cue, anim, baseSets: sets, baseReps: reps, sets: `${sets} × ${reps}`
+    });
+    const press = noEquipment ? 'Flexiones (variante ajustada)' : partialEquipment && !hasDumbbells ? 'Flexiones con mochila / Press con banda' : 'Press banca con barra o mancuernas';
+    const incline = noEquipment ? 'Flexiones con pies elevados' : partialEquipment && !hasDumbbells ? 'Flexiones con pies elevados' : 'Press inclinado con mancuernas';
+    const row = noEquipment ? 'Remo invertido bajo mesa firme' : partialEquipment && !hasDumbbells ? 'Remo con banda elástica' : 'Remo con barra o mancuerna';
+    const verticalPull = noEquipment ? 'Remo invertido con agarre alto' : partialEquipment && !hasPullup && !hasBands ? 'Remo con mancuerna' : hasPullup || !partialEquipment ? 'Dominadas / jalón al pecho' : 'Jalón con banda o dominadas asistidas';
+    const squat = noEquipment ? 'Sentadilla libre con tempo' : partialEquipment && !hasDumbbells ? 'Sentadilla búlgara' : 'Sentadilla trasera con barra';
+    const hinge = noEquipment ? 'Puente de glúteos unilateral' : partialEquipment && !hasDumbbells ? 'Peso muerto rumano a una pierna' : 'Peso muerto rumano';
+    const shoulderPress = noEquipment ? 'Flexiones en pica' : partialEquipment && !hasDumbbells ? 'Press de hombros con banda' : 'Press militar';
+    const curl = noEquipment ? 'Curl isométrico con toalla' : partialEquipment && !hasDumbbells ? 'Curl con banda' : 'Curl de bíceps con mancuernas';
+    const triceps = noEquipment ? 'Flexiones diamante (según tolerancia)' : partialEquipment && !hasDumbbells ? 'Extensión de tríceps con banda' : 'Extensión de tríceps en polea';
+    const quad = noEquipment ? 'Zancada hacia atrás' : partialEquipment && !hasDumbbells ? 'Sentadilla búlgara' : 'Prensa de piernas';
+    const hamstring = noEquipment ? 'Curl femoral deslizante' : partialEquipment && !hasDumbbells ? 'Curl femoral con banda' : 'Curl femoral en máquina';
 
-    if (mode === 'some_equip') {
-      const hasPullup = owned.includes('Barra de dominadas');
-      const hasDumbbells = owned.includes('Mancuernas ajustables') || owned.includes('Kettlebell / Pesa rusa');
-      return {
-        horizon: weeks,
-        modeLabel: `En Casa — Equipo Parcial (${owned.length > 0 ? owned.join(', ') : 'Básico'})`,
-        phases: profile.routineDurationMonths === 1
-          ? ['Sem 1-2: Calibración de cargas caseras', 'Sem 3-4: Sobrecarga por repeticiones y pausas isométricas']
-          : ['Sem 1-3: Hipertrofia mecánica controlada', 'Sem 4-6: Intensificación con descanso corto', 'Sem 7-8: Consolidación de marcas y descarga'],
-        exercises: [
-          {
-            name: hasDumbbells ? 'Press en Suelo / Banco con Mancuernas' : 'Flexiones Lastradas con Mochila',
-            sets: '4x10-12 (RIR 1-2)',
-            focus: 'Empuje Horizontal',
-            anim: 'press',
-            cue: 'Controla el descenso en 3 segundos sin rebotar.'
-          },
-          {
-            name: hasDumbbells ? 'Sentadilla Copa (Goblet Squat) Profunda' : 'Sentadilla Zancada Búlgara',
-            sets: '4x10-12',
-            focus: 'Tren Inferior Completo',
-            anim: 'squat',
-            cue: 'Mantén el pecho erguido y rompe el paralelo.'
-          },
-          {
-            name: hasPullup ? 'Dominadas Pronas / Supinas Estrictas' : 'Remo Unilateral con Mancuerna / Banda',
-            sets: '4x8-12',
-            focus: 'Tracción Vertical / Espalda',
-            anim: 'pull',
-            cue: 'Lleva el pecho hacia la barra, evita balanceo.'
-          },
-        ]
-      };
-    }
+    const makeDay = (name, focus, exercises) => ({ name, focus, exercises });
+    const fullBody = (variant = 0) => makeDay(`Cuerpo completo ${variant + 1}`, 'Trabajo global con énfasis alternado', [
+      ex(variant % 2 ? squat : press, variant % 2 ? 'Cuádriceps y glúteos' : 'Pectoral y tríceps', 'Usá un rango de movimiento cómodo y mantené la técnica estable.', variant % 2 ? 'squat' : 'press', 3, strengthGoal ? '4-6' : '8-12'),
+      ex(variant % 2 ? row : verticalPull, 'Espalda', 'Iniciá el movimiento con las escápulas y evitá impulsarte.', 'pull', 3, '8-12'),
+      ex(variant % 2 ? hinge : quad, 'Cadena posterior o cuádriceps', 'Controlá la fase de descenso y evitá compensaciones.', 'squat', 3, '8-12'),
+      ex(variant % 2 ? shoulderPress : incline, 'Hombros o pectoral superior', 'Dejá una o dos repeticiones en reserva.', 'press', 2, '10-15'),
+      ex(variant % 2 ? curl : triceps, 'Brazos', 'Movimiento controlado, sin balanceo.', 'press', 2, '10-15'),
+      ex('Plancha frontal', 'Core y estabilidad', 'Mantené pelvis y caja torácica alineadas.', 'core', 2, '20-40 s')
+    ]);
 
+    const pushDay = () => makeDay('Empuje', 'Pectoral, hombros y tríceps', [
+      ex(press, 'Pectoral', 'Escápulas estables y descenso controlado.', 'press', 3, strengthGoal ? '4-6' : '6-10'),
+      ex(incline, 'Pectoral superior', 'No rebotes en la parte baja.', 'press', 3, '8-12'),
+      ex(shoulderPress, 'Deltoides', 'Evitá arquear excesivamente la zona lumbar.', 'press', 3, '6-10'),
+      ex('Elevaciones laterales', 'Deltoides lateral', 'Subí hasta una altura cómoda sin impulso.', 'press', 3, '12-20'),
+      ex(triceps, 'Tríceps', 'Mantené el codo estable.', 'press', 3, '10-15')
+    ]);
+    const pullDay = () => makeDay('Tracción', 'Espalda, deltoides posterior y bíceps', [
+      ex(verticalPull, 'Dorsales', 'Evitá balancearte y completá el recorrido tolerable.', 'pull', 3, '6-10'),
+      ex(row, 'Romboides y espalda media', 'Llevá los codos hacia atrás sin encoger hombros.', 'pull', 3, '8-12'),
+      ex('Pájaros / face pull', 'Deltoides posterior', 'Controlá la retracción escapular.', 'pull', 2, '12-20'),
+      ex(curl, 'Bíceps', 'No uses impulso de cadera.', 'pull', 3, '8-12'),
+      ex('Curl martillo', 'Braquial y antebrazo', 'Muñecas neutras durante todo el recorrido.', 'pull', 2, '10-15')
+    ]);
+    const legDay = (variant = 0) => makeDay(variant ? 'Piernas B' : 'Piernas A', variant ? 'Énfasis posterior y unilateral' : 'Énfasis cuádriceps y glúteos', [
+      ex(variant ? hinge : squat, variant ? 'Isquiotibiales y glúteos' : 'Cuádriceps', 'Mantené el tronco firme y no fuerces la profundidad.', 'squat', 3, strengthGoal ? '4-6' : '6-10'),
+      ex(variant ? hamstring : quad, variant ? 'Isquiotibiales' : 'Cuádriceps', 'Controlá la bajada y evitá rebotes.', 'squat', 3, '10-15'),
+      ex(variant ? 'Sentadilla búlgara' : hinge, 'Glúteos y estabilidad', 'Usá apoyo si necesitás mejorar el equilibrio.', 'squat', 3, '8-12'),
+      ex('Elevación de gemelos', 'Gemelos', 'Pausa breve arriba y abajo.', 'squat', 3, '12-20'),
+      ex('Dead bug', 'Core', 'Mantené la zona lumbar estable.', 'core', 2, '8-12 por lado')
+    ]);
+    const upperDay = () => makeDay('Tren superior', 'Volumen equilibrado de torso', [
+      ex(press, 'Pectoral', 'Controlá el descenso y mantené los pies firmes.', 'press', 3, '6-10'),
+      ex(row, 'Espalda media', 'No tires con la zona lumbar.', 'pull', 3, '8-12'),
+      ex(shoulderPress, 'Hombros', 'No llegues al fallo si la técnica se deteriora.', 'press', 2, '8-12'),
+      ex(verticalPull, 'Dorsales', 'Evitá balanceos.', 'pull', 2, '8-12'),
+      ex(curl, 'Bíceps', 'Repeticiones estrictas.', 'pull', 2, '10-15'),
+      ex(triceps, 'Tríceps', 'Codos estables.', 'press', 2, '10-15')
+    ]);
+    const lowerDay = () => makeDay('Tren inferior', 'Cuádriceps, glúteos e isquiotibiales', [
+      ex(squat, 'Cuádriceps y glúteos', 'Brace abdominal antes de cada repetición.', 'squat', 3, strengthGoal ? '4-6' : '6-10'),
+      ex(hinge, 'Isquiotibiales y glúteos', 'Bisagra de cadera, espalda neutra.', 'squat', 3, '8-12'),
+      ex(quad, 'Cuádriceps', 'Recorrido controlado.', 'squat', 2, '10-15'),
+      ex(hamstring, 'Isquiotibiales', 'No aceleres la fase excéntrica.', 'squat', 2, '10-15'),
+      ex('Elevación de gemelos', 'Gemelos', 'Pausa en el estiramiento y en la contracción.', 'squat', 3, '12-20'),
+      ex('Plancha lateral', 'Core', 'Cuerpo alineado de hombros a tobillos.', 'core', 2, '20-40 s por lado')
+    ]);
+
+    let days;
+    if (daysPerWeek === 3) days = [fullBody(0), fullBody(1), fullBody(2)];
+    else if (daysPerWeek === 4) days = [makeDay('Tren superior A', 'Énfasis fuerza e hipertrofia de torso', upperDay().exercises), makeDay('Tren inferior A', 'Énfasis fuerza e hipertrofia de piernas', lowerDay().exercises), makeDay('Tren superior B', 'Segundo estímulo de torso', upperDay().exercises), makeDay('Tren inferior B', 'Segundo estímulo de piernas', lowerDay().exercises)];
+    else if (daysPerWeek === 5) days = [pushDay(), pullDay(), legDay(0), makeDay('Tren superior mixto', 'Segundo estímulo de torso', [...upperDay().exercises]), makeDay('Tren inferior y core', 'Segundo estímulo de piernas con volumen moderado', [...lowerDay().exercises].slice(0, 5))];
+    else days = [pushDay(), pullDay(), legDay(0), pushDay(), pullDay(), legDay(1)];
+
+    // En resistencia/calistenia se priorizan rangos moderados-altos y descansos controlados.
+    if (enduranceGoal) days = days.map(day => ({ ...day, exercises: day.exercises.map(item => ({ ...item, baseReps: item.baseReps.includes('s') ? item.baseReps : '12-20' })) }));
+    const phases = months === 1
+      ? ['Semana 1: calibración técnica y de cargas (RIR 3)', 'Semana 2: sumar repeticiones manteniendo el RIR (2-3)', 'Semana 3: progresión de carga o repeticiones (RIR 1-2)', 'Semana 4: descarga, reducir series y alejarse del fallo (RIR 3-4)']
+      : ['Semanas 1-3: acumulación progresiva (RIR 2-3)', 'Semanas 4-6: intensificación gradual sin perder técnica (RIR 1-3)', 'Semana 7: consolidación, sin buscar máximos obligatorios', 'Semana 8: descarga y recuperación (RIR 3-4)'];
     return {
-      horizon: weeks,
-      modeLabel: `Gimnasio Completo — Todo el Equipo (${profile.daysPerWeek} días/sem)`,
-      phases: profile.routineDurationMonths === 1
-        ? ['Sem 1-2: Acumulación de volumen efectivo (RIR 2)', 'Sem 3-4: Sobrecarga progresiva en básicos (RIR 1)']
-        : ['Sem 1-3: Hipertrofia estructural (8-12 reps)', 'Sem 4-6: Fuerza-Hipertrofia pesada (5-8 reps)', 'Sem 7: Pico de rendimiento', 'Sem 8: Descarga activa (-35% volumen)'],
-      exercises: [
-        { name: 'Press Banca Plano / Inclinado con Barra', sets: '4x6-8 (RIR 1-2)', focus: 'Pectoral, Deltoides Anterior y Tríceps', anim: 'press', cue: 'Arco torácico natural, retracción escapular y pies firmes.' },
-        { name: 'Sentadilla Trasera con Barra Libre', sets: '4x6-8 (RIR 1-2)', focus: 'Cuádriceps, Glúteo y Core', anim: 'squat', cue: 'Inspira y bloquea el abdomen (bracing) antes de descender.' },
-        { name: 'Dominadas Lastradas / Jalón al Pecho', sets: '4x8-10 (RIR 1)', focus: 'Dorsal Ancho y Bíceps', anim: 'pull', cue: 'Inicia el tirón deprimiendo los hombros.' },
-      ]
+      horizon: `${weeks} Semanas (${months} ${months === 1 ? 'Mes' : 'Meses'})`,
+      modeLabel: `${noEquipment ? 'Casa sin equipo' : partialEquipment ? `Casa con equipo parcial (${owned.length ? owned.join(', ') : 'equipo básico'})` : 'Gimnasio completo'} • ${daysPerWeek} días • ${goal}`,
+      phases,
+      days,
+      exercises: days.flatMap(day => day.exercises)
     };
   };
 
   const activeRoutinePlan = generatePersonalizedRoutine();
+
+  // Cada semana conserva el split y muestra la prescripción de cada ejercicio.
+  const weeklyRoutinePlan = Array.from(
+    { length: profile.routineDurationMonths === 1 ? 4 : 8 },
+    (_, weekIndex) => {
+      const week = weekIndex + 1;
+      const isDeload = profile.routineDurationMonths === 1 ? week === 4 : week === 8;
+      const isIntensification = profile.routineDurationMonths === 2 && week >= 4 && week <= 7;
+      const progression = profile.goal === 'Fuerza Máxima (Powerlifting)'
+        ? { min: 3, max: 6 }
+        : profile.goal === 'Resistencia y Calistenia' ? { min: 12, max: 20 } : { min: 6, max: 12 };
+      const days = activeRoutinePlan.days.map((day) => ({
+        ...day,
+        exercises: day.exercises.map((exercise) => {
+          const baseSets = exercise.baseSets || 3;
+          const repMatch = String(exercise.baseReps || '8-12').match(/(\d+)(?:\s*[-–]\s*(\d+))?/);
+          const minReps = Number(repMatch?.[1] || progression.min);
+          const maxReps = Number(repMatch?.[2] || repMatch?.[1] || progression.max);
+          let sets = baseSets;
+          let low = minReps;
+          let high = maxReps;
+          if (isDeload) {
+            sets = Math.max(1, Math.ceil(baseSets * 0.6));
+            low = Math.max(5, minReps - 1);
+            high = Math.max(low, maxReps - 1);
+          } else if (week === 2) {
+            low += 1;
+            high += 1;
+          } else if (week === 3 || (profile.routineDurationMonths === 2 && week === 7)) {
+            high += 1;
+          } else if (isIntensification && week >= 4 && week <= 6 && profile.goal !== 'Resistencia y Calistenia') {
+            low = Math.max(4, low - 1);
+            high = Math.max(low, high - 1);
+          }
+          const rir = isDeload ? 'RIR 3-4' : week === 1 ? 'RIR 3' : week >= 3 ? 'RIR 1-2' : 'RIR 2-3';
+          return { ...exercise, weeklySets: `${sets} × ${low === high ? low : `${low}-${high}`} reps • ${rir}` };
+        })
+      }));
+      return {
+        week,
+        phase: isDeload ? 'Descarga y recuperación' : isIntensification ? 'Intensificación' : week <= 2 ? 'Adaptación y acumulación' : 'Progresión',
+        isDeload,
+        days
+      };
+    }
+  );
+
+  const analyzeRoutineText = (rawText, sourceName = 'Texto pegado') => {
+    const cleanText = String(rawText || '').replace(/\r/g, '').trim();
+    if (!cleanText) {
+      triggerToast('[ESCÁNER] No se encontró texto para analizar.');
+      return;
+    }
+    const lines = cleanText.split('\n').map((line) => line.trim()).filter(Boolean);
+    const prescriptionLines = lines.filter((line) => /\d+\s*[x×]\s*\d+/i.test(line));
+    const rirMentions = (cleanText.match(/RIR\s*\d+|repeticiones en reserva/gi) || []).length;
+    const progressionMentions = (cleanText.match(/semana\s*\d+|progresi[oó]n|sobrecarga|descarga|deload/gi) || []).length;
+    const recoveryMentions = (cleanText.match(/descanso|recuperaci[oó]n|sueño|deload|descarga/gi) || []).length;
+    const daysMentions = (cleanText.match(/d[ií]a\s*[1-7]|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo/gi) || []).length;
+    const findings = [];
+    const improvements = [];
+    if (prescriptionLines.length >= 4) findings.push(`Se identificaron ${prescriptionLines.length} líneas con series y repeticiones: hay una base cuantificable para revisar el volumen.`);
+    else improvements.push('Faltan prescripciones claras de series × repeticiones en varios ejercicios. Conviene escribirlas de forma explícita.');
+    if (rirMentions > 0) findings.push('La rutina incluye referencias a RIR, lo que permite regular la proximidad al fallo.');
+    else improvements.push('No se especifica RIR ni proximidad al fallo. Añadirlo ayudaría a controlar la fatiga y el esfuerzo.');
+    if (progressionMentions > 0) findings.push('Hay indicios de progresión o de organización por semanas.');
+    else improvements.push('No se detecta una progresión semanal clara. Definí cómo aumentan repeticiones, carga o series y cuándo descargar.');
+    if (recoveryMentions > 0) findings.push('Se menciona descanso, recuperación o descarga.');
+    else improvements.push('No aparecen pautas claras de recuperación o descarga. Incluí descansos y una estrategia para manejar la fatiga.');
+    if (daysMentions > 0) findings.push('Se detectó cierta organización por días de entrenamiento.');
+    else improvements.push('No se distingue claramente la distribución semanal. Separá los entrenamientos por día.');
+    if (prescriptionLines.length >= 8 && rirMentions > 0 && progressionMentions > 0 && recoveryMentions > 0) {
+      findings.push('La información disponible permite una evaluación más completa de estructura, esfuerzo y progresión.');
+    }
+    setScanReport({
+      sourceName,
+      rawText: cleanText,
+      exerciseLines: prescriptionLines,
+      score: `${Math.min(100, 35 + prescriptionLines.length * 4 + rirMentions * 5 + progressionMentions * 5 + recoveryMentions * 5 + daysMentions * 2)} / 100 (ÍNDICE ORIENTATIVO DE INFORMACIÓN)`,
+      finding: findings.length ? findings : ['Se pudo leer el contenido, pero faltan datos para valorar su estructura.'],
+      fix: improvements.length ? improvements : ['La estructura básica parece documentada. Para una crítica más precisa, añadí objetivo, experiencia, descansos, cargas/RIR y contexto de recuperación.']
+    });
+    triggerToast('[ESCÁNER] Rutina leída y evaluación orientativa generada.');
+  };
+
+  const handleRoutineFileUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const allowed = /\.(txt|md|csv)$/i.test(file.name) || ['text/plain', 'text/markdown', 'text/csv'].includes(file.type);
+    if (!allowed) {
+      triggerToast('[ESCÁNER] Por ahora se admiten archivos TXT, MD o CSV. Para imágenes/PDF, pegá el texto extraído en el cuadro.');
+      event.target.value = '';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      triggerToast('[ESCÁNER] El archivo supera el límite de 2 MB.');
+      event.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const content = String(reader.result || '');
+      setRoutineFileName(file.name);
+      setCustomRoutineText(content);
+      analyzeRoutineText(content, file.name);
+    };
+    reader.onerror = () => triggerToast('[ESCÁNER] No se pudo leer el archivo.');
+    reader.readAsText(file);
+    event.target.value = '';
+  };
 
   const toggleHomeEquipment = (eq) => {
     const current = profile.ownedHomeEquipment || [];
@@ -3720,33 +3860,52 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               ))}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {activeRoutinePlan.exercises.map((ex, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '12px',
-                    borderRadius: '10px',
-                    background: 'rgba(4,6,12,0.88)',
-                    border: '1px solid rgba(148,163,184,0.25)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '10px',
-                    flexWrap: 'wrap'
-                  }}
-                >
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{ex.name}</div>
-                    <div style={{ fontSize: '12px', color: '#fbbf24' }}>{ex.sets} • {ex.focus}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {activeRoutinePlan.days.map((day, dayIndex) => (
+                <div key={`preview-day-${dayIndex}`} style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.88)', border: '1px solid rgba(148,163,184,0.25)' }}>
+                  <div style={{ marginBottom: '8px' }}>
+                    <strong style={{ color: '#00f0ff', fontSize: '14px' }}>DÍA {dayIndex + 1} — {day.name}</strong>
+                    <div style={{ color: '#94a3b8', fontSize: '11px' }}>{day.focus}</div>
                   </div>
-                  <button
-                    className="sys-btn sys-btn-primary"
-                    style={{ padding: '8px 12px', fontSize: '10px' }}
-                    onClick={() => setAnimModalEx(ex)}
-                  >
-                    <Play size={13} /> VER MINI ANIMACIÓN
-                  </button>
+                  {day.exercises.map((ex, idx) => (
+                    <div key={`${dayIndex}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div>
+                        <div style={{ color: '#fff', fontSize: '13px', fontWeight: 700 }}>{ex.name}</div>
+                        <div style={{ color: '#fbbf24', fontSize: '11px' }}>{ex.baseSets} × {ex.baseReps} • {ex.focus}</div>
+                      </div>
+                      <button className="sys-btn sys-btn-primary" style={{ padding: '6px 9px', fontSize: '9px' }} onClick={() => setAnimModalEx(ex)}>
+                        <Play size={12} /> TÉCNICA
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '18px', borderTop: '1px solid rgba(0,240,255,0.25)', paddingTop: '14px' }}>
+              <h3 className="font-hud" style={{ fontSize: '13px', color: '#00f0ff', marginBottom: '10px' }}>
+                PLAN COMPLETO — DESGLOSE SEMANA POR SEMANA
+              </h3>
+              <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '12px' }}>
+                Se muestran todos los ejercicios del plan y su prescripción semanal. La progresión es una propuesta inicial y debe ajustarse según técnica, rendimiento y recuperación.
+              </p>
+              {weeklyRoutinePlan.map((weekPlan) => (
+                <div key={weekPlan.week} style={{ padding: '12px', marginBottom: '10px', borderRadius: '10px', background: 'rgba(4,6,12,0.82)', border: `1px solid ${weekPlan.isDeload ? 'rgba(251,191,36,0.55)' : 'rgba(148,163,184,0.22)'}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                    <strong style={{ color: weekPlan.isDeload ? '#fbbf24' : '#fff' }}>SEMANA {weekPlan.week}</strong>
+                    <span style={{ fontSize: '11px', color: weekPlan.isDeload ? '#fbbf24' : '#00f0ff' }}>{weekPlan.phase}</span>
+                  </div>
+                  {weekPlan.days.map((day, dayIndex) => (
+                    <div key={`week-${weekPlan.week}-day-${dayIndex}`} style={{ marginTop: '10px', padding: '9px', borderRadius: '8px', background: 'rgba(0,240,255,0.035)', border: '1px solid rgba(0,240,255,0.12)' }}>
+                      <div style={{ color: '#00f0ff', fontWeight: 700, fontSize: '12px', marginBottom: '5px' }}>DÍA {dayIndex + 1} — {day.name}</div>
+                      {day.exercises.map((exercise, exerciseIndex) => (
+                        <div key={`${weekPlan.week}-${dayIndex}-${exerciseIndex}`} style={{ padding: '6px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ color: '#e2e8f0', fontWeight: 700, fontSize: '12px' }}>{exercise.name}</div>
+                          <div style={{ color: '#fbbf24', fontSize: '11px' }}>{exercise.weeklySets} • {exercise.focus}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -3766,38 +3925,32 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
               <button
                 className="sys-btn sys-btn-primary"
-                onClick={() => {
-                  setScanReport({
-                    score: '86 / 100 (ÓPTIMA)',
-                    finding: 'Buen estímulo mecánico, equilibrio adecuado entre empuje y tracción.',
-                    fix: 'Mantener RIR 1-2 y respetar la descarga en la semana final del bloque.'
-                  });
-                  triggerToast('[ESCÁNER IA] Auditoría biomecánica completada.');
-                }}
+                onClick={() => analyzeRoutineText(customRoutineText, routineFileName || 'Texto pegado')}
               >
                 <Scan size={15} /> EXAMINAR RUTINA
               </button>
               <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
-                <FileText size={15} /> SUBIR FOTO/ARCHIVO
+                <FileText size={15} /> SUBIR ARCHIVO TXT / MD / CSV
                 <input
                   type="file"
+                  accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"
                   style={{ display: 'none' }}
-                  onChange={() => {
-                    setScanReport({
-                      score: '89 / 100 (ALTO RENDIMIENTO)',
-                      finding: 'Archivo escaneado: Distribución correcta de series efectivas.',
-                      fix: 'Ideal para un ciclo de 6 a 8 semanas con sobrecarga progresiva.'
-                    });
-                    triggerToast('[ESCÁNER IA] Archivo procesado correctamente.');
-                  }}
+                  onChange={handleRoutineFileUpload}
                 />
               </label>
             </div>
             {scanReport && (
-              <div style={{ marginTop: '12px', padding: '12px', borderRadius: '10px', background: 'rgba(16,185,129,0.12)', border: '1px solid #10b981', fontSize: '13px' }}>
-                <div style={{ fontWeight: 700, color: '#6ee7b7' }}>RESULTADO: {scanReport.score}</div>
-                <p style={{ marginTop: '4px', color: '#e2e8f0' }}>{scanReport.finding}</p>
-                <p style={{ marginTop: '4px', color: '#fbbf24' }}>Ajuste sugerido: {scanReport.fix}</p>
+              <div style={{ marginTop: '12px', padding: '14px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.55)', fontSize: '13px' }}>
+                <div style={{ fontWeight: 700, color: '#6ee7b7' }}>EVALUACIÓN ORIENTATIVA: {scanReport.score}</div>
+                <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '4px' }}>Fuente: {scanReport.sourceName}. El índice mide la información detectada, no certifica que la rutina sea óptima.</div>
+                <h3 style={{ color: '#6ee7b7', marginTop: '12px', marginBottom: '5px' }}>PUNTOS FUERTES / DATOS DETECTADOS</h3>
+                {scanReport.finding.map((item, index) => <p key={`finding-${index}`} style={{ color: '#e2e8f0', marginTop: '4px' }}>• {item}</p>)}
+                <h3 style={{ color: '#fbbf24', marginTop: '12px', marginBottom: '5px' }}>CRÍTICA CONSTRUCTIVA Y MEJORAS</h3>
+                {scanReport.fix.map((item, index) => <p key={`fix-${index}`} style={{ color: '#fcd34d', marginTop: '4px' }}>• {item}</p>)}
+                <h3 style={{ color: '#00f0ff', marginTop: '12px', marginBottom: '5px' }}>RUTINA LEÍDA</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: '260px', overflowY: 'auto', padding: '10px', borderRadius: '8px', background: 'rgba(4,6,12,0.8)', color: '#cbd5e1', fontFamily: 'inherit', fontSize: '12px' }}>{scanReport.rawText}</pre>
+                <h3 style={{ color: '#00f0ff', marginTop: '12px', marginBottom: '5px' }}>EJERCICIOS / SERIES × REPETICIONES DETECTADOS</h3>
+                {scanReport.exerciseLines.length ? scanReport.exerciseLines.map((item, index) => <p key={`exercise-${index}`} style={{ color: '#e2e8f0', marginTop: '3px' }}>• {item}</p>) : <p style={{ color: '#94a3b8' }}>No se detectaron formatos del tipo 3 × 8-12. Revisá el texto o agregá las prescripciones.</p>}
               </div>
             )}
           </div>
