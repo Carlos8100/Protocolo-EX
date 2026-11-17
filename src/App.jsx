@@ -321,6 +321,22 @@ const SYSTEM_CSS = `
     text-transform: uppercase;
   }
 
+  .hud-nav-steps-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
+  @media (min-width: 860px) {
+    .hud-nav-steps-layout {
+      grid-template-columns: 1.45fr 1fr;
+    }
+  }
+  .hud-nav-steps-layout .nav-tabs {
+    margin-bottom: 0;
+  }
+
   .nav-tabs {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2685,6 +2701,351 @@ function MovementTrackerModule({
 }
 
 // ============================================================================
+// UTILIDADES DE RUTINA LIMPIA, JUSTIFICACIÓN LIBRE Y ANULACIÓN (12H / 12 CUPOS)
+// ============================================================================
+const CANCELLATION_MAX_QUOTA = 12;
+const CANCELLATION_WINDOW_MS = 12 * 60 * 60 * 1000;
+
+function formatRemainingCancellationWindow(remainingMs) {
+  const safeMs = Math.max(0, Number(remainingMs) || 0);
+  const totalMins = Math.ceil(safeMs / 60000);
+  const hrs = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+  if (hrs > 0) return `${hrs}h ${String(mins).padStart(2, '0')}m`;
+  return `${mins}m`;
+}
+
+function normalizeQuestList(rawList) {
+  if (!Array.isArray(rawList)) return [];
+  return rawList.map((q, idx) => {
+    const inferredCustom =
+      q.origin === 'custom' ||
+      q.isDaily === false ||
+      ['Declarado', 'Rutina programada', 'Rutina importada', 'Planilla', 'Documento'].includes(q.env);
+    return {
+      ...q,
+      isDaily: inferredCustom ? false : true,
+      origin: inferredCustom ? 'custom' : 'daily',
+      createdAt: q.createdAt || Date.now() - idx * 1000,
+    };
+  });
+}
+
+function parseRoutineExercisesAndLoads(rawText) {
+  const lines = String(rawText || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  let currentDay = 'Bloque General';
+  const items = [];
+  const headerRegex =
+    /^(d[ií]a\s*\d+|semana\s*\d+|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|bloque|hoja:|upper|lower|push|pull|legs|full\s*body|torso|pierna)/i;
+  const exerciseRegex =
+    /(\d+\s*[x×]\s*\d+|series|reps|repeticiones|\d+(?:[.,]\d+)?\s*(?:kg|lbs?|%\s*1rm)|rir\s*\d+|rpe\s*\d+|press|sentadilla|peso muerto|remo|dominada|curl|extensi[oó]n|plancha|fondos|zancada|b[uú]lgara|elevaci[oó]n|jal[oó]n|prensa|hip\s*thrust|aperturas|face\s*pull)/i;
+
+  lines.forEach((line, idx) => {
+    const cleanLine = line.replace(/^[-•*\d.)]+\s*/, '').trim();
+    if (!cleanLine) return;
+    if (
+      headerRegex.test(cleanLine) &&
+      !/\d+\s*[x×]\s*\d+/i.test(cleanLine) &&
+      !/\d+\s*(?:kg|lbs?)/i.test(cleanLine)
+    ) {
+      currentDay = cleanLine.replace(/^hoja:\s*/i, '').trim();
+      return;
+    }
+    if (!exerciseRegex.test(cleanLine)) return;
+
+    const setsRepsMatch = cleanLine.match(
+      /(\d+\s*[x×]\s*\d+(?:\s*[-–]\s*\d+)?(?:\s*(?:reps?|seg|s))?)/i
+    );
+    const loadMatch = cleanLine.match(/(@?\s*\d+(?:[.,]\d+)?\s*(?:kg|lbs?|%\s*1rm))/i);
+    const rirMatch = cleanLine.match(/(RIR\s*\d+(?:\s*[-–]\s*\d+)?|RPE\s*\d+(?:[.,]\d+)?)/i);
+
+    let namePart = cleanLine;
+    if (setsRepsMatch) namePart = namePart.replace(setsRepsMatch[0], ' ');
+    if (loadMatch) namePart = namePart.replace(loadMatch[0], ' ');
+    if (rirMatch) namePart = namePart.replace(rirMatch[0], ' ');
+    namePart = namePart
+      .replace(/[|•@:]+/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/^[-–—\s]+|[-–—\s]+$/g, '')
+      .trim();
+    if (!namePart || namePart.length < 2) namePart = cleanLine.slice(0, 48);
+
+    const numericKgMatch = loadMatch ? loadMatch[0].match(/(\d+(?:[.,]\d+)?)\s*kg/i) : null;
+    items.push({
+      id: `rut_item_${idx}_${namePart.slice(0, 12)}`,
+      day: currentDay,
+      name: namePart,
+      prescription: setsRepsMatch ? setsRepsMatch[1].replace(/\s+/g, ' ') : 'Según rutina',
+      load: loadMatch ? loadMatch[1].replace(/^@\s*/, '').trim() : 'Sin carga fija',
+      loadKg: numericKgMatch ? Number(numericKgMatch[1].replace(',', '.')) : null,
+      notes: rirMatch ? rirMatch[1].toUpperCase() : '',
+    });
+  });
+  return items;
+}
+
+function buildJustificationRecommendation(rawReason, questTitle = 'Entrenar hoy') {
+  const cleanReason = String(rawReason || '').trim();
+  const norm = cleanReason
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  if (!cleanReason) {
+    return {
+      category: 'ESCRIBÍ TU MOTIVO',
+      badgeColor: '#38bdf8',
+      advice:
+        'Describí libremente qué te impide entrenar hoy (poco tiempo, cansancio, gimnasio cerrado, molestia física, etc.) para recibir una recomendación concreta.',
+      adaptedTitle: `[DESAFÍO ADAPTADO] ${questTitle}`,
+    };
+  }
+  if (/(tiempo|trabajo|laburo|facu|estudio|parcial|examen|tarde|ocupad|hora|minuto|rapido|reunion|turno)/.test(norm)) {
+    return {
+      category: 'FALTA DE TIEMPO / AGENDA',
+      badgeColor: '#fbbf24',
+      advice:
+        'Consejo concreto: Hacé una sesión exprés de 15–20 minutos en superseries (empuje + tracción + piernas) con 45 seg de descanso y RIR 1-2. Conservás cerca del 85% del estímulo sin necesitar una hora completa.',
+      adaptedTitle: `[ADAPTADA • SESIÓN EXPRÉS 20 MIN] 3 rondas en superserie (Flexiones + Remo + Sentadillas) • Motivo: ${cleanReason}`,
+    };
+  }
+  if (/(cansad|fatig|sueno|dorm|agotad|energia|estres|pesad|sin fuerza|exhaust)/.test(norm)) {
+    return {
+      category: 'CANSANCIO / FATIGA DEL SNC',
+      badgeColor: '#a855f7',
+      advice:
+        'Consejo concreto: Bajá el volumen de hoy al 50% (2 series efectivas dejando RIR 3-4 lejos del fallo) o reemplazalo por 15 min de movilidad y caminata suave. Priorizá dormir 7.5–8h esta noche antes de volver a cargas altas.',
+      adaptedTitle: `[ADAPTADA • DESCARGA DE FATIGA] 50% volumen técnico (RIR 3-4) + 15 min movilidad • Motivo: ${cleanReason}`,
+    };
+  }
+  if (/(gimnasio|gym|cerrado|feriado|lluvia|tormenta|transporte|colectivo|tren|casa|equipo|sin pesas|clima)/.test(norm)) {
+    return {
+      category: 'GIMNASIO CERRADO / SIN ACCESO',
+      badgeColor: '#00f0ff',
+      advice:
+        'Consejo concreto: Trasladá la sesión a casa usando tempo controlado (3 seg de bajada + 1 seg de pausa) para sostener la tensión mecánica sin pesas: flexiones declinadas, sentadillas búlgaras y plancha abdominal.',
+      adaptedTitle: `[ADAPTADA • PROTOCOLO EN CASA] 4 rondas tempo lento: 15 Flexiones + 16 Sentadillas búlgaras + 45s Plancha • Motivo: ${cleanReason}`,
+    };
+  }
+  if (/(molestia|dolor|lesion|contractura|tiron|hombro|rodilla|espalda|lumbar|muneca|codo|tobillo|enferm|gripe|fiebre|malestar)/.test(norm)) {
+    return {
+      category: 'MOLESTIA FÍSICA / SALUD',
+      badgeColor: '#f43f5e',
+      advice:
+        'Consejo concreto: No entrenes sobre dolor agudo ni con fiebre. Si hay malestar general, descanso total obligatorio. Si es molestia localizada, trabajá únicamente patrones sin dolor (ej. tren inferior o movilidad suave) y evaluá en 48h.',
+      adaptedTitle: `[ADAPTADA • CUIDADO ARTICULAR] Movilidad suave sin dolor + recuperación activa • Motivo: ${cleanReason}`,
+    };
+  }
+  return {
+    category: 'IMPREVISTO PERSONAL',
+    badgeColor: '#10b981',
+    advice:
+      'Consejo concreto: Aplicá la regla de mínimo viable para no cortar tu racha: completá 12–15 min de movimiento continuo (caminata rápida + 3 rondas suaves de peso corporal) y retomá mañana sin intentar compensar doblando volumen.',
+    adaptedTitle: `[ADAPTADA • MÍNIMO VIABLE 15 MIN] Caminata activa + 3 rondas movilidad/peso corporal • Motivo: ${cleanReason}`,
+  };
+}
+
+function IntegratedStepCounterPanel({
+  todaySteps,
+  stepGoal,
+  onChangeStepGoal,
+  stepGoalClaimed,
+  walkRunKm,
+  onQuickAddSteps,
+  onOpenFullTracker,
+}) {
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customStepsInput, setCustomStepsInput] = useState('');
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState(String(stepGoal || 8000));
+
+  const safeGoal = Math.max(1000, Number(stepGoal) || 8000);
+  const safeSteps = Math.max(0, Number(todaySteps) || 0);
+  const pct = Math.min(100, Math.round((safeSteps / safeGoal) * 100));
+
+  return (
+    <div
+      className="sys-window"
+      style={{
+        padding: '12px 14px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        gap: '8px',
+        border: '1px solid rgba(0, 234, 255, 0.36)',
+        background: 'linear-gradient(155deg, rgba(11, 21, 48, 0.96), rgba(5, 8, 23, 0.98))',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Activity size={15} color="#00f0ff" />
+          <span className="font-hud" style={{ fontSize: '11px', fontWeight: 800, color: '#00f0ff', letterSpacing: '0.04em' }}>
+            PASOS DIARIOS
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <button
+            type="button"
+            onClick={() => {
+              setGoalInput(String(safeGoal));
+              setEditingGoal(!editingGoal);
+            }}
+            style={{
+              background: 'rgba(251, 191, 36, 0.14)',
+              border: '1px solid rgba(251, 191, 36, 0.45)',
+              color: '#fde047',
+              borderRadius: '999px',
+              padding: '2px 8px',
+              fontSize: '10px',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Meta: {safeGoal.toLocaleString()}
+          </button>
+          <button
+            type="button"
+            onClick={onOpenFullTracker}
+            style={{
+              background: 'rgba(0, 234, 255, 0.12)',
+              border: '1px solid rgba(0, 234, 255, 0.4)',
+              color: '#67e8f9',
+              borderRadius: '999px',
+              padding: '2px 8px',
+              fontSize: '10px',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            GPS / Bici
+          </button>
+        </div>
+      </div>
+
+      {editingGoal && (
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <input
+            type="number"
+            min="1000"
+            step="500"
+            className="sys-input"
+            style={{ padding: '5px 8px', fontSize: '12px' }}
+            value={goalInput}
+            onChange={(e) => setGoalInput(e.target.value)}
+          />
+          <button
+            type="button"
+            className="sys-btn sys-btn-gold"
+            style={{ padding: '6px 10px', fontSize: '10px' }}
+            onClick={() => {
+              onChangeStepGoal(Math.max(1000, Number(goalInput) || 8000));
+              setEditingGoal(false);
+            }}
+          >
+            OK
+          </button>
+        </div>
+      )}
+
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px', gap: '6px' }}>
+          <div style={{ fontSize: '15px', fontWeight: 800, color: '#fff' }}>
+            {safeSteps.toLocaleString()}{' '}
+            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>
+              / {safeGoal.toLocaleString()} ({pct}%)
+            </span>
+          </div>
+          <span style={{ fontSize: '10px', fontWeight: 700, color: stepGoalClaimed || safeSteps >= safeGoal ? '#10b981' : '#fbbf24' }}>
+            {stepGoalClaimed || safeSteps >= safeGoal ? '✓ META CUMPLIDA' : `${Number(walkRunKm || 0).toFixed(1)} km • +40 EXP`}
+          </span>
+        </div>
+        <div className="progress-track">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${pct}%`,
+              background: pct >= 100 ? 'linear-gradient(90deg, #10b981, #34d399)' : 'linear-gradient(90deg, #0284c7, #00f0ff)',
+            }}
+          />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {[500, 1000, 2500, 5000].map((inc) => (
+          <button
+            key={inc}
+            type="button"
+            onClick={() => onQuickAddSteps(inc)}
+            style={{
+              flex: '1 1 auto',
+              padding: '5px 7px',
+              borderRadius: '8px',
+              background: 'rgba(0, 234, 255, 0.12)',
+              border: '1px solid rgba(0, 234, 255, 0.35)',
+              color: '#e0f2fe',
+              fontSize: '10.5px',
+              fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            +{inc.toLocaleString()}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setCustomOpen(!customOpen)}
+          style={{
+            padding: '5px 8px',
+            borderRadius: '8px',
+            background: customOpen ? 'rgba(251, 191, 36, 0.22)' : 'rgba(16, 27, 56, 0.9)',
+            border: '1px solid rgba(251, 191, 36, 0.45)',
+            color: '#fde047',
+            fontSize: '10.5px',
+            fontWeight: 800,
+            cursor: 'pointer',
+          }}
+        >
+          + Otro
+        </button>
+      </div>
+
+      {customOpen && (
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <input
+            type="number"
+            min="1"
+            className="sys-input"
+            style={{ padding: '5px 9px', fontSize: '12px' }}
+            placeholder="Cantidad de pasos (ej. 1200)"
+            value={customStepsInput}
+            onChange={(e) => setCustomStepsInput(e.target.value)}
+          />
+          <button
+            type="button"
+            className="sys-btn sys-btn-primary"
+            style={{ padding: '6px 10px', fontSize: '10px' }}
+            onClick={() => {
+              const val = Math.max(0, Math.round(Number(customStepsInput) || 0));
+              if (val > 0) {
+                onQuickAddSteps(val);
+                setCustomStepsInput('');
+                setCustomOpen(false);
+              }
+            }}
+          >
+            SUMAR
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
 // ESPACIO DE TRABAJO DEL CAZADOR (TODO INICIA ESTRICTAMENTE DESDE 0)
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
@@ -2767,15 +3128,82 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [toast, setToast] = useState(null);
   const [animModalEx, setAnimModalEx] = useState(null);
 
-  const [quests, setQuests] = useState(() => initialData?.quests || [
-    { id: 1, title: 'Completar primera sesión de entrenamiento del plan', env: 'Entreno', lp: 45, exp: 100, status: 'pending' },
-    { id: 2, title: 'Registrar tus marcas base en la pestaña Cargas', env: 'Sistema', lp: 35, exp: 60, status: 'pending' },
-    { id: 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending' },
-  ]);
+  const [quests, setQuests] = useState(() =>
+    initialData?.quests
+      ? normalizeQuestList(initialData.quests)
+      : [
+          {
+            id: 1,
+            title: 'Entrenar hoy',
+            env: 'Rutina diaria',
+            lp: 50,
+            exp: 100,
+            status: 'pending',
+            isDaily: true,
+            origin: 'daily',
+            dailyDate: getLocalDateISO(),
+          },
+          {
+            id: 2,
+            title: 'Registrar tus marcas base en la pestaña Cargas',
+            env: 'Sistema',
+            lp: 35,
+            exp: 60,
+            status: 'pending',
+            isDaily: true,
+            origin: 'daily',
+          },
+          {
+            id: 3,
+            title: 'Dormir al menos 7.5 horas esta noche',
+            env: 'Recuperación',
+            lp: 25,
+            exp: 50,
+            status: 'pending',
+            isDaily: true,
+            origin: 'daily',
+          },
+        ]
+  );
   const [nextWeekQueue, setNextWeekQueue] = useState(() => initialData?.nextWeekQueue || []);
   const [newQuestTitle, setNewQuestTitle] = useState('');
   const [justifyModalId, setJustifyModalId] = useState(null);
-  const [justifyReason, setJustifyReason] = useState('Lluvia intensa / Tormenta');
+  const [justifyReason, setJustifyReason] = useState('');
+  const [justificationHistory, setJustificationHistory] = useState(() => initialData?.justificationHistory || []);
+  const [cancellationsRemaining, setCancellationsRemaining] = useState(() => {
+    if (typeof initialData?.cancellationsRemaining === 'number') return initialData.cancellationsRemaining;
+    try {
+      const rawQuota = localStorage.getItem(`pex_cancel_quota_v1_${currentUser.email}`);
+      if (rawQuota !== null) return Math.max(0, Math.min(CANCELLATION_MAX_QUOTA, Number(rawQuota)));
+    } catch {}
+    return CANCELLATION_MAX_QUOTA;
+  });
+  const [nowTimestamp, setNowTimestamp] = useState(() => Date.now());
+  const [savedRoutineAnalysis, setSavedRoutineAnalysis] = useState(() => {
+    if (initialData?.savedRoutineAnalysis) return initialData.savedRoutineAnalysis;
+    try {
+      const rawSaved = localStorage.getItem(`pex_routine_analysis_v1_${currentUser.email}`);
+      return rawSaved ? JSON.parse(rawSaved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [dailyStepGoal, setDailyStepGoal] = useState(() => {
+    if (typeof initialData?.dailyStepGoal === 'number') return initialData.dailyStepGoal;
+    try {
+      const rawStepsMeta = localStorage.getItem(`pex_steps_meta_v1_${currentUser.email}`);
+      if (rawStepsMeta) {
+        const parsed = JSON.parse(rawStepsMeta);
+        if (parsed?.dailyStepGoal) return Number(parsed.dailyStepGoal);
+      }
+    } catch {}
+    return 8000;
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => setNowTimestamp(Date.now()), 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const [selectedExercise, setSelectedExercise] = useState('Press Banca');
   const [liftWeightInput, setLiftWeightInput] = useState(savedLifts['Press Banca']?.weight || 0);
@@ -3024,6 +3452,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         friends,
         quests,
         nextWeekQueue,
+        justificationHistory,
+        cancellationsRemaining,
+        savedRoutineAnalysis,
+        dailyStepGoal,
         sleepLog,
         yearlyRecap,
         routineDayLogs,
@@ -3047,6 +3479,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         friends,
         quests,
         nextWeekQueue,
+        justificationHistory,
+        cancellationsRemaining,
+        savedRoutineAnalysis,
+        dailyStepGoal,
         sleepLog,
         yearlyRecap,
         routineDayLogs,
@@ -3054,11 +3490,21 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       };
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
+    try {
+      localStorage.setItem(`pex_cancel_quota_v1_${currentUser.email}`, String(cancellationsRemaining));
+      localStorage.setItem(`pex_steps_meta_v1_${currentUser.email}`, JSON.stringify({ dailyStepGoal }));
+      if (savedRoutineAnalysis) {
+        localStorage.setItem(`pex_routine_analysis_v1_${currentUser.email}`, JSON.stringify(savedRoutineAnalysis));
+      } else {
+        localStorage.removeItem(`pex_routine_analysis_v1_${currentUser.email}`);
+      }
+    } catch {}
   }, [
-    storageKey, awakened, profile, hunterClass, savedLifts,
+    storageKey, currentUser.email, awakened, profile, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
-    friends, quests, nextWeekQueue, sleepLog, yearlyRecap, routineDayLogs, activityLogs
+    friends, quests, nextWeekQueue, justificationHistory, cancellationsRemaining,
+    savedRoutineAnalysis, dailyStepGoal, sleepLog, yearlyRecap, routineDayLogs, activityLogs
   ]);
 
   const triggerToast = (msg) => {
@@ -3086,9 +3532,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setPveBattleLog(null);
     setPvpLog(null);
     setQuests([
-      { id: Date.now() + 1, title: 'Completar primera sesión de entrenamiento del plan', env: 'Entreno', lp: 45, exp: 100, status: 'pending' },
-      { id: Date.now() + 2, title: 'Registrar tus marcas base en la pestaña Cargas', env: 'Sistema', lp: 35, exp: 60, status: 'pending' },
-      { id: Date.now() + 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending' },
+      { id: Date.now() + 1, title: 'Entrenar hoy', env: 'Rutina diaria', lp: 50, exp: 100, status: 'pending', isDaily: true, origin: 'daily', dailyDate: getLocalDateISO() },
+      { id: Date.now() + 2, title: 'Registrar tus marcas base en la pestaña Cargas', env: 'Sistema', lp: 35, exp: 60, status: 'pending', isDaily: true, origin: 'daily' },
+      { id: Date.now() + 3, title: 'Dormir al menos 7.5 horas esta noche', env: 'Recuperación', lp: 25, exp: 50, status: 'pending', isDaily: true, origin: 'daily' },
     ]);
     prevGradeRef.current = 'F';
     triggerToast('[SISTEMA REINICIADO] Todos tus stats, racha (0d), nivel (0), LP (0) y cargas volvieron a 0.');
@@ -3488,6 +3934,38 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     };
   };
 
+  const applyAnalyzedRoutineToTabs = (combinedText, sourceName) => {
+    const parsedItems = parseRoutineExercisesAndLoads(combinedText);
+    setSavedRoutineAnalysis({
+      sourceName,
+      updatedAt: new Date().toLocaleString(),
+      items: parsedItems,
+      totalExercises: parsedItems.length,
+    });
+
+    const todayIso = getLocalDateISO();
+    setQuests((prev) => {
+      const withoutOldDailyTrain = prev.filter(
+        (q) => !(q.isDaily && (q.title === 'Entrenar hoy' || q.env === 'Rutina diaria' || q.id === 1))
+      );
+      const existingTodayClean = prev.find(
+        (q) => q.isDaily && q.title === 'Entrenar hoy' && q.dailyDate === todayIso
+      );
+      const cleanDailyMission = existingTodayClean || {
+        id: Date.now(),
+        title: 'Entrenar hoy',
+        env: 'Rutina diaria',
+        lp: 50,
+        exp: 100,
+        status: 'pending',
+        isDaily: true,
+        origin: 'daily',
+        dailyDate: todayIso,
+      };
+      return [cleanDailyMission, ...withoutOldDailyTrain];
+    });
+  };
+
   const syncInteractiveSpreadsheet = (nextSheets, sourceName, nextActiveSheetIdx = 0, nextCheckedRows = {}) => {
     const combinedText = serializeSheetsToText(nextSheets);
     setCustomRoutineText(combinedText);
@@ -3497,10 +3975,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       sheets: nextSheets,
       activeSheetIdx: Math.min(nextActiveSheetIdx, Math.max(0, nextSheets.length - 1)),
       checkedRows: nextCheckedRows,
-      editMode: 'interactive'
+      editMode: 'interactive',
     });
     const report = evaluateRoutineContent(combinedText, sourceName);
     if (report) setScanReport(report);
+    applyAnalyzedRoutineToTabs(combinedText, sourceName);
   };
 
   const syncInteractiveDocumentLines = (nextDocLines, sourceName, editMode = 'interactive') => {
@@ -3510,10 +3989,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       fileName: sourceName,
       fileType: 'document',
       docLines: nextDocLines,
-      editMode
+      editMode,
     });
     const report = evaluateRoutineContent(combinedText, sourceName);
     if (report) setScanReport(report);
+    applyAnalyzedRoutineToTabs(combinedText, sourceName);
   };
 
   const analyzeRoutineText = (rawText, sourceName = 'Texto pegado') => {
@@ -3524,7 +4004,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     }
     const docLines = buildInteractiveDocLines(cleanText);
     syncInteractiveDocumentLines(docLines, sourceName, 'interactive');
-    triggerToast('[ESCÁNER] Rutina cargada en modo interactivo y evaluada abajo.');
+    triggerToast('[RUTINA & MISIONES] Ejercicios y cargas guardados en Rutina; tarjeta diaria "Entrenar hoy" lista en Misiones.');
   };
 
   const handleRoutineFileUpload = async (event) => {
@@ -4174,6 +4654,72 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     );
   }
 
+  const handleQuickAddDailySteps = (addedSteps) => {
+    const inc = Math.max(0, Math.round(Number(addedSteps) || 0));
+    if (inc <= 0) return;
+
+    const todayKey = getLocalDateISO();
+    const prevDay = activityLogs[todayKey] || {
+      steps: 0,
+      walkRunKm: 0,
+      bikeKm: 0,
+      calories: 0,
+      sessions: [],
+      stepGoalClaimed: false,
+      bikeGoalClaimed: false,
+    };
+
+    const heightM = (Number(profile.heightCm) || 176) / 100;
+    const addedKm = Number(((inc * heightM * 0.415) / 1000).toFixed(2));
+    const kcal = Math.max(1, Math.round(3.8 * (Number(profile.weightKg) || 75) * (inc / 6500)));
+
+    const nextSteps = (prevDay.steps || 0) + inc;
+    const nextWalkRunKm = Number(((prevDay.walkRunKm || 0) + addedKm).toFixed(2));
+
+    let gainedExp = Math.max(3, Math.floor(inc / 1000) * 10 || 4);
+    let gainedLp = Math.max(2, Math.floor(inc / 1000) * 5 || 2);
+    let claimedStepBonus = Boolean(prevDay.stepGoalClaimed);
+    let bonusNote = '';
+
+    if (!claimedStepBonus && nextSteps >= dailyStepGoal) {
+      claimedStepBonus = true;
+      gainedExp += 40;
+      gainedLp += 20;
+      bonusNote = ` • ¡Meta de ${dailyStepGoal.toLocaleString()} pasos cumplida (+40 EXP / +20 LP)!`;
+    }
+
+    const quickSession = {
+      id: Date.now(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      mode: 'walk',
+      modeLabel: 'Carga rápida pasos',
+      steps: inc,
+      distanceKm: addedKm,
+      durationSec: Math.round((inc / 100) * 60),
+      calories: kcal,
+      source: 'Acceso rápido HUD',
+      exp: gainedExp,
+      lp: gainedLp,
+    };
+
+    setActivityLogs({
+      ...activityLogs,
+      [todayKey]: {
+        ...prevDay,
+        steps: nextSteps,
+        walkRunKm: nextWalkRunKm,
+        calories: (prevDay.calories || 0) + kcal,
+        sessions: [quickSession, ...(prevDay.sessions || [])].slice(0, 25),
+        stepGoalClaimed: claimedStepBonus,
+      },
+    });
+    setExp((prev) => prev + gainedExp);
+    setLp((prev) => prev + gainedLp);
+    triggerToast(
+      `[PASOS +${inc.toLocaleString()}] Total hoy: ${nextSteps.toLocaleString()} pasos (+${gainedExp} EXP / +${gainedLp} LP)${bonusNote}`
+    );
+  };
+
   // ==========================================================================
   // INTERFAZ PRINCIPAL DEL SISTEMA (ANIME FANTASY RPG HUD)
   // ==========================================================================
@@ -4284,57 +4830,72 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         </div>
       </div>
 
-      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS */}
-      <div className="nav-tabs">
-        <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
-          <Trophy size={16} color="#fbbf24" />
-          <span>Misiones</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'routines' ? 'active' : ''}`} onClick={() => setActiveTab('routines')}>
-          <Cpu size={16} color="#10b981" />
-          <span>Rutina</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
-          <Sword size={16} color="#00f0ff" />
-          <span>Clase & Pasiva</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'pve' ? 'active' : ''}`} onClick={() => setActiveTab('pve')}>
-          <BookOpen size={16} color="#f59e0b" />
-          <span>Historia PvE</span>
-        </button>
-        <button
-          className={`nav-tab ${activeTab === 'city_vn' ? 'active' : ''}`}
-          style={{ opacity: cityUnlocked ? 1 : 0.72 }}
-          onClick={() => {
-            if (!cityUnlocked) {
-              triggerToast('🔒 Completa el Capítulo 1 de Historia PvE para fundar tu Ciudad 2D y desbloquear la Novela Visual.');
-            }
-            setActiveTab('city_vn');
+      {/* MENÚ DE NAVEGACIÓN DE 2 FILAS x 5 COLUMNAS + CONTADOR DE PASOS INTEGRADO */}
+      <div className="hud-nav-steps-layout">
+        <div className="nav-tabs">
+          <button className={`nav-tab ${activeTab === 'quests' ? 'active' : ''}`} onClick={() => setActiveTab('quests')}>
+            <Trophy size={16} color="#fbbf24" />
+            <span>Misiones</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'routines' ? 'active' : ''}`} onClick={() => setActiveTab('routines')}>
+            <Cpu size={16} color="#10b981" />
+            <span>Rutina</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'avatar' ? 'active' : ''}`} onClick={() => setActiveTab('avatar')}>
+            <Sword size={16} color="#00f0ff" />
+            <span>Clase & Pasiva</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'pve' ? 'active' : ''}`} onClick={() => setActiveTab('pve')}>
+            <BookOpen size={16} color="#f59e0b" />
+            <span>Historia PvE</span>
+          </button>
+          <button
+            className={`nav-tab ${activeTab === 'city_vn' ? 'active' : ''}`}
+            style={{ opacity: cityUnlocked ? 1 : 0.72 }}
+            onClick={() => {
+              if (!cityUnlocked) {
+                triggerToast('🔒 Completa el Capítulo 1 de Historia PvE para fundar tu Ciudad 2D y desbloquear la Novela Visual.');
+              }
+              setActiveTab('city_vn');
+            }}
+          >
+            {cityUnlocked ? <Heart size={16} color="#fb7185" /> : <Lock size={16} color="#94a3b8" />}
+            <span>{cityUnlocked ? 'Ciudad 2D' : 'Ciudad 🔒'}</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'pvp' ? 'active' : ''}`} onClick={() => setActiveTab('pvp')}>
+            <Users size={16} color="#f43f5e" />
+            <span>PvP</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
+            <Dumbbell size={16} color="#e11d48" />
+            <span>Cargas</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'vault' ? 'active' : ''}`} onClick={() => setActiveTab('vault')}>
+            <Lock size={16} color="#a855f7" />
+            <span>Bóveda</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'sleep' ? 'active' : ''}`} onClick={() => setActiveTab('sleep')}>
+            <Moon size={16} color="#38bdf8" />
+            <span>Sueño ({totalSleep}h)</span>
+          </button>
+          <button className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+            <Settings size={16} color="#94a3b8" />
+            <span>Ajustes</span>
+          </button>
+        </div>
+
+        <IntegratedStepCounterPanel
+          todaySteps={activityLogs[getLocalDateISO()]?.steps || 0}
+          stepGoal={dailyStepGoal}
+          onChangeStepGoal={(nextGoal) => {
+            setDailyStepGoal(nextGoal);
+            triggerToast(`[PASOS] Meta diaria actualizada a ${nextGoal.toLocaleString()} pasos.`);
           }}
-        >
-          {cityUnlocked ? <Heart size={16} color="#fb7185" /> : <Lock size={16} color="#94a3b8" />}
-          <span>{cityUnlocked ? 'Ciudad 2D' : 'Ciudad 🔒'}</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'pvp' ? 'active' : ''}`} onClick={() => setActiveTab('pvp')}>
-          <Users size={16} color="#f43f5e" />
-          <span>PvP</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'strength' ? 'active' : ''}`} onClick={() => setActiveTab('strength')}>
-          <Dumbbell size={16} color="#e11d48" />
-          <span>Cargas</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'vault' ? 'active' : ''}`} onClick={() => setActiveTab('vault')}>
-          <Lock size={16} color="#a855f7" />
-          <span>Bóveda</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'sleep' ? 'active' : ''}`} onClick={() => setActiveTab('sleep')}>
-          <Moon size={16} color="#38bdf8" />
-          <span>Sueño ({totalSleep}h)</span>
-        </button>
-        <button className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
-          <Settings size={16} color="#94a3b8" />
-          <span>Ajustes</span>
-        </button>
+          stepGoalClaimed={Boolean(activityLogs[getLocalDateISO()]?.stepGoalClaimed)}
+          walkRunKm={activityLogs[getLocalDateISO()]?.walkRunKm || 0}
+          onQuickAddSteps={handleQuickAddDailySteps}
+          onOpenFullTracker={() => setActiveTab('avatar')}
+        />
       </div>
 
       {/* ====================================================================
@@ -4437,14 +4998,26 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       )}
 
       {/* ====================================================================
-          MÓDULO 1: MISIONES DIARIAS
+          MÓDULO 1: MISIONES DIARIAS (PROTECCIÓN DIARIA, CUPO 12/12 Y JUSTIFICACIÓN LIBRE)
          ==================================================================== */}
       {activeTab === 'quests' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="sys-window" style={{ padding: '18px' }}>
-            <h2 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '12px' }}>
-              MISIONES DIARIAS (SUMA RACHA, EXP, LP Y RECOMPENSAS)
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+              <h2 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24' }}>
+                MISIONES DIARIAS (SUMA RACHA, EXP, LP Y RECOMPENSAS)
+              </h2>
+              <span
+                className="sys-badge"
+                style={{
+                  background: cancellationsRemaining > 0 ? 'rgba(0, 234, 255, 0.14)' : 'rgba(225, 29, 72, 0.18)',
+                  color: cancellationsRemaining > 0 ? '#67e8f9' : '#fda4af',
+                  border: `1px solid ${cancellationsRemaining > 0 ? 'rgba(0, 234, 255, 0.45)' : 'rgba(225, 29, 72, 0.45)'}`,
+                }}
+              >
+                CUPO ANULACIONES: {cancellationsRemaining}/{CANCELLATION_MAX_QUOTA}
+              </span>
+            </div>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
               <input
@@ -4457,9 +5030,22 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 className="sys-btn sys-btn-gold"
                 onClick={() => {
                   if (!newQuestTitle.trim()) return;
-                  setQuests([{ id: Date.now(), title: newQuestTitle, env: 'Declarado', lp: 45, exp: 95, status: 'pending' }, ...quests]);
+                  setQuests([
+                    {
+                      id: Date.now(),
+                      title: newQuestTitle,
+                      env: 'Declarado',
+                      lp: 45,
+                      exp: 95,
+                      status: 'pending',
+                      isDaily: false,
+                      origin: 'custom',
+                      createdAt: Date.now(),
+                    },
+                    ...quests,
+                  ]);
                   setNewQuestTitle('');
-                  triggerToast('[SISTEMA] Nueva misión diaria registrada.');
+                  triggerToast('[SISTEMA] Nueva misión personalizada registrada (anulable dentro de las próximas 12h).');
                 }}
               >
                 + AGREGAR
@@ -4467,120 +5053,286 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {quests.map((q) => (
-                <div
-                  key={q.id}
-                  style={{
-                    padding: '14px',
-                    borderRadius: '11px',
-                    background: 'rgba(4, 6, 12, 0.8)',
-                    border: `1px solid ${q.status === 'completed' ? '#10b981' : q.status === 'failed' ? '#e11d48' : 'rgba(148,163,184,0.22)'}`,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{q.title}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                        Recompensa: +{q.lp} LP • +{q.exp || 80} EXP • Cofre de Habilidad/Equipo
-                      </div>
-                    </div>
-                    <span className="sys-badge" style={{
-                      background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(225,29,72,0.2)' : 'rgba(251,191,36,0.15)',
-                      color: q.status === 'completed' ? '#6ee7b7' : q.status === 'failed' ? '#fda4af' : '#fbbf24'
-                    }}>
-                      {q.status === 'completed' ? 'CUMPLIDA' : q.status === 'failed' ? 'FALLIDA' : 'EN CURSO'}
-                    </span>
-                  </div>
+              {quests.map((q) => {
+                const isCustomMission = !q.isDaily && q.origin === 'custom';
+                const remainingCancelMs = isCustomMission
+                  ? Math.max(0, CANCELLATION_WINDOW_MS - (nowTimestamp - (q.createdAt || nowTimestamp)))
+                  : 0;
+                const canCancelCustom = isCustomMission && remainingCancelMs > 0 && cancellationsRemaining > 0;
 
-                  {q.status === 'pending' && (
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button
-                        className="sys-btn sys-btn-success"
-                        style={{ padding: '8px 12px', fontSize: '11px' }}
-                        onClick={() => {
-                          setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'completed' } : item));
-                          setLp((prev) => prev + q.lp);
-                          setExp((prev) => prev + (q.exp || 85));
-                          setStreak((s) => s + 1);
-
-                          const lockedDrops = DAILY_REWARD_POOL.filter(
-                            (drop) => !unlockedInventory.some((owned) => owned.id === drop.id)
-                          );
-                          if (lockedDrops.length > 0) {
-                            const won = lockedDrops[Math.floor(Math.random() * lockedDrops.length)];
-                            setUnlockedInventory([...unlockedInventory, won]);
-                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.exp || 85} EXP y obtuviste [${won.type}]: ${won.name}`);
-                          } else {
-                            triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.lp} LP y +${q.exp || 85} EXP.`);
-                          }
-                        }}
-                      >
-                        <CheckCircle2 size={14} /> LOGRADO
-                      </button>
-
-                      <button
-                        className="sys-btn sys-btn-danger"
-                        style={{ padding: '8px 12px', fontSize: '11px' }}
-                        onClick={() => {
-                          setQuests(quests.map((item) => item.id === q.id ? { ...item, status: 'failed' } : item));
-                          setNextWeekQueue([...nextWeekQueue, { id: Date.now(), title: `${q.title} (Retoma Semanal)`, lp: q.lp, exp: q.exp || 85 }]);
-                          triggerToast('[ALERTA] Misión fallida. Enviada a cola de retoma.');
-                        }}
-                      >
-                        <XCircle size={14} /> NO LOGRADO
-                      </button>
-
-                      <button
-                        className="sys-btn sys-btn-ghost"
-                        style={{ padding: '8px 12px', fontSize: '11px' }}
-                        onClick={() => setJustifyModalId(q.id)}
-                      >
-                        <CloudRain size={14} color="#38bdf8" /> JUSTIFICAR
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {justifyModalId && (
-              <div style={{
-                marginTop: '14px',
-                padding: '14px',
-                borderRadius: '11px',
-                background: 'rgba(14, 116, 144, 0.22)',
-                border: '1px solid #00f0ff'
-              }}>
-                <div style={{ fontWeight: 700, fontSize: '13px', color: '#00f0ff', marginBottom: '8px' }}>
-                  JUSTIFICACIÓN DE IMPREVISTO EXTERNO (CONVERSIÓN A DESAFÍO EN CASA)
-                </div>
-                <select className="sys-select" value={justifyReason} onChange={(e) => setJustifyReason(e.target.value)} style={{ marginBottom: '10px' }}>
-                  <option>Lluvia intensa / Tormenta (imposible salir a correr)</option>
-                  <option>Gimnasio cerrado por feriado o mantenimiento</option>
-                  <option>Corte de transporte / Emergencia laboral</option>
-                </select>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    className="sys-btn sys-btn-primary"
-                    onClick={() => {
-                      setQuests(quests.map((item) =>
-                        item.id === justifyModalId
-                          ? { ...item, title: `[DESAFÍO EN CASA] Circuito HIIT Tabata + 120 Sentadillas/Flexiones (${justifyReason})`, env: 'Casa (Adaptado)' }
-                          : item
-                      ));
-                      setJustifyModalId(null);
-                      triggerToast('[SISTEMA] Justificación aceptada. Misión transformada a entrenamiento en casa.');
+                return (
+                  <div
+                    key={q.id}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '11px',
+                      background: 'rgba(4, 6, 12, 0.8)',
+                      border: `1px solid ${q.status === 'completed' ? '#10b981' : q.status === 'failed' ? '#e11d48' : 'rgba(148,163,184,0.22)'}`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
                     }}
                   >
-                    GENERAR DESAFÍO EN CASA
-                  </button>
-                  <button className="sys-btn sys-btn-ghost" onClick={() => setJustifyModalId(null)}>CANCELAR</button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '15px', color: '#fff' }}>{q.title}</div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                          Recompensa: +{q.lp} LP • +{q.exp || 80} EXP • Cofre de Habilidad/Equipo
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        {q.isDaily && (
+                          <span
+                            className="sys-badge"
+                            style={{
+                              background: 'rgba(251, 191, 36, 0.14)',
+                              color: '#fde047',
+                              border: '1px solid rgba(251, 191, 36, 0.45)',
+                            }}
+                          >
+                            🔒 PROTEGIDA
+                          </span>
+                        )}
+                        <span
+                          className="sys-badge"
+                          style={{
+                            background: q.status === 'completed' ? 'rgba(16,185,129,0.2)' : q.status === 'failed' ? 'rgba(225,29,72,0.2)' : 'rgba(251,191,36,0.15)',
+                            color: q.status === 'completed' ? '#6ee7b7' : q.status === 'failed' ? '#fda4af' : '#fbbf24',
+                          }}
+                        >
+                          {q.status === 'completed' ? 'CUMPLIDA' : q.status === 'failed' ? 'FALLIDA' : 'EN CURSO'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {q.justificationAdvice && (
+                      <div
+                        style={{
+                          padding: '10px 12px',
+                          borderRadius: '9px',
+                          background: 'rgba(14, 116, 144, 0.18)',
+                          border: `1px solid ${q.justificationBadgeColor || '#00f0ff'}`,
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px', marginBottom: '4px' }}>
+                          <span
+                            className="sys-badge"
+                            style={{
+                              background: 'rgba(5, 8, 23, 0.85)',
+                              color: q.justificationBadgeColor || '#00f0ff',
+                              border: `1px solid ${q.justificationBadgeColor || '#00f0ff'}`,
+                            }}
+                          >
+                            {q.justificationCategory || 'JUSTIFICACIÓN REGISTRADA'}
+                          </span>
+                          {q.justificationReason && (
+                            <span style={{ fontSize: '11px', color: '#cbd5e1' }}>
+                              Motivo: <em>"{q.justificationReason}"</em>
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '12.5px', color: '#e0f2fe', lineHeight: 1.45 }}>
+                          {q.justificationAdvice}
+                        </div>
+                      </div>
+                    )}
+
+                    {q.status === 'pending' && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <button
+                          className="sys-btn sys-btn-success"
+                          style={{ padding: '8px 12px', fontSize: '11px' }}
+                          onClick={() => {
+                            setQuests(quests.map((item) => (item.id === q.id ? { ...item, status: 'completed' } : item)));
+                            setLp((prev) => prev + q.lp);
+                            setExp((prev) => prev + (q.exp || 85));
+                            setStreak((s) => s + 1);
+
+                            const lockedDrops = DAILY_REWARD_POOL.filter(
+                              (drop) => !unlockedInventory.some((owned) => owned.id === drop.id)
+                            );
+                            if (lockedDrops.length > 0) {
+                              const won = lockedDrops[Math.floor(Math.random() * lockedDrops.length)];
+                              setUnlockedInventory([...unlockedInventory, won]);
+                              triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.exp || 85} EXP y obtuviste [${won.type}]: ${won.name}`);
+                            } else {
+                              triggerToast(`¡MISIÓN CUMPLIDA! Racha +1 • +${q.lp} LP y +${q.exp || 85} EXP.`);
+                            }
+                          }}
+                        >
+                          <CheckCircle2 size={14} /> LOGRADO
+                        </button>
+
+                        <button
+                          className="sys-btn sys-btn-danger"
+                          style={{ padding: '8px 12px', fontSize: '11px' }}
+                          onClick={() => {
+                            setQuests(quests.map((item) => (item.id === q.id ? { ...item, status: 'failed' } : item)));
+                            setNextWeekQueue([
+                              ...nextWeekQueue,
+                              { id: Date.now(), title: `${q.title} (Retoma Semanal)`, lp: q.lp, exp: q.exp || 85 },
+                            ]);
+                            triggerToast('[ALERTA] Misión fallida. Enviada a cola de retoma.');
+                          }}
+                        >
+                          <XCircle size={14} /> NO LOGRADO
+                        </button>
+
+                        <button
+                          className="sys-btn sys-btn-ghost"
+                          style={{ padding: '8px 12px', fontSize: '11px' }}
+                          onClick={() => {
+                            setJustifyModalId(q.id);
+                            setJustifyReason(q.justificationReason || '');
+                          }}
+                        >
+                          <CloudRain size={14} color="#38bdf8" /> JUSTIFICAR
+                        </button>
+
+                        {isCustomMission && (
+                          <button
+                            type="button"
+                            disabled={!canCancelCustom}
+                            className="sys-btn sys-btn-ghost"
+                            style={{
+                              padding: '8px 12px',
+                              fontSize: '11px',
+                              borderColor: canCancelCustom ? 'rgba(251, 191, 36, 0.55)' : 'rgba(148, 163, 184, 0.25)',
+                              color: canCancelCustom ? '#fde047' : '#64748b',
+                              opacity: canCancelCustom ? 1 : 0.65,
+                              cursor: canCancelCustom ? 'pointer' : 'not-allowed',
+                            }}
+                            onClick={() => {
+                              if (!canCancelCustom) return;
+                              const nextQuota = Math.max(0, cancellationsRemaining - 1);
+                              setCancellationsRemaining(nextQuota);
+                              setQuests((prev) => prev.filter((item) => item.id !== q.id));
+                              if (justifyModalId === q.id) {
+                                setJustifyModalId(null);
+                                setJustifyReason('');
+                              }
+                              triggerToast(
+                                `[MISIÓN ANULADA] Eliminada sin penalizar racha ni enviarla a retoma. Cupo restante: ${nextQuota}/${CANCELLATION_MAX_QUOTA}.`
+                              );
+                            }}
+                          >
+                            {remainingCancelMs <= 0
+                              ? 'PLAZO 12H EXPIRADO'
+                              : cancellationsRemaining <= 0
+                              ? 'SIN CUPO (0/12)'
+                              : `ANULAR MISIÓN (${formatRemainingCancellationWindow(remainingCancelMs)})`}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {justifyModalId && (() => {
+              const targetQuest = quests.find((item) => item.id === justifyModalId);
+              const liveRec = buildJustificationRecommendation(justifyReason, targetQuest?.title);
+              return (
+                <div
+                  style={{
+                    marginTop: '14px',
+                    padding: '14px',
+                    borderRadius: '11px',
+                    background: 'rgba(14, 116, 144, 0.22)',
+                    border: '1px solid #00f0ff',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#00f0ff', marginBottom: '8px' }}>
+                    JUSTIFICACIÓN LIBRE Y RECOMENDACIÓN ADAPTADA ({targetQuest?.title || 'MISIÓN'})
+                  </div>
+                  <textarea
+                    className="sys-textarea"
+                    rows={3}
+                    placeholder="Describí libremente qué te ocurrió hoy (ej. poco tiempo por trabajo/facultad, cansancio acumulado, gimnasio cerrado, molestia física...)"
+                    value={justifyReason}
+                    onChange={(e) => setJustifyReason(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                  />
+                  <div
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: '9px',
+                      background: 'rgba(5, 8, 23, 0.88)',
+                      border: `1px solid ${liveRec.badgeColor}`,
+                      marginBottom: '10px',
+                    }}
+                  >
+                    <span
+                      className="sys-badge"
+                      style={{
+                        background: 'rgba(11, 21, 48, 0.9)',
+                        color: liveRec.badgeColor,
+                        border: `1px solid ${liveRec.badgeColor}`,
+                        marginBottom: '5px',
+                      }}
+                    >
+                      {liveRec.category}
+                    </span>
+                    <div style={{ fontSize: '12.5px', color: '#e2e8f0', lineHeight: 1.45 }}>
+                      {liveRec.advice}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      className="sys-btn sys-btn-primary"
+                      onClick={() => {
+                        const cleanReason = justifyReason.trim();
+                        if (!cleanReason) {
+                          triggerToast('[JUSTIFICACIÓN] Escribí brevemente tu motivo antes de confirmar.');
+                          return;
+                        }
+                        const rec = buildJustificationRecommendation(cleanReason, targetQuest?.title);
+                        const historyEntry = {
+                          id: Date.now(),
+                          questId: justifyModalId,
+                          questTitle: targetQuest?.title || 'Misión',
+                          reason: cleanReason,
+                          category: rec.category,
+                          advice: rec.advice,
+                          createdAt: new Date().toLocaleString(),
+                        };
+                        setJustificationHistory((prev) => [historyEntry, ...prev].slice(0, 30));
+                        setQuests(
+                          quests.map((item) =>
+                            item.id === justifyModalId
+                              ? {
+                                  ...item,
+                                  title: rec.adaptedTitle,
+                                  env: 'Adaptada (Justificada)',
+                                  justificationReason: cleanReason,
+                                  justificationCategory: rec.category,
+                                  justificationBadgeColor: rec.badgeColor,
+                                  justificationAdvice: rec.advice,
+                                }
+                              : item
+                          )
+                        );
+                        setJustifyModalId(null);
+                        setJustifyReason('');
+                        triggerToast(`[SISTEMA] Justificación registrada (${rec.category}) y consejo aplicado en la tarjeta.`);
+                      }}
+                    >
+                      APLICAR JUSTIFICACIÓN Y CONSEJO
+                    </button>
+                    <button
+                      className="sys-btn sys-btn-ghost"
+                      onClick={() => {
+                        setJustifyModalId(null);
+                        setJustifyReason('');
+                      }}
+                    >
+                      CANCELAR
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           <div className="sys-window" style={{ padding: '16px' }}>
@@ -4767,7 +5519,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               onCreateMission={(payload) => {
                 const exists = quests.some((q) => q.routineDate === payload.date && q.title === payload.title);
                 if (exists) { triggerToast('[MISIÓN] Ya existe una misión para este entrenamiento.'); return; }
-                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina programada', lp: 40, exp: 80, status: 'pending' }, ...prev]);
+                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina programada', lp: 40, exp: 80, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...prev]);
                 triggerToast('[MISIÓN] Creada a partir del entrenamiento programado, sin modificar ejercicios.');
               }}
             />
@@ -5099,7 +5851,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                                           style={{ padding: '4px 8px', fontSize: '9px' }}
                                           onClick={() => {
                                             const summary = row.filter(Boolean).join(' • ');
-                                            setQuests([{ id: Date.now(), title: summary, env: 'Planilla', lp: 40, exp: 85, status: 'pending' }, ...quests]);
+                                            setQuests([{ id: Date.now(), title: summary, env: 'Planilla', lp: 40, exp: 85, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...quests]);
                                             triggerToast(`[MISIONES] "${summary.slice(0, 42)}" enviado a Misiones Diarias.`);
                                           }}
                                         >
@@ -5224,7 +5976,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                               className="sys-btn sys-btn-ghost"
                               style={{ padding: '4px 8px', fontSize: '9px', flexShrink: 0 }}
                               onClick={() => {
-                                setQuests([{ id: Date.now(), title: item.text, env: 'Documento', lp: 40, exp: 85, status: 'pending' }, ...quests]);
+                                setQuests([{ id: Date.now(), title: item.text, env: 'Documento', lp: 40, exp: 85, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...quests]);
                                 triggerToast(`[MISIONES] "${item.text.slice(0, 42)}" añadido a Misiones Diarias.`);
                               }}
                             >
@@ -5249,10 +6001,69 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               onCreateMission={(payload) => {
                 const exists = quests.some((q) => q.routineDate === payload.date && q.title === payload.title);
                 if (exists) { triggerToast('[MISIÓN] Ya existe una misión para esta fecha.'); return; }
-                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina importada', lp: 40, exp: 80, status: 'pending' }, ...prev]);
+                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina importada', lp: 40, exp: 80, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...prev]);
                 triggerToast('[MISIÓN] Creada desde los ejercicios detectados en tu rutina importada.');
               }}
             />
+
+            {savedRoutineAnalysis && savedRoutineAnalysis.items?.length > 0 && (
+              <div
+                style={{
+                  marginTop: '14px',
+                  padding: '15px',
+                  borderRadius: '12px',
+                  background: 'rgba(5, 8, 23, 0.94)',
+                  border: '1.5px solid rgba(16, 185, 129, 0.5)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                  <div>
+                    <div className="font-hud" style={{ fontSize: '13px', fontWeight: 800, color: '#6ee7b7' }}>
+                      EJERCICIOS Y CARGAS GUARDADOS EN RUTINA ({savedRoutineAnalysis.items.length})
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      Origen: <strong>{savedRoutineAnalysis.sourceName}</strong> • Guardado: {savedRoutineAnalysis.updatedAt} • En Misiones se generó únicamente la tarjeta diaria <strong>"Entrenar hoy"</strong>.
+                    </div>
+                  </div>
+                </div>
+                <div className="grid-2">
+                  {savedRoutineAnalysis.items.map((item) => (
+                    <div
+                      key={item.id}
+                      style={{
+                        padding: '9px 11px',
+                        borderRadius: '9px',
+                        background: 'rgba(11, 21, 48, 0.82)',
+                        border: '1px solid rgba(0, 234, 255, 0.22)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: '10px', color: '#00f0ff', fontWeight: 700 }}>{item.day}</div>
+                        <div style={{ fontSize: '13px', color: '#fff', fontWeight: 700 }}>{item.name}</div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                          {item.prescription}{item.notes ? ` • ${item.notes}` : ''}
+                        </div>
+                      </div>
+                      <span
+                        className="sys-badge"
+                        style={{
+                          background: item.load !== 'Sin carga fija' ? 'rgba(251, 191, 36, 0.18)' : 'rgba(148, 163, 184, 0.14)',
+                          color: item.load !== 'Sin carga fija' ? '#fde047' : '#cbd5e1',
+                          border: `1px solid ${item.load !== 'Sin carga fija' ? 'rgba(251, 191, 36, 0.45)' : 'rgba(148, 163, 184, 0.25)'}`,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.load}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* ==============================================================
                 2) CRÍTICA CONSTRUCTIVA Y PUNTOS FUERTES (DEBAJO DEL ARCHIVO)
