@@ -6,7 +6,8 @@ import {
   ChevronRight, Sword, Clock, Save, Check,
   UserCheck, Users, MapPin, Play, BookOpen, Plus, Crosshair,
   LogIn, KeyRound, Mail, UserPlus, Settings, Trash2,
-  Heart, Building2, Send, RotateCcw
+  Heart, Building2, Send, RotateCcw,
+  Pause, Navigation, Activity
 } from 'lucide-react';
 
 // ============================================================================
@@ -901,6 +902,24 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return Number((R * c).toFixed(1));
+}
+
+function getPreciseDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function getLocalDateISO(dateObj = new Date()) {
+  return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 }
 
 function getRelationshipLabel(affection) {
@@ -2217,6 +2236,455 @@ export default function App() {
 }
 
 // ============================================================================
+// MÓDULO DE MOVIMIENTO & CARDIO GPS (PASOS, CARRERA Y BICICLETA)
+// ============================================================================
+function MovementTrackerModule({
+  profile,
+  activityLogs,
+  setActivityLogs,
+  tracker,
+  onStartTracker,
+  onPauseTracker,
+  onDiscardTracker,
+  onChangeMode,
+  onAwardProgress,
+}) {
+  const [showManualForm, setShowManualForm] = useState(false);
+  const [manualMode, setManualMode] = useState('walk');
+  const [manualSteps, setManualSteps] = useState('');
+  const [manualKm, setManualKm] = useState('');
+  const [manualMinutes, setManualMinutes] = useState('');
+
+  const todayKey = getLocalDateISO();
+  const todayData = activityLogs[todayKey] || {
+    steps: 0,
+    walkRunKm: 0,
+    bikeKm: 0,
+    calories: 0,
+    sessions: [],
+    stepGoalClaimed: false,
+    bikeGoalClaimed: false,
+  };
+
+  const STEP_GOAL = 8000;
+  const DISTANCE_GOAL_KM = 10;
+
+  const totalTodayKm = Number(((todayData.walkRunKm || 0) + (todayData.bikeKm || 0)).toFixed(2));
+  const stepProgressPct = Math.min(100, Math.round(((todayData.steps || 0) / STEP_GOAL) * 100));
+  const distProgressPct = Math.min(100, Math.round((totalTodayKm / DISTANCE_GOAL_KM) * 100));
+
+  const formatElapsed = (sec) => {
+    const mins = Math.floor(sec / 60);
+    const remSec = sec % 60;
+    const hrs = Math.floor(mins / 60);
+    if (hrs > 0) {
+      return `${hrs}:${String(mins % 60).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+    }
+    return `${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+  };
+
+  const estimateCalories = (mode, steps, km, elapsedSec) => {
+    const weight = Number(profile.weightKg) || 75;
+    const hours = Math.max(
+      elapsedSec / 3600,
+      km > 0 ? km / (mode === 'bike' ? 18 : mode === 'run' ? 9.5 : 5) : steps / 6500
+    );
+    const met = mode === 'bike' ? 7.5 : mode === 'run' ? 8.8 : 3.8;
+    return Math.max(1, Math.round(met * weight * hours));
+  };
+
+  const commitActivityRecord = ({ mode, steps, distanceKm, elapsedSec, sourceLabel }) => {
+    const cleanSteps = mode === 'bike' ? 0 : Math.max(0, Math.round(steps));
+    const cleanKm = Math.max(0, Number(distanceKm.toFixed(2)));
+    if (cleanSteps === 0 && cleanKm === 0) return;
+
+    const kcal = estimateCalories(mode, cleanSteps, cleanKm, elapsedSec);
+    const prevDay = activityLogs[todayKey] || {
+      steps: 0,
+      walkRunKm: 0,
+      bikeKm: 0,
+      calories: 0,
+      sessions: [],
+      stepGoalClaimed: false,
+      bikeGoalClaimed: false,
+    };
+
+    const nextSteps = (prevDay.steps || 0) + cleanSteps;
+    const nextWalkRunKm = Number(((prevDay.walkRunKm || 0) + (mode !== 'bike' ? cleanKm : 0)).toFixed(2));
+    const nextBikeKm = Number(((prevDay.bikeKm || 0) + (mode === 'bike' ? cleanKm : 0)).toFixed(2));
+    const nextTotalKm = Number((nextWalkRunKm + nextBikeKm).toFixed(2));
+
+    const stepExp = Math.floor(cleanSteps / 1000) * 10;
+    const stepLp = Math.floor(cleanSteps / 1000) * 5;
+    const kmExp = Math.floor(cleanKm * 12);
+    const kmLp = Math.floor(cleanKm * 6);
+
+    let gainedExp = Math.max(5, mode === 'bike' ? kmExp : Math.max(stepExp, kmExp));
+    let gainedLp = Math.max(3, mode === 'bike' ? kmLp : Math.max(stepLp, kmLp));
+
+    let claimedStepBonus = Boolean(prevDay.stepGoalClaimed);
+    let claimedDistBonus = Boolean(prevDay.bikeGoalClaimed);
+    const bonusNotes = [];
+
+    if (!claimedStepBonus && nextSteps >= STEP_GOAL) {
+      claimedStepBonus = true;
+      gainedExp += 40;
+      gainedLp += 20;
+      bonusNotes.push('Meta 8.000 pasos (+40 EXP / +20 LP)');
+    }
+    if (!claimedDistBonus && nextTotalKm >= DISTANCE_GOAL_KM) {
+      claimedDistBonus = true;
+      gainedExp += 50;
+      gainedLp += 25;
+      bonusNotes.push('Meta 10 km diarios (+50 EXP / +25 LP)');
+    }
+
+    const modeNames = { walk: 'Caminata', run: 'Carrera', bike: 'Bicicleta' };
+    const newSession = {
+      id: Date.now(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      mode,
+      modeLabel: modeNames[mode] || 'Actividad',
+      steps: cleanSteps,
+      distanceKm: cleanKm,
+      durationSec: elapsedSec,
+      calories: kcal,
+      source: sourceLabel,
+      exp: gainedExp,
+      lp: gainedLp,
+    };
+
+    setActivityLogs({
+      ...activityLogs,
+      [todayKey]: {
+        steps: nextSteps,
+        walkRunKm: nextWalkRunKm,
+        bikeKm: nextBikeKm,
+        calories: (prevDay.calories || 0) + kcal,
+        sessions: [newSession, ...(prevDay.sessions || [])].slice(0, 25),
+        stepGoalClaimed: claimedStepBonus,
+        bikeGoalClaimed: claimedDistBonus,
+      },
+    });
+
+    const summaryStr =
+      mode === 'bike'
+        ? `${cleanKm.toFixed(2)} km en bici`
+        : `${cleanSteps.toLocaleString()} pasos (${cleanKm.toFixed(2)} km)`;
+
+    onAwardProgress(
+      gainedExp,
+      gainedLp,
+      `[MOVIMIENTO GUARDADO] ${summaryStr} • +${gainedExp} EXP y +${gainedLp} LP${bonusNotes.length ? ` • ¡${bonusNotes.join(' + ')}!` : ''}`
+    );
+  };
+
+  const handleFinishLiveSession = () => {
+    if (tracker.sessionSteps === 0 && tracker.sessionDistanceKm < 0.01) {
+      onDiscardTracker('No se registró desplazamiento suficiente para guardar la sesión.');
+      return;
+    }
+    commitActivityRecord({
+      mode: tracker.mode,
+      steps: tracker.sessionSteps,
+      distanceKm: tracker.sessionDistanceKm,
+      elapsedSec: tracker.elapsedSec,
+      sourceLabel: tracker.hasAccelerometer ? 'GPS + Acelerómetro' : 'GPS Satelital',
+    });
+    onDiscardTracker(null);
+  };
+
+  const handleSaveManual = () => {
+    const stepsVal = manualMode === 'bike' ? 0 : Math.max(0, Number(manualSteps) || 0);
+    const heightM = (Number(profile.heightCm) || 176) / 100;
+    const strideM = manualMode === 'run' ? heightM * 0.65 : heightM * 0.415;
+    const rawKm = Math.max(0, Number(manualKm) || 0);
+    const derivedKm = rawKm > 0 ? rawKm : Number(((stepsVal * strideM) / 1000).toFixed(2));
+    const derivedSteps =
+      manualMode === 'bike'
+        ? 0
+        : stepsVal > 0
+        ? stepsVal
+        : Math.round((derivedKm * 1000) / strideM);
+    const mins = Math.max(1, Number(manualMinutes) || 15);
+
+    if (derivedSteps === 0 && derivedKm === 0) return;
+
+    commitActivityRecord({
+      mode: manualMode,
+      steps: derivedSteps,
+      distanceKm: derivedKm,
+      elapsedSec: mins * 60,
+      sourceLabel: 'Registro Manual',
+    });
+    setManualSteps('');
+    setManualKm('');
+    setManualMinutes('');
+    setShowManualForm(false);
+  };
+
+  const recentDates = Object.keys(activityLogs).sort().reverse().slice(0, 5);
+
+  return (
+    <div className="sys-window" style={{ padding: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Activity size={18} color="#00f0ff" />
+          <h3 className="font-hud" style={{ fontSize: '13px', color: '#00f0ff' }}>
+            RASTREADOR DE PASOS & GPS (A PIE / BICICLETA)
+          </h3>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <span
+            className="sys-badge"
+            style={{
+              background: tracker.isRunning ? 'rgba(16,185,129,0.2)' : 'rgba(148,163,184,0.14)',
+              color: tracker.isRunning ? '#6ee7b7' : '#94a3b8',
+              border: `1px solid ${tracker.isRunning ? '#10b981' : 'rgba(148,163,184,0.3)'}`,
+            }}
+          >
+            {tracker.isRunning ? '● RASTREO ACTIVO' : tracker.elapsedSec > 0 ? '❚❚ EN PAUSA' : 'LISTO'}
+          </span>
+          {tracker.wakeLockActive && (
+            <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fde047', border: '1px solid #fbbf24' }}>
+              PANTALLA ACTIVA
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="grid-2" style={{ marginBottom: '14px' }}>
+        <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(5,8,23,0.85)', border: '1px solid rgba(0,234,255,0.22)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+            <span style={{ color: '#7dd3fc', fontWeight: 700 }}>
+              PASOS HOY: {(todayData.steps || 0).toLocaleString()} / {STEP_GOAL.toLocaleString()}
+            </span>
+            <span style={{ color: todayData.stepGoalClaimed ? '#10b981' : '#fbbf24', fontWeight: 700 }}>
+              {todayData.stepGoalClaimed ? '✓ META +40 EXP' : '+40 EXP / +20 LP'}
+            </span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${stepProgressPct}%`, background: 'linear-gradient(90deg, #0284c7, #00f0ff)' }} />
+          </div>
+        </div>
+
+        <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(5,8,23,0.85)', border: '1px solid rgba(255,212,90,0.25)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
+            <span style={{ color: '#fde047', fontWeight: 700 }}>
+              DISTANCIA HOY: {totalTodayKm.toFixed(2)} / {DISTANCE_GOAL_KM} KM
+            </span>
+            <span style={{ color: todayData.bikeGoalClaimed ? '#10b981' : '#fbbf24', fontWeight: 700 }}>
+              {todayData.bikeGoalClaimed ? '✓ META +50 EXP' : '+50 EXP / +25 LP'}
+            </span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${distProgressPct}%`, background: 'linear-gradient(90deg, #b45309, #fbbf24)' }} />
+          </div>
+          <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px' }}>
+            A pie: {(todayData.walkRunKm || 0).toFixed(2)} km • Bici: {(todayData.bikeKm || 0).toFixed(2)} km • ~{todayData.calories || 0} kcal
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
+        {[
+          { id: 'walk', label: 'Caminar', sub: 'Pasos + GPS' },
+          { id: 'run', label: 'Correr', sub: 'Zancada + GPS' },
+          { id: 'bike', label: 'Bicicleta', sub: 'Km GPS' },
+        ].map((item) => {
+          const selected = tracker.mode === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              disabled={tracker.isRunning}
+              onClick={() => onChangeMode(item.id)}
+              style={{
+                padding: '9px 6px',
+                borderRadius: '10px',
+                cursor: tracker.isRunning ? 'not-allowed' : 'pointer',
+                background: selected
+                  ? 'linear-gradient(135deg, rgba(0,234,255,0.22), rgba(16,27,56,0.96))'
+                  : 'rgba(5,8,23,0.8)',
+                border: `1px solid ${selected ? '#00f0ff' : 'rgba(170,185,213,0.22)'}`,
+                color: selected ? '#fff' : '#94a3b8',
+                opacity: tracker.isRunning && !selected ? 0.5 : 1,
+                textAlign: 'center',
+              }}
+            >
+              <div className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: selected ? '#00f0ff' : '#cbd5e1' }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: '10px', color: '#94a3b8' }}>{item.sub}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '8px',
+          padding: '12px',
+          borderRadius: '12px',
+          background: 'rgba(4,7,18,0.92)',
+          border: '1px solid rgba(0,234,255,0.25)',
+          marginBottom: '12px',
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>
+            {tracker.mode === 'bike' ? 'VELOCIDAD' : 'PASOS SESIÓN'}
+          </div>
+          <div className="font-hud" style={{ fontSize: '20px', fontWeight: 900, color: '#00f0ff' }}>
+            {tracker.mode === 'bike'
+              ? `${tracker.speedKmh.toFixed(1)} km/h`
+              : tracker.sessionSteps.toLocaleString()}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>DISTANCIA</div>
+          <div className="font-hud" style={{ fontSize: '20px', fontWeight: 900, color: '#fbbf24' }}>
+            {tracker.sessionDistanceKm.toFixed(2)} km
+          </div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>TIEMPO</div>
+          <div className="font-hud" style={{ fontSize: '20px', fontWeight: 900, color: '#f4f6ff' }}>
+            {formatElapsed(tracker.elapsedSec)}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+        <span>
+          <Navigation size={12} style={{ display: 'inline', marginRight: '4px', color: '#00f0ff' }} />
+          GPS: <strong style={{ color: '#e2e8f0' }}>{tracker.gpsStatus}</strong>
+        </span>
+        <span>
+          Sensor: <strong style={{ color: '#e2e8f0' }}>{tracker.hasAccelerometer ? 'Acelerómetro + GPS' : `Híbrido GPS (Altura ${profile.heightCm || 176} cm)`}</strong>
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {!tracker.isRunning ? (
+          <button type="button" className="sys-btn sys-btn-primary" style={{ flex: 1 }} onClick={onStartTracker}>
+            <Play size={15} /> {tracker.elapsedSec > 0 ? 'REANUDAR' : 'INICIAR'}
+          </button>
+        ) : (
+          <button type="button" className="sys-btn sys-btn-gold" style={{ flex: 1 }} onClick={onPauseTracker}>
+            <Pause size={15} /> PAUSAR
+          </button>
+        )}
+
+        {(tracker.elapsedSec > 0 || tracker.sessionSteps > 0 || tracker.sessionDistanceKm > 0) && (
+          <>
+            <button type="button" className="sys-btn sys-btn-success" onClick={handleFinishLiveSession}>
+              <CheckCircle2 size={15} /> GUARDAR SESIÓN
+            </button>
+            <button type="button" className="sys-btn sys-btn-danger" onClick={() => onDiscardTracker('Sesión descartada.')}>
+              <RotateCcw size={15} />
+            </button>
+          </>
+        )}
+
+        <button type="button" className="sys-btn sys-btn-ghost" onClick={() => setShowManualForm(!showManualForm)}>
+          <Plus size={15} /> MANUAL
+        </button>
+      </div>
+
+      {showManualForm && (
+        <div style={{ marginTop: '12px', padding: '12px', borderRadius: '12px', background: 'rgba(5,8,23,0.92)', border: '1px solid rgba(251,191,36,0.35)' }}>
+          <div style={{ fontSize: '11px', color: '#fde047', fontWeight: 700, marginBottom: '8px' }}>
+            CARGA MANUAL (CINTA DE CORRER, BICI FIJA O SIN GPS)
+          </div>
+          <div className="grid-2" style={{ marginBottom: '8px' }}>
+            <select className="sys-select" value={manualMode} onChange={(e) => setManualMode(e.target.value)}>
+              <option value="walk">Caminata (Pasos / Km)</option>
+              <option value="run">Carrera / Trote (Pasos / Km)</option>
+              <option value="bike">Bicicleta / Bici Fija (Km)</option>
+            </select>
+            <input
+              type="number"
+              className="sys-input"
+              placeholder="Duración (minutos)"
+              value={manualMinutes}
+              onChange={(e) => setManualMinutes(e.target.value)}
+            />
+          </div>
+          <div className="grid-2" style={{ marginBottom: '8px' }}>
+            {manualMode !== 'bike' && (
+              <input
+                type="number"
+                className="sys-input"
+                placeholder="Pasos realizados (ej. 5000)"
+                value={manualSteps}
+                onChange={(e) => setManualSteps(e.target.value)}
+              />
+            )}
+            <input
+              type="number"
+              step="0.1"
+              className="sys-input"
+              placeholder="Distancia en km (ej. 4.5)"
+              value={manualKm}
+              onChange={(e) => setManualKm(e.target.value)}
+            />
+          </div>
+          <button type="button" className="sys-btn sys-btn-gold" style={{ width: '100%' }} onClick={handleSaveManual}>
+            <Save size={15} /> REGISTRAR Y SUMAR EXP / LP
+          </button>
+        </div>
+      )}
+
+      {todayData.sessions?.length > 0 && (
+        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginBottom: '6px' }}>
+            SESIONES DE HOY ({todayData.sessions.length})
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {todayData.sessions.slice(0, 4).map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '12px',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  background: 'rgba(5,8,23,0.75)',
+                }}
+              >
+                <span style={{ color: '#e2e8f0' }}>
+                  <strong>{s.modeLabel}</strong> ({s.time}) •{' '}
+                  {s.mode === 'bike'
+                    ? `${s.distanceKm.toFixed(2)} km`
+                    : `${s.steps.toLocaleString()} pasos (${s.distanceKm.toFixed(2)} km)`}
+                </span>
+                <span style={{ color: '#10b981', fontWeight: 700 }}>
+                  +{s.exp} EXP • +{s.lp} LP
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {recentDates.length > 1 && (
+        <div style={{ marginTop: '8px', fontSize: '11px', color: '#94a3b8' }}>
+          Días registrados: {recentDates.map((d) => `${d.slice(5)} (${(activityLogs[d]?.steps || 0).toLocaleString()} pasos / ${((activityLogs[d]?.walkRunKm || 0) + (activityLogs[d]?.bikeKm || 0)).toFixed(1)} km)`).join(' • ')}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
 // ESPACIO DE TRABAJO DEL CAZADOR (TODO INICIA ESTRICTAMENTE DESDE 0)
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
@@ -2328,6 +2796,197 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
   const [todaySleep, setTodaySleep] = useState(0);
 
+  const [activityLogs, setActivityLogs] = useState(() => initialData?.activityLogs || {});
+  const [tracker, setTracker] = useState({
+    isRunning: false,
+    mode: 'walk',
+    sessionSteps: 0,
+    sessionDistanceKm: 0,
+    speedKmh: 0,
+    elapsedSec: 0,
+    gpsStatus: 'En espera',
+    hasAccelerometer: false,
+    wakeLockActive: false,
+  });
+
+  const lastGpsPointRef = useRef(null);
+  const wakeLockRef = useRef(null);
+  const lastStepTimestampRef = useRef(0);
+  const gravityEstimateRef = useRef(9.81);
+  const hasAccelRef = useRef(false);
+
+  useEffect(() => {
+    if (!tracker.isRunning) {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().catch(() => {});
+        wakeLockRef.current = null;
+      }
+      setTracker((prev) => (prev.wakeLockActive ? { ...prev, wakeLockActive: false } : prev));
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setTracker((prev) => ({ ...prev, elapsedSec: prev.elapsedSec + 1 }));
+    }, 1000);
+
+    if ('wakeLock' in navigator && !wakeLockRef.current) {
+      navigator.wakeLock
+        .request('screen')
+        .then((sentinel) => {
+          wakeLockRef.current = sentinel;
+          setTracker((prev) => ({ ...prev, wakeLockActive: true }));
+        })
+        .catch(() => {});
+    }
+
+    return () => clearInterval(intervalId);
+  }, [tracker.isRunning]);
+
+  useEffect(() => {
+    if (!tracker.isRunning) return;
+
+    let watchId = null;
+    if (navigator.geolocation) {
+      setTracker((prev) => ({ ...prev, gpsStatus: 'Buscando satélite...' }));
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude, accuracy, speed } = pos.coords;
+          if (accuracy && accuracy > 45) {
+            setTracker((prev) => ({ ...prev, gpsStatus: `Señal débil (±${Math.round(accuracy)}m)` }));
+            return;
+          }
+
+          setUserCoords({
+            lat: latitude,
+            lon: longitude,
+            label: `GPS Activo (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+          });
+
+          const prevPt = lastGpsPointRef.current;
+          const nowMs = Date.now();
+          let deltaKm = 0;
+
+          if (prevPt) {
+            const rawDist = getPreciseDistanceKm(prevPt.lat, prevPt.lon, latitude, longitude);
+            const dtHours = Math.max((nowMs - prevPt.time) / 3600000, 1 / 3600);
+            const impliedSpeed = rawDist / dtHours;
+            if (rawDist >= 0.004 && impliedSpeed <= 65) {
+              deltaKm = rawDist;
+              lastGpsPointRef.current = { lat: latitude, lon: longitude, time: nowMs };
+            }
+          } else {
+            lastGpsPointRef.current = { lat: latitude, lon: longitude, time: nowMs };
+          }
+
+          setTracker((prev) => {
+            const heightM = (Number(profile.heightCm) || 176) / 100;
+            const strideM = prev.mode === 'run' ? heightM * 0.65 : heightM * 0.415;
+            const gpsEstimatedSteps =
+              prev.mode !== 'bike' && !hasAccelRef.current && deltaKm > 0
+                ? Math.round((deltaKm * 1000) / strideM)
+                : 0;
+            const liveSpeed =
+              typeof speed === 'number' && speed >= 0
+                ? Number((speed * 3.6).toFixed(1))
+                : deltaKm > 0 && prevPt
+                ? Number((deltaKm / Math.max((nowMs - prevPt.time) / 3600000, 1 / 3600)).toFixed(1))
+                : 0;
+
+            return {
+              ...prev,
+              gpsStatus: `Conectado (±${Math.round(accuracy || 10)}m)`,
+              sessionDistanceKm: prev.sessionDistanceKm + deltaKm,
+              sessionSteps: prev.sessionSteps + gpsEstimatedSteps,
+              speedKmh: liveSpeed,
+            };
+          });
+        },
+        () => {
+          setTracker((prev) => ({ ...prev, gpsStatus: 'GPS no disponible (usando sensor/manual)' }));
+        },
+        { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+      );
+    }
+
+    const handleDeviceMotion = (event) => {
+      if (tracker.mode === 'bike') return;
+      const acc =
+        event.acceleration && event.acceleration.x !== null
+          ? event.acceleration
+          : event.accelerationIncludingGravity;
+      if (!acc) return;
+
+      const mag = Math.sqrt((acc.x || 0) ** 2 + (acc.y || 0) ** 2 + (acc.z || 0) ** 2);
+      let dynamicDelta = mag;
+      if (!event.acceleration || event.acceleration.x === null) {
+        gravityEstimateRef.current = 0.9 * gravityEstimateRef.current + 0.1 * mag;
+        dynamicDelta = Math.abs(mag - gravityEstimateRef.current);
+      }
+
+      const threshold = tracker.mode === 'run' ? 2.6 : 1.65;
+      const minGapMs = tracker.mode === 'run' ? 190 : 280;
+      const now = Date.now();
+
+      if (dynamicDelta > threshold && now - lastStepTimestampRef.current > minGapMs) {
+        lastStepTimestampRef.current = now;
+        if (!hasAccelRef.current) {
+          hasAccelRef.current = true;
+        }
+        setTracker((prev) => ({
+          ...prev,
+          hasAccelerometer: true,
+          sessionSteps: prev.sessionSteps + 1,
+        }));
+      }
+    };
+
+    window.addEventListener('devicemotion', handleDeviceMotion);
+    return () => {
+      if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+      window.removeEventListener('devicemotion', handleDeviceMotion);
+    };
+  }, [tracker.isRunning, tracker.mode, profile.heightCm]);
+
+  const handleStartTracker = async () => {
+    if (
+      typeof DeviceMotionEvent !== 'undefined' &&
+      typeof DeviceMotionEvent.requestPermission === 'function'
+    ) {
+      try {
+        await DeviceMotionEvent.requestPermission();
+      } catch {
+        // Continúa con respaldo GPS si el usuario rechaza el acelerómetro
+      }
+    }
+    lastGpsPointRef.current = null;
+    setTracker((prev) => ({ ...prev, isRunning: true }));
+    triggerToast('[SISTEMA GPS] Rastreo de actividad iniciado.');
+  };
+
+  const handlePauseTracker = () => {
+    lastGpsPointRef.current = null;
+    setTracker((prev) => ({ ...prev, isRunning: false, speedKmh: 0 }));
+    triggerToast('[SISTEMA GPS] Sesión en pausa.');
+  };
+
+  const handleDiscardTracker = (msg) => {
+    lastGpsPointRef.current = null;
+    hasAccelRef.current = false;
+    setTracker((prev) => ({
+      ...prev,
+      isRunning: false,
+      sessionSteps: 0,
+      sessionDistanceKm: 0,
+      speedKmh: 0,
+      elapsedSec: 0,
+      gpsStatus: 'En espera',
+      hasAccelerometer: false,
+    }));
+    if (msg) triggerToast(msg);
+  };
+
   const canvasRef = useRef(null);
 
   const gradeData = computeHunterGradeData(savedLifts, profile.weightKg);
@@ -2368,6 +3027,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         sleepLog,
         yearlyRecap,
         routineDayLogs,
+        activityLogs,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
@@ -2390,6 +3050,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         sleepLog,
         yearlyRecap,
         routineDayLogs,
+        activityLogs,
       };
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
@@ -2397,7 +3058,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     storageKey, awakened, profile, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
-    friends, quests, nextWeekQueue, sleepLog, yearlyRecap, routineDayLogs
+    friends, quests, nextWeekQueue, sleepLog, yearlyRecap, routineDayLogs, activityLogs
   ]);
 
   const triggerToast = (msg) => {
@@ -2419,6 +3080,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setNextWeekQueue([]);
     setSleepLog(ZERO_SLEEP_LOG);
     setTodaySleep(0);
+    setActivityLogs({});
+    handleDiscardTracker(null);
     setYearlyRecap([]);
     setPveBattleLog(null);
     setPvpLog(null);
@@ -3541,7 +4204,27 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         <span style={{ color: '#cbd5e1' }}>
           <span style={{ color: '#10b981', fontWeight: 700 }}>● SESIÓN PERMANENTE ACTIVA:</span> {currentUser.email}
         </span>
-        <span style={{ color: '#94a3b8' }}>Guardado automático</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {tracker.isRunning && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('avatar')}
+              style={{
+                background: 'rgba(16, 185, 129, 0.2)',
+                border: '1px solid #10b981',
+                color: '#6ee7b7',
+                borderRadius: '999px',
+                padding: '2px 8px',
+                fontSize: '10px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              ● {tracker.mode === 'bike' ? `${tracker.sessionDistanceKm.toFixed(2)} km` : `${tracker.sessionSteps} pasos`}
+            </button>
+          )}
+          <span style={{ color: '#94a3b8' }}>Guardado automático</span>
+        </div>
       </div>
 
       {/* CABECERA DE ESTADO DEL CAZADOR (DESDE 0) */}
@@ -3670,6 +4353,22 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               passiveClassBonus={passiveClassBonus}
             />
           </div>
+
+          <MovementTrackerModule
+            profile={profile}
+            activityLogs={activityLogs}
+            setActivityLogs={setActivityLogs}
+            tracker={tracker}
+            onStartTracker={handleStartTracker}
+            onPauseTracker={handlePauseTracker}
+            onDiscardTracker={handleDiscardTracker}
+            onChangeMode={(newMode) => setTracker((prev) => ({ ...prev, mode: newMode }))}
+            onAwardProgress={(gainedExp, gainedLp, toastMsg) => {
+              setExp((prev) => prev + gainedExp);
+              setLp((prev) => prev + gainedLp);
+              triggerToast(toastMsg);
+            }}
+          />
 
           <div className="sys-window" style={{ padding: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
