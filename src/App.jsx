@@ -190,6 +190,44 @@ const SYSTEM_CSS = `
     animation: cinematicEntry .8s ease-out;
   }
 
+  /* Aplicación explícita del sistema visual RPG al módulo Avatar */
+  .avatar-rpg-shell {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .avatar-rpg-shell::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    z-index: -1;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(0, 234, 255, 0.16), transparent 42%),
+      radial-gradient(circle at 85% 20%, rgba(150, 60, 255, 0.18), transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(255, 62, 157, 0.12), transparent 48%);
+    filter: blur(12px);
+    pointer-events: none;
+  }
+
+  .avatar-rpg-shell .rpg-card {
+    background: linear-gradient(145deg, var(--bg-panel), var(--bg-main));
+    color: var(--text-main);
+  }
+
+  .avatar-rpg-shell .rpg-button:focus-visible {
+    outline: 2px solid var(--neon-gold);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .avatar-rpg-shell *,
+    .avatar-rpg-shell::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
   .sys-btn {
     display: inline-flex;
     align-items: center;
@@ -2547,6 +2585,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
   const [routineFileName, setRoutineFileName] = useState('');
+  const [showGeneratedRoutine, setShowGeneratedRoutine] = useState(false);
 
   const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
   const [todaySleep, setTodaySleep] = useState(0);
@@ -2900,30 +2939,91 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     triggerToast('[ESCÁNER] Rutina leída y evaluación orientativa generada.');
   };
 
-  const handleRoutineFileUpload = (event) => {
+  const handleRoutineFileUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const allowed = /\.(txt|md|csv)$/i.test(file.name) || ['text/plain', 'text/markdown', 'text/csv'].includes(file.type);
-    if (!allowed) {
-      triggerToast('[ESCÁNER] Por ahora se admiten archivos TXT, MD o CSV. Para imágenes/PDF, pegá el texto extraído en el cuadro.');
+
+    // Se aceptan todos los formatos. El límite evita bloquear el navegador con archivos enormes.
+    const MAX_FILE_SIZE = 25 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      triggerToast('[ESCÁNER] El archivo supera el límite de 25 MB.');
       event.target.value = '';
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      triggerToast('[ESCÁNER] El archivo supera el límite de 2 MB.');
+
+    const extension = (file.name.split('.').pop() || '').toLowerCase();
+    const fileInfo = `Archivo: ${file.name}\nTipo MIME: ${file.type || 'no informado'}\nTamaño: ${(file.size / 1024).toFixed(1)} KB`;
+    setRoutineFileName(file.name);
+
+    try {
+      let extractedText = '';
+      const textExtensions = ['txt', 'md', 'csv', 'tsv', 'json', 'xml', 'html', 'htm', 'log', 'rtf', 'yaml', 'yml', 'ini'];
+      const isTextFile = (file.type || '').startsWith('text/') || textExtensions.includes(extension);
+
+      if (isTextFile) {
+        extractedText = await file.text();
+      } else if (extension === 'pdf' && typeof window !== 'undefined' && window.pdfjsLib) {
+        const pdfData = new Uint8Array(await file.arrayBuffer());
+        const pdf = await window.pdfjsLib.getDocument({ data: pdfData }).promise;
+        const pages = [];
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const content = await page.getTextContent();
+          pages.push(content.items.map((item) => item.str || '').join(' '));
+        }
+        extractedText = pages.join('\n\n');
+      } else if (['docx', 'doc'].includes(extension) && typeof window !== 'undefined' && window.mammoth) {
+        const result = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+        extractedText = result.value || '';
+      } else if (['xlsx', 'xls', 'ods'].includes(extension) && typeof window !== 'undefined' && window.XLSX) {
+        const workbook = window.XLSX.read(await file.arrayBuffer(), { type: 'array' });
+        extractedText = workbook.SheetNames.map((sheetName) => {
+          const sheet = workbook.Sheets[sheetName];
+          return `HOJA: ${sheetName}\n${window.XLSX.utils.sheet_to_csv(sheet)}`;
+        }).join('\n\n');
+      }
+
+      if (extractedText.trim()) {
+        setCustomRoutineText(extractedText);
+        analyzeRoutineText(extractedText, file.name);
+        triggerToast(`[ESCÁNER] Se cargó ${file.name} y se extrajo su texto.`);
+      } else {
+        const isImage = (file.type || '').startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic', 'heif'].includes(extension);
+        const isPdf = extension === 'pdf';
+        const explanation = isImage
+          ? 'La imagen se recibió correctamente, pero esta versión no tiene OCR integrado para leer automáticamente el texto de la captura. Podés conservar el archivo como referencia y pegar/transcribir el contenido en el cuadro.'
+          : isPdf
+            ? 'El PDF se recibió correctamente. Para extraer su texto automáticamente, la aplicación necesita tener PDF.js cargado (window.pdfjsLib). Si es un PDF escaneado, además necesita OCR.'
+            : ['doc', 'docx'].includes(extension)
+              ? 'El documento se recibió correctamente. Para leerlo automáticamente, la aplicación necesita tener Mammoth cargado (window.mammoth).'
+              : ['xls', 'xlsx', 'ods'].includes(extension)
+                ? 'La planilla se recibió correctamente. Para leerla automáticamente, la aplicación necesita tener SheetJS cargado (window.XLSX).'
+                : 'El archivo se recibió correctamente, pero este formato binario no tiene un lector compatible integrado. Podés pegar el texto de la rutina en el cuadro para analizarlo.';
+        setCustomRoutineText('');
+        setScanReport({
+          sourceName: file.name,
+          rawText: `${fileInfo}\n\n${explanation}`,
+          exerciseLines: [],
+          score: 'PENDIENTE (CONTENIDO NO EXTRAÍDO)',
+          finding: [`Se aceptó el archivo ${file.name}.`, 'El archivo quedó identificado por nombre, formato y tamaño.'],
+          fix: [explanation, 'Cuando el contenido esté disponible como texto, usá EXAMINAR RUTINA para recibir la evaluación de ejercicios, series, repeticiones, RIR y progresión.']
+        });
+        triggerToast('[ESCÁNER] Archivo recibido. La extracción depende del formato.');
+      }
+    } catch (error) {
+      console.error('Error al procesar el archivo de rutina:', error);
+      setScanReport({
+        sourceName: file.name,
+        rawText: `${fileInfo}\n\nNo se pudo extraer el contenido del archivo.`,
+        exerciseLines: [],
+        score: 'NO DISPONIBLE',
+        finding: ['El archivo fue seleccionado, pero ocurrió un error durante la lectura.'],
+        fix: ['Probá con otro formato o pegá el texto de la rutina directamente en el cuadro.']
+      });
+      triggerToast('[ESCÁNER] No se pudo extraer el contenido del archivo.');
+    } finally {
       event.target.value = '';
-      return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const content = String(reader.result || '');
-      setRoutineFileName(file.name);
-      setCustomRoutineText(content);
-      analyzeRoutineText(content, file.name);
-    };
-    reader.onerror = () => triggerToast('[ESCÁNER] No se pudo leer el archivo.');
-    reader.readAsText(file);
-    event.target.value = '';
   };
 
   const toggleHomeEquipment = (eq) => {
@@ -3528,7 +3628,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
          ==================================================================== */}
       {activeTab === 'avatar' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ maxWidth: '520px', width: '100%', margin: '0 auto' }}>
+          <div className="avatar-rpg-shell cinematic-entry" style={{ maxWidth: '520px', width: '100%', margin: '0 auto' }}>
             <JrpgFantasyPortrait
               hunterClass={hunterClass}
               hunterGrade={hunterGrade}
@@ -3789,7 +3889,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           <div className="sys-window" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
               <h2 className="font-hud" style={{ fontSize: '14px', color: '#10b981' }}>
-                PLAN DE ENTRENAMIENTO PERSONALIZADO ({activeRoutinePlan.horizon.toUpperCase()})
+                GENERADOR DE ENTRENAMIENTO PERSONALIZADO
               </h2>
               <span className="sys-badge" style={{ background: 'rgba(16,185,129,0.2)', color: '#6ee7b7' }}>
                 {profile.daysPerWeek} DÍAS / SEMANA
@@ -3851,6 +3951,24 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             )}
 
+            <div style={{ marginTop: '8px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                className="sys-btn sys-btn-primary"
+                style={{ width: '100%', justifyContent: 'center', padding: '13px' }}
+                onClick={() => {
+                  setShowGeneratedRoutine(true);
+                  triggerToast('[SISTEMA] Rutina personalizada generada.');
+                }}
+              >
+                <Dumbbell size={16} /> GENERAR MI RUTINA COMPLETA
+              </button>
+              <p style={{ color: '#94a3b8', fontSize: '11px', textAlign: 'center' }}>
+                La rutina y su desglose semanal permanecerán ocultos hasta que solicites generarlos.
+              </p>
+            </div>
+
+            {showGeneratedRoutine && (
+            <div className="cinematic-entry">
             <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.3)', marginBottom: '14px' }}>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#fde047', marginBottom: '4px' }}>
                 ESTRUCTURA DEL MESOCICLO ({activeRoutinePlan.modeLabel}):
@@ -3909,16 +4027,18 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               ))}
             </div>
+            </div>
+            )}
           </div>
 
           <div className="sys-window" style={{ padding: '18px' }}>
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', marginBottom: '10px' }}>
-              ESCÁNER DE RUTINA PROPIA (ARCHIVO O TEXTO)
+              ESCÁNER DE RUTINA PROPIA (CUALQUIER ARCHIVO O TEXTO)
             </h2>
             <textarea
               className="sys-textarea"
               rows={3}
-              placeholder="Pegá tu rutina actual o subí una captura para auditar volumen y fatiga..."
+              placeholder="Pegá tu rutina o subí un archivo de cualquier formato. Se intentará extraer el texto según el tipo de archivo..."
               value={customRoutineText}
               onChange={(e) => setCustomRoutineText(e.target.value)}
             />
@@ -3930,10 +4050,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <Scan size={15} /> EXAMINAR RUTINA
               </button>
               <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
-                <FileText size={15} /> SUBIR ARCHIVO TXT / MD / CSV
+                <FileText size={15} /> SUBIR CUALQUIER ARCHIVO
                 <input
                   type="file"
-                  accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"
+                  accept="*/*"
                   style={{ display: 'none' }}
                   onChange={handleRoutineFileUpload}
                 />
