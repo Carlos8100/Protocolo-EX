@@ -946,704 +946,141 @@ function generateCharacterAIReply(char, userMsg, memoryList, context) {
 }
 
 // ============================================================================
-// MOTOR PROCEDURAL LEGENDARY GACHA (BASE EXACTA: 1000272220.jpg Y 1000272221.jpg)
+// MOTOR MULTI-IA CON FILTRO ANTI-ERROR Y CACHÉ LOCAL (100% SIN CANVAS)
 // ============================================================================
-function LegendaryGachaCanvas({ gender, stage }) {
-  const canvasRef = useRef(null);
+function buildAnimeAvatarPrompt(gender, cls) {
+  const subject = gender === 'female'
+    ? '1girl, solo, anime heroine warrior, long flowing black hair, fierce violet-indigo eyes'
+    : '1boy, solo, anime hero warrior, spiky messy black hair, fierce violet-indigo eyes';
+  const weapon = cls?.weaponType === 'spear'
+    ? 'holding glowing cyan runic spear'
+    : cls?.weaponType === 'greatsword'
+    ? 'holding massive glowing cyan runic greatsword'
+    : cls?.weaponType === 'staff'
+    ? 'holding ornate golden arcane staff with cyan crystal'
+    : cls?.weaponType === 'daggers'
+    ? 'holding dual glowing cyan runic daggers'
+    : cls?.weaponType === 'gauntlets'
+    ? 'wearing glowing cyan runic battle gauntlets'
+    : 'holding glowing cyan lightning runic sword';
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const W = 720;
-    const H = 960;
-    const isFemale = gender === 'female';
-    const neonBlue = '#00f0ff';
-    const royalGold = '#fbbf24';
+  return `${subject}, wearing ornate dark obsidian fantasy armor with gold filigree trim and glowing cyan neon runes, large glowing cyan diamond crystal in center of chestplate, tattered crimson red cape, ${weapon}, glowing blue arcane magic circles floating behind, cosmic starry night sky background with golden embers and light rays, high quality anime JRPG gacha character portrait, vibrant cel shaded illustration, masterpiece`;
+}
 
-    ctx.clearRect(0, 0, W, H);
-
-    // 1. CIELO ESTELAR DE ALTA FANTASÍA CON NEBULOSA VIOLETA/AZUL Y RAYOS DORADOS
-    const bgGrad = ctx.createRadialGradient(350, 360, 40, 360, 460, 650);
-    bgGrad.addColorStop(0, '#1e2756');
-    bgGrad.addColorStop(0.45, '#111633');
-    bgGrad.addColorStop(0.85, '#070a19');
-    bgGrad.addColorStop(1, '#03050c');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, W, H);
-
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-
-    // Halo dorado trasero central
-    const centerGold = ctx.createRadialGradient(360, 430, 15, 360, 430, 300);
-    centerGold.addColorStop(0, 'rgba(251, 191, 36, 0.34)');
-    centerGold.addColorStop(0.55, 'rgba(217, 119, 6, 0.14)');
-    centerGold.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = centerGold;
-    ctx.fillRect(0, 0, W, H);
-
-    // Resplandor Neon Blue detrás del torso y círculos arcanos
-    const centerBlue = ctx.createRadialGradient(340, 500, 10, 340, 500, 340);
-    centerBlue.addColorStop(0, 'rgba(0, 240, 255, 0.38)');
-    centerBlue.addColorStop(0.6, 'rgba(37, 99, 235, 0.14)');
-    centerBlue.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = centerBlue;
-    ctx.fillRect(0, 0, W, H);
-
-    // Rayos de luz verticales/diagonales
-    const beamGrad = ctx.createLinearGradient(360, 40, 360, 650);
-    beamGrad.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
-    beamGrad.addColorStop(0.6, 'rgba(0, 240, 255, 0.08)');
-    beamGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = beamGrad;
-    ctx.beginPath();
-    ctx.moveTo(275, 0);
-    ctx.lineTo(445, 0);
-    ctx.lineTo(540, 620);
-    ctx.lineTo(180, 620);
-    ctx.closePath();
-    ctx.fill();
-
-    // Estrellas de 4 puntas doradas y blancas
-    const drawFourPointStar = (sx, sy, size, color) => {
-      ctx.save();
-      ctx.fillStyle = color;
-      ctx.shadowBlur = 14;
-      ctx.shadowColor = color;
-      ctx.beginPath();
-      ctx.moveTo(sx, sy - size);
-      ctx.quadraticCurveTo(sx, sy, sx + size, sy);
-      ctx.quadraticCurveTo(sx, sy, sx, sy + size);
-      ctx.quadraticCurveTo(sx, sy, sx - size, sy);
-      ctx.quadraticCurveTo(sx, sy, sx, sy - size);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    };
-    drawFourPointStar(188, 175, 22, '#fde047');
-    drawFourPointStar(132, 92, 11, '#c084fc');
-    drawFourPointStar(232, 238, 12, '#e879f9');
-    drawFourPointStar(575, 112, 9, '#7dd3fc');
-
-    // 2. DOBLE CÍRCULO MÁGICO ARCANO (IZQUIERDA Y DERECHA COMO EN LA ILUSTRACIÓN)
-    const drawArcaneSeal = (mx, my, rad) => {
-      ctx.save();
-      ctx.shadowBlur = 18;
-      ctx.shadowColor = neonBlue;
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.72)';
-      ctx.lineWidth = 2.4;
-      ctx.beginPath();
-      ctx.arc(mx, my, rad, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.arc(mx, my, rad * 0.84, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(mx, my, rad * 0.44, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Triángulos entrelazados estilo sello rúnico
-      for (let t = 0; t < 2; t++) {
-        ctx.beginPath();
-        for (let i = 0; i <= 3; i++) {
-          const a = (i * (Math.PI * 2)) / 3 - Math.PI / 2 + t * Math.PI;
-          const px = mx + Math.cos(a) * (rad * 0.82);
-          const py = my + Math.sin(a) * (rad * 0.82);
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-      }
-      ctx.restore();
-    };
-
-    drawArcaneSeal(105, 345, 92);
-    drawArcaneSeal(615, 265, 96);
-
-    // Pétalos y ascuas doradas flotando
-    const embers = [
-      [85, 220, 4, royalGold], [65, 480, 5, royalGold], [145, 760, 4.5, royalGold],
-      [645, 165, 4, royalGold], [665, 420, 5, royalGold], [630, 620, 4.5, neonBlue],
-      [530, 88, 3.5, royalGold], [275, 62, 3, '#ffffff'], [470, 145, 3, neonBlue]
-    ];
-    embers.forEach(([ex, ey, er, ec]) => {
-      ctx.save();
-      ctx.fillStyle = ec;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = ec;
-      ctx.beginPath();
-      ctx.ellipse(ex, ey, er * 1.4, er * 0.7, -0.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+// Filtro detector: rechaza imágenes < 45 KB o con esquinas beige/blancas ("At its limit right now")
+async function verifyAndCompressAiBlob(blob) {
+  if (!blob || blob.size < 45000) {
+    throw new Error('Imagen descartada por tamaño reducido (posible cartel de saturación).');
+  }
+  const objectUrl = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('No se pudo decodificar la imagen.'));
+      el.src = objectUrl;
     });
-    ctx.restore();
 
-    const cx = 345;
+    const probe = document.createElement('canvas');
+    probe.width = 16;
+    probe.height = 16;
+    const pCtx = probe.getContext('2d');
+    pCtx.drawImage(img, 0, 0, 16, 16);
 
-    // 3. CAPA CARMESÍ DESGARRADA ONDEANDO A AMBOS LADOS
-    ctx.save();
-    const capeGrad = ctx.createLinearGradient(60, 420, 660, 740);
-    capeGrad.addColorStop(0, '#9f1239');
-    capeGrad.addColorStop(0.5, '#be123c');
-    capeGrad.addColorStop(1, '#881337');
-    ctx.fillStyle = capeGrad;
-
-    // Ala izquierda de la capa
-    ctx.beginPath();
-    ctx.moveTo(cx - 120, 445);
-    ctx.bezierCurveTo(cx - 210, 470, 70, 515, 16, 560);
-    ctx.lineTo(28, 610);
-    ctx.lineTo(14, 650);
-    ctx.lineTo(44, 685);
-    ctx.lineTo(24, 725);
-    ctx.lineTo(140, 650);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ala derecha de la capa
-    ctx.beginPath();
-    ctx.moveTo(cx + 120, 445);
-    ctx.bezierCurveTo(cx + 220, 465, 635, 495, 706, 515);
-    ctx.lineTo(688, 565);
-    ctx.lineTo(708, 605);
-    ctx.lineTo(672, 650);
-    ctx.lineTo(560, 615);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-
-    // 4. CABELLO TRASERO LARGO (FEMENINO) O NUCA (MASCULINO)
-    ctx.save();
-    const hairDark = ctx.createLinearGradient(cx, 130, cx, 620);
-    hairDark.addColorStop(0, '#090c18');
-    hairDark.addColorStop(0.55, '#151a30');
-    hairDark.addColorStop(1, '#232946');
-    ctx.fillStyle = hairDark;
-
-    if (isFemale) {
-      ctx.beginPath();
-      ctx.moveTo(cx - 88, 200);
-      ctx.bezierCurveTo(cx - 175, 290, cx - 220, 420, cx - 185, 515);
-      ctx.quadraticCurveTo(cx - 135, 495, cx - 105, 465);
-      ctx.lineTo(cx + 105, 465);
-      ctx.quadraticCurveTo(cx + 145, 495, cx + 195, 505);
-      ctx.bezierCurveTo(cx + 225, 415, cx + 180, 290, cx + 88, 200);
-      ctx.closePath();
-      ctx.fill();
-    } else {
-      ctx.beginPath();
-      ctx.moveTo(cx - 82, 210);
-      ctx.quadraticCurveTo(cx - 98, 275, cx - 72, 326);
-      ctx.lineTo(cx + 72, 326);
-      ctx.quadraticCurveTo(cx + 98, 275, cx + 82, 210);
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // 5. ARMADURA DE OBSIDIANA CON FILIGRANA DORADA Y CIRCUITO NEON BLUE
-    ctx.save();
-    const armorGrad = ctx.createLinearGradient(cx - 150, 370, cx + 150, 860);
-    armorGrad.addColorStop(0, '#1e2642');
-    armorGrad.addColorStop(0.45, '#0e1324');
-    armorGrad.addColorStop(1, '#070a14');
-
-    // Torso y faldón blindado
-    ctx.fillStyle = armorGrad;
-    ctx.beginPath();
-    ctx.moveTo(cx - 125, 405);
-    ctx.lineTo(cx + 125, 405);
-    ctx.lineTo(cx + 96, 635);
-    ctx.lineTo(cx + 158, 955);
-    ctx.lineTo(cx - 158, 955);
-    ctx.lineTo(cx - 96, 635);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ribetes de oro del peto
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 3.2;
-    ctx.stroke();
-
-    // Cuello alto blindado con borde dorado y línea azul neón
-    ctx.fillStyle = '#0c1122';
-    ctx.beginPath();
-    ctx.moveTo(cx - 64, 336);
-    ctx.lineTo(cx - 86, 412);
-    ctx.lineTo(cx, 446);
-    ctx.lineTo(cx + 86, 412);
-    ctx.lineTo(cx + 64, 336);
-    ctx.lineTo(cx, 368);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = neonBlue;
-    ctx.strokeStyle = neonBlue;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(cx - 58, 352);
-    ctx.lineTo(cx - 74, 404);
-    ctx.moveTo(cx + 58, 352);
-    ctx.lineTo(cx + 74, 404);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Hombreras curvas de obsidiana con volutas doradas y rombo cian
-    const drawOrnatePauldron = (dir) => {
-      ctx.save();
-      const pGrad = ctx.createLinearGradient(cx + dir * 95, 365, cx + dir * 215, 510);
-      pGrad.addColorStop(0, '#273052');
-      pGrad.addColorStop(0.5, '#11162b');
-      pGrad.addColorStop(1, '#070a14');
-      ctx.fillStyle = pGrad;
-
-      ctx.beginPath();
-      ctx.moveTo(cx + dir * 92, 402);
-      ctx.bezierCurveTo(cx + dir * 155, 362, cx + dir * 218, 392, cx + dir * 224, 488);
-      ctx.lineTo(cx + dir * 116, 502);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = royalGold;
-      ctx.lineWidth = 3.5;
-      ctx.stroke();
-
-      // Voluta interior dorada
-      ctx.strokeStyle = '#fde047';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(cx + dir * 118, 418);
-      ctx.bezierCurveTo(cx + dir * 165, 395, cx + dir * 195, 435, cx + dir * 165, 468);
-      ctx.stroke();
-
-      // Rombo cian en hombrera
-      const rx = cx + dir * 116;
-      const ry = 434;
-      ctx.fillStyle = neonBlue;
-      ctx.beginPath();
-      ctx.moveTo(rx, ry - 12);
-      ctx.lineTo(rx + 10, ry);
-      ctx.lineTo(rx, ry + 12);
-      ctx.lineTo(rx - 10, ry);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+    const checkCorner = (x, y) => {
+      const [r, g, b] = pCtx.getImageData(x, y, 1, 1).data;
+      const isBeigeBanner = r > 205 && g > 188 && b > 160 && r >= g && g >= b;
+      const isBlankWhite = r > 235 && g > 235 && b > 235;
+      return isBeigeBanner || isBlankWhite;
     };
-    drawOrnatePauldron(-1);
-    drawOrnatePauldron(1);
 
-    // Brazos y Guanteletes con runas azul neón
-    ctx.fillStyle = '#0d1224';
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 2.6;
-    // Brazo izquierdo (puño cerrado)
-    ctx.beginPath();
-    ctx.moveTo(cx - 126, 495);
-    ctx.lineTo(cx - 178, 635);
-    ctx.lineTo(cx - 154, 755);
-    ctx.lineTo(cx - 105, 748);
-    ctx.lineTo(cx - 118, 632);
-    ctx.lineTo(cx - 94, 505);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Brazo derecho (empuñando la espada)
-    ctx.beginPath();
-    ctx.moveTo(cx + 126, 495);
-    ctx.lineTo(cx + 188, 635);
-    ctx.lineTo(cx + 168, 768);
-    ctx.lineTo(cx + 115, 758);
-    ctx.lineTo(cx + 124, 635);
-    ctx.lineTo(cx + 94, 505);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Runas Neon Blue en peto, guanteletes y faldón
-    ctx.save();
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = neonBlue;
-    ctx.strokeStyle = neonBlue;
-    ctx.lineWidth = 2.6;
-    ctx.beginPath();
-    ctx.moveTo(cx - 88, 465);
-    ctx.lineTo(cx - 56, 512);
-    ctx.moveTo(cx + 88, 465);
-    ctx.lineTo(cx + 56, 512);
-    ctx.moveTo(cx - 72, 548);
-    ctx.lineTo(cx, 588);
-    ctx.lineTo(cx + 72, 548);
-    ctx.moveTo(cx - 64, 582);
-    ctx.lineTo(cx, 620);
-    ctx.lineTo(cx + 64, 582);
-    // Runas en guanteletes
-    ctx.moveTo(cx - 156, 610);
-    ctx.lineTo(cx - 142, 710);
-    ctx.moveTo(cx + 162, 610);
-    ctx.lineTo(cx + 148, 715);
-    ctx.stroke();
-    ctx.restore();
-
-    // Hebilla de cinturón con diamante cian
-    const beltY = 678;
-    ctx.fillStyle = '#11162b';
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(cx, beltY - 26);
-    ctx.lineTo(cx + 28, beltY);
-    ctx.lineTo(cx, beltY + 26);
-    ctx.lineTo(cx - 28, beltY);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = neonBlue;
-    ctx.beginPath();
-    ctx.moveTo(cx, beltY - 14);
-    ctx.lineTo(cx + 15, beltY);
-    ctx.lineTo(cx, beltY + 14);
-    ctx.lineTo(cx - 15, beltY);
-    ctx.closePath();
-    ctx.fill();
-
-    // GRAN DIAMANTE PECTORAL CIAN CON DESTELLO LUMINOSO HORIZONTAL
-    const coreY = 505;
-    ctx.save();
-    ctx.shadowBlur = 32;
-    ctx.shadowColor = neonBlue;
-    ctx.fillStyle = '#071b2e';
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(cx, coreY - 62);
-    ctx.lineTo(cx + 52, coreY);
-    ctx.lineTo(cx, coreY + 62);
-    ctx.lineTo(cx - 52, coreY);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    const diamondGrad = ctx.createRadialGradient(cx, coreY, 4, cx, coreY, 44);
-    diamondGrad.addColorStop(0, '#ffffff');
-    diamondGrad.addColorStop(0.45, '#67e8f9');
-    diamondGrad.addColorStop(0.85, '#0284c7');
-    diamondGrad.addColorStop(1, '#0369a1');
-    ctx.fillStyle = diamondGrad;
-    ctx.beginPath();
-    ctx.moveTo(cx, coreY - 46);
-    ctx.lineTo(cx + 38, coreY);
-    ctx.lineTo(cx, coreY + 46);
-    ctx.lineTo(cx - 38, coreY);
-    ctx.closePath();
-    ctx.fill();
-
-    // Lens flare horizontal blanco/cian sobre el diamante del pecho
-    ctx.globalCompositeOperation = 'lighter';
-    const flareGrad = ctx.createLinearGradient(cx - 260, coreY, cx + 260, coreY);
-    flareGrad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-    flareGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.35)');
-    flareGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
-    flareGrad.addColorStop(0.65, 'rgba(0, 240, 255, 0.35)');
-    flareGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
-    ctx.fillStyle = flareGrad;
-    ctx.fillRect(cx - 260, coreY - 4, 520, 8);
-    ctx.restore();
-    ctx.restore();
-
-    // 6. ROSTRO ANIME CON OJOS VIOLETA-ÍNDIGO INTENSO
-    ctx.save();
-    const neckGrad = ctx.createLinearGradient(cx, 305, cx, 378);
-    neckGrad.addColorStop(0, '#d69e82');
-    neckGrad.addColorStop(0.5, '#f6cbb2');
-    neckGrad.addColorStop(1, '#eab89b');
-    ctx.fillStyle = neckGrad;
-    ctx.beginPath();
-    ctx.moveTo(cx - 24, 306);
-    ctx.lineTo(cx + 24, 306);
-    ctx.lineTo(cx + 30, 378);
-    ctx.lineTo(cx - 30, 378);
-    ctx.closePath();
-    ctx.fill();
-
-    const faceGrad = ctx.createLinearGradient(cx - 64, 180, cx + 64, 332);
-    faceGrad.addColorStop(0, '#ffe2ce');
-    faceGrad.addColorStop(0.6, '#f8cdb4');
-    faceGrad.addColorStop(1, '#e8b090');
-    ctx.fillStyle = faceGrad;
-    ctx.beginPath();
-    ctx.moveTo(cx - 62, 224);
-    ctx.bezierCurveTo(cx - 63, 282, cx - 44, 316, cx, 334);
-    ctx.bezierCurveTo(cx + 44, 316, cx + 63, 282, cx + 62, 224);
-    ctx.bezierCurveTo(cx + 62, 172, cx + 36, 156, cx, 156);
-    ctx.bezierCurveTo(cx - 36, 156, cx - 62, 172, cx - 62, 224);
-    ctx.closePath();
-    ctx.fill();
-
-    // Ojos Violeta-Índigo
-    const drawVioletAnimeEye = (ex, isLeft) => {
-      ctx.save();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.moveTo(ex - 18, 260);
-      ctx.quadraticCurveTo(ex, 246, ex + 18, 260);
-      ctx.quadraticCurveTo(ex, 272, ex - 18, 260);
-      ctx.closePath();
-      ctx.fill();
-
-      const irisGrad = ctx.createLinearGradient(ex, 249, ex, 270);
-      irisGrad.addColorStop(0, '#1e1b4b');
-      irisGrad.addColorStop(0.45, '#4f46e5');
-      irisGrad.addColorStop(0.85, '#818cf8');
-      irisGrad.addColorStop(1, '#c7d2fe');
-      ctx.fillStyle = irisGrad;
-      ctx.beginPath();
-      ctx.ellipse(ex, 260, 9.5, 10.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#090d1a';
-      ctx.beginPath();
-      ctx.ellipse(ex, 260, 4.4, 5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(ex - 3.5, 256, 3.1, 0, Math.PI * 2);
-      ctx.arc(ex + 3.6, 263, 1.6, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#090c18';
-      ctx.lineWidth = 4.2;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      if (isLeft) {
-        ctx.moveTo(ex - 21, 258);
-        ctx.quadraticCurveTo(ex - 2, 244, ex + 18, 259);
-      } else {
-        ctx.moveTo(ex - 18, 259);
-        ctx.quadraticCurveTo(ex + 2, 244, ex + 21, 258);
-      }
-      ctx.stroke();
-
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2.8;
-      ctx.beginPath();
-      if (isLeft) {
-        ctx.moveTo(ex - 20, 239);
-        ctx.lineTo(ex + 15, 246);
-      } else {
-        ctx.moveTo(ex - 15, 246);
-        ctx.lineTo(ex + 20, 239);
-      }
-      ctx.stroke();
-      ctx.restore();
-    };
-    drawVioletAnimeEye(cx - 30, true);
-    drawVioletAnimeEye(cx + 30, false);
-
-    // Nariz y boca seria/determinada
-    ctx.strokeStyle = '#b97455';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath();
-    ctx.moveTo(cx - 1, 276);
-    ctx.lineTo(cx - 3, 288);
-    ctx.lineTo(cx + 2, 290);
-    ctx.stroke();
-
-    ctx.strokeStyle = '#7c2d12';
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(cx - 12, 306);
-    ctx.quadraticCurveTo(cx, 304, cx + 12, 306);
-    ctx.stroke();
-    ctx.restore();
-
-    // 7. CABELLO NEGRO CON REFLEJOS VIOLETA/AZUL (CORTO MASCULINO / LARGO FEMENINO)
-    ctx.save();
-    const frontHairGrad = ctx.createLinearGradient(cx - 85, 115, cx + 85, 275);
-    frontHairGrad.addColorStop(0, '#0a0d1a');
-    frontHairGrad.addColorStop(0.55, '#171c36');
-    frontHairGrad.addColorStop(1, '#262d52');
-    ctx.fillStyle = frontHairGrad;
-
-    ctx.beginPath();
-    if (isFemale) {
-      ctx.moveTo(cx - 86, 255);
-      ctx.bezierCurveTo(cx - 102, 165, cx - 52, 118, cx, 118);
-      ctx.bezierCurveTo(cx + 52, 118, cx + 102, 165, cx + 86, 255);
-      ctx.quadraticCurveTo(cx + 72, 215, cx + 56, 206);
-      ctx.quadraticCurveTo(cx + 48, 242, cx + 36, 258);
-      ctx.quadraticCurveTo(cx + 26, 218, cx + 14, 202);
-      ctx.quadraticCurveTo(cx + 4, 244, cx - 8, 260);
-      ctx.quadraticCurveTo(cx - 18, 220, cx - 30, 204);
-      ctx.quadraticCurveTo(cx - 42, 240, cx - 56, 254);
-      ctx.quadraticCurveTo(cx - 70, 218, cx - 86, 255);
-    } else {
-      ctx.moveTo(cx - 88, 242);
-      ctx.lineTo(cx - 108, 212);
-      ctx.lineTo(cx - 86, 188);
-      ctx.lineTo(cx - 98, 152);
-      ctx.lineTo(cx - 64, 144);
-      ctx.lineTo(cx - 56, 112);
-      ctx.lineTo(cx - 22, 128);
-      ctx.lineTo(cx + 4, 102);
-      ctx.lineTo(cx + 28, 128);
-      ctx.lineTo(cx + 62, 114);
-      ctx.lineTo(cx + 68, 146);
-      ctx.lineTo(cx + 102, 156);
-      ctx.lineTo(cx + 86, 192);
-      ctx.lineTo(cx + 106, 218);
-      ctx.lineTo(cx + 82, 246);
-      ctx.quadraticCurveTo(cx + 66, 214, cx + 52, 206);
-      ctx.quadraticCurveTo(cx + 44, 238, cx + 32, 254);
-      ctx.quadraticCurveTo(cx + 22, 216, cx + 10, 202);
-      ctx.quadraticCurveTo(cx, 242, cx - 12, 258);
-      ctx.quadraticCurveTo(cx - 22, 218, cx - 34, 204);
-      ctx.quadraticCurveTo(cx - 46, 238, cx - 60, 252);
-      ctx.quadraticCurveTo(cx - 72, 216, cx - 88, 242);
+    if (checkCorner(2, 2) || checkCorner(13, 2)) {
+      throw new Error('Cartel de límite detectado por color de fondo.');
     }
-    ctx.closePath();
-    ctx.fill();
 
-    // Brillo violeta/azulado en el flequillo
-    ctx.strokeStyle = 'rgba(129, 140, 248, 0.45)';
-    ctx.lineWidth = 2.6;
-    ctx.beginPath();
-    ctx.moveTo(cx - 52, 182);
-    ctx.quadraticCurveTo(cx, 162, cx + 52, 182);
-    ctx.stroke();
+    // Comprime a JPEG ligero para guardarlo permanente en localStorage
+    const out = document.createElement('canvas');
+    const targetW = 540;
+    const targetH = Math.round((img.height / img.width) * targetW) || 720;
+    out.width = targetW;
+    out.height = targetH;
+    out.getContext('2d').drawImage(img, 0, 0, targetW, targetH);
+    return out.toDataURL('image/jpeg', 0.84);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
 
-    if (stage >= 3) {
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = royalGold;
-      ctx.strokeStyle = royalGold;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(cx - 46, 142);
-      ctx.lineTo(cx - 24, 114);
-      ctx.lineTo(cx, 132);
-      ctx.lineTo(cx + 24, 114);
-      ctx.lineTo(cx + 46, 142);
-      ctx.stroke();
-    }
-    ctx.restore();
+async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
-    // 8. ESPADA RÚNICA DIAGONAL INFERIOR DERECHA CON RAYOS ELÉCTRICOS NEON BLUE
-    ctx.save();
-    ctx.translate(495, 765);
-    ctx.rotate(-0.62);
+// Motor 1 y 2: Pollinations con distintos modelos
+async function tryPollinationsEngine(prompt, seed, modelName) {
+  const encoded = encodeURIComponent(prompt);
+  const url = `https://image.pollinations.ai/prompt/${encoded}?width=720&height=960&model=${modelName}&nologo=true&seed=${seed}`;
+  const res = await fetchWithTimeout(url, {}, 13000);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const blob = await res.blob();
+  return await verifyAndCompressAiBlob(blob);
+}
 
-    // Resplandor eléctrico de la hoja
-    ctx.globalCompositeOperation = 'lighter';
-    const swordGlow = ctx.createRadialGradient(-80, 0, 10, -80, 0, 190);
-    swordGlow.addColorStop(0, 'rgba(0, 240, 255, 0.65)');
-    swordGlow.addColorStop(0.6, 'rgba(56, 189, 248, 0.22)');
-    swordGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = swordGlow;
-    ctx.fillRect(-290, -140, 380, 280);
-    ctx.globalCompositeOperation = 'source-over';
-
-    // Hoja de acero rúnico con filo dorada y núcleo Neon Blue
-    ctx.fillStyle = '#0284c7';
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 3.5;
-    ctx.beginPath();
-    ctx.moveTo(-260, 0);
-    ctx.lineTo(-210, -24);
-    ctx.lineTo(0, -22);
-    ctx.lineTo(0, 22);
-    ctx.lineTo(-210, 24);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#67e8f9';
-    ctx.beginPath();
-    ctx.moveTo(-240, 0);
-    ctx.lineTo(-195, -11);
-    ctx.lineTo(-10, -10);
-    ctx.lineTo(-10, 10);
-    ctx.lineTo(-195, 11);
-    ctx.closePath();
-    ctx.fill();
-
-    // Guarda dorada ornamentada y núcleo de diamante
-    ctx.fillStyle = '#d97706';
-    ctx.strokeStyle = '#fde047';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(-12, -52);
-    ctx.lineTo(14, -36);
-    ctx.lineTo(14, 36);
-    ctx.lineTo(-12, 52);
-    ctx.lineTo(-4, 0);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = neonBlue;
-    ctx.beginPath();
-    ctx.moveTo(0, -14);
-    ctx.lineTo(14, 0);
-    ctx.lineTo(0, 14);
-    ctx.lineTo(-14, 0);
-    ctx.closePath();
-    ctx.fill();
-
-    // Empuñadura y pomo de diamante
-    ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = royalGold;
-    ctx.lineWidth = 2.5;
-    ctx.fillRect(14, -10, 74, 20);
-    ctx.strokeRect(14, -10, 74, 20);
-
-    ctx.fillStyle = neonBlue;
-    ctx.beginPath();
-    ctx.moveTo(104, -14);
-    ctx.lineTo(120, 0);
-    ctx.lineTo(104, 14);
-    ctx.lineTo(88, 0);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Rayos eléctricos cian rodeando la hoja
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = neonBlue;
-    ctx.strokeStyle = '#e0f2fe';
-    ctx.lineWidth = 2.4;
-    ctx.beginPath();
-    ctx.moveTo(-235, -12);
-    ctx.lineTo(-190, -34);
-    ctx.lineTo(-155, -18);
-    ctx.lineTo(-110, -40);
-    ctx.lineTo(-65, -20);
-    ctx.lineTo(-25, -36);
-    ctx.moveTo(-210, 16);
-    ctx.lineTo(-165, 36);
-    ctx.lineTo(-120, 18);
-    ctx.lineTo(-75, 38);
-    ctx.stroke();
-    ctx.restore();
-  }, [gender, stage]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={720}
-      height={960}
-      style={{ width: '100%', height: 'auto', display: 'block' }}
-    />
+// Motor 3: AI Horde (red comunitaria gratuita con modelos anime)
+async function tryAiHordeEngine(prompt) {
+  const submitRes = await fetchWithTimeout(
+    'https://aihorde.net/api/v2/generate/async',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: '0000000000',
+        'Client-Agent': 'ProtocoloEX:1.0:web'
+      },
+      body: JSON.stringify({
+        prompt: `${prompt} ### lowres, bad anatomy, bad hands, text, error, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, blurry, 3d, realistic`,
+        params: {
+          sampler_name: 'k_euler_a',
+          cfg_scale: 7,
+          width: 512,
+          height: 704,
+          steps: 20,
+          n: 1
+        },
+        nsfw: false,
+        censor_nsfw: true,
+        models: ['Animagine XL', 'Counterfeit-V3.0', 'Anything Diffusion'],
+        r2: true
+      })
+    },
+    10000
   );
+  if (!submitRes.ok) throw new Error('AI Horde no disponible');
+  const { id } = await submitRes.json();
+  if (!id) throw new Error('Sin ID de tarea en AI Horde');
+
+  for (let attempt = 0; attempt < 12; attempt++) {
+    await new Promise((r) => setTimeout(r, 2500));
+    const checkRes = await fetchWithTimeout(`https://aihorde.net/api/v2/generate/check/${id}`, {}, 6000);
+    if (!checkRes.ok) continue;
+    const checkData = await checkRes.json();
+    if (checkData.faulted) throw new Error('Fallo en worker de AI Horde');
+    if (checkData.done) {
+      const statusRes = await fetchWithTimeout(`https://aihorde.net/api/v2/generate/status/${id}`, {}, 8000);
+      const statusData = await statusRes.json();
+      const imgUrl = statusData?.generations?.[0]?.img;
+      if (!imgUrl) throw new Error('Sin URL de imagen en AI Horde');
+      const imgRes = await fetchWithTimeout(imgUrl, {}, 10000);
+      const blob = await imgRes.blob();
+      return await verifyAndCompressAiBlob(blob);
+    }
+  }
+  throw new Error('Tiempo agotado en AI Horde');
 }
 
 // ============================================================================
@@ -1702,27 +1139,94 @@ function JrpgFantasyPortrait({
     name: 'Centinela Infinito',
     weaponType: 'sword',
     accentColor: '#00eaff',
+    variantCode: 101,
     passiveName: 'Muralla Inquebrantable (Infinito)',
     passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
   };
+
   const stage = classEvolution.stage;
   const isFemale = gender === 'female';
+  const cacheKey = `pex_ai_avatar_v2_${gender}_${cls.variantCode || 1}`;
 
-  const candidateSources = isFemale
-    ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg', '/1000272221.png']
-    : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg', '/1000272220.png'];
-
-  const [candidateIdx, setCandidateIdx] = useState(0);
+  const [aiImageSrc, setAiImageSrc] = useState(() => {
+    try {
+      return localStorage.getItem(cacheKey) || null;
+    } catch {
+      return null;
+    }
+  });
+  const [aiStatus, setAiStatus] = useState('');
+  const [regenNonce, setRegenNonce] = useState(0);
+  const [localFallbackIdx, setLocalFallbackIdx] = useState(0);
   const [styleIdx, setStyleIdx] = useState(0);
 
-  useEffect(() => {
-    setCandidateIdx(0);
-  }, [gender]);
+  const localFallbacks = isFemale
+    ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg']
+    : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg'];
 
-  const activeImageSrc = candidateIdx < candidateSources.length ? candidateSources[candidateIdx] : null;
+  useEffect(() => {
+    let cancelled = false;
+
+    async function runMultiAiCascade() {
+      if (regenNonce === 0) {
+        try {
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            setAiImageSrc(cached);
+            setAiStatus('');
+            return;
+          }
+        } catch {
+          // Ignora errores de lectura de almacenamiento
+        }
+      }
+
+      const prompt = buildAnimeAvatarPrompt(gender, cls);
+      const seed = (cls.variantCode || 77) + regenNonce * 31 + (isFemale ? 500 : 100);
+
+      const engines = [
+        { label: 'IA 1/3 (Flux)', run: () => tryPollinationsEngine(prompt, seed, 'flux') },
+        { label: 'IA 2/3 (Turbo)', run: () => tryPollinationsEngine(prompt, seed + 9, 'turbo') },
+        { label: 'IA 3/3 (AI Horde)', run: () => tryAiHordeEngine(prompt) }
+      ];
+
+      for (const engine of engines) {
+        if (cancelled) return;
+        setAiStatus(`Invocando retrato con ${engine.label}...`);
+        try {
+          const verifiedDataUrl = await engine.run();
+          if (cancelled) return;
+          setAiImageSrc(verifiedDataUrl);
+          setAiStatus('');
+          try {
+            localStorage.setItem(cacheKey, verifiedDataUrl);
+          } catch {
+            // Si localStorage está lleno, mantiene la imagen en memoria de sesión
+          }
+          return;
+        } catch {
+          // Si este motor falla o devuelve el cartel beige, pasa automáticamente al siguiente
+        }
+      }
+
+      if (!cancelled) {
+        setAiStatus('');
+        setAiImageSrc(null);
+        setLocalFallbackIdx(0);
+      }
+    }
+
+    runMultiAiCascade();
+    return () => {
+      cancelled = true;
+    };
+  }, [gender, cls.variantCode, regenNonce, cacheKey]);
+
   const activeStyle = GACHA_STYLES[styleIdx];
   const isStylized = styleIdx !== 0;
   const starCount = Math.min(6, Math.max(4, 3 + stage));
+  const fallbackSrc = localFallbackIdx < localFallbacks.length ? localFallbacks[localFallbackIdx] : null;
+  const finalImgToRender = aiImageSrc || fallbackSrc;
 
   return (
     <div className="cinematic-entry" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1757,7 +1261,6 @@ function JrpgFantasyPortrait({
               {'★'.repeat(starCount)}
             </span>
           </div>
-
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <button
               type="button"
@@ -1767,7 +1270,19 @@ function JrpgFantasyPortrait({
             >
               <Sparkles size={12} color="#ffd45a" /> ESTILIZAR ({activeStyle.label})
             </button>
-
+            <button
+              type="button"
+              disabled={Boolean(aiStatus)}
+              onClick={() => {
+                try { localStorage.removeItem(cacheKey); } catch {}
+                setAiImageSrc(null);
+                setRegenNonce((n) => n + 1);
+              }}
+              className="rpg-button"
+              style={{ borderColor: 'var(--neon-purple)', opacity: aiStatus ? 0.6 : 1 }}
+            >
+              <RotateCcw size={12} color="#c084fc" /> {aiStatus ? 'GENERANDO...' : 'NUEVA IA'}
+            </button>
             {isStylized && (
               <button
                 type="button"
@@ -1775,13 +1290,15 @@ function JrpgFantasyPortrait({
                 className="rpg-button"
                 style={{ borderColor: 'var(--neon-pink)', boxShadow: '0 0 12px rgba(255, 62, 157, 0.4)' }}
               >
-                <RotateCcw size={12} color="#ff3e9d" /> VOLVER AL ORIGINAL
+                <RotateCcw size={12} color="#ff3e9d" /> ORIGINAL
               </button>
             )}
-
             <button
               type="button"
-              onClick={onToggleGender}
+              onClick={() => {
+                setRegenNonce(0);
+                onToggleGender();
+              }}
               className="rpg-button"
             >
               <UserCheck size={12} color="#00eaff" /> {isFemale ? 'FEMENINO' : 'MASCULINO'}
@@ -1789,7 +1306,7 @@ function JrpgFantasyPortrait({
           </div>
         </div>
 
-        {/* CONTENEDOR CON PULSO DE ENERGÍA Y ESTILIZACIÓN DEL PERSONAJE */}
+        {/* CONTENEDOR CON PULSO DE ENERGÍA E IMAGEN GENERADA POR IA */}
         <div
           className="energy-effect"
           style={{
@@ -1797,22 +1314,61 @@ function JrpgFantasyPortrait({
             overflow: 'hidden',
             position: 'relative',
             border: `1.5px solid ${activeStyle.borderColor}`,
-            background: 'var(--bg-card)'
+            background: 'radial-gradient(circle at 50% 35%, #1e2756 0%, #070a19 100%)',
+            minHeight: '420px'
           }}
         >
+          {aiStatus && (
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 6,
+              background: 'rgba(5, 8, 23, 0.92)',
+              border: '1px solid var(--neon-blue)',
+              borderRadius: '999px',
+              padding: '6px 14px',
+              fontSize: '11px',
+              fontWeight: 700,
+              color: 'var(--neon-blue)',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 0 16px rgba(0, 234, 255, 0.45)'
+            }}>
+              ⚡ {aiStatus}
+            </div>
+          )}
+
           <div style={{ filter: activeStyle.filter, transition: 'filter 0.45s ease' }}>
-            {activeImageSrc ? (
+            {finalImgToRender ? (
               <img
-                src={activeImageSrc}
+                src={finalImgToRender}
                 alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
-                onError={() => setCandidateIdx((prev) => prev + 1)}
+                onError={() => {
+                  if (aiImageSrc) setAiImageSrc(null);
+                  else setLocalFallbackIdx((prev) => prev + 1);
+                }}
                 style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }}
               />
             ) : (
-              <LegendaryGachaCanvas
-                gender={gender}
-                stage={stage}
-              />
+              <div style={{
+                minHeight: '420px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '24px',
+                textAlign: 'center',
+                color: '#cbd5e1'
+              }}>
+                <Sparkles size={38} color="#00eaff" style={{ marginBottom: '10px' }} />
+                <div className="font-souls" style={{ fontSize: '15px', color: '#fff', marginBottom: '6px' }}>
+                  {aiStatus || 'ESPERANDO CONEXIÓN CON MOTOR IA'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                  Presioná "NUEVA IA" para reintentar la invocación del personaje.
+                </div>
+              </div>
             )}
           </div>
 
@@ -1868,7 +1424,6 @@ function JrpgFantasyPortrait({
                 {classEvolution.bonus}
               </div>
             </div>
-
             <div style={{
               width: '58px',
               height: '58px',
@@ -1905,7 +1460,6 @@ function JrpgFantasyPortrait({
           </h2>
           <div style={{ flex: 1, height: '1px', background: 'linear-gradient(90deg, var(--neon-gold), transparent)' }} />
         </div>
-
         <div style={{
           padding: '14px',
           borderRadius: '14px',
@@ -1929,7 +1483,6 @@ function JrpgFantasyPortrait({
               +{passiveClassBonus} PWR
             </span>
           </div>
-
           <div className="font-souls neon-glow" style={{
             fontSize: '16px',
             fontWeight: 900,
@@ -1940,7 +1493,6 @@ function JrpgFantasyPortrait({
           }}>
             {(cls.passiveName || 'Muralla Inquebrantable (Infinito)').toUpperCase()}
           </div>
-
           <p style={{
             fontSize: '13px',
             color: 'var(--text-secondary)',
