@@ -1989,6 +1989,189 @@ function AuthPortal({ onAuthenticated }) {
 // ============================================================================
 // CONTENEDOR PRINCIPAL (SESIÓN PERSISTENTE HASTA ELIMINACIÓN DE CUENTA)
 // ============================================================================
+
+// ============================================================================
+// EXPLORADOR SEMANAL DE RUTINAS — CALENDARIO, HISTORIAL Y MISIONES FIELES AL PLAN
+// ============================================================================
+function extractRoutineDaysFromText(rawText) {
+  const lines = String(rawText || '').replace(/\r/g, '').split('\n').map((x) => x.trim()).filter(Boolean);
+  if (!lines.length) return [];
+  const groups = [];
+  let current = null;
+  const headingRe = /^(?:[-*#\s]*)?(?:d[ií]a|day)\s*(\d{1,2})\s*[-:.)–—]?\s*(.*)$/i;
+  lines.forEach((line) => {
+    const match = line.match(headingRe);
+    if (match) {
+      current = { id: `uploaded-day-${match[1]}`, name: `Día ${match[1]}${match[2] ? ` — ${match[2]}` : ''}`, focus: match[2] || 'Rutina importada', exercises: [] };
+      groups.push(current);
+      return;
+    }
+    if (!current) {
+      current = { id: 'uploaded-day-1', name: 'Rutina importada', focus: 'Contenido del archivo', exercises: [] };
+      groups.push(current);
+    }
+    if (/^(descanso|rest day|día libre)/i.test(line)) {
+      current.isRest = true;
+      current.focus = line;
+      return;
+    }
+    if (/^(semana\s+\d+|mesociclo|fase\s+\d+)/i.test(line)) return;
+    current.exercises.push({ name: line.replace(/^[-*•]\s*/, ''), prescription: '' });
+  });
+  return groups.filter((day) => day.isRest || day.exercises.length);
+}
+
+function RoutineDayExplorer({
+  generatedDays, weeklyRoutinePlan, routineText, logs, setLogs, onCreateMission, scopeKey = 'routine'
+}) {
+  const todayISO = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+  const [selectedDate, setSelectedDate] = useState(todayISO);
+  const [selectedWeek, setSelectedWeek] = useState(1);
+  const parsedDays = extractRoutineDaysFromText(routineText);
+  const sourceDays = generatedDays?.length ? generatedDays : parsedDays;
+  const weekData = weeklyRoutinePlan?.find((w) => Number(w.week) === Number(selectedWeek)) || weeklyRoutinePlan?.[0];
+  const weekDays = weekData?.days?.length ? weekData.days : sourceDays;
+  const dateObj = new Date(`${selectedDate}T12:00:00`);
+  const mondayIndex = (dateObj.getDay() + 6) % 7;
+  const defaultSessionIndex = mondayIndex < weekDays.length ? mondayIndex : -1;
+  const dateKey = `${scopeKey}-${selectedDate}-w${selectedWeek}`;
+  const dayLog = logs[dateKey] || {};
+  const selectedSessionIndex = Number.isInteger(dayLog._sessionIndex) ? dayLog._sessionIndex : defaultSessionIndex;
+  const selectedDay = selectedSessionIndex >= 0 ? (weekDays[selectedSessionIndex] || null) : null;
+  const isToday = selectedDate === todayISO;
+  const isPast = selectedDate < todayISO;
+  const exercises = (selectedDay?.exercises || []).map((ex, idx) => ({
+    ...ex,
+    name: ex.name || `Ejercicio ${idx + 1}`,
+    prescription: ex.weeklySets || `${ex.baseSets || ''} × ${ex.baseReps || ''} ${ex.focus || ''}`.trim()
+  }));
+  const completedCount = exercises.filter((_, idx) => dayLog[idx]?.completed).length;
+  const progress = exercises.length ? Math.round((completedCount / exercises.length) * 100) : 0;
+  const changeLog = (idx, patch) => setLogs((prev) => ({
+    ...prev,
+    [dateKey]: {
+      ...(prev[dateKey] || {}),
+      [idx]: { ...(prev[dateKey]?.[idx] || {}), ...patch }
+    }
+  }));
+  const shiftDate = (amount) => {
+    const next = new Date(`${selectedDate}T12:00:00`);
+    next.setDate(next.getDate() + amount);
+    setSelectedDate(`${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-${String(next.getDate()).padStart(2, '0')}`);
+  };
+  const weekStart = new Date(`${selectedDate}T12:00:00`);
+  weekStart.setDate(weekStart.getDate() - mondayIndex);
+  const weekLabels = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+
+  return (
+    <div className="sys-window" style={{ padding: '16px', marginTop: '14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <h3 className="font-hud" style={{ color: '#00f0ff', fontSize: '13px' }}>AGENDA DE ENTRENAMIENTO — DÍA A DÍA</h3>
+        <span className="sys-badge" style={{ background: 'rgba(0,240,255,.12)', color: '#67e8f9' }}>
+          {isToday ? 'HOY' : isPast ? 'HISTORIAL' : 'PROGRAMADO'}
+        </span>
+      </div>
+      <p style={{ color: '#94a3b8', fontSize: '11px', margin: '6px 0 12px' }}>
+        Elegí cualquier fecha para consultar el plan, revisar lo registrado o anticipar una sesión. Los días de descanso se respetan.
+      </p>
+      {weeklyRoutinePlan?.length > 0 && (
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ display: 'block', color: '#94a3b8', fontSize: '10px', marginBottom: '4px' }}>SEMANA DEL MESOCICLO</label>
+          <select className="sys-select" value={selectedWeek} onChange={(e) => setSelectedWeek(Number(e.target.value))}>
+            {weeklyRoutinePlan.map((w) => <option key={w.week} value={w.week}>Semana {w.week} — {w.phase}</option>)}
+          </select>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: '7px', alignItems: 'center', marginBottom: '10px' }}>
+        <button type="button" className="sys-btn sys-btn-ghost" onClick={() => shiftDate(-7)}>‹ Semana anterior</button>
+        <input aria-label="Elegir fecha" type="date" className="sys-input" value={selectedDate} onChange={(e) => e.target.value && setSelectedDate(e.target.value)} />
+        <button type="button" className="sys-btn sys-btn-ghost" onClick={() => shiftDate(7)}>Semana siguiente ›</button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '5px', marginBottom: '14px' }}>
+        {weekLabels.map((label, idx) => {
+          const d = new Date(weekStart);
+          d.setDate(weekStart.getDate() + idx);
+          const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          const active = iso === selectedDate;
+          const stripKey = `${scopeKey}-${iso}-w${selectedWeek}`;
+          const assignedIndex = Number.isInteger(logs[stripKey]?._sessionIndex) ? logs[stripKey]._sessionIndex : (idx < weekDays.length ? idx : -1);
+          const hasTraining = assignedIndex >= 0 && !!weekDays[assignedIndex] && !weekDays[assignedIndex]?.isRest;
+          return (
+            <button key={label} type="button" onClick={() => setSelectedDate(iso)}
+              style={{ padding: '8px 2px', borderRadius: '8px', border: `1px solid ${active ? '#fbbf24' : hasTraining ? 'rgba(0,240,255,.4)' : 'rgba(148,163,184,.2)'}`, background: active ? 'rgba(251,191,36,.18)' : 'rgba(4,6,12,.8)', color: active ? '#fde68a' : '#cbd5e1', cursor: 'pointer', minWidth: 0 }}>
+              <div style={{ fontSize: '9px', fontWeight: 800 }}>{label}</div>
+              <div style={{ fontSize: '13px', fontWeight: 800 }}>{d.getDate()}</div>
+              <div style={{ fontSize: '8px', color: hasTraining ? '#67e8f9' : '#94a3b8' }}>{hasTraining ? 'ENTRENO' : 'DESC.'}</div>
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,.85)', border: '1px solid rgba(0,240,255,.28)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ color: '#fbbf24', fontSize: '10px', fontWeight: 800 }}>{selectedDate} · {isToday ? 'DÍA ACTUAL' : isPast ? 'DÍA ANTERIOR' : 'DÍA FUTURO'}</div>
+            <h4 style={{ color: '#fff', fontSize: '15px', marginTop: '3px' }}>{selectedDay?.name || (weekDays.length ? 'Día de recuperación' : 'Rutina todavía no disponible')}</h4>
+            {selectedDay?.focus && <div style={{ color: '#94a3b8', fontSize: '11px' }}>{selectedDay.focus}</div>}
+          </div>
+          {exercises.length > 0 && <span className="sys-badge" style={{ color: '#6ee7b7', background: 'rgba(16,185,129,.12)' }}>{completedCount}/{exercises.length} EJERCICIOS</span>}
+        </div>
+        <div style={{ marginTop: '10px' }}>
+          <label style={{ display: 'block', color: '#94a3b8', fontSize: '10px', marginBottom: '4px' }}>SESIÓN ASIGNADA A ESTA FECHA</label>
+          <select className="sys-select" value={selectedSessionIndex} onChange={(e) => setLogs((prev) => ({
+            ...prev,
+            [dateKey]: { ...(prev[dateKey] || {}), _sessionIndex: Number(e.target.value) }
+          }))}>
+            <option value={-1}>Descanso / sin sesión</option>
+            {weekDays.map((day, idx) => <option key={`session-${idx}`} value={idx}>Día {idx + 1} — {day.name}</option>)}
+          </select>
+        </div>
+        {exercises.length > 0 ? (
+          <>
+            <div className="progress-track" style={{ margin: '10px 0 12px' }}><div className="progress-fill" style={{ width: `${progress}%`, background: 'linear-gradient(90deg,#00eaff,#10b981)' }} /></div>
+            {exercises.map((ex, idx) => {
+              const entry = dayLog[idx] || {};
+              return (
+                <div key={`${dateKey}-${idx}`} style={{ padding: '10px 0', borderTop: '1px solid rgba(255,255,255,.07)' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                    <input type="checkbox" checked={!!entry.completed} onChange={(e) => changeLog(idx, { completed: e.target.checked })} aria-label={`Completar ${ex.name}`} style={{ marginTop: '4px', accentColor: '#10b981' }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ color: entry.completed ? '#6ee7b7' : '#fff', fontWeight: 800, fontSize: '13px', textDecoration: entry.completed ? 'line-through' : 'none' }}>{ex.name}</div>
+                      <div style={{ color: '#fbbf24', fontSize: '11px' }}>{ex.prescription || ex.focus || 'Prescripción según rutina original'}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: '7px' }}>
+                        <input className="sys-input" value={entry.weight ?? ''} onChange={(e) => changeLog(idx, { weight: e.target.value })} placeholder="Peso usado (kg)" />
+                        <input className="sys-input" value={entry.reps ?? ''} onChange={(e) => changeLog(idx, { reps: e.target.value })} placeholder="Reps realizadas" />
+                      </div>
+                      <input className="sys-input" style={{ marginTop: '6px' }} value={entry.notes ?? ''} onChange={(e) => changeLog(idx, { notes: e.target.value })} placeholder="Notas: RIR, técnica, sensaciones..." />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <button type="button" className="sys-btn sys-btn-gold" style={{ width: '100%', marginTop: '10px' }}
+              onClick={() => onCreateMission({
+                title: `Entrenamiento ${selectedDay.name} (${selectedDate})`,
+                date: selectedDate,
+                detail: exercises.map((x) => x.name).join(' · ')
+              })}>
+              <Sword size={14} /> CREAR MISIÓN CON ESTE ENTRENAMIENTO
+            </button>
+          </>
+        ) : (
+          <div style={{ color: '#94a3b8', fontSize: '12px', padding: '12px 0' }}>
+            {selectedDay?.isRest ? 'Día de descanso indicado por la rutina. No se agregan ejercicios ni desafíos físicos extra.' : weekDays.length ? 'Este día queda libre según la distribución semanal. Usalo para descanso y recuperación.' : 'Generá una rutina o cargá un archivo que contenga encabezados como “Día 1”, “Día 2”, etc. para habilitar el calendario.'}
+          </div>
+        )}
+        <div style={{ color: '#64748b', fontSize: '10px', marginTop: '10px' }}>
+          El registro se guarda por fecha y semana. Podés volver a días anteriores o abrir fechas futuras sin alterar el plan base.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   useEffect(() => {
     const styleTag = document.createElement('style');
@@ -2140,6 +2323,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [routineLoadingMsg, setRoutineLoadingMsg] = useState('');
   const [interactiveRoutineDoc, setInteractiveRoutineDoc] = useState(null);
   const [showGeneratedRoutine, setShowGeneratedRoutine] = useState(false);
+  const [routineDayLogs, setRoutineDayLogs] = useState(() => initialData?.routineDayLogs || {});
 
   const [sleepLog, setSleepLog] = useState(() => initialData?.sleepLog || ZERO_SLEEP_LOG);
   const [todaySleep, setTodaySleep] = useState(0);
@@ -2183,6 +2367,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         nextWeekQueue,
         sleepLog,
         yearlyRecap,
+        routineDayLogs,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
@@ -2204,6 +2389,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         nextWeekQueue,
         sleepLog,
         yearlyRecap,
+        routineDayLogs,
       };
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
@@ -2211,7 +2397,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     storageKey, awakened, profile, hunterClass, savedLifts,
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
-    friends, quests, nextWeekQueue, sleepLog, yearlyRecap
+    friends, quests, nextWeekQueue, sleepLog, yearlyRecap, routineDayLogs
   ]);
 
   const triggerToast = (msg) => {
@@ -3872,6 +4058,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               ))}
             </div>
+            <RoutineDayExplorer
+              generatedDays={activeRoutinePlan.days}
+              weeklyRoutinePlan={weeklyRoutinePlan}
+              routineText=""
+              scopeKey="generated"
+              logs={routineDayLogs}
+              setLogs={setRoutineDayLogs}
+              onCreateMission={(payload) => {
+                const exists = quests.some((q) => q.routineDate === payload.date && q.title === payload.title);
+                if (exists) { triggerToast('[MISIÓN] Ya existe una misión para este entrenamiento.'); return; }
+                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina programada', lp: 40, exp: 80, status: 'pending' }, ...prev]);
+                triggerToast('[MISIÓN] Creada a partir del entrenamiento programado, sin modificar ejercicios.');
+              }}
+            />
             </div>
             )}
           </div>
@@ -4339,6 +4539,21 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 )}
               </div>
             )}
+
+            <RoutineDayExplorer
+              generatedDays={[]}
+              weeklyRoutinePlan={[]}
+              routineText={customRoutineText}
+              scopeKey="uploaded"
+              logs={routineDayLogs}
+              setLogs={setRoutineDayLogs}
+              onCreateMission={(payload) => {
+                const exists = quests.some((q) => q.routineDate === payload.date && q.title === payload.title);
+                if (exists) { triggerToast('[MISIÓN] Ya existe una misión para esta fecha.'); return; }
+                setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina importada', lp: 40, exp: 80, status: 'pending' }, ...prev]);
+                triggerToast('[MISIÓN] Creada desde los ejercicios detectados en tu rutina importada.');
+              }}
+            />
 
             {/* ==============================================================
                 2) CRÍTICA CONSTRUCTIVA Y PUNTOS FUERTES (DEBAJO DEL ARCHIVO)
