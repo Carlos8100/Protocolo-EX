@@ -28,9 +28,9 @@ const SYSTEM_CSS = `
     --neon-purple: #963cff;
     --neon-gold: #ffd45a;
     --neon-pink: #ff3e9d;
-    --neon-primary-rgb: var(--neon-primary-rgb);
-    --neon-secondary-rgb: var(--neon-secondary-rgb);
-    --neon-accent-rgb: var(--neon-accent-rgb);
+    --neon-primary-rgb: 0, 234, 255;
+    --neon-secondary-rgb: 150, 60, 255;
+    --neon-accent-rgb: 255, 212, 90;
 
     --text-main: #f4f6ff;
     --text-secondary: #aab9d5;
@@ -683,6 +683,75 @@ const SYSTEM_CSS = `
     border-color: var(--neon-blue);
     background: rgba(var(--neon-primary-rgb), 0.22);
     box-shadow: 0 0 10px rgba(var(--neon-primary-rgb), 0.45);
+  }
+  /* Animaciones y marco ornamental del Avatar Anime Fantasy RPG */
+  @keyframes arcaneSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes arcaneCounterSpin {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes avatarBreathe {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-4px) scale(1.012); }
+  }
+  @keyframes emberFloat {
+    0%, 100% { transform: translateY(0px); opacity: 0.45; }
+    50% { transform: translateY(-10px); opacity: 0.95; }
+  }
+  .pex-arcane-ring-cw {
+    transform-origin: 210px 175px;
+    animation: arcaneSpin 28s linear infinite;
+  }
+  .pex-arcane-ring-ccw {
+    transform-origin: 210px 175px;
+    animation: arcaneCounterSpin 20s linear infinite;
+  }
+  .pex-avatar-hero-float {
+    animation: avatarBreathe 4.2s ease-in-out infinite;
+  }
+  .pex-ember-pulse {
+    animation: emberFloat 3.4s ease-in-out infinite;
+  }
+  .pex-avatar-corner-tl,
+  .pex-avatar-corner-tr,
+  .pex-avatar-corner-bl,
+  .pex-avatar-corner-br {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-color: var(--neon-gold);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px rgba(var(--neon-accent-rgb), 0.55));
+  }
+  .pex-avatar-corner-tl {
+    top: 8px;
+    left: 8px;
+    border-width: 2.5px 0 0 2.5px;
+    border-top-left-radius: 10px;
+  }
+  .pex-avatar-corner-tr {
+    top: 8px;
+    right: 8px;
+    border-width: 2.5px 2.5px 0 0;
+    border-top-right-radius: 10px;
+  }
+  .pex-avatar-corner-bl {
+    bottom: 24px;
+    left: 8px;
+    border-width: 0 0 2.5px 2.5px;
+    border-bottom-left-radius: 10px;
+  }
+  .pex-avatar-corner-br {
+    bottom: 24px;
+    right: 8px;
+    border-width: 0 2.5px 2.5px 0;
+    border-bottom-right-radius: 10px;
   }
 `;
 
@@ -1399,6 +1468,456 @@ const GACHA_STYLES = [
   },
 ];
 
+function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
+  const uid = isFemale ? 'fem' : 'masc';
+  const primaryGlow = accentColor || '#00eaff';
+  const stageScale = Math.min(5, Math.max(1, Number(stage) || 1));
+
+  return (
+    <svg
+      viewBox="0 0 420 400"
+      width="100%"
+      height="395"
+      style={{ display: 'block', maxWidth: '460px', margin: '0 auto' }}
+      aria-label={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
+    >
+      <defs>
+        {/* Cielo cósmico profundo */}
+        <radialGradient id={`pexCosmos_${uid}`} cx="50%" cy="38%" r="68%">
+          <stop offset="0%" stopColor="#261b5e" />
+          <stop offset="45%" stopColor="#0f1b44" />
+          <stop offset="82%" stopColor="#070d24" />
+          <stop offset="100%" stopColor="#050817" />
+        </radialGradient>
+
+        {/* Halo arcano detrás del personaje */}
+        <radialGradient id={`pexArcaneHalo_${uid}`} cx="50%" cy="44%" r="48%">
+          <stop offset="0%" stopColor={primaryGlow} stopOpacity="0.42" />
+          <stop offset="48%" stopColor="#963cff" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#050817" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Piel estilo anime cel-shaded */}
+        <linearGradient id={`pexSkin_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="72%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#f5b882" />
+        </linearGradient>
+
+        {/* Sombra de cuello */}
+        <linearGradient id={`pexNeckShade_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#d99b6c" />
+          <stop offset="55%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#ffedd5" />
+        </linearGradient>
+
+        {/* Cabello negro azabache con reflejos índigo/cian */}
+        <linearGradient id={`pexHair_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#1e293b" />
+          <stop offset="45%" stopColor="#090d1c" />
+          <stop offset="100%" stopColor="#04060e" />
+        </linearGradient>
+
+        {/* Armadura obsidiana */}
+        <linearGradient id={`pexObsidian_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#1e293b" />
+          <stop offset="45%" stopColor="#0d1429" />
+          <stop offset="100%" stopColor="#050814" />
+        </linearGradient>
+
+        {/* Filigrana dorada */}
+        <linearGradient id={`pexGold_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="48%" stopColor="#ffd45a" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+
+        {/* Capa carmesí real */}
+        <linearGradient id={`pexCape_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#be123c" />
+          <stop offset="55%" stopColor="#881337" />
+          <stop offset="100%" stopColor="#3b0716" />
+        </linearGradient>
+
+        {/* Cristal romboidal cian del pecho */}
+        <linearGradient id={`pexCrystal_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#e0f2fe" />
+          <stop offset="45%" stopColor="#00eaff" />
+          <stop offset="100%" stopColor="#0284c7" />
+        </linearGradient>
+
+        {/* Filtro de resplandor neón */}
+        <filter id={`pexNeonBlur_${uid}`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="4.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* 1. FONDO CÓSMICO ESTRELLADO */}
+      <rect width="420" height="400" fill={`url(#pexCosmos_${uid})`} />
+      <circle cx="210" cy="175" r="175" fill={`url(#pexArcaneHalo_${uid})`} />
+
+      {/* Estrellas y partículas ambientales */}
+      <g opacity="0.8">
+        <circle cx="52" cy="58" r="1.4" fill="#ffffff" />
+        <circle cx="88" cy="112" r="1.1" fill="#7dd3fc" />
+        <circle cx="348" cy="64" r="1.5" fill="#fef08a" />
+        <circle cx="372" cy="128" r="1.2" fill="#ffffff" />
+        <circle cx="64" cy="215" r="1.3" fill="#c084fc" />
+        <circle cx="356" cy="224" r="1.4" fill="#7dd3fc" />
+        <circle cx="122" cy="46" r="1.2" fill="#ffd45a" />
+        <circle cx="302" cy="48" r="1.2" fill="#00eaff" />
+      </g>
+
+      {/* 2. CÍRCULO MÁGICO ARCANO GIRATORIO DETRÁS DEL HÉROE */}
+      <g className="pex-arcane-ring-cw" opacity={0.45 + stageScale * 0.08}>
+        <circle cx="210" cy="175" r="126" fill="none" stroke={primaryGlow} strokeWidth="1.4" strokeDasharray="8 5 2 5" />
+        <circle cx="210" cy="175" r="116" fill="none" stroke="#ffd45a" strokeWidth="0.9" strokeOpacity="0.65" />
+        <polygon
+          points="210,52 297,88 333,175 297,262 210,298 123,262 87,175 123,88"
+          fill="none"
+          stroke={primaryGlow}
+          strokeWidth="1"
+          strokeOpacity="0.55"
+        />
+        <polygon
+          points="210,52 333,175 210,298 87,175"
+          fill="none"
+          stroke="#963cff"
+          strokeWidth="1.1"
+          strokeOpacity="0.65"
+        />
+        <polygon
+          points="123,88 297,88 297,262 123,262"
+          fill="none"
+          stroke="#ffd45a"
+          strokeWidth="0.9"
+          strokeOpacity="0.5"
+        />
+        {/* Nodos rúnicos cardinales */}
+        <circle cx="210" cy="49" r="3.5" fill="#00eaff" />
+        <circle cx="336" cy="175" r="3.5" fill="#00eaff" />
+        <circle cx="210" cy="301" r="3.5" fill="#00eaff" />
+        <circle cx="84" cy="175" r="3.5" fill="#00eaff" />
+      </g>
+
+      <g className="pex-arcane-ring-ccw" opacity="0.55">
+        <circle cx="210" cy="175" r="92" fill="none" stroke="#c084fc" strokeWidth="1.2" strokeDasharray="4 6" />
+        {stageScale >= 2 && (
+          <circle cx="210" cy="175" r="142" fill="none" stroke="#ffd45a" strokeWidth="1" strokeDasharray="3 9" />
+        )}
+      </g>
+
+      {/* 3. GRUPO PRINCIPAL DEL PERSONAJE DE MEDIO CUERPO */}
+      <g className="pex-avatar-hero-float">
+        {/* CAPA CARMESÍ REAL ONDEANDO DETRÁS DE LOS HOMBROS */}
+        <path
+          d="M118 228 C78 265, 58 325, 48 398 L372 398 C362 325, 342 265, 302 228 Z"
+          fill={`url(#pexCape_${uid})`}
+          stroke={`url(#pexGold_${uid})`}
+          strokeWidth="2"
+        />
+        {/* Pliegues internos de la capa */}
+        <path d="M128 242 L95 398" stroke="#4c0519" strokeWidth="4" opacity="0.65" />
+        <path d="M292 242 L325 398" stroke="#4c0519" strokeWidth="4" opacity="0.65" />
+
+        {/* ARMA RÚNICA DE CLASE (DETRÁS / COSTADO DEL HÉROE) */}
+        {weaponType === 'spear' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <line x1="336" y1="36" x2="292" y2="396" stroke={`url(#pexGold_${uid})`} strokeWidth="5" strokeLinecap="round" />
+            <polygon points="336,14 348,54 336,68 324,54" fill={`url(#pexCrystal_${uid})`} stroke="#ffffff" strokeWidth="1" />
+            <circle cx="336" cy="68" r="5" fill="#ffd45a" />
+          </g>
+        )}
+        {weaponType === 'greatsword' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <polygon points="334,26 350,48 318,266 296,262" fill="#0f172a" stroke="#00eaff" strokeWidth="2" />
+            <line x1="333" y1="44" x2="308" y2="254" stroke="#00eaff" strokeWidth="2.5" />
+            <rect x="285" y="260" width="44" height="9" rx="3" transform="rotate(9 307 264)" fill={`url(#pexGold_${uid})`} />
+            <line x1="305" y1="268" x2="298" y2="322" stroke="#1e293b" strokeWidth="7" strokeLinecap="round" />
+          </g>
+        )}
+        {weaponType === 'staff' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <line x1="330" y1="68" x2="298" y2="396" stroke={`url(#pexGold_${uid})`} strokeWidth="5.5" strokeLinecap="round" />
+            <circle cx="332" cy="52" r="18" fill="none" stroke="#ffd45a" strokeWidth="2.5" />
+            <polygon points="332,37 342,52 332,67 322,52" fill={`url(#pexCrystal_${uid})`} />
+          </g>
+        )}
+        {weaponType === 'daggers' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <polygon points="78,195 92,268 74,274" fill={`url(#pexCrystal_${uid})`} stroke="#ffd45a" strokeWidth="1.2" />
+            <polygon points="342,195 328,268 346,274" fill={`url(#pexCrystal_${uid})`} stroke="#ffd45a" strokeWidth="1.2" />
+          </g>
+        )}
+        {weaponType === 'gauntlets' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <circle cx="94" cy="316" r="22" fill="none" stroke="#00eaff" strokeWidth="2.2" strokeDasharray="6 4" />
+            <circle cx="326" cy="316" r="22" fill="none" stroke="#00eaff" strokeWidth="2.2" strokeDasharray="6 4" />
+          </g>
+        )}
+        {(!weaponType || weaponType === 'sword') && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            {/* Espada rúnica relámpago desenfundada al costado */}
+            <polygon points="338,34 346,52 312,264 300,262" fill={`url(#pexCrystal_${uid})`} stroke="#ffffff" strokeWidth="1" />
+            <line x1="337" y1="48" x2="306" y2="256" stroke="#ffffff" strokeWidth="1.6" opacity="0.85" />
+            <path d="M284 258 L328 266 L324 274 L282 266 Z" fill={`url(#pexGold_${uid})`} />
+            <circle cx="305" cy="266" r="4.5" fill="#00eaff" />
+            <line x1="304" y1="271" x2="297" y2="318" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
+            <circle cx="296" cy="321" r="5" fill="#ffd45a" />
+          </g>
+        )}
+
+        {/* CABELLO TRASERO LARGO PARA VERSIÓN FEMENINA */}
+        {isFemale && (
+          <path
+            d="M142 104 C114 156, 108 242, 118 332 C142 318, 152 292, 158 265 L262 265 C268 292, 278 318, 302 332 C312 242, 306 156, 278 104 Z"
+            fill={`url(#pexHair_${uid})`}
+            stroke="#1e3a8a"
+            strokeWidth="1.2"
+          />
+        )}
+
+        {/* TORSO Y ARMADURA FANTASY OBSIDIANA CON FILIGRANA DORADA */}
+        <path
+          d={
+            isFemale
+              ? 'M146 224 L274 224 L294 398 L126 398 Z'
+              : 'M134 222 L286 222 L310 398 L110 398 Z'
+          }
+          fill={`url(#pexObsidian_${uid})`}
+          stroke={`url(#pexGold_${uid})`}
+          strokeWidth="2.4"
+        />
+
+        {/* Cuello alto blindado de la armadura */}
+        <path
+          d="M164 204 L182 232 L238 232 L256 204 L268 226 L236 250 L184 250 L152 226 Z"
+          fill="#0b1226"
+          stroke={`url(#pexGold_${uid})`}
+          strokeWidth="2"
+        />
+
+        {/* Placas pectorales esculpidas y filigranas doradas */}
+        <path
+          d="M148 246 L192 268 L184 334 L138 312 Z"
+          fill="#111c3a"
+          stroke={`url(#pexGold_${uid})`}
+          strokeWidth="1.8"
+        />
+        <path
+          d="M272 246 L228 268 L236 334 L282 312 Z"
+          fill="#111c3a"
+          stroke={`url(#pexGold_${uid})`}
+          strokeWidth="1.8"
+        />
+
+        {/* Circuitos rúnicos cian brillantes en la coraza */}
+        <g filter={`url(#pexNeonBlur_${uid})`}>
+          <path d="M154 266 L180 280 L176 312" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M266 266 L240 280 L244 312" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M166 352 L192 338 L228 338 L254 352" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
+        </g>
+
+        {/* HOMBRERAS ORNAMENTADAS (PAULDRONS) CON FILIGRANA DORADA Y RUNAS */}
+        <g>
+          {/* Hombrera izquierda */}
+          <path
+            d="M148 218 C108 216, 84 242, 82 284 C106 286, 132 276, 152 254 Z"
+            fill={`url(#pexObsidian_${uid})`}
+            stroke={`url(#pexGold_${uid})`}
+            strokeWidth="2.4"
+          />
+          <path
+            d="M138 228 C112 228, 96 244, 94 270"
+            fill="none"
+            stroke="#00eaff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter={`url(#pexNeonBlur_${uid})`}
+          />
+          <circle cx="116" cy="252" r="4" fill="#ffd45a" />
+
+          {/* Hombrera derecha */}
+          <path
+            d="M272 218 C312 216, 336 242, 338 284 C314 286, 288 276, 268 254 Z"
+            fill={`url(#pexObsidian_${uid})`}
+            stroke={`url(#pexGold_${uid})`}
+            strokeWidth="2.4"
+          />
+          <path
+            d="M282 228 C308 228, 324 244, 326 270"
+            fill="none"
+            stroke="#00eaff"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter={`url(#pexNeonBlur_${uid})`}
+          />
+          <circle cx="304" cy="252" r="4" fill="#ffd45a" />
+        </g>
+
+        {/* GRAN CRISTAL ROMBOIDAL CIAN EN EL CENTRO DEL PECHO */}
+        <g filter={`url(#pexNeonBlur_${uid})`}>
+          <polygon
+            points="210,256 232,286 210,316 188,286"
+            fill="#071329"
+            stroke={`url(#pexGold_${uid})`}
+            strokeWidth="2.8"
+          />
+          <polygon
+            points="210,263 225,286 210,309 195,286"
+            fill={`url(#pexCrystal_${uid})`}
+          />
+          {/* Brillo facetado del cristal */}
+          <polygon points="210,263 225,286 210,286" fill="#ffffff" opacity="0.45" />
+          <circle cx="206" cy="278" r="2.6" fill="#ffffff" />
+        </g>
+
+        {/* CUELLO Y CLAVÍCULAS */}
+        <path
+          d={
+            isFemale
+              ? 'M194 184 L226 184 L232 232 L188 232 Z'
+              : 'M190 182 L230 182 L238 232 L182 232 Z'
+          }
+          fill={`url(#pexNeckShade_${uid})`}
+        />
+
+        {/* ROSTRO ANIME */}
+        <path
+          d={
+            isFemale
+              ? 'M168 122 C168 162, 184 184, 210 190 C236 184, 252 162, 252 122 C252 86, 234 74, 210 74 C186 74, 168 86, 168 122 Z'
+              : 'M165 120 C165 162, 182 186, 210 193 C238 186, 255 162, 255 120 C255 84, 236 72, 210 72 C184 72, 165 84, 165 120 Z'
+          }
+          fill={`url(#pexSkin_${uid})`}
+        />
+
+        {/* OJOS ANIME EXPRESIVOS CON IRIS VIOLETA-ÍNDIGO Y DESTELLO CIAN */}
+        {/* Ojo Izquierdo */}
+        <g>
+          <ellipse cx="191" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
+          <ellipse cx="191.5" cy="142.5" rx="6.2" ry={isFemale ? '7.2' : '6.2'} fill="#4f46e5" />
+          <ellipse cx="191.5" cy="143.5" rx="4.2" ry="4.5" fill="#00eaff" opacity="0.72" />
+          <circle cx="191.5" cy="142.5" r="2.8" fill="#050817" />
+          <circle cx="189" cy="139.5" r="2.3" fill="#ffffff" />
+          <circle cx="194" cy="145" r="1.1" fill="#e0f2fe" />
+          {/* Delineado superior y ceja */}
+          <path
+            d={isFemale ? 'M179 136 Q191 129 202 137' : 'M180 137 Q191 132 202 138'}
+            fill="none"
+            stroke="#050817"
+            strokeWidth={isFemale ? '2.8' : '3'}
+            strokeLinecap="round"
+          />
+          <path
+            d={isFemale ? 'M178 126 Q190 122 201 127' : 'M178 126 Q191 124 202 129'}
+            fill="none"
+            stroke="#090d1c"
+            strokeWidth={isFemale ? '2' : '2.6'}
+            strokeLinecap="round"
+          />
+        </g>
+
+        {/* Ojo Derecho */}
+        <g>
+          <ellipse cx="229" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
+          <ellipse cx="228.5" cy="142.5" rx="6.2" ry={isFemale ? '7.2' : '6.2'} fill="#4f46e5" />
+          <ellipse cx="228.5" cy="143.5" rx="4.2" ry="4.5" fill="#00eaff" opacity="0.72" />
+          <circle cx="228.5" cy="142.5" r="2.8" fill="#050817" />
+          <circle cx="226" cy="139.5" r="2.3" fill="#ffffff" />
+          <circle cx="231" cy="145" r="1.1" fill="#e0f2fe" />
+          {/* Delineado superior y ceja */}
+          <path
+            d={isFemale ? 'M218 137 Q229 129 241 136' : 'M218 138 Q229 132 240 137'}
+            fill="none"
+            stroke="#050817"
+            strokeWidth={isFemale ? '2.8' : '3'}
+            strokeLinecap="round"
+          />
+          <path
+            d={isFemale ? 'M219 127 Q230 122 242 126' : 'M218 129 Q229 124 242 126'}
+            fill="none"
+            stroke="#090d1c"
+            strokeWidth={isFemale ? '2' : '2.6'}
+            strokeLinecap="round"
+          />
+        </g>
+
+        {/* Nariz y expresión heroica anime */}
+        <path d="M209 152 L207 160 L211 161" fill="none" stroke="#c98a5b" strokeWidth="1.6" strokeLinecap="round" />
+        <path
+          d={isFemale ? 'M202 171 Q210 175 218 171' : 'M200 172 Q210 175 220 172'}
+          fill="none"
+          stroke="#9a5b38"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+
+        {/* CABELLO FRONTAL ANIME (DISTINTO PARA MASCULINO Y FEMENINO) */}
+        {isFemale ? (
+          <g>
+            {/* Melena frontal y flequillo estilizado */}
+            <path
+              d="M158 134 C154 82, 180 58, 210 58 C240 58, 266 82, 262 134 L254 228 L244 156 L234 126 L222 146 L212 118 L202 146 L190 124 L178 154 L166 228 Z"
+              fill={`url(#pexHair_${uid})`}
+            />
+            {/* Reflejos azules/violetas en el cabello */}
+            <path
+              d="M174 96 Q210 82 246 96"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="1.6"
+              opacity="0.45"
+              strokeLinecap="round"
+            />
+            {/* Tiara / diadema rúnica dorada en Etapa >= 2 */}
+            {stageScale >= 2 && (
+              <path
+                d="M174 102 L196 94 L210 84 L224 94 L246 102"
+                fill="none"
+                stroke="#ffd45a"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              />
+            )}
+          </g>
+        ) : (
+          <g>
+            {/* Cabello puntiagudo dinámico estilo protagonista shonen/JRPG */}
+            <path
+              d="M156 130 L146 96 L168 102 L162 66 L188 84 L198 52 L214 78 L234 54 L236 86 L262 72 L252 104 L272 100 L262 132 L252 154 L244 122 L232 142 L222 114 L210 144 L198 114 L186 142 L176 122 L166 154 Z"
+              fill={`url(#pexHair_${uid})`}
+            />
+            {/* Reflejos de luz cian en los mechones */}
+            <path
+              d="M178 92 L198 76 L212 92 L228 76 L244 92"
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="1.6"
+              opacity="0.45"
+              strokeLinecap="round"
+            />
+          </g>
+        )}
+      </g>
+
+      {/* 4. CHISPAS DORADAS Y PARTÍCULAS DE ENERGÍA FLOTANDO */}
+      <g className="pex-ember-pulse" filter={`url(#pexNeonBlur_${uid})`}>
+        <circle cx="96" cy="296" r="2.6" fill="#ffd45a" />
+        <circle cx="324" cy="288" r="2.6" fill="#ffd45a" />
+        <circle cx="118" cy="196" r="2.2" fill="#00eaff" />
+        <circle cx="302" cy="192" r="2.2" fill="#00eaff" />
+        <circle cx="148" cy="336" r="2" fill="#ffd45a" />
+        <circle cx="272" cy="338" r="2" fill="#00eaff" />
+      </g>
+    </svg>
+  );
+}
+
 function JrpgFantasyPortrait({
   hunterClass,
   hunterGrade,
@@ -1429,77 +1948,69 @@ function JrpgFantasyPortrait({
     }
   });
   const [aiStatus, setAiStatus] = useState('');
-  const [regenNonce, setRegenNonce] = useState(0);
-  const [localFallbackIdx, setLocalFallbackIdx] = useState(0);
   const [styleIdx, setStyleIdx] = useState(0);
   const [showPassiveDetails, setShowPassiveDetails] = useState(false);
 
-  const localFallbacks = isFemale
-    ? ['/avatar-female.jpg', '/avatar-female.png', '/1000272221.jpg']
-    : ['/avatar-male.jpg', '/avatar-male.png', '/1000272220.jpg'];
-
+  // Sincroniza si existe una imagen personalizada o generada previamente para el género/clase actual
   useEffect(() => {
-    let cancelled = false;
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      setAiImageSrc(cached || null);
+    } catch {
+      setAiImageSrc(null);
+    }
+  }, [cacheKey]);
 
-    async function runMultiAiCascade() {
-      if (regenNonce === 0) {
-        try {
-          const cached = localStorage.getItem(cacheKey);
-          if (cached) {
-            setAiImageSrc(cached);
-            setAiStatus('');
-            return;
-          }
-        } catch {
-          // Ignora errores de lectura de almacenamiento
-        }
-      }
+  const handleInvokeAiPortrait = async () => {
+    if (aiStatus) return;
+    const prompt = buildAnimeAvatarPrompt(gender, cls);
+    const seed = (cls.variantCode || 77) + Math.floor(Math.random() * 900) + (isFemale ? 500 : 100);
+    const engines = [
+      { label: 'IA 1/3 (Flux)', run: () => tryPollinationsEngine(prompt, seed, 'flux') },
+      { label: 'IA 2/3 (Turbo)', run: () => tryPollinationsEngine(prompt, seed + 9, 'turbo') },
+      { label: 'IA 3/3 (AI Horde)', run: () => tryAiHordeEngine(prompt) }
+    ];
 
-      const prompt = buildAnimeAvatarPrompt(gender, cls);
-      const seed = (cls.variantCode || 77) + regenNonce * 31 + (isFemale ? 500 : 100);
-
-      const engines = [
-        { label: 'IA 1/3 (Flux)', run: () => tryPollinationsEngine(prompt, seed, 'flux') },
-        { label: 'IA 2/3 (Turbo)', run: () => tryPollinationsEngine(prompt, seed + 9, 'turbo') },
-        { label: 'IA 3/3 (AI Horde)', run: () => tryAiHordeEngine(prompt) }
-      ];
-
-      for (const engine of engines) {
-        if (cancelled) return;
-        setAiStatus(`Invocando retrato con ${engine.label}...`);
-        try {
-          const verifiedDataUrl = await engine.run();
-          if (cancelled) return;
-          setAiImageSrc(verifiedDataUrl);
-          setAiStatus('');
-          try {
-            localStorage.setItem(cacheKey, verifiedDataUrl);
-          } catch {
-            // Si localStorage está lleno, mantiene la imagen en memoria de sesión
-          }
-          return;
-        } catch {
-          // Si este motor falla, pasa automáticamente al siguiente
-        }
-      }
-
-      if (!cancelled) {
+    for (const engine of engines) {
+      setAiStatus(`Invocando retrato con ${engine.label}...`);
+      try {
+        const verifiedDataUrl = await engine.run();
+        setAiImageSrc(verifiedDataUrl);
         setAiStatus('');
-        setAiImageSrc(null);
-        setLocalFallbackIdx(0);
+        try {
+          localStorage.setItem(cacheKey, verifiedDataUrl);
+        } catch {
+          // Mantiene en memoria de sesión si localStorage está lleno
+        }
+        return;
+      } catch {
+        // Pasa al siguiente motor sin borrar el retrato Anime Fantasy actual
       }
     }
 
-    runMultiAiCascade();
-    return () => {
-      cancelled = true;
+    setAiStatus('Servidores IA ocupados • Manteniendo retrato Anime RPG');
+    setTimeout(() => setAiStatus(''), 3200);
+  };
+
+  const handleUploadCustomAvatar = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result;
+      if (typeof dataUrl === 'string') {
+        setAiImageSrc(dataUrl);
+        try {
+          localStorage.setItem(cacheKey, dataUrl);
+        } catch {}
+      }
     };
-  }, [gender, cls.variantCode, regenNonce, cacheKey]);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   const activeStyle = GACHA_STYLES[styleIdx];
   const isStylized = styleIdx !== 0;
-  const fallbackSrc = localFallbackIdx < localFallbacks.length ? localFallbacks[localFallbackIdx] : null;
-  const finalImgToRender = aiImageSrc || fallbackSrc;
 
   return (
     <div className="cinematic-entry" style={{ position: 'relative', paddingBottom: '18px' }}>
@@ -1510,24 +2021,28 @@ function JrpgFantasyPortrait({
           borderRadius: '20px',
           overflow: 'hidden',
           background:
-            'radial-gradient(circle at 50% 42%, rgba(var(--neon-secondary-rgb), 0.24) 0%, rgba(var(--neon-primary-rgb), 0.12) 38%, rgba(5, 8, 23, 0.98) 78%)',
-          border: '1px solid rgba(var(--neon-primary-rgb), 0.25)',
+            'radial-gradient(circle at 50% 42%, rgba(var(--neon-secondary-rgb), 0.28) 0%, rgba(var(--neon-primary-rgb), 0.14) 40%, rgba(5, 8, 23, 0.98) 80%)',
+          border: '1.5px solid rgba(var(--neon-primary-rgb), 0.38)',
           boxShadow:
-            '0 14px 36px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(var(--neon-secondary-rgb), 0.16)',
+            '0 14px 36px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(var(--neon-secondary-rgb), 0.18)',
         }}
       >
-        {/* MARCO ORNAMENTAL DE FONDO DETRÁS DEL AVATAR */}
+        {/* MARCO ORNAMENTAL DE FONDO Y ESQUINAS DORADAS RPG */}
         <div
           style={{
             position: 'absolute',
-            inset: '14px 28px 34px',
-            border: '1px solid rgba(var(--neon-primary-rgb), 0.28)',
-            borderRadius: '10px',
-            boxShadow: 'inset 0 0 22px rgba(var(--neon-primary-rgb), 0.08)',
+            inset: '14px 24px 32px',
+            border: '1px solid rgba(var(--neon-primary-rgb), 0.34)',
+            borderRadius: '12px',
+            boxShadow: 'inset 0 0 24px rgba(var(--neon-primary-rgb), 0.1)',
             pointerEvents: 'none',
-            zIndex: 1,
+            zIndex: 5,
           }}
         />
+        <div className="pex-avatar-corner-tl" />
+        <div className="pex-avatar-corner-tr" />
+        <div className="pex-avatar-corner-bl" />
+        <div className="pex-avatar-corner-br" />
 
         {/* CONTROLES FLOTANTES COMPACTOS EN LA ESQUINA SUPERIOR DERECHA DEL AVATAR */}
         <div
@@ -1537,9 +2052,10 @@ function JrpgFantasyPortrait({
             right: '10px',
             zIndex: 8,
             display: 'flex',
-            gap: '6px',
+            gap: '5px',
             flexWrap: 'wrap',
             justifyContent: 'flex-end',
+            maxWidth: '72%',
           }}
         >
           <button
@@ -1547,13 +2063,13 @@ function JrpgFantasyPortrait({
             title={`Filtro visual: ${activeStyle.label}`}
             onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
             style={{
-              background: 'rgba(6, 11, 28, 0.82)',
+              background: 'rgba(6, 11, 28, 0.84)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
               color: 'var(--neon-gold)',
               borderRadius: '999px',
-              padding: '4px 9px',
-              fontSize: '10px',
+              padding: '4px 8px',
+              fontSize: '9.5px',
               fontFamily: 'Orbitron, sans-serif',
               fontWeight: 700,
               display: 'inline-flex',
@@ -1567,44 +2083,86 @@ function JrpgFantasyPortrait({
 
           <button
             type="button"
-            title="Regenerar retrato con IA"
+            title="Generar variante adicional con IA"
             disabled={Boolean(aiStatus)}
-            onClick={() => {
-              try { localStorage.removeItem(cacheKey); } catch {}
-              setAiImageSrc(null);
-              setRegenNonce((n) => n + 1);
-            }}
+            onClick={handleInvokeAiPortrait}
             style={{
-              background: 'rgba(6, 11, 28, 0.82)',
+              background: 'rgba(6, 11, 28, 0.84)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(var(--neon-secondary-rgb), 0.55)',
               color: '#e9d5ff',
               borderRadius: '999px',
-              padding: '4px 9px',
-              fontSize: '10px',
+              padding: '4px 8px',
+              fontSize: '9.5px',
               fontFamily: 'Orbitron, sans-serif',
               fontWeight: 700,
               display: 'inline-flex',
               alignItems: 'center',
               gap: '4px',
               cursor: 'pointer',
-              opacity: aiStatus ? 0.6 : 1,
+              opacity: aiStatus ? 0.65 : 1,
             }}
           >
             <RotateCcw size={11} /> {aiStatus ? 'IA...' : 'Nueva IA'}
           </button>
+
+          <label
+            title="Subir retrato personalizado desde tu dispositivo"
+            style={{
+              background: 'rgba(6, 11, 28, 0.84)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(16, 185, 129, 0.55)',
+              color: '#6ee7b7',
+              borderRadius: '999px',
+              padding: '4px 8px',
+              fontSize: '9.5px',
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 700,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            <Upload size={11} /> IMG
+            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadCustomAvatar} />
+          </label>
+
+          {aiImageSrc && (
+            <button
+              type="button"
+              title="Volver al retrato Anime Fantasy RPG integrado"
+              onClick={() => {
+                try { localStorage.removeItem(cacheKey); } catch {}
+                setAiImageSrc(null);
+              }}
+              style={{
+                background: 'rgba(6, 11, 28, 0.84)',
+                border: '1px solid var(--neon-gold)',
+                color: 'var(--neon-gold)',
+                borderRadius: '999px',
+                padding: '4px 8px',
+                fontSize: '9.5px',
+                fontFamily: 'Orbitron, sans-serif',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Anime RPG
+            </button>
+          )}
 
           {isStylized && (
             <button
               type="button"
               onClick={() => setStyleIdx(0)}
               style={{
-                background: 'rgba(6, 11, 28, 0.82)',
+                background: 'rgba(6, 11, 28, 0.84)',
                 border: '1px solid var(--neon-pink)',
                 color: 'var(--neon-pink)',
                 borderRadius: '999px',
                 padding: '4px 8px',
-                fontSize: '10px',
+                fontSize: '9.5px',
                 fontFamily: 'Orbitron, sans-serif',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -1617,18 +2175,15 @@ function JrpgFantasyPortrait({
           <button
             type="button"
             title="Cambiar género del avatar"
-            onClick={() => {
-              setRegenNonce(0);
-              onToggleGender();
-            }}
+            onClick={onToggleGender}
             style={{
-              background: 'rgba(6, 11, 28, 0.82)',
+              background: 'rgba(6, 11, 28, 0.84)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
               color: 'var(--neon-blue)',
               borderRadius: '999px',
-              padding: '4px 9px',
-              fontSize: '10px',
+              padding: '4px 8px',
+              fontSize: '9.5px',
               fontFamily: 'Orbitron, sans-serif',
               fontWeight: 700,
               display: 'inline-flex',
@@ -1648,9 +2203,9 @@ function JrpgFantasyPortrait({
             top: '10px',
             left: '10px',
             zIndex: 8,
-            background: 'rgba(6, 11, 28, 0.82)',
+            background: 'rgba(6, 11, 28, 0.84)',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(var(--neon-accent-rgb), 0.5)',
+            border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
             borderRadius: '999px',
             padding: '4px 10px',
             fontSize: '10px',
@@ -1684,7 +2239,7 @@ function JrpgFantasyPortrait({
           </div>
         )}
 
-        {/* RETRATO DE MEDIO CUERPO */}
+        {/* RETRATO DE MEDIO CUERPO (ANIME FANTASY RPG INTEGRADO + IMAGEN IA/PERSONALIZADA OPCIONAL) */}
         <div
           style={{
             position: 'relative',
@@ -1696,44 +2251,26 @@ function JrpgFantasyPortrait({
             alignItems: 'flex-start',
           }}
         >
-          {finalImgToRender ? (
+          {aiImageSrc ? (
             <img
-              src={finalImgToRender}
+              src={aiImageSrc}
               alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
-              onError={() => {
-                if (aiImageSrc) setAiImageSrc(null);
-                else setLocalFallbackIdx((prev) => prev + 1);
-              }}
+              onError={() => setAiImageSrc(null)}
               style={{
                 width: '100%',
-                height: '390px',
+                height: '395px',
                 objectFit: 'cover',
                 objectPosition: 'top center',
                 display: 'block',
               }}
             />
           ) : (
-            <div
-              style={{
-                height: '360px',
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '24px',
-                textAlign: 'center',
-                color: '#cbd5e1',
-              }}
-            >
-              <Sparkles size={36} color="var(--neon-blue)" style={{ marginBottom: '10px' }} />
-              <div className="font-souls" style={{ fontSize: '15px', color: '#fff', marginBottom: '6px' }}>
-                {aiStatus || 'ESPERANDO CONEXIÓN CON MOTOR IA'}
-              </div>
-              <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                Tocá "Nueva IA" arriba a la derecha para invocar el retrato de medio cuerpo.
-              </div>
-            </div>
+            <FantasyAnimeAvatarSvg
+              isFemale={isFemale}
+              weaponType={cls.weaponType}
+              stage={stage}
+              accentColor={cls.accentColor}
+            />
           )}
         </div>
 
@@ -1793,7 +2330,6 @@ function JrpgFantasyPortrait({
             CLASE: {classEvolution.title.toUpperCase()}
           </span>
         </div>
-
         <div
           className="pex-ribbon-badge"
           style={{
