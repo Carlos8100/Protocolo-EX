@@ -619,6 +619,49 @@ const SYSTEM_CSS = `
     border-width: 2px 2px 0 0;
     border-top-right-radius: 8px;
   }
+
+  .pex-ornate-frame {
+    position: relative;
+    background: linear-gradient(160deg, rgba(13, 22, 48, 0.95) 0%, rgba(5, 8, 22, 0.98) 100%);
+    border: 1.5px solid rgba(var(--neon-accent-rgb), 0.45);
+    border-radius: 18px;
+    box-shadow:
+      0 14px 36px rgba(0, 0, 0, 0.85),
+      inset 0 0 28px rgba(var(--neon-primary-rgb), 0.08);
+    overflow: hidden;
+  }
+
+  .pex-tactical-card {
+    background: linear-gradient(155deg, rgba(18, 30, 64, 0.96) 0%, rgba(7, 11, 28, 0.98) 100%);
+    border: 1.5px solid rgba(var(--neon-primary-rgb), 0.42);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: left;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pex-tactical-card:hover:not(:disabled) {
+    transform: translateY(-4px);
+    border-color: var(--neon-gold);
+    box-shadow: 0 8px 22px rgba(var(--neon-accent-rgb), 0.3), inset 0 0 14px rgba(var(--neon-primary-rgb), 0.14);
+  }
+
+  .pex-tactical-card:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @keyframes torchFlicker {
+    0%, 100% { opacity: 0.75; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.14); }
+  }
+  .pex-torch-glow {
+    animation: torchFlicker 2.1s ease-in-out infinite;
+  }
  
   .pex-ribbon-badge {
     background: linear-gradient(90deg, rgba(8, 14, 34, 0.95) 0%, rgba(20, 32, 66, 0.96) 50%, rgba(8, 14, 34, 0.95) 100%);
@@ -967,7 +1010,34 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 1 — El Umbral del Hierro',
     reqPower: 60,
     enemy: 'Centinela Oxidado de la Grieta',
+    bossHp: 170,
+    bossAtk: 24,
     lore: 'Tras despertar como Cazador desde cero, cruzas el puente de piedra y rescatas a Lyra, una herrera rúnica atrapada junto a la forja antigua. Al superar este capítulo fundas tu Ciudad 2D.',
+    vnScenes: [
+      {
+        speaker: 'Lyra Ignis',
+        role: 'Herrera Rúnica Atrapada',
+        accent: '#f97316',
+        text: '¡Cuidado con el puente de piedra! Ese coloso de hierro selló la entrada a la forja ancestral y bloquea el acceso al valle donde podrías levantar un bastión.'
+      },
+      {
+        speaker: 'Centinela Oxidado de la Grieta',
+        role: 'Guardián de la Primera Grieta',
+        accent: '#f43f5e',
+        text: '«INTRUSO DETECTADO. SOLO QUIEN DEMUESTRE VOLUNTAD DE ACERO CRUZARÁ EL UMBRAL.»'
+      },
+      {
+        speaker: 'Lyra Ignis',
+        role: 'Herrera Rúnica',
+        accent: '#fbbf24',
+        text: '¡Templaré tu arma con las brasas que quedan! Dime cómo quieres encarar el primer choque antes de desplegar tus cartas:'
+      }
+    ],
+    vnChoices: [
+      { label: '⚔️ Postura Ofensiva (+20% Daño de Cartas)', buffType: 'atk', value: 0.20 },
+      { label: '🛡️ Guardia Rúnica (+55 Escudo Inicial)', buffType: 'shield', value: 55 },
+      { label: '⚡ Concentración (+25 Recurso Inicial)', buffType: 'resource', value: 25 }
+    ],
     rewardType: 'Habilidad Especial',
     rewardName: 'Voluntad de Hierro (Pasiva +20 DEF)',
     unlockCharacterId: 'lyra',
@@ -982,7 +1052,28 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 2 — El Bosque de los Ecos',
     reqPower: 160,
     enemy: 'Acechador Sombrío de Fenrir',
+    bossHp: 280,
+    bossAtk: 34,
     lore: 'Entre la niebla lunar, Kaelen, el explorador de las sombras, une fuerzas contigo y llega a patrullar los alrededores de tu ciudad.',
+    vnScenes: [
+      {
+        speaker: 'Kaelen Vane',
+        role: 'Explorador de las Sombras',
+        accent: '#00eaff',
+        text: 'Silencio... Las marcas de garras en los árboles pertenecen al Acechador de Fenrir. Ataca en ráfagas rápidas cuando detecta debilidad.'
+      },
+      {
+        speaker: 'Acechador Sombrío de Fenrir',
+        role: 'Bestia Alfa del Bosque',
+        accent: '#a855f7',
+        text: '«GRRRAAAAH... EL OLOR DE UN CAZADOR EN ASCENSO ATRAE A LA MANADA NOCTURNA.»'
+      }
+    ],
+    vnChoices: [
+      { label: '🐺 Emboscada con Kaelen (+25% Daño Crítico)', buffType: 'atk', value: 0.25 },
+      { label: '🛡️ Manto de Niebla (+75 Escudo Inicial)', buffType: 'shield', value: 75 },
+      { label: '⚡ Flujo Lunar (+30 Recurso Inicial)', buffType: 'resource', value: 30 }
+    ],
     rewardType: 'Equipamiento de Historia',
     rewardName: 'Brazaletes del Lobo Plateado (+35 ATQ)',
     unlockCharacterId: 'kaelen',
@@ -997,7 +1088,28 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 3 — La Guardia del Bastión',
     reqPower: 280,
     enemy: 'Comandante Valkiria Caída',
+    bossHp: 410,
+    bossAtk: 46,
     lore: 'Tras purificar su armadura maldita en un duelo honorable, Seraphina jura lealtad y se instala en la plaza de tu ciudad.',
+    vnScenes: [
+      {
+        speaker: 'Seraphina Aurelia',
+        role: 'Comandante de la Ciudadela Carmesí',
+        accent: '#fbbf24',
+        text: 'Mi armadura responde a la maldición del bastión... Si aún conservas honor, ¡cruza tu acero conmigo y rompe este sello!'
+      },
+      {
+        speaker: 'Comandante Valkiria Caída',
+        role: 'Soberana del Bastión',
+        accent: '#e11d48',
+        text: '«¡QUE EL JUICIO DE LA LANCE DORADA DECIDA SI ERES DIGNO DE COMANDAR!»'
+      }
+    ],
+    vnChoices: [
+      { label: '⚔️ Duelo Honorable (+25% Daño de Cartas)', buffType: 'atk', value: 0.25 },
+      { label: '🛡️ Égida del Bastión (+100 Escudo Inicial)', buffType: 'shield', value: 100 },
+      { label: '⚡ Sobrecarga Vital (+35 Recurso Inicial)', buffType: 'resource', value: 35 }
+    ],
     rewardType: 'Habilidad Especial',
     rewardName: 'Estocada Relámpago Carmesí (+55 ATQ)',
     unlockCharacterId: 'seraphina',
@@ -1012,7 +1124,28 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 4 — El Altar del Eclipse',
     reqPower: 420,
     enemy: 'Archidemonio Revenant Malakor',
+    bossHp: 560,
+    bossAtk: 58,
     lore: 'En la biblioteca sellada del Altar conoces a Isolde, oráculo de las estrellas que viaja a tu ciudad para estudiar tu evolución sin límites.',
+    vnScenes: [
+      {
+        speaker: 'Isolde Noctis',
+        role: 'Oráculo Astral del Eclipse',
+        accent: '#c084fc',
+        text: 'Las constelaciones convergieron sobre este altar esperando tu llegada. Malakor devora el maná de quienes dudan de su propia fuerza.'
+      },
+      {
+        speaker: 'Archidemonio Revenant Malakor',
+        role: 'Señor del Altar Sellado',
+        accent: '#f43f5e',
+        text: '«TU EVOLUCIÓN TERMINA AQUÍ, MORTAL. EL ECLIPSE CONSUMIRÁ TU ALMA.»'
+      }
+    ],
+    vnChoices: [
+      { label: '🔮 Sello Astral de Isolde (+30% Daño de Cartas)', buffType: 'atk', value: 0.30 },
+      { label: '🛡️ Barrera Estelar (+130 Escudo Inicial)', buffType: 'shield', value: 130 },
+      { label: '⚡ Convergencia Cósmica (+40 Recurso Inicial)', buffType: 'resource', value: 40 }
+    ],
     rewardType: 'Reliquia Única de Historia',
     rewardName: 'Espadón Eclipse del Monarca (+90 ATQ)',
     unlockCharacterId: 'isolde',
@@ -1027,7 +1160,22 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 5 — Juicio de los Antiguos',
     reqPower: 600,
     enemy: 'Serafín de Acero Astral',
+    bossHp: 750,
+    bossAtk: 72,
     lore: 'Ascendiendo sobre las nubes, los guardianes celestiales evalúan si tu evolución de clase merece el título de Soberano.',
+    vnScenes: [
+      {
+        speaker: 'Serafín de Acero Astral',
+        role: 'Juez del Santuario Celestial',
+        accent: '#38bdf8',
+        text: '«HAS FORJADO TU CUERPO EN EL MUNDO REAL Y TU ESPÍRITU EN EL ABISMO. DEMUESTRA AHORA TU SOBERANÍA.»'
+      }
+    ],
+    vnChoices: [
+      { label: '⚔️ Determinación Suprema (+30% Daño)', buffType: 'atk', value: 0.30 },
+      { label: '🛡️ Armadura Celestial (+170 Escudo)', buffType: 'shield', value: 170 },
+      { label: '⚡ Despertar Sin Límites (+45 Recurso)', buffType: 'resource', value: 45 }
+    ],
     rewardType: 'Habilidad Suprema',
     rewardName: 'Juicio Astral de los Mil Filos (+140 ATQ)',
     unlockCharacterId: 'isolde',
@@ -1042,7 +1190,22 @@ const PVE_STORY_CHAPTERS = [
     chapter: 'Capítulo 6 — El Trono del Monarca Eterno',
     reqPower: 850,
     enemy: 'Sombra del Monarca Primordial (Jefe Final)',
+    bossHp: 1020,
+    bossAtk: 90,
     lore: 'Tu propio reflejo llevado al límite físico absoluto. Vencerlo sella tu leyenda en el Salón de los Inmortales.',
+    vnScenes: [
+      {
+        speaker: 'Sombra del Monarca Primordial',
+        role: 'Tu Reflejo Absoluto en el Trono',
+        accent: '#ffd45a',
+        text: '«SOY CADA REPETICIÓN QUE NO HICISTE Y CADA LÍMITE QUE SUPERASTE. SI ME VENCES, EL TRONO ETERNO SERÁ TUYO.»'
+      }
+    ],
+    vnChoices: [
+      { label: '👑 Voluntad del Monarca (+35% Daño)', buffType: 'atk', value: 0.35 },
+      { label: '🛡️ Trono Inquebrantable (+220 Escudo)', buffType: 'shield', value: 220 },
+      { label: '⚡ Trascendencia Total (+50 Recurso)', buffType: 'resource', value: 50 }
+    ],
     rewardType: 'Título & Armadura Mítica',
     rewardName: 'Égida del Monarca Absoluto (+220 PODER)',
     unlockCharacterId: 'seraphina',
@@ -1254,18 +1417,218 @@ const ZERO_SLEEP_LOG = [
 ];
  
 function getRankFromLP(lp) {
-  const safeLP = Math.max(0, Math.min(8999, lp));
+  const rawLP = Math.max(0, Number(lp) || 0);
+  const safeLP = Math.min(8999, rawLP);
   const totalDivisions = Math.floor(safeLP / 100);
   const rankIndex = Math.min(14, Math.floor(totalDivisions / 6));
   const divInRank = 6 - (totalDivisions % 6);
-  const currentDivLP = safeLP % 100;
+  const currentDivLP = rawLP >= 9000 ? 100 : safeLP % 100;
+  const currentRank = RANKS[rankIndex];
+  const rankStartLP = rankIndex * 600;
+  const rankEndLP = rankStartLP + 599;
+  const lpInCurrentRank = rawLP >= 9000 ? 600 : safeLP - rankStartLP;
+  const rankProgressPct = Math.min(100, Math.round((lpInCurrentRank / 600) * 100));
+
+  const isMaxChallenger = rankIndex === 14 && divInRank === 1 && rawLP >= 9000;
+  const lpToNextLayer = isMaxChallenger ? 0 : 100 - (safeLP % 100);
+  const nextLayerTargetLP = isMaxChallenger ? 9000 : safeLP + lpToNextLayer;
+  const nextLayerLabel = isMaxChallenger
+    ? 'Challenger • Capa 1 (Cúspide Máxima)'
+    : divInRank > 1
+    ? `${currentRank.name} • Capa ${divInRank - 1}`
+    : rankIndex < 14
+    ? `${RANKS[rankIndex + 1].name} • Capa 6`
+    : 'Challenger • Capa 1 (Cúspide Máxima)';
+
+  const nextRank = rankIndex < 14 ? RANKS[rankIndex + 1] : null;
+  const nextRankRequiredLP = nextRank ? (rankIndex + 1) * 600 : 9000;
+  const lpToNextRank = nextRank ? Math.max(0, nextRankRequiredLP - rawLP) : 0;
+
+  const layers = [6, 5, 4, 3, 2, 1].map((layerNum) => {
+    const layerOffset = 6 - layerNum;
+    const minLP = rankStartLP + layerOffset * 100;
+    const maxLP = minLP + 99;
+    const isCompleted = rawLP > maxLP;
+    const isCurrent = !isCompleted && rawLP >= minLP;
+    const lpInLayer = isCompleted ? 100 : isCurrent ? currentDivLP : 0;
+    const lpMissing = isCompleted ? 0 : isCurrent ? lpToNextLayer : minLP - rawLP;
+    return {
+      layerNum,
+      title: layerNum === 6 ? 'Capa 6 (Acceso)' : layerNum === 1 ? 'Capa 1 (Cúspide)' : `Capa ${layerNum}`,
+      minLP,
+      maxLP,
+      status: isCompleted ? 'completed' : isCurrent ? 'current' : 'locked',
+      lpInLayer,
+      lpMissing
+    };
+  });
+
   return {
-    ...RANKS[rankIndex],
+    ...currentRank,
+    rankIndex,
     division: divInRank,
-    label: `${RANKS[rankIndex].name} ${divInRank}`,
+    label: `${currentRank.name} • Capa ${divInRank}`,
+    shortLabel: `${currentRank.name} ${divInRank}`,
     currentDivLP,
-    totalLP: safeLP,
+    totalLP: rawLP,
+    rankStartLP,
+    rankEndLP,
+    lpInCurrentRank,
+    rankProgressPct,
+    lpToNextLayer,
+    nextLayerTargetLP,
+    nextLayerLabel,
+    nextRank,
+    nextRankRequiredLP,
+    lpToNextRank,
+    layers,
   };
+}
+
+function getClassResourceProfile(clsObj, level = 0) {
+  const base = String(clsObj?.baseArchetype || clsObj?.name || '').toLowerCase();
+  const aff = String(clsObj?.affinityName || '').toLowerCase();
+  const isArcane =
+    base.includes('monje') ||
+    base.includes('invocador') ||
+    base.includes('alquimista') ||
+    base.includes('soberano') ||
+    aff.includes('celestial') ||
+    aff.includes('vacío') ||
+    aff.includes('astral') ||
+    aff.includes('espectral') ||
+    aff.includes('eclipse');
+
+  if (isArcane) {
+    return {
+      type: 'mana',
+      name: 'Maná Arcano',
+      shortName: 'MANÁ',
+      color: '#38bdf8',
+      glow: 'rgba(56, 189, 248, 0.45)',
+      max: 100 + Math.min(60, level * 3),
+      regenPerTurn: 28,
+      archetypeLabel: 'Clase Mágica / Arcana',
+      mechanicNote: 'Alta reserva mágica (+28 Maná/turno) y hechizos arcanos de gran impacto.'
+    };
+  }
+  return {
+    type: 'stamina',
+    name: 'Energía / Estamina',
+    shortName: 'ESTAMINA',
+    color: '#f59e0b',
+    glow: 'rgba(245, 158, 11, 0.45)',
+    max: 100,
+    regenPerTurn: 38,
+    archetypeLabel: 'Clase Física / Marcial',
+    mechanicNote: 'Regeneración explosiva (+38 Estamina/turno) para encadenar múltiples golpes tácticos.'
+  };
+}
+
+function buildHunterTacticalDeck({ clsObj, gradeData, hunterCombatPower, unlockedInventory = [], atkMultiplier = 1 }) {
+  const mult = Math.max(0.5, Number(atkMultiplier) || 1);
+  const benchDmg = Math.max(24, Math.round((22 + (gradeData?.bench1RM || 0) * 0.35 + hunterCombatPower * 0.14) * mult));
+  const deadliftDmg = Math.max(38, Math.round((34 + (gradeData?.deadlift1RM || 0) * 0.32 + hunterCombatPower * 0.22) * mult));
+  const squatShield = Math.max(26, Math.round(24 + (gradeData?.squat1RM || 0) * 0.36 + hunterCombatPower * 0.12));
+  const ultimateDmg = Math.max(54, Math.round((48 + hunterCombatPower * 0.32) * mult));
+
+  const baseCards = [
+    {
+      id: 'card_bench_strike',
+      name: 'Tajo de Acero (Banca)',
+      kind: 'Ataque',
+      cost: 20,
+      damage: benchDmg,
+      shield: 0,
+      heal: 0,
+      resourceGain: 0,
+      drainEnemyResource: 0,
+      accent: '#f43f5e',
+      desc: `Inflige ${benchDmg} daño físico escalado con tu Press Banca (${gradeData?.bench1RM || 0} kg).`
+    },
+    {
+      id: 'card_squat_bastion',
+      name: 'Muralla del Titán (Sentadilla)',
+      kind: 'Defensa',
+      cost: 20,
+      damage: 0,
+      shield: squatShield,
+      heal: 8,
+      resourceGain: 0,
+      drainEnemyResource: 0,
+      accent: '#00eaff',
+      desc: `Otorga +${squatShield} Escudo y +8 HP escalado con Sentadilla (${gradeData?.squat1RM || 0} kg).`
+    },
+    {
+      id: 'card_deadlift_crush',
+      name: 'Impacto Sísmico (Peso Muerto)',
+      kind: 'Pesado',
+      cost: 35,
+      damage: deadliftDmg,
+      shield: 0,
+      heal: 0,
+      resourceGain: 0,
+      drainEnemyResource: 12,
+      accent: '#f97316',
+      desc: `Inflige ${deadliftDmg} daño perforante y drena 12 pts de recurso rival.`
+    },
+    {
+      id: 'card_focus_flow',
+      name: 'Canalización Táctica',
+      kind: 'Recurso',
+      cost: 0,
+      damage: 10,
+      shield: 12,
+      heal: 14,
+      resourceGain: 30,
+      drainEnemyResource: 0,
+      accent: '#10b981',
+      desc: 'Recupera +30 de recurso, +14 HP, +12 Escudo e inflige 10 daño.'
+    },
+    {
+      id: 'card_class_ultimate',
+      name: clsObj?.passiveName || 'Arte Definitivo de Clase',
+      kind: 'Definitiva',
+      cost: 50,
+      damage: ultimateDmg,
+      shield: Math.round(squatShield * 0.6),
+      heal: 0,
+      resourceGain: 0,
+      drainEnemyResource: 15,
+      accent: '#ffd45a',
+      desc: `Desata ${ultimateDmg} daño de clase + ${Math.round(squatShield * 0.6)} Escudo.`
+    }
+  ];
+
+  const relicCards = (unlockedInventory || []).slice(0, 3).map((item, idx) => {
+    const relicDmg = Math.max(28, Math.round((24 + (item.power || 30) * 0.55) * mult));
+    return {
+      id: `card_relic_${item.id || idx}`,
+      name: item.name,
+      kind: item.type || 'Reliquia',
+      cost: 25,
+      damage: relicDmg,
+      shield: Math.round((item.power || 20) * 0.35),
+      heal: 0,
+      resourceGain: 0,
+      drainEnemyResource: 0,
+      accent: '#a855f7',
+      desc: `Carta de equipo: ${relicDmg} daño + ${Math.round((item.power || 20) * 0.35)} Escudo.`
+    };
+  });
+
+  return [...baseCards, ...relicCards];
+}
+
+function drawTacticalHand(deck, count = 4) {
+  const pool = [...deck];
+  const hand = [];
+  while (hand.length < count && pool.length > 0) {
+    const idx = Math.floor(Math.random() * pool.length);
+    hand.push({ ...pool[idx], instanceId: `${pool[idx].id}_${Date.now()}_${hand.length}_${Math.random()}` });
+    pool.splice(idx, 1);
+  }
+  return hand;
 }
  
  
@@ -3289,32 +3652,15 @@ async function verifyAndCompressAiBlob(blob) {
       el.onerror = () => reject(new Error('No se pudo decodificar la imagen.'));
       el.src = objectUrl;
     });
- 
-    const probe = document.createElement('canvas');
-    probe.width = 16;
-    probe.height = 16;
-    const pCtx = probe.getContext('2d');
-    pCtx.drawImage(img, 0, 0, 16, 16);
- 
-    const checkCorner = (x, y) => {
-      const [r, g, b] = pCtx.getImageData(x, y, 1, 1).data;
-      const isBeigeBanner = r > 205 && g > 188 && b > 160 && r >= g && g >= b;
-      const isBlankWhite = r > 235 && g > 235 && b > 235;
-      return isBeigeBanner || isBlankWhite;
-    };
- 
-    if (checkCorner(2, 2) || checkCorner(13, 2)) {
-      throw new Error('Cartel de límite detectado por color de fondo.');
+    if ((img.width || 0) < 256 || (img.height || 0) < 256) {
+      throw new Error('Resolución insuficiente para retrato de personaje.');
     }
- 
-    // Comprime a JPEG ligero para guardarlo permanente en localStorage
-    const out = document.createElement('canvas');
-    const targetW = 540;
-    const targetH = Math.round((img.height / img.width) * targetW) || 720;
-    out.width = targetW;
-    out.height = targetH;
-    out.getContext('2d').drawImage(img, 0, 0, targetW, targetH);
-    return out.toDataURL('image/jpeg', 0.84);
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(new Error('No se pudo convertir la imagen.'));
+      reader.readAsDataURL(blob);
+    });
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
@@ -4787,98 +5133,164 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
 // MAPA 2D INTERACTIVO DE LA CIUDAD
 // ============================================================================
 function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selectedCharId, onSelectCharacter }) {
+  const [selectedLandmark, setSelectedLandmark] = useState(null);
+
+  const landmarksInfo = {
+    hall: { title: 'Ayuntamiento del Soberano', detail: 'Sede central de gobierno, rango y gestión de tu ciudadela.' },
+    forge: { title: 'Forja de Acero Real', detail: '+15 Poder de Equipo. Lyra templa armas rúnicas aquí.' },
+    tavern: { title: 'Taberna del Crepúsculo', detail: '+3 Afinidad extra en citas y centro de rumores.' },
+    dojo: { title: 'Arena Dojo de Entrenamiento', detail: '+20 Poder de Clase y prácticas de combate.' },
+    observatory: { title: 'Observatorio Astral', detail: 'Amplifica tu Pasiva Única de Clase y lee las estrellas.' },
+    garden: { title: 'Jardín de los Juramentos ♥', detail: 'Santuario floral iluminado para encuentros románticos.' },
+  };
+
   return (
-    <div style={{
-      borderRadius: '12px',
-      overflow: 'hidden',
-      border: '2px solid rgba(251, 191, 36, 0.5)',
-      background: '#060a14',
-      marginBottom: '14px',
-      position: 'relative'
-    }}>
+    <div
+      className="pex-ornate-frame"
+      style={{
+        marginBottom: '14px',
+        padding: '0',
+      }}
+    >
+      <span className="pex-avatar-corner-tl" />
+      <span className="pex-avatar-corner-tr" />
+      <span className="pex-avatar-corner-bl" style={{ bottom: '8px' }} />
+      <span className="pex-avatar-corner-br" style={{ bottom: '8px' }} />
+
       <div style={{
         position: 'absolute',
-        top: '8px',
-        left: '10px',
-        right: '10px',
+        top: '10px',
+        left: '14px',
+        right: '14px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        zIndex: 2,
-        pointerEvents: 'none'
+        zIndex: 4,
+        pointerEvents: 'none',
+        flexWrap: 'wrap',
+        gap: '6px'
       }}>
-        <span className="sys-badge" style={{ background: 'rgba(4,6,12,0.85)', color: '#fde047', border: '1px solid #fbbf24' }}>
-          MAPA 2D EN VIVO • {cityName.toUpperCase()}
+        <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.9)', color: '#ffd45a', border: '1px solid rgba(255,212,90,0.65)', boxShadow: '0 0 12px rgba(255,212,90,0.25)' }}>
+          ✦ CIUDADELA 2D • {cityName.toUpperCase()}
         </span>
-        <span className="sys-badge" style={{ background: 'rgba(4,6,12,0.85)', color: '#00f0ff', border: '1px solid #00f0ff' }}>
-          ALIADOS PRESENTES: {unlockedCharacters.length}
+        <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.9)', color: '#00eaff', border: '1px solid rgba(0,234,255,0.65)' }}>
+          ALIADOS EN PLAZA: {unlockedCharacters.length}/{STORY_CHARACTERS.length}
         </span>
       </div>
- 
-      <svg viewBox="0 0 540 230" width="100%" height="230" style={{ display: 'block' }}>
+
+      <svg viewBox="0 0 540 250" width="100%" height="250" style={{ display: 'block' }}>
         <defs>
           <linearGradient id="citySky2d" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#090d1e" />
-            <stop offset="65%" stopColor="#1e1b4b" />
-            <stop offset="100%" stopColor="#312e81" />
+            <stop offset="0%" stopColor="#040714" />
+            <stop offset="50%" stopColor="#12183b" />
+            <stop offset="100%" stopColor="#261c4e" />
+          </linearGradient>
+          <radialGradient id="moonHalo2d" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffd45a" stopOpacity="0.45" />
+            <stop offset="60%" stopColor="#963cff" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="#040714" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="ground2d" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#0f1f1c" />
+            <stop offset="100%" stopColor="#070d14" />
+          </linearGradient>
+          <linearGradient id="road2d" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#1e293b" />
+            <stop offset="50%" stopColor="#334155" />
+            <stop offset="100%" stopColor="#1e293b" />
           </linearGradient>
         </defs>
- 
-        <rect width="540" height="230" fill="url(#citySky2d)" />
-        <circle cx="470" cy="44" r="20" fill="#fde047" opacity="0.25" />
-        <polygon points="0,145 90,75 180,145" fill="#111827" />
-        <polygon points="140,145 260,65 380,145" fill="#0f172a" />
-        <polygon points="330,145 450,72 540,145" fill="#111827" />
- 
-        <rect x="0" y="142" width="540" height="88" fill="#142318" />
-        <rect x="0" y="168" width="540" height="26" fill="#334155" />
- 
-        <g>
-          <rect x="232" y="92" width="76" height="54" fill="#1e293b" stroke="#fbbf24" strokeWidth="2" />
-          <polygon points="226,92 270,64 314,92" fill="#991b1b" stroke="#fbbf24" strokeWidth="1.5" />
-          <rect x="261" y="120" width="18" height="26" fill="#090d16" />
-          <text x="270" y="58" textAnchor="middle" fill="#fde047" fontSize="9" fontWeight="bold">AYUNTAMIENTO</text>
+
+        <rect width="540" height="250" fill="url(#citySky2d)" />
+        <circle cx="468" cy="48" r="46" fill="url(#moonHalo2d)" />
+        <circle cx="468" cy="48" r="16" fill="#fef08a" opacity="0.88" />
+        <circle cx="474" cy="44" r="14" fill="#12183b" />
+
+        {[
+          [48, 34, 1.6], [92, 52, 1.2], [148, 28, 1.8], [204, 46, 1.3],
+          [320, 32, 1.7], [385, 55, 1.2], [512, 26, 1.5], [30, 72, 1.1]
+        ].map(([sx, sy, sr], idx) => (
+          <circle key={idx} cx={sx} cy={sy} r={sr} fill="#e0f2fe" opacity="0.8" />
+        ))}
+        <polyline points="148,28 204,46 248,30" fill="none" stroke="#00eaff" strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 3" />
+
+        <polygon points="0,152 85,78 175,152" fill="#0b1124" />
+        <polygon points="130,152 265,64 395,152" fill="#090e1f" />
+        <polygon points="325,152 448,74 540,152" fill="#0b1124" />
+
+        <rect x="0" y="140" width="540" height="12" fill="#1e293b" stroke="#475569" strokeWidth="0.8" />
+        {Array.from({ length: 18 }, (_, i) => (
+          <rect key={i} x={i * 30 + 4} y="135" width="16" height="6" fill="#334155" stroke="#ffd45a" strokeWidth="0.4" />
+        ))}
+
+        <rect x="0" y="150" width="540" height="100" fill="url(#ground2d)" />
+        <rect x="0" y="176" width="540" height="30" fill="url(#road2d)" stroke="#475569" strokeWidth="1" />
+        <line x1="0" y1="191" x2="540" y2="191" stroke="#00eaff" strokeWidth="1" strokeDasharray="8 10" strokeOpacity="0.45" />
+
+        {[52, 195, 345, 505].map((lx, idx) => (
+          <g key={idx}>
+            <line x1={lx} y1="158" x2={lx} y2="177" stroke="#94a3b8" strokeWidth="2" />
+            <circle cx={lx} cy="156" r="4" fill="#00eaff" className="pex-torch-glow" />
+            <circle cx={lx} cy="156" r="10" fill="#00eaff" opacity="0.22" />
+          </g>
+        ))}
+
+        <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.hall)}>
+          <rect x="230" y="96" width="80" height="56" rx="3" fill="#162038" stroke="#ffd45a" strokeWidth="2" />
+          <polygon points="222,96 270,64 318,96" fill="#7f1d1d" stroke="#ffd45a" strokeWidth="1.6" />
+          <polygon points="262,64 270,48 278,64" fill="#ffd45a" />
+          <rect x="260" y="122" width="20" height="30" rx="2" fill="#050817" stroke="#ffd45a" strokeWidth="1" />
+          <rect x="240" y="106" width="12" height="12" fill="#38bdf8" opacity="0.7" />
+          <rect x="288" y="106" width="12" height="12" fill="#38bdf8" opacity="0.7" />
+          <rect x="226" y="42" width="88" height="14" rx="4" fill="rgba(5,8,23,0.88)" stroke="#ffd45a" strokeWidth="0.8" />
+          <text x="270" y="52" textAnchor="middle" fill="#ffd45a" fontSize="8" fontWeight="bold">AYUNTAMIENTO</text>
         </g>
- 
+
         {builtBuildings.includes('forge') && (
-          <g>
-            <rect x="68" y="106" width="64" height="40" fill="#292524" stroke="#f97316" strokeWidth="1.8" />
-            <polygon points="64,106 100,84 136,106" fill="#7c2d12" />
-            <text x="100" y="79" textAnchor="middle" fill="#fdba74" fontSize="8" fontWeight="bold">FORJA</text>
+          <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.forge)}>
+            <rect x="64" y="110" width="68" height="42" rx="3" fill="#292524" stroke="#f97316" strokeWidth="1.8" />
+            <polygon points="58,110 98,86 138,110" fill="#9a3412" stroke="#fdba74" strokeWidth="1.2" />
+            <rect x="114" y="76" width="10" height="22" fill="#44403c" />
+            <circle cx="119" cy="70" r="5" fill="#fb923c" className="pex-torch-glow" />
+            <text x="98" y="81" textAnchor="middle" fill="#fdba74" fontSize="8" fontWeight="bold">FORJA</text>
           </g>
         )}
- 
+
         {builtBuildings.includes('tavern') && (
-          <g>
-            <rect x="150" y="104" width="66" height="42" fill="#3f2e21" stroke="#fbbf24" strokeWidth="1.8" />
-            <polygon points="146,104 183,82 220,104" fill="#92400e" />
-            <text x="183" y="77" textAnchor="middle" fill="#fde047" fontSize="8" fontWeight="bold">TABERNA</text>
+          <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.tavern)}>
+            <rect x="148" y="108" width="68" height="44" rx="3" fill="#3b2618" stroke="#fbbf24" strokeWidth="1.8" />
+            <polygon points="142,108 182,84 222,108" fill="#92400e" stroke="#fde047" strokeWidth="1.2" />
+            <circle cx="182" cy="124" r="6" fill="#fbbf24" opacity="0.85" />
+            <text x="182" y="79" textAnchor="middle" fill="#fde047" fontSize="8" fontWeight="bold">TABERNA</text>
           </g>
         )}
- 
+
         {builtBuildings.includes('dojo') && (
-          <g>
-            <rect x="326" y="106" width="70" height="40" fill="#1e293b" stroke="#00f0ff" strokeWidth="1.8" />
-            <polygon points="320,106 361,84 402,106" fill="#0369a1" />
-            <text x="361" y="79" textAnchor="middle" fill="#00f0ff" fontSize="8" fontWeight="bold">ARENA DOJO</text>
+          <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.dojo)}>
+            <rect x="324" y="110" width="72" height="42" rx="3" fill="#13263a" stroke="#00eaff" strokeWidth="1.8" />
+            <polygon points="318,110 360,86 402,110" fill="#0369a1" stroke="#7dd3fc" strokeWidth="1.2" />
+            <text x="360" y="81" textAnchor="middle" fill="#00eaff" fontSize="8" fontWeight="bold">ARENA DOJO</text>
           </g>
         )}
- 
+
         {builtBuildings.includes('observatory') && (
-          <g>
-            <rect x="412" y="96" width="44" height="50" fill="#312e81" stroke="#c084fc" strokeWidth="1.8" />
-            <path d="M412 96 Q434 68 456 96 Z" fill="#6b21a8" stroke="#c084fc" strokeWidth="1.5" />
-            <text x="434" y="64" textAnchor="middle" fill="#e9d5ff" fontSize="8" fontWeight="bold">OBSERVATORIO</text>
+          <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.observatory)}>
+            <rect x="410" y="98" width="46" height="54" rx="3" fill="#2e1065" stroke="#c084fc" strokeWidth="1.8" />
+            <path d="M410 98 Q433 68 456 98 Z" fill="#6b21a8" stroke="#e9d5ff" strokeWidth="1.4" />
+            <line x1="433" y1="74" x2="452" y2="52" stroke="#c084fc" strokeWidth="1.5" strokeOpacity="0.6" />
+            <text x="433" y="64" textAnchor="middle" fill="#e9d5ff" fontSize="8" fontWeight="bold">OBSERVATORIO</text>
           </g>
         )}
- 
+
         {builtBuildings.includes('garden') && (
-          <g>
-            <circle cx="486" cy="134" r="16" fill="#065f46" stroke="#fb7185" strokeWidth="1.8" />
-            <text x="486" y="113" textAnchor="middle" fill="#fda4af" fontSize="8" fontWeight="bold">JARDÍN ♥</text>
+          <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.garden)}>
+            <circle cx="490" cy="136" r="18" fill="#064e3b" stroke="#ff3e9d" strokeWidth="1.8" />
+            <circle cx="485" cy="131" r="4" fill="#fda4af" />
+            <circle cx="495" cy="134" r="3.5" fill="#f472b6" />
+            <text x="490" y="113" textAnchor="middle" fill="#fda4af" fontSize="8" fontWeight="bold">JARDÍN ♥</text>
           </g>
         )}
- 
+
         {unlockedCharacters.map((char, idx) => {
           const isSelected = char.id === selectedCharId;
           return (
@@ -4888,21 +5300,49 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
               style={{ cursor: 'pointer' }}
               onClick={() => onSelectCharacter(char.id)}
             >
-              <circle cx={char.mapX} cy={char.mapY - 28} r="10" fill="#090d16" stroke={isSelected ? '#fb7185' : '#fbbf24'} strokeWidth="1.5" />
-              <text x={char.mapX} y={char.mapY - 25} textAnchor="middle" fill={isSelected ? '#fb7185' : '#fde047'} fontSize="8" fontWeight="bold">
+              <ellipse cx={char.mapX} cy={char.mapY + 24} rx="12" ry="4" fill="rgba(0,0,0,0.55)" />
+              <circle cx={char.mapX} cy={char.mapY - 26} r="10" fill="#050817" stroke={isSelected ? '#ff3e9d' : '#ffd45a'} strokeWidth="1.6" />
+              <text x={char.mapX} y={char.mapY - 23} textAnchor="middle" fill={isSelected ? '#ff3e9d' : '#ffd45a'} fontSize="8.5" fontWeight="bold">
                 {isSelected ? '♥' : '!'}
               </text>
-              <rect x={char.mapX - 8} y={char.mapY - 6} width="16" height="18" rx="4" fill={char.outfitColor} stroke={char.trimColor} strokeWidth="1.2" />
-              <circle cx={char.mapX} cy={char.mapY - 12} r="7" fill="#ffedd5" />
-              <path d={`M${char.mapX - 7} ${char.mapY - 13} Q${char.mapX} ${char.mapY - 21} ${char.mapX + 7} ${char.mapY - 13}`} fill={char.hairColor} />
-              <rect x={char.mapX - 28} y={char.mapY + 14} width="56" height="13" rx="4" fill="rgba(4,6,12,0.85)" />
-              <text x={char.mapX} y={char.mapY + 23} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold">
+              <rect x={char.mapX - 9} y={char.mapY - 4} width="18" height="20" rx="5" fill={char.outfitColor} stroke={char.trimColor} strokeWidth="1.4" />
+              <circle cx={char.mapX} cy={char.mapY - 11} r="7.5" fill="#ffedd5" />
+              <path d={`M${char.mapX - 7.5} ${char.mapY - 12} Q${char.mapX} ${char.mapY - 21} ${char.mapX + 7.5} ${char.mapY - 12}`} fill={char.hairColor} />
+              <rect x={char.mapX - 30} y={char.mapY + 18} width="60" height="14" rx="4" fill="rgba(5,8,23,0.92)" stroke={isSelected ? '#ff3e9d' : 'rgba(0,234,255,0.4)'} strokeWidth="0.8" />
+              <text x={char.mapX} y={char.mapY + 27.5} textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold">
                 {char.name.split(' ')[0]}
               </text>
             </g>
           );
         })}
       </svg>
+
+      <div style={{
+        padding: '9px 14px',
+        background: 'rgba(5, 8, 23, 0.94)',
+        borderTop: '1px solid rgba(255, 212, 90, 0.25)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '6px',
+        fontSize: '12px'
+      }}>
+        <span style={{ color: '#cbd5e1' }}>
+          {selectedLandmark
+            ? <><strong style={{ color: '#ffd45a' }}>{selectedLandmark.title}:</strong> {selectedLandmark.detail}</>
+            : 'Toca cualquier edificio o aliado en el mapa 2D para inspeccionarlo.'}
+        </span>
+        {selectedLandmark && (
+          <button
+            type="button"
+            onClick={() => setSelectedLandmark(null)}
+            style={{ background: 'transparent', border: 'none', color: '#00eaff', fontSize: '11px', cursor: 'pointer', fontWeight: 700 }}
+          >
+            Cerrar
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -6416,6 +6856,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [unlockedInventory, setUnlockedInventory] = useState(() => initialData?.unlockedInventory || []);
   const [completedChapters, setCompletedChapters] = useState(() => initialData?.completedChapters || []);
   const [pveBattleLog, setPveBattleLog] = useState(null);
+  const [activeStoryEncounter, setActiveStoryEncounter] = useState(null);
+  const [activePvpDuel, setActivePvpDuel] = useState(null);
+  const [showAllRanksLadder, setShowAllRanksLadder] = useState(false);
  
   const [cityName, setCityName] = useState(() => initialData?.cityName || 'Bastión de Ceniza');
   const [builtBuildings, setBuiltBuildings] = useState(() => initialData?.builtBuildings || []);
@@ -6780,7 +7223,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     if (msg) triggerToast(msg);
   };
  
-  const canvasRef = useRef(null);
  
   const gradeData = computeHunterGradeData(savedLifts, profile.weightKg);
   const hunterGrade = gradeData.currentStd.grade;
@@ -7629,34 +8071,15 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = canvasRef.current || document.createElement('canvas');
-        canvas.width = 240;
-        canvas.height = 300;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 240, 300);
- 
-        ctx.fillStyle = '#04060b';
-        ctx.fillRect(65, 12, 110, 58);
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(65, 12, 110, 58);
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = 'bold 10px monospace';
-        ctx.fillText('ROSTRO CENSURADO', 71, 40);
-        ctx.fillText('AES-256 LOCAL', 82, 54);
- 
-        const safeDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        if (target === 'onboarding') {
-          setProfile((p) => ({ ...p, photoScanned: true, censoredPreview: safeDataUrl }));
-          triggerToast('[SISTEMA] Fotografía escaneada y rostro censurado con éxito.');
-        } else if (target === 'front' || target === 'back') {
-          setVaultPhotos((v) => ({ ...v, [target]: safeDataUrl }));
-          triggerToast(`[BÓVEDA] Captura ${target === 'front' ? 'frontal' : 'dorsal'} cifrada sin rostro.`);
-        }
-      };
-      img.src = ev.target.result;
+      const safeDataUrl = String(ev.target?.result || '');
+      if (!safeDataUrl) return;
+      if (target === 'onboarding') {
+        setProfile((p) => ({ ...p, photoScanned: true, censoredPreview: safeDataUrl }));
+        triggerToast('[SISTEMA] Fotografía escaneada y protegida con escudo local AES-256.');
+      } else if (target === 'front' || target === 'back') {
+        setVaultPhotos((v) => ({ ...v, [target]: safeDataUrl }));
+        triggerToast(`[BÓVEDA] Captura ${target === 'front' ? 'frontal' : 'dorsal'} cifrada sin rostro.`);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -7750,7 +8173,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   if (!awakened) {
     return (
       <div className="sys-container" style={{ maxWidth: '580px', paddingTop: '24px' }}>
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
         {toast && (
           <div className="toast-alert">
             <Sparkles size={18} color="#fbbf24" />
@@ -8116,7 +8538,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   // ==========================================================================
   return (
     <div className="sys-container">
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
       <ExerciseAnimationModal exercise={animModalEx} onClose={() => setAnimModalEx(null)} />
  
       {toast && (
@@ -8140,6 +8561,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                   {profile.hunterName} ({profile.hunterCode})
+                </div>
+                <div style={{ marginTop: '4px' }}>
+                  <span
+                    className="sys-badge"
+                    style={{
+                      background: 'rgba(5, 8, 23, 0.9)',
+                      color: rankInfo.color,
+                      border: `1px solid ${rankInfo.color}`,
+                      fontSize: '10px',
+                      padding: '2px 8px'
+                    }}
+                  >
+                    {rankInfo.label.toUpperCase()} ({rankInfo.currentDivLP}/100 LP)
+                  </span>
                 </div>
               </div>
               <button
@@ -8410,8 +8845,65 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             NIVEL {level} • {profile.hunterName} ({hunterGrade})
           </div>
  
+          {/* INDICADOR VISIBLE DE RANGO ACTUAL Y SUS 6 CAPAS */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '6px',
+              padding: '7px 10px',
+              marginBottom: '8px',
+              borderRadius: '11px',
+              background: 'rgba(11, 21, 48, 0.88)',
+              border: `1px solid ${rankInfo.color}`,
+              boxShadow: '0 0 14px rgba(0, 0, 0, 0.55)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+              <Crown size={15} color={rankInfo.color} />
+              <span className="font-hud" style={{ fontSize: '11px', fontWeight: 800, color: rankInfo.color }}>
+                RANGO {rankInfo.name.toUpperCase()} • CAPA {rankInfo.division}/6
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }} title="Progreso de las 6 Capas del Rango Actual">
+              {rankInfo.layers.map((lyr) => (
+                <span
+                  key={lyr.layerNum}
+                  style={{
+                    padding: '1px 5px',
+                    borderRadius: '5px',
+                    fontSize: '9px',
+                    fontFamily: 'Orbitron, sans-serif',
+                    fontWeight: 800,
+                    background:
+                      lyr.status === 'completed'
+                        ? rankInfo.color
+                        : lyr.status === 'current'
+                        ? 'rgba(255, 212, 90, 0.22)'
+                        : 'rgba(5, 8, 23, 0.8)',
+                    color:
+                      lyr.status === 'completed'
+                        ? '#050817'
+                        : lyr.status === 'current'
+                        ? '#ffd45a'
+                        : '#64748b',
+                    border:
+                      lyr.status === 'current'
+                        ? '1px solid #ffd45a'
+                        : '1px solid rgba(148, 163, 184, 0.25)'
+                  }}
+                >
+                  C{lyr.layerNum}
+                </span>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto', alignItems: 'center', gap: '8px' }}>
               <span className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>
                 LP
               </span>
@@ -8429,6 +8921,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   }}
                 />
               </div>
+              <span className="font-hud" style={{ fontSize: '10px', fontWeight: 700, color: '#ffd45a', whiteSpace: 'nowrap' }}>
+                {rankInfo.currentDivLP}/100 LP
+              </span>
             </div>
  
             <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', alignItems: 'center', gap: '8px' }}>
@@ -8566,6 +9061,163 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               }}
             />
  
+            {/* PANEL ORNAMENTADO: RANGO ACTUAL, 6 CAPAS Y REQUERIMIENTOS DE SUBIDA */}
+            <div className="pex-ornate-panel">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Layers size={17} color={rankInfo.color} />
+                  <span className="font-hud" style={{ fontSize: '12px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0.08em' }}>
+                    RANGO ACTUAL Y 6 CAPAS
+                  </span>
+                </div>
+                <span
+                  className="sys-badge"
+                  style={{
+                    background: 'rgba(5, 8, 23, 0.92)',
+                    color: rankInfo.color,
+                    border: `1px solid ${rankInfo.color}`,
+                    fontSize: '11px'
+                  }}
+                >
+                  {rankInfo.name.toUpperCase()} • CAPA {rankInfo.division} ({rankInfo.totalLP} LP)
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '8px',
+                  marginBottom: '12px'
+                }}
+              >
+                <div style={{ padding: '10px', borderRadius: '11px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(0, 234, 255, 0.3)' }}>
+                  <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', fontWeight: 700 }}>
+                    SIGUIENTE CAPA: {rankInfo.nextLayerLabel.toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#fff', fontWeight: 700, marginTop: '3px' }}>
+                    {rankInfo.lpToNextLayer > 0
+                      ? `Faltan ${rankInfo.lpToNextLayer} LP (Meta: ${rankInfo.nextLayerTargetLP} LP)`
+                      : '¡Cúspide Challenger 1 Alcanzada!'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    Progreso de capa actual: {rankInfo.currentDivLP}/100 LP
+                  </div>
+                </div>
+
+                <div style={{ padding: '10px', borderRadius: '11px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(255, 212, 90, 0.35)' }}>
+                  <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-gold)', fontWeight: 700 }}>
+                    ASCENSO DE RANGO: {rankInfo.nextRank ? rankInfo.nextRank.name.toUpperCase() : 'MÁXIMO'}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#fff', fontWeight: 700, marginTop: '3px' }}>
+                    {rankInfo.nextRank
+                      ? `Faltan ${rankInfo.lpToNextRank} LP (Meta: ${rankInfo.nextRankRequiredLP} LP)`
+                      : 'Has conquistado los 15 Rangos'}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    Avance en {rankInfo.name}: {rankInfo.lpInCurrentRank}/600 LP ({rankInfo.rankProgressPct}%)
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                DESGLOSE DE LAS 6 CAPAS DE {rankInfo.name.toUpperCase()} (100 LP POR CAPA):
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '7px', marginBottom: '10px' }}>
+                {rankInfo.layers.map((lyr) => {
+                  const isCurrent = lyr.status === 'current';
+                  const isCompleted = lyr.status === 'completed';
+                  return (
+                    <div
+                      key={lyr.layerNum}
+                      style={{
+                        padding: '8px',
+                        borderRadius: '10px',
+                        background: isCurrent
+                          ? 'rgba(255, 212, 90, 0.14)'
+                          : isCompleted
+                          ? 'rgba(16, 185, 129, 0.14)'
+                          : 'rgba(5, 8, 23, 0.82)',
+                        border: isCurrent
+                          ? '1.5px solid #ffd45a'
+                          : isCompleted
+                          ? '1px solid #10b981'
+                          : '1px solid rgba(148, 163, 184, 0.2)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className="font-hud" style={{ fontSize: '10px', fontWeight: 800, color: isCurrent ? '#ffd45a' : isCompleted ? '#6ee7b7' : '#94a3b8' }}>
+                          CAPA {lyr.layerNum}
+                        </span>
+                        <span style={{ fontSize: '9px', fontWeight: 700, color: isCurrent ? '#ffd45a' : isCompleted ? '#6ee7b7' : '#64748b' }}>
+                          {isCompleted ? '✓ OK' : isCurrent ? 'ACTIVA' : 'BLOQ.'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#cbd5e1', marginTop: '3px' }}>
+                        {lyr.minLP}–{lyr.maxLP} LP
+                      </div>
+                      <div className="progress-track" style={{ height: '5px', marginTop: '4px' }}>
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${lyr.lpInLayer}%`,
+                            background: isCompleted ? '#10b981' : isCurrent ? '#ffd45a' : 'transparent'
+                          }}
+                        />
+                      </div>
+                      <div style={{ fontSize: '9px', color: isCurrent ? '#fde047' : '#94a3b8', marginTop: '3px' }}>
+                        {isCompleted ? 'Superada' : isCurrent ? `Faltan ${lyr.lpMissing} LP` : `Req: ${lyr.minLP} LP`}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                  Gana LP: <strong style={{ color: '#fff' }}>Misiones (+25..50)</strong> • <strong style={{ color: '#fff' }}>Cargas (+15+)</strong> • <strong style={{ color: '#fff' }}>Historia/PvP (+25..160)</strong>
+                </span>
+                <button
+                  type="button"
+                  className="rpg-button"
+                  style={{ padding: '5px 10px', fontSize: '9px' }}
+                  onClick={() => setShowAllRanksLadder((v) => !v)}
+                >
+                  {showAllRanksLadder ? 'Ocultar 15 Rangos' : 'Ver 15 Rangos (Tierra → Challenger)'}
+                </button>
+              </div>
+
+              {showAllRanksLadder && (
+                <div style={{ marginTop: '10px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '6px' }}>
+                  {RANKS.map((rk) => {
+                    const start = rk.tier * 600;
+                    const end = start + 599;
+                    const isHere = rankInfo.tier === rk.tier;
+                    const isPassed = rankInfo.tier > rk.tier;
+                    return (
+                      <div
+                        key={rk.name}
+                        style={{
+                          padding: '7px 9px',
+                          borderRadius: '9px',
+                          background: isHere ? 'rgba(255, 212, 90, 0.16)' : 'rgba(5, 8, 23, 0.85)',
+                          border: `1px solid ${isHere ? '#ffd45a' : isPassed ? '#10b981' : 'rgba(148,163,184,0.2)'}`,
+                          fontSize: '11px'
+                        }}
+                      >
+                        <div style={{ fontWeight: 800, color: rk.color }}>
+                          {rk.tier + 1}. {rk.name} {isHere ? '★' : isPassed ? '✓' : ''}
+                        </div>
+                        <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+                          6 Capas • {start}–{rk.tier === 14 ? '8999+' : end} LP
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* 2. PANEL ORNAMENTADO DE HABILIDADES Y EQUIPAMIENTO (2 FILAS x 5 RANURAS) */}
             <div className="pex-ornate-panel">
               <div
@@ -10077,128 +10729,498 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       {/* ====================================================================
           MÓDULO 4: MODO HISTORIA PVE SECUENCIAL
          ==================================================================== */}
-      {activeTab === 'pve' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="sys-window" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-              <h2 className="font-souls" style={{ fontSize: '17px', color: '#f59e0b' }}>
-                CRÓNICAS DEL ABISMO — MODO HISTORIA PVE
-              </h2>
-              <span className="sys-badge" style={{ background: 'rgba(245,158,11,0.2)', color: '#fde047', border: '1px solid #f59e0b' }}>
-                TU PODER DE COMBATE: {hunterCombatPower}
-              </span>
-            </div>
- 
-            {pveBattleLog && (
-              <div style={{
-                padding: '14px',
-                borderRadius: '11px',
-                marginBottom: '14px',
-                background: pveBattleLog.victory ? 'rgba(16,185,129,0.16)' : 'rgba(225,29,72,0.16)',
-                border: `1px solid ${pveBattleLog.victory ? '#10b981' : '#e11d48'}`
-              }}>
-                <div style={{ fontWeight: 700, fontSize: '14px', color: pveBattleLog.victory ? '#6ee7b7' : '#fda4af' }}>
-                  {pveBattleLog.title}
-                </div>
-                <p style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pveBattleLog.detail}</p>
+      {activeTab === 'pve' && (() => {
+        const clsObj = hunterClass?.cls || {
+          name: 'Centinela Infinito',
+          passiveName: 'Muralla Inquebrantable',
+          passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
+        };
+        const resProfile = getClassResourceProfile(clsObj, level);
+
+        const startStoryEncounter = (ch) => {
+          const prevCleared = ch.prevId === null || completedChapters.includes(ch.prevId);
+          if (!prevCleared) return;
+          const playerMaxHp = 210 + level * 22 + Math.round(hunterCombatPower * 0.45);
+          const deck = buildHunterTacticalDeck({
+            clsObj,
+            gradeData,
+            hunterCombatPower,
+            unlockedInventory,
+            atkMultiplier: 1
+          });
+          setActiveStoryEncounter({
+            chapter: ch,
+            phase: 'vn',
+            sceneIdx: 0,
+            selectedChoice: null,
+            turn: 1,
+            playerHp: playerMaxHp,
+            playerMaxHp,
+            playerShield: 20,
+            resource: Math.min(resProfile.max, Math.round(resProfile.max * 0.7)),
+            maxResource: resProfile.max,
+            atkMultiplier: 1,
+            bossHp: ch.bossHp,
+            bossMaxHp: ch.bossHp,
+            bossShield: 0,
+            bossIntent: { label: `Golpe de Grieta (${ch.bossAtk} daño)`, type: 'attack', value: ch.bossAtk },
+            deck,
+            hand: drawTacticalHand(deck, 4),
+            combatLogs: [`Escena narrativa iniciada en ${ch.chapter}.`]
+          });
+        };
+
+        const chooseVnOptionAndEnterCombat = (choice) => {
+          setActiveStoryEncounter((prev) => {
+            if (!prev) return null;
+            const nextAtkMult = choice.buffType === 'atk' ? 1 + choice.value : 1;
+            const nextShield = prev.playerShield + (choice.buffType === 'shield' ? choice.value : 0);
+            const nextResource = Math.min(prev.maxResource, prev.resource + (choice.buffType === 'resource' ? choice.value : 0));
+            const upgradedDeck = buildHunterTacticalDeck({
+              clsObj,
+              gradeData,
+              hunterCombatPower,
+              unlockedInventory,
+              atkMultiplier: nextAtkMult
+            });
+            return {
+              ...prev,
+              phase: 'combat',
+              selectedChoice: choice,
+              playerShield: nextShield,
+              resource: nextResource,
+              atkMultiplier: nextAtkMult,
+              deck: upgradedDeck,
+              hand: drawTacticalHand(upgradedDeck, 4),
+              combatLogs: [
+                `Decisión táctica: ${choice.label}.`,
+                `¡Comienza el Combate Táctico por Turnos contra ${prev.chapter.enemy}!`
+              ]
+            };
+          });
+        };
+
+        const playStoryCard = (card) => {
+          setActiveStoryEncounter((prev) => {
+            if (!prev || prev.phase !== 'combat') return prev;
+            if (prev.resource < card.cost) {
+              triggerToast(`[COMBATE] No tienes suficiente ${resProfile.shortName} (${card.cost} req).`);
+              return prev;
+            }
+            const nextResource = Math.min(prev.maxResource, prev.resource - card.cost + (card.resourceGain || 0));
+            let remainingDmg = card.damage || 0;
+            let nextBossShield = prev.bossShield;
+            if (nextBossShield > 0 && remainingDmg > 0) {
+              const absorbed = Math.min(nextBossShield, remainingDmg);
+              nextBossShield -= absorbed;
+              remainingDmg -= absorbed;
+            }
+            const nextBossHp = Math.max(0, prev.bossHp - remainingDmg);
+            const nextPlayerShield = prev.playerShield + (card.shield || 0);
+            const nextPlayerHp = Math.min(prev.playerMaxHp, prev.playerHp + (card.heal || 0));
+            const nextHand = prev.hand.filter((c) => c.instanceId !== card.instanceId);
+            const logLine = `Turno ${prev.turn}: Usaste "${card.name}" (${card.damage > 0 ? `-${card.damage} HP jefe` : ''}${card.shield > 0 ? ` +${card.shield} Escudo` : ''}${card.resourceGain > 0 ? ` +${card.resourceGain} ${resProfile.shortName}` : ''}).`;
+
+            if (nextBossHp <= 0) {
+              const ch = prev.chapter;
+              if (!completedChapters.includes(ch.id)) {
+                setCompletedChapters((cList) => [...cList, ch.id]);
+                setExp((e) => e + ch.expReward);
+                setLp((l) => l + ch.lpReward);
+                setUnlockedInventory((inv) => [
+                  ...inv,
+                  { id: ch.id, type: ch.rewardType, name: ch.rewardName, power: 55, desc: `Recompensa obtenida en ${ch.chapter}` }
+                ]);
+              }
+              setPveBattleLog({
+                victory: true,
+                title: `¡VICTORIA TÁCTICA EN ${ch.chapter.toUpperCase()}!`,
+                detail: ch.id === 'act1_ch1'
+                  ? `Has derrotado a ${ch.enemy} en combate por turnos, fundado tu Ciudad 2D y desbloqueado a Lyra.`
+                  : `Has derrotado a ${ch.enemy} y reclamado ${ch.rewardName} (+${ch.expReward} EXP, +${ch.lpReward} LP).`
+              });
+              triggerToast(
+                ch.id === 'act1_ch1'
+                  ? '¡CIUDAD 2D Y NOVELA VISUAL DESBLOQUEADAS!'
+                  : `[HISTORIA PVE] ¡Capítulo ${ch.order} completado!`
+              );
+              return null;
+            }
+
+            return {
+              ...prev,
+              resource: nextResource,
+              bossHp: nextBossHp,
+              bossShield: nextBossShield,
+              playerShield: nextPlayerShield,
+              playerHp: nextPlayerHp,
+              hand: nextHand,
+              combatLogs: [logLine, ...prev.combatLogs].slice(0, 6)
+            };
+          });
+        };
+
+        const endStoryTurn = () => {
+          setActiveStoryEncounter((prev) => {
+            if (!prev || prev.phase !== 'combat') return prev;
+            const ch = prev.chapter;
+            const intent = prev.bossIntent;
+            let nextPlayerHp = prev.playerHp;
+            let nextPlayerShield = prev.playerShield;
+            let nextBossShield = prev.bossShield;
+            let enemyActionText = '';
+
+            if (intent.type === 'attack' || intent.type === 'heavy') {
+              let dmg = intent.value;
+              if (nextPlayerShield > 0) {
+                const blocked = Math.min(nextPlayerShield, dmg);
+                nextPlayerShield -= blocked;
+                dmg -= blocked;
+              }
+              nextPlayerHp = Math.max(0, nextPlayerHp - dmg);
+              enemyActionText = `${ch.enemy} ejecuta ${intent.label} (${dmg} daño directo recibido).`;
+            } else {
+              nextBossShield += intent.value;
+              enemyActionText = `${ch.enemy} refuerza su guardia (+${intent.value} Escudo).`;
+            }
+
+            if (nextPlayerHp <= 0) {
+              setPveBattleLog({
+                victory: false,
+                title: `DERROTA TÁCTICA ANTE ${ch.enemy.toUpperCase()}`,
+                detail: `Tu HP llegó a 0. Sube tus marcas en Cargas o utiliza cartas de escudo ante los ataques pesados del jefe.`
+              });
+              return null;
+            }
+
+            const nextTurn = prev.turn + 1;
+            const roll = nextTurn % 3;
+            const nextIntent =
+              roll === 0
+                ? { label: `Embate Devastador (${Math.round(ch.bossAtk * 1.35)} daño)`, type: 'heavy', value: Math.round(ch.bossAtk * 1.35) }
+                : roll === 1
+                ? { label: `Golpe de Grieta (${ch.bossAtk} daño)`, type: 'attack', value: ch.bossAtk }
+                : { label: `Postura Defensiva (+${Math.round(ch.bossAtk * 0.9)} Escudo)`, type: 'defend', value: Math.round(ch.bossAtk * 0.9) };
+
+            const nextResource = Math.min(prev.maxResource, prev.resource + resProfile.regenPerTurn);
+            return {
+              ...prev,
+              turn: nextTurn,
+              playerHp: nextPlayerHp,
+              playerShield: nextPlayerShield,
+              bossShield: nextBossShield,
+              bossIntent: nextIntent,
+              resource: nextResource,
+              hand: drawTacticalHand(prev.deck, 4),
+              combatLogs: [enemyActionText, ...prev.combatLogs].slice(0, 6)
+            };
+          });
+        };
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="sys-window" style={{ padding: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                <h2 className="font-souls" style={{ fontSize: '17px', color: '#f59e0b' }}>
+                  CRÓNICAS DEL ABISMO — NOVELA VISUAL & COMBATE TÁCTICO
+                </h2>
+                <span className="sys-badge" style={{ background: 'rgba(245,158,11,0.2)', color: '#fde047', border: '1px solid #f59e0b' }}>
+                  PODER: {hunterCombatPower} • {resProfile.shortName}
+                </span>
               </div>
-            )}
- 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {PVE_STORY_CHAPTERS.map((ch) => {
-                const cleared = completedChapters.includes(ch.id);
-                const prevCleared = ch.prevId === null || completedChapters.includes(ch.prevId);
-                const canChallenge = prevCleared && hunterCombatPower >= ch.reqPower;
- 
-                return (
-                  <div
-                    key={ch.id}
-                    style={{
-                      padding: '15px',
-                      borderRadius: '12px',
-                      background: 'rgba(4,6,12,0.88)',
-                      opacity: prevCleared ? 1 : 0.6,
-                      border: `1px solid ${cleared ? '#10b981' : !prevCleared ? 'rgba(148,163,184,0.2)' : canChallenge ? 'rgba(251,191,36,0.45)' : 'rgba(225,29,72,0.35)'}`
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b' }}>{ch.act}</span>
-                      <span className="sys-badge" style={{
-                        background: cleared ? 'rgba(16,185,129,0.2)' : !prevCleared ? 'rgba(148,163,184,0.15)' : 'rgba(251,191,36,0.15)',
-                        color: cleared ? '#6ee7b7' : !prevCleared ? '#94a3b8' : '#fde047'
-                      }}>
-                        {cleared
-                          ? '✓ CAPÍTULO COMPLETADO'
-                          : !prevCleared
-                          ? `🔒 REQUIERE CAPÍTULO ${ch.order - 1}`
-                          : `PODER REQUERIDO: ${ch.reqPower}`}
-                      </span>
+
+              {activeStoryEncounter && (
+                <div
+                  className="pex-ornate-frame"
+                  style={{
+                    padding: '16px',
+                    marginBottom: '16px',
+                    borderColor: 'var(--neon-gold)'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                    <div>
+                      <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: '#ffd45a' }}>
+                        {activeStoryEncounter.chapter.act.toUpperCase()} • {activeStoryEncounter.phase === 'vn' ? 'FASE 1: NOVELA VISUAL' : `FASE 2: COMBATE TÁCTICO (TURNO ${activeStoryEncounter.turn})`}
+                      </div>
+                      <h3 className="font-souls" style={{ fontSize: '16px', color: '#fff' }}>
+                        {activeStoryEncounter.chapter.chapter}
+                      </h3>
                     </div>
- 
-                    <h3 className="font-souls" style={{ fontSize: '16px', color: '#fff', marginTop: '4px' }}>
-                      {ch.chapter}
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px', lineHeight: 1.45 }}>
-                      {ch.lore}
-                    </p>
-                    <div style={{ fontSize: '12px', color: '#fda4af', marginTop: '6px' }}>
-                      <strong>Jefe de Capítulo:</strong> {ch.enemy}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#00f0ff', marginTop: '2px' }}>
-                      <strong>Recompensa Especial:</strong> {ch.rewardName} (+{ch.expReward} EXP, +{ch.lpReward} LP)
-                    </div>
- 
-                    {!cleared && (
-                      <button
-                        disabled={!prevCleared}
-                        className={`sys-btn ${!prevCleared ? 'sys-btn-ghost' : canChallenge ? 'sys-btn-gold' : 'sys-btn-danger'}`}
-                        style={{ marginTop: '10px', padding: '9px 14px', fontSize: '11px' }}
-                        onClick={() => {
-                          if (!prevCleared) return;
-                          if (!canChallenge) {
-                            setPveBattleLog({
-                              victory: false,
-                              title: `DERROTA ANTE ${ch.enemy.toUpperCase()}`,
-                              detail: `Tu poder actual (${hunterCombatPower}) es inferior al umbral (${ch.reqPower}).`
-                            });
-                            return;
-                          }
-                          setCompletedChapters([...completedChapters, ch.id]);
-                          setExp((e) => e + ch.expReward);
-                          setLp((l) => l + ch.lpReward);
-                          setUnlockedInventory([
-                            ...unlockedInventory,
-                            { id: ch.id, type: ch.rewardType, name: ch.rewardName, power: 55, desc: `Recompensa obtenida en ${ch.chapter}` }
-                          ]);
-                          setPveBattleLog({
-                            victory: true,
-                            title: `¡VICTORIA EN ${ch.chapter.toUpperCase()}!`,
-                            detail: ch.id === 'act1_ch1'
-                              ? `Has derrotado a ${ch.enemy}, fundado tu Ciudad 2D y desbloqueado a Lyra en la Novela Visual.`
-                              : `Has derrotado a ${ch.enemy} y reclamado ${ch.rewardName}.`
-                          });
-                          triggerToast(
-                            ch.id === 'act1_ch1'
-                              ? '¡CIUDAD 2D Y NOVELA VISUAL DESBLOQUEADAS!'
-                              : `[HISTORIA PVE] ¡Capítulo ${ch.order} superado!`
-                          );
-                        }}
-                      >
-                        {!prevCleared ? (
-                          <><Lock size={14} /> COMPLETA EL CAPÍTULO {ch.order - 1} PRIMERO</>
-                        ) : (
-                          <><Sword size={14} /> INICIAR COMBATE DE HISTORIA</>
-                        )}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="sys-btn sys-btn-danger"
+                      style={{ padding: '6px 10px', fontSize: '10px' }}
+                      onClick={() => setActiveStoryEncounter(null)}
+                    >
+                      Retirarse
+                    </button>
                   </div>
-                );
-              })}
+
+                  {activeStoryEncounter.phase === 'vn' ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {(() => {
+                        const scenes = activeStoryEncounter.chapter.vnScenes || [];
+                        const currentScene = scenes[activeStoryEncounter.sceneIdx] || scenes[0];
+                        const isLastScene = activeStoryEncounter.sceneIdx >= scenes.length - 1;
+                        return (
+                          <>
+                            <div
+                              style={{
+                                padding: '14px',
+                                borderRadius: '14px',
+                                background: 'rgba(5, 8, 23, 0.94)',
+                                border: `1.5px solid ${currentScene?.accent || '#ffd45a'}`,
+                                boxShadow: 'inset 0 0 18px rgba(0,0,0,0.75)'
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                <span className="font-hud" style={{ fontSize: '12px', fontWeight: 800, color: currentScene?.accent || '#ffd45a' }}>
+                                  {currentScene?.speaker}
+                                </span>
+                                <span style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                  {currentScene?.role} ({activeStoryEncounter.sceneIdx + 1}/{scenes.length})
+                                </span>
+                              </div>
+                              <p style={{ fontSize: '15px', color: '#f8fafc', lineHeight: 1.55, fontStyle: 'italic' }}>
+                                «{currentScene?.text}»
+                              </p>
+                            </div>
+
+                            {!isLastScene ? (
+                              <button
+                                type="button"
+                                className="sys-btn sys-btn-primary"
+                                style={{ alignSelf: 'flex-end' }}
+                                onClick={() =>
+                                  setActiveStoryEncounter((prev) =>
+                                    prev ? { ...prev, sceneIdx: prev.sceneIdx + 1 } : null
+                                  )
+                                }
+                              >
+                                Siguiente Diálogo <ChevronRight size={15} />
+                              </button>
+                            ) : (
+                              <div>
+                                <div style={{ fontSize: '11px', fontFamily: 'Orbitron, sans-serif', color: '#ffd45a', marginBottom: '8px' }}>
+                                  ELIGE TU RESPUESTA TÁCTICA PARA INICIAR EL DUELO DE CARTAS:
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+                                  {(activeStoryEncounter.chapter.vnChoices || []).map((chOpt, idx) => (
+                                    <button
+                                      key={idx}
+                                      type="button"
+                                      className="sys-btn sys-btn-gold"
+                                      style={{ justifyContent: 'flex-start', textAlign: 'left' }}
+                                      onClick={() => chooseVnOptionAndEnterCombat(chOpt)}
+                                    >
+                                      {chOpt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div className="grid-2" style={{ gap: '10px' }}>
+                        <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(225, 29, 72, 0.12)', border: '1px solid rgba(244, 63, 94, 0.45)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#fda4af' }}>
+                            <span>JEFE: {activeStoryEncounter.chapter.enemy}</span>
+                            <span>{activeStoryEncounter.bossHp}/{activeStoryEncounter.bossMaxHp} HP</span>
+                          </div>
+                          <div className="progress-track" style={{ height: '8px', marginTop: '6px' }}>
+                            <div
+                              className="progress-fill"
+                              style={{
+                                width: `${Math.round((activeStoryEncounter.bossHp / activeStoryEncounter.bossMaxHp) * 100)}%`,
+                                background: 'linear-gradient(90deg, #9f1239, #f43f5e)'
+                              }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#cbd5e1', marginTop: '6px' }}>
+                            <span>Escudo Jefe: <strong>{activeStoryEncounter.bossShield}</strong></span>
+                            <span style={{ color: '#fbbf24' }}>Intención: <strong>{activeStoryEncounter.bossIntent.label}</strong></span>
+                          </div>
+                        </div>
+
+                        <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(0, 234, 255, 0.09)', border: '1px solid rgba(0, 234, 255, 0.4)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#00eaff' }}>
+                            <span>{profile.hunterName} ({clsObj.name})</span>
+                            <span>{activeStoryEncounter.playerHp}/{activeStoryEncounter.playerMaxHp} HP</span>
+                          </div>
+                          <div className="progress-track" style={{ height: '8px', marginTop: '6px' }}>
+                            <div
+                              className="progress-fill"
+                              style={{
+                                width: `${Math.round((activeStoryEncounter.playerHp / activeStoryEncounter.playerMaxHp) * 100)}%`,
+                                background: 'linear-gradient(90deg, #0284c7, #10b981)'
+                              }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#cbd5e1', marginTop: '6px' }}>
+                            <span>Escudo: <strong style={{ color: '#38bdf8' }}>{activeStoryEncounter.playerShield}</strong></span>
+                            <span style={{ color: resProfile.color }}>
+                              {resProfile.shortName}: <strong>{activeStoryEncounter.resource}/{activeStoryEncounter.maxResource}</strong>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span className="font-hud" style={{ fontSize: '11px', color: '#ffd45a' }}>
+                            MANO DE CARTAS TÁCTICAS ({activeStoryEncounter.hand.length} DISPONIBLES)
+                          </span>
+                          <button
+                            type="button"
+                            className="sys-btn sys-btn-gold"
+                            style={{ padding: '6px 12px', fontSize: '10px' }}
+                            onClick={endStoryTurn}
+                          >
+                            FINALIZAR TURNO (+{resProfile.regenPerTurn} {resProfile.shortName})
+                          </button>
+                        </div>
+
+                        <div className="grid-2" style={{ gap: '8px' }}>
+                          {activeStoryEncounter.hand.map((card) => {
+                            const canAfford = activeStoryEncounter.resource >= card.cost;
+                            return (
+                              <button
+                                key={card.instanceId}
+                                type="button"
+                                disabled={!canAfford}
+                                className="pex-tactical-card"
+                                style={{ borderColor: canAfford ? card.accent : 'rgba(148,163,184,0.2)' }}
+                                onClick={() => playStoryCard(card)}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                  <span style={{ fontSize: '10px', fontWeight: 800, color: card.accent, textTransform: 'uppercase' }}>
+                                    {card.kind}
+                                  </span>
+                                  <span
+                                    className="sys-badge"
+                                    style={{
+                                      background: 'rgba(5,8,23,0.9)',
+                                      color: resProfile.color,
+                                      border: `1px solid ${resProfile.color}`,
+                                      fontSize: '10px',
+                                      padding: '2px 7px'
+                                    }}
+                                  >
+                                    {card.cost} {resProfile.shortName}
+                                  </span>
+                                </div>
+                                <div style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>{card.name}</div>
+                                <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '3px', lineHeight: 1.35 }}>
+                                  {card.desc}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div style={{ padding: '9px 11px', borderRadius: '10px', background: 'rgba(5, 8, 23, 0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: '#94a3b8', marginBottom: '4px' }}>
+                          CRÓNICA DEL COMBATE:
+                        </div>
+                        {activeStoryEncounter.combatLogs.map((entry, idx) => (
+                          <div key={idx} style={{ fontSize: '11px', color: idx === 0 ? '#ffd45a' : '#cbd5e1' }}>
+                            • {entry}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {pveBattleLog && (
+                <div style={{
+                  padding: '14px',
+                  borderRadius: '11px',
+                  marginBottom: '14px',
+                  background: pveBattleLog.victory ? 'rgba(16,185,129,0.16)' : 'rgba(225,29,72,0.16)',
+                  border: `1px solid ${pveBattleLog.victory ? '#10b981' : '#e11d48'}`
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: '14px', color: pveBattleLog.victory ? '#6ee7b7' : '#fda4af' }}>
+                    {pveBattleLog.title}
+                  </div>
+                  <p style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pveBattleLog.detail}</p>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {PVE_STORY_CHAPTERS.map((ch) => {
+                  const cleared = completedChapters.includes(ch.id);
+                  const prevCleared = ch.prevId === null || completedChapters.includes(ch.prevId);
+                  const recommendedReady = hunterCombatPower >= ch.reqPower;
+
+                  return (
+                    <div
+                      key={ch.id}
+                      style={{
+                        padding: '15px',
+                        borderRadius: '12px',
+                        background: 'rgba(4,6,12,0.88)',
+                        opacity: prevCleared ? 1 : 0.6,
+                        border: `1px solid ${cleared ? '#10b981' : !prevCleared ? 'rgba(148,163,184,0.2)' : recommendedReady ? 'rgba(251,191,36,0.45)' : 'rgba(225,29,72,0.35)'}`
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b' }}>{ch.act}</span>
+                        <span className="sys-badge" style={{
+                          background: cleared ? 'rgba(16,185,129,0.2)' : !prevCleared ? 'rgba(148,163,184,0.15)' : 'rgba(251,191,36,0.15)',
+                          color: cleared ? '#6ee7b7' : !prevCleared ? '#94a3b8' : '#fde047'
+                        }}>
+                          {cleared
+                            ? '✓ CAPÍTULO COMPLETADO'
+                            : !prevCleared
+                            ? `🔒 REQUIERE CAPÍTULO ${ch.order - 1}`
+                            : `PODER SUGERIDO: ${ch.reqPower}`}
+                        </span>
+                      </div>
+
+                      <h3 className="font-souls" style={{ fontSize: '16px', color: '#fff', marginTop: '4px' }}>
+                        {ch.chapter}
+                      </h3>
+                      <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px', lineHeight: 1.45 }}>
+                        {ch.lore}
+                      </p>
+                      <div style={{ fontSize: '12px', color: '#fda4af', marginTop: '6px' }}>
+                        <strong>Jefe de Capítulo:</strong> {ch.enemy} ({ch.bossHp} HP)
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#00f0ff', marginTop: '2px' }}>
+                        <strong>Recompensa Especial:</strong> {ch.rewardName} (+{ch.expReward} EXP, +{ch.lpReward} LP)
+                      </div>
+
+                      {!cleared && (
+                        <button
+                          disabled={!prevCleared}
+                          className={`sys-btn ${!prevCleared ? 'sys-btn-ghost' : 'sys-btn-gold'}`}
+                          style={{ marginTop: '10px', padding: '9px 14px', fontSize: '11px' }}
+                          onClick={() => startStoryEncounter(ch)}
+                        >
+                          {!prevCleared ? (
+                            <><Lock size={14} /> COMPLETA EL CAPÍTULO {ch.order - 1} PRIMERO</>
+                          ) : (
+                            <><BookOpen size={14} /> INICIAR NOVELA VISUAL & DUELO DE CARTAS</>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
- 
+        );
+      })()}
+
       {/* ====================================================================
           MÓDULO 5: CIUDAD PERSONALIZABLE 2D + NOVELA VISUAL
          ==================================================================== */}
@@ -10410,169 +11432,525 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       {/* ====================================================================
           MÓDULO 6: AMIGOS & MODO PVP POR PROXIMIDAD (LÍMITE MÁXIMO 30 KM)
          ==================================================================== */}
-      {activeTab === 'pvp' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div className="sys-window" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-              <h2 className="font-hud" style={{ fontSize: '14px', color: '#f43f5e' }}>
-                ARENA PVP ENTRE AMIGOS (RADAR MÁXIMO 30 KM)
-              </h2>
-              <button className="sys-btn sys-btn-ghost" style={{ padding: '6px 10px', fontSize: '10px' }} onClick={requestGpsLocation}>
-                <Crosshair size={13} color="#00f0ff" /> CALIBRAR GPS
-              </button>
-            </div>
- 
-            <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
-              <MapPin size={13} style={{ display: 'inline', color: '#00f0ff', marginRight: '4px' }} />
-              Ubicación actual: <strong>{userCoords.label}</strong> • Tu código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
-            </div>
- 
-            <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(244,63,94,0.3)', marginBottom: '14px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af', marginBottom: '8px' }}>
-                AGREGAR CAZADOR AMIGO
-              </div>
-              <div className="grid-2" style={{ gap: '8px', marginBottom: '8px' }}>
-                <input
-                  className="sys-input"
-                  placeholder="Nombre del amigo (ej. DRAKE_99)"
-                  value={newFriendName}
-                  onChange={(e) => setNewFriendName(e.target.value.toUpperCase())}
-                />
-                <input
-                  className="sys-input"
-                  placeholder="Código (#PEX-1234)"
-                  value={newFriendCode}
-                  onChange={(e) => setNewFriendCode(e.target.value.toUpperCase())}
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '160px' }}>
-                  <label style={{ fontSize: '11px', color: '#94a3b8' }}>DISTANCIA DETECTADA (KM):</label>
-                  <input
-                    type="number"
-                    className="sys-input"
-                    value={newFriendDistKm}
-                    onChange={(e) => setNewFriendDistKm(Number(e.target.value))}
-                  />
-                </div>
-                <button
-                  className="sys-btn sys-btn-gold"
-                  style={{ marginTop: '14px' }}
-                  onClick={() => {
-                    if (!newFriendName.trim()) return;
-                    const offsetDeg = (Number(newFriendDistKm) || 5) / 111;
-                    setFriends([
-                      ...friends,
-                      {
-                        id: Date.now(),
-                        name: newFriendName,
-                        code: newFriendCode || `#PEX-${Math.floor(1000 + Math.random() * 8999)}`,
-                        level: Math.max(1, level),
-                        grade: hunterGrade,
-                        power: Math.max(60, Math.round(hunterCombatPower * 0.92)),
-                        lat: userCoords.lat + offsetDeg,
-                        lon: userCoords.lon,
-                        city: `${newFriendDistKm} km de distancia`
-                      }
-                    ]);
-                    setNewFriendName('');
-                    setNewFriendCode('');
-                    triggerToast('[AMIGOS] Cazador añadido a tu lista.');
-                  }}
-                >
-                  + AGREGAR AMIGO
+      {activeTab === 'pvp' && (() => {
+        const clsObj = hunterClass?.cls || {
+          name: 'Centinela Infinito',
+          baseArchetype: 'Centinela',
+          affinityName: 'Infinito',
+          passiveName: 'Muralla Inquebrantable',
+          passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
+        };
+        const playerRes = getClassResourceProfile(clsObj, level);
+
+        const startPvpTacticalDuel = (opponent, distKm, isRankedFriend = true) => {
+          const enemySeed = (opponent.id || 77) + opponent.name.length * 13;
+          const enemyGen = generateRandomInfiniteClass(enemySeed);
+          const enemyCls = opponent.cls || enemyGen.cls;
+          const enemyRes = getClassResourceProfile(enemyCls, opponent.level || 1);
+
+          const playerMaxHp = 220 + level * 20 + Math.round(hunterCombatPower * 0.42);
+          const enemyMaxHp = 210 + (opponent.level || 1) * 20 + Math.round((opponent.power || 80) * 0.42);
+          const deck = buildHunterTacticalDeck({
+            clsObj,
+            gradeData,
+            hunterCombatPower,
+            unlockedInventory,
+            atkMultiplier: 1
+          });
+
+          setActivePvpDuel({
+            opponent,
+            distKm,
+            isRankedFriend,
+            enemyCls,
+            enemyRes,
+            turn: 1,
+            playerHp: playerMaxHp,
+            playerMaxHp,
+            playerShield: 15,
+            playerResource: Math.round(playerRes.max * 0.75),
+            playerMaxResource: playerRes.max,
+            enemyHp: enemyMaxHp,
+            enemyMaxHp,
+            enemyShield: 15,
+            enemyResource: Math.round(enemyRes.max * 0.75),
+            enemyMaxResource: enemyRes.max,
+            deck,
+            hand: drawTacticalHand(deck, 4),
+            duelLogs: [
+              `¡Duelo Táctico PvP iniciado contra ${opponent.name} (${distKm} km)!`,
+              `Tu recurso: ${playerRes.name} (${playerRes.max} máx) vs Rival: ${enemyRes.name} (${enemyRes.max} máx).`
+            ]
+          });
+        };
+
+        const playPvpCard = (card) => {
+          setActivePvpDuel((prev) => {
+            if (!prev) return null;
+            if (prev.playerResource < card.cost) {
+              triggerToast(`[ARENA PVP] ${playerRes.shortName} insuficiente (${card.cost} req).`);
+              return prev;
+            }
+            const nextPlayerResource = Math.min(
+              prev.playerMaxResource,
+              prev.playerResource - card.cost + (card.resourceGain || 0)
+            );
+            const nextEnemyResource = Math.max(0, prev.enemyResource - (card.drainEnemyResource || 0));
+
+            let dmg = card.damage || 0;
+            let nextEnemyShield = prev.enemyShield;
+            if (nextEnemyShield > 0 && dmg > 0) {
+              const blocked = Math.min(nextEnemyShield, dmg);
+              nextEnemyShield -= blocked;
+              dmg -= blocked;
+            }
+            const nextEnemyHp = Math.max(0, prev.enemyHp - dmg);
+            const nextPlayerShield = prev.playerShield + (card.shield || 0);
+            const nextPlayerHp = Math.min(prev.playerMaxHp, prev.playerHp + (card.heal || 0));
+            const nextHand = prev.hand.filter((c) => c.instanceId !== card.instanceId);
+
+            if (nextEnemyHp <= 0) {
+              const lpWon = prev.isRankedFriend
+                ? (String(clsObj.affinityName || '').includes('Sangre Real') ? 35 : 25)
+                : 10;
+              const expWon = prev.isRankedFriend ? 45 : 20;
+              setLp((l) => l + lpWon);
+              setExp((e) => e + expWon);
+              setPvpLog({
+                win: true,
+                header: `¡VICTORIA TÁCTICA PVP CONTRA ${prev.opponent.name} (${prev.distKm} KM)!`,
+                body: `Dominaste el duelo gestionando tu ${playerRes.name} frente a su ${prev.enemyRes.name}. Ganaste +${lpWon} LP y +${expWon} EXP.`
+              });
+              triggerToast(`[ARENA PVP] ¡Victoria! +${lpWon} LP y +${expWon} EXP.`);
+              return null;
+            }
+
+            const logEntry = `Turno ${prev.turn}: Jugaste "${card.name}" (${card.damage > 0 ? `-${card.damage} HP` : ''}${card.shield > 0 ? ` +${card.shield} Escudo` : ''}${card.drainEnemyResource > 0 ? ` -${card.drainEnemyResource} ${prev.enemyRes.shortName} rival` : ''}).`;
+            return {
+              ...prev,
+              playerResource: nextPlayerResource,
+              enemyResource: nextEnemyResource,
+              enemyHp: nextEnemyHp,
+              enemyShield: nextEnemyShield,
+              playerShield: nextPlayerShield,
+              playerHp: nextPlayerHp,
+              hand: nextHand,
+              duelLogs: [logEntry, ...prev.duelLogs].slice(0, 6)
+            };
+          });
+        };
+
+        const endPvpTurn = () => {
+          setActivePvpDuel((prev) => {
+            if (!prev) return null;
+            const isEnemyArcane = prev.enemyRes.type === 'mana';
+            const skillCost = isEnemyArcane ? 35 : 25;
+            const baseEnemyPower = Math.max(22, Math.round((prev.opponent.power || 80) * 0.24));
+            let enemyAtk = baseEnemyPower;
+            let enemyShieldGain = 0;
+            let nextEnemyResource = prev.enemyResource;
+            let actionDesc = '';
+
+            if (nextEnemyResource >= skillCost) {
+              nextEnemyResource -= skillCost;
+              if (isEnemyArcane) {
+                enemyAtk = Math.round(baseEnemyPower * 1.45);
+                enemyShieldGain = 14;
+                actionDesc = `${prev.opponent.name} gasta ${skillCost} MANÁ en Descarga Arcana (${enemyAtk} daño + 14 Escudo).`;
+              } else {
+                enemyAtk = Math.round(baseEnemyPower * 1.35);
+                actionDesc = `${prev.opponent.name} gasta ${skillCost} ESTAMINA en Ráfaga Marcial (${enemyAtk} daño).`;
+              }
+            } else {
+              enemyAtk = Math.round(baseEnemyPower * 0.65);
+              enemyShieldGain = 18;
+              actionDesc = `${prev.opponent.name} concentra recurso y golpea ligero (${enemyAtk} daño + 18 Escudo).`;
+            }
+
+            let dmgToPlayer = enemyAtk;
+            let nextPlayerShield = prev.playerShield;
+            if (nextPlayerShield > 0) {
+              const absorbed = Math.min(nextPlayerShield, dmgToPlayer);
+              nextPlayerShield -= absorbed;
+              dmgToPlayer -= absorbed;
+            }
+            const nextPlayerHp = Math.max(0, prev.playerHp - dmgToPlayer);
+
+            if (nextPlayerHp <= 0) {
+              setPvpLog({
+                win: false,
+                header: `DERROTA TÁCTICA ANTE ${prev.opponent.name} (${prev.distKm} KM)`,
+                body: `${prev.opponent.name} (${prev.enemyCls.name}) agotó tu HP administrando su ${prev.enemyRes.name}.`
+              });
+              return null;
+            }
+
+            nextEnemyResource = Math.min(prev.enemyMaxResource, nextEnemyResource + prev.enemyRes.regenPerTurn);
+            const nextPlayerResource = Math.min(prev.playerMaxResource, prev.playerResource + playerRes.regenPerTurn);
+
+            return {
+              ...prev,
+              turn: prev.turn + 1,
+              playerHp: nextPlayerHp,
+              playerShield: nextPlayerShield,
+              playerResource: nextPlayerResource,
+              enemyShield: prev.enemyShield + enemyShieldGain,
+              enemyResource: nextEnemyResource,
+              hand: drawTacticalHand(prev.deck, 4),
+              duelLogs: [actionDesc, ...prev.duelLogs].slice(0, 6)
+            };
+          });
+        };
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="sys-window" style={{ padding: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                <h2 className="font-hud" style={{ fontSize: '14px', color: '#f43f5e' }}>
+                  ARENA PVP TÁCTICA — RECURSOS DE CLASE & RADAR 30 KM
+                </h2>
+                <button className="sys-btn sys-btn-ghost" style={{ padding: '6px 10px', fontSize: '10px' }} onClick={requestGpsLocation}>
+                  <Crosshair size={13} color="#00f0ff" /> CALIBRAR GPS
                 </button>
               </div>
-            </div>
- 
-            {pvpLog && (
-              <div style={{
-                padding: '12px',
-                borderRadius: '10px',
-                marginBottom: '14px',
-                background: pvpLog.win ? 'rgba(16,185,129,0.16)' : 'rgba(225,29,72,0.16)',
-                border: `1px solid ${pvpLog.win ? '#10b981' : '#e11d48'}`
-              }}>
-                <div style={{ fontWeight: 700, fontSize: '14px', color: pvpLog.win ? '#6ee7b7' : '#fda4af' }}>
-                  {pvpLog.header}
+
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: '12px',
+                  background: 'rgba(11, 21, 48, 0.9)',
+                  border: `1px solid ${playerRes.color}`,
+                  marginBottom: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                  <span className="font-hud" style={{ fontSize: '11px', fontWeight: 800, color: playerRes.color }}>
+                    TU RECURSO DE CLASE: {playerRes.name.toUpperCase()} ({playerRes.max} MÁX)
+                  </span>
+                  <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.9)', color: '#fff', border: `1px solid ${playerRes.color}` }}>
+                    {playerRes.archetypeLabel}
+                  </span>
                 </div>
-                <div style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pvpLog.body}</div>
+                <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>
+                  {playerRes.mechanicNote}
+                </div>
               </div>
-            )}
- 
-            {friends.length === 0 ? (
-              <p style={{ fontSize: '13px', color: '#94a3b8' }}>
-                Tu lista de amigos empieza en 0. Agrega un amigo arriba con su código `#PEX` para combatir dentro de un radio de 30 km.
-              </p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {friends.map((fr) => {
-                  const distKm = getDistanceKm(userCoords.lat, userCoords.lon, fr.lat, fr.lon);
-                  const inRange = distKm <= 30;
-                  return (
-                    <div
-                      key={fr.id}
-                      style={{
-                        padding: '14px',
-                        borderRadius: '11px',
-                        background: 'rgba(4,6,12,0.88)',
-                        border: `1px solid ${inRange ? 'rgba(16,185,129,0.45)' : 'rgba(225,29,72,0.4)'}`,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '10px'
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <strong style={{ fontSize: '15px', color: '#fff' }}>{fr.name}</strong>
-                          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{fr.code}</span>
-                          <span className="sys-badge" style={{
-                            background: inRange ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
-                            color: inRange ? '#6ee7b7' : '#fda4af'
-                          }}>
-                            {distKm} km {inRange ? '(EN RANGO ≤30 KM)' : '(FUERA DE RANGO >30 KM)'}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '3px' }}>
-                          Nivel {fr.level} • Grado de Cazador {fr.grade} • Poder: {fr.power}
-                        </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
+                <div>
+                  <MapPin size={13} style={{ display: 'inline', color: '#00f0ff', marginRight: '4px' }} />
+                  Ubicación: <strong>{userCoords.label}</strong> • Código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
+                </div>
+                <button
+                  type="button"
+                  className="sys-btn sys-btn-primary"
+                  style={{ padding: '7px 11px', fontSize: '10px' }}
+                  onClick={() =>
+                    startPvpTacticalDuel(
+                      {
+                        id: 901,
+                        name: 'CENTINELA SPECTRUM (SPARRING)',
+                        level: Math.max(1, level),
+                        grade: hunterGrade,
+                        power: Math.max(70, Math.round(hunterCombatPower * 0.95)),
+                      },
+                      2.4,
+                      false
+                    )
+                  }
+                >
+                  <Sword size={13} /> DUELO TÁCTICO DE PRÁCTICA (2.4 KM)
+                </button>
+              </div>
+
+              {activePvpDuel && (
+                <div
+                  className="pex-ornate-frame"
+                  style={{
+                    padding: '16px',
+                    marginBottom: '16px',
+                    borderColor: '#f43f5e'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                    <div>
+                      <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: '#f43f5e' }}>
+                        ARENA PVP CLASIFICATORIA • TURNO {activePvpDuel.turn} ({activePvpDuel.distKm} KM)
                       </div>
- 
-                      <button
-                        className={`sys-btn ${inRange ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
-                        style={{ padding: '8px 12px', fontSize: '11px', opacity: inRange ? 1 : 0.6 }}
-                        onClick={() => {
-                          if (!inRange) {
-                            triggerToast(`[RADAR PVP] ${fr.name} está a ${distKm} km. El límite máximo para duelos PvP es 30 km.`);
-                            return;
-                          }
-                          const win = hunterCombatPower >= fr.power;
-                          if (win) {
-                            setLp((l) => l + 25);
-                            setExp((e) => e + 45);
-                          }
-                          setPvpLog({
-                            win,
-                            header: win ? `¡VICTORIA PVP CONTRA ${fr.name} (${distKm} KM)!` : `DERROTA PVP ANTE ${fr.name} (${distKm} KM)`,
-                            body: win
-                              ? `Tu poder (${hunterCombatPower}) superó al de tu amigo (${fr.power}). Ganaste +25 LP y +45 EXP.`
-                              : `El poder de ${fr.name} (${fr.power}) superó al tuyo (${hunterCombatPower}).`
-                          });
+                      <h3 className="font-souls" style={{ fontSize: '16px', color: '#fff' }}>
+                        {profile.hunterName} VS {activePvpDuel.opponent.name}
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      className="sys-btn sys-btn-danger"
+                      style={{ padding: '6px 10px', fontSize: '10px' }}
+                      onClick={() => setActivePvpDuel(null)}
+                    >
+                      Abandonar Duelo
+                    </button>
+                  </div>
+
+                  <div className="grid-2" style={{ gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(0, 234, 255, 0.09)', border: `1px solid ${playerRes.color}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#fff' }}>
+                        <span>TÚ • {clsObj.name}</span>
+                        <span>{activePvpDuel.playerHp}/{activePvpDuel.playerMaxHp} HP</span>
+                      </div>
+                      <div className="progress-track" style={{ height: '7px', marginTop: '5px' }}>
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${Math.round((activePvpDuel.playerHp / activePvpDuel.playerMaxHp) * 100)}%`,
+                            background: 'linear-gradient(90deg, #0284c7, #10b981)'
+                          }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
+                        <span style={{ color: '#cbd5e1' }}>Escudo: <strong>{activePvpDuel.playerShield}</strong></span>
+                        <span style={{ color: playerRes.color, fontWeight: 800 }}>
+                          {playerRes.shortName}: {activePvpDuel.playerResource}/{activePvpDuel.playerMaxResource}
+                        </span>
+                      </div>
+                      <div className="progress-track" style={{ height: '6px', marginTop: '4px' }}>
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${Math.round((activePvpDuel.playerResource / activePvpDuel.playerMaxResource) * 100)}%`,
+                            background: playerRes.color
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(244, 63, 94, 0.1)', border: `1px solid ${activePvpDuel.enemyRes.color}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#fda4af' }}>
+                        <span>{activePvpDuel.opponent.name} • {activePvpDuel.enemyCls.name}</span>
+                        <span>{activePvpDuel.enemyHp}/{activePvpDuel.enemyMaxHp} HP</span>
+                      </div>
+                      <div className="progress-track" style={{ height: '7px', marginTop: '5px' }}>
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${Math.round((activePvpDuel.enemyHp / activePvpDuel.enemyMaxHp) * 100)}%`,
+                            background: 'linear-gradient(90deg, #9f1239, #f43f5e)'
+                          }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '6px' }}>
+                        <span style={{ color: '#cbd5e1' }}>Escudo: <strong>{activePvpDuel.enemyShield}</strong></span>
+                        <span style={{ color: activePvpDuel.enemyRes.color, fontWeight: 800 }}>
+                          {activePvpDuel.enemyRes.shortName}: {activePvpDuel.enemyResource}/{activePvpDuel.enemyMaxResource}
+                        </span>
+                      </div>
+                      <div className="progress-track" style={{ height: '6px', marginTop: '4px' }}>
+                        <div
+                          className="progress-fill"
+                          style={{
+                            width: `${Math.round((activePvpDuel.enemyResource / activePvpDuel.enemyMaxResource) * 100)}%`,
+                            background: activePvpDuel.enemyRes.color
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                    <span className="font-hud" style={{ fontSize: '11px', color: '#ffd45a' }}>
+                      ACCIONES TÁCTICAS DE CLASE ({activePvpDuel.hand.length})
+                    </span>
+                    <button
+                      type="button"
+                      className="sys-btn sys-btn-gold"
+                      style={{ padding: '6px 12px', fontSize: '10px' }}
+                      onClick={endPvpTurn}
+                    >
+                      CEDER TURNO (+{playerRes.regenPerTurn} {playerRes.shortName})
+                    </button>
+                  </div>
+
+                  <div className="grid-2" style={{ gap: '8px', marginBottom: '10px' }}>
+                    {activePvpDuel.hand.map((card) => {
+                      const canAfford = activePvpDuel.playerResource >= card.cost;
+                      return (
+                        <button
+                          key={card.instanceId}
+                          type="button"
+                          disabled={!canAfford}
+                          className="pex-tactical-card"
+                          style={{ borderColor: canAfford ? card.accent : 'rgba(148,163,184,0.2)' }}
+                          onClick={() => playPvpCard(card)}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <span style={{ fontSize: '10px', fontWeight: 800, color: card.accent, textTransform: 'uppercase' }}>
+                              {card.kind}
+                            </span>
+                            <span
+                              className="sys-badge"
+                              style={{
+                                background: 'rgba(5,8,23,0.9)',
+                                color: playerRes.color,
+                                border: `1px solid ${playerRes.color}`,
+                                fontSize: '10px',
+                                padding: '2px 7px'
+                              }}
+                            >
+                              {card.cost} {playerRes.shortName}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>{card.name}</div>
+                          <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '3px' }}>{card.desc}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ padding: '9px 11px', borderRadius: '10px', background: 'rgba(5, 8, 23, 0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    {activePvpDuel.duelLogs.map((entry, idx) => (
+                      <div key={idx} style={{ fontSize: '11px', color: idx === 0 ? '#00eaff' : '#cbd5e1' }}>
+                        • {entry}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(244,63,94,0.3)', marginBottom: '14px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af', marginBottom: '8px' }}>
+                  AGREGAR CAZADOR AMIGO
+                </div>
+                <div className="grid-2" style={{ gap: '8px', marginBottom: '8px' }}>
+                  <input
+                    className="sys-input"
+                    placeholder="Nombre del amigo (ej. DRAKE_99)"
+                    value={newFriendName}
+                    onChange={(e) => setNewFriendName(e.target.value.toUpperCase())}
+                  />
+                  <input
+                    className="sys-input"
+                    placeholder="Código (#PEX-1234)"
+                    value={newFriendCode}
+                    onChange={(e) => setNewFriendCode(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: '160px' }}>
+                    <label style={{ fontSize: '11px', color: '#94a3b8' }}>DISTANCIA DETECTADA (KM):</label>
+                    <input
+                      type="number"
+                      className="sys-input"
+                      value={newFriendDistKm}
+                      onChange={(e) => setNewFriendDistKm(Number(e.target.value))}
+                    />
+                  </div>
+                  <button
+                    className="sys-btn sys-btn-gold"
+                    style={{ marginTop: '14px' }}
+                    onClick={() => {
+                      if (!newFriendName.trim()) return;
+                      const offsetDeg = (Number(newFriendDistKm) || 5) / 111;
+                      setFriends([
+                        ...friends,
+                        {
+                          id: Date.now(),
+                          name: newFriendName,
+                          code: newFriendCode || `#PEX-${Math.floor(1000 + Math.random() * 8999)}`,
+                          level: Math.max(1, level),
+                          grade: hunterGrade,
+                          power: Math.max(60, Math.round(hunterCombatPower * 0.92)),
+                          lat: userCoords.lat + offsetDeg,
+                          lon: userCoords.lon,
+                          city: `${newFriendDistKm} km de distancia`
+                        }
+                      ]);
+                      setNewFriendName('');
+                      setNewFriendCode('');
+                      triggerToast('[AMIGOS] Cazador añadido a tu lista.');
+                    }}
+                  >
+                    + AGREGAR AMIGO
+                  </button>
+                </div>
+              </div>
+
+              {pvpLog && (
+                <div style={{
+                  padding: '12px',
+                  borderRadius: '10px',
+                  marginBottom: '14px',
+                  background: pvpLog.win ? 'rgba(16,185,129,0.16)' : 'rgba(225,29,72,0.16)',
+                  border: `1px solid ${pvpLog.win ? '#10b981' : '#e11d48'}`
+                }}>
+                  <div style={{ fontWeight: 700, fontSize: '14px', color: pvpLog.win ? '#6ee7b7' : '#fda4af' }}>
+                    {pvpLog.header}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pvpLog.body}</div>
+                </div>
+              )}
+
+              {friends.length === 0 ? (
+                <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                  Tu lista de amigos empieza en 0. Agrega un amigo arriba con su código `#PEX` para combatir dentro de un radio de 30 km (o usa el botón de Duelo Táctico de Práctica arriba).
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {friends.map((fr) => {
+                    const distKm = getDistanceKm(userCoords.lat, userCoords.lon, fr.lat, fr.lon);
+                    const inRange = distKm <= 30;
+                    return (
+                      <div
+                        key={fr.id}
+                        style={{
+                          padding: '14px',
+                          borderRadius: '11px',
+                          background: 'rgba(4,6,12,0.88)',
+                          border: `1px solid ${inRange ? 'rgba(16,185,129,0.45)' : 'rgba(225,29,72,0.4)'}`,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: '10px'
                         }}
                       >
-                        <Sword size={14} /> {inRange ? 'DESAFIAR PVP' : 'FUERA DE 30 KM'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <strong style={{ fontSize: '15px', color: '#fff' }}>{fr.name}</strong>
+                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>{fr.code}</span>
+                            <span className="sys-badge" style={{
+                              background: inRange ? 'rgba(16,185,129,0.2)' : 'rgba(225,29,72,0.2)',
+                              color: inRange ? '#6ee7b7' : '#fda4af'
+                            }}>
+                              {distKm} km {inRange ? '(EN RANGO ≤30 KM)' : '(FUERA DE RANGO >30 KM)'}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '3px' }}>
+                            Nivel {fr.level} • Grado de Cazador {fr.grade} • Poder: {fr.power}
+                          </div>
+                        </div>
+
+                        <button
+                          className={`sys-btn ${inRange ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
+                          style={{ padding: '8px 12px', fontSize: '11px', opacity: inRange ? 1 : 0.6 }}
+                          onClick={() => {
+                            if (!inRange) {
+                              triggerToast(`[RADAR PVP] ${fr.name} está a ${distKm} km. El límite máximo para duelos PvP es 30 km.`);
+                              return;
+                            }
+                            startPvpTacticalDuel(fr, distKm, true);
+                          }}
+                        >
+                          <Sword size={14} /> {inRange ? 'INICIAR DUELO PVP TÁCTICO' : 'FUERA DE 30 KM'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
- 
+        );
+      })()}
+
       {/* ====================================================================
           MÓDULO 7: CARGAS GUARDADAS (DESDE 0 -> SUBE NIVEL Y GRADO AUTOMÁTICAMENTE)
          ==================================================================== */}
