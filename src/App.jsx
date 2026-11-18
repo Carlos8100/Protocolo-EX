@@ -9,7 +9,8 @@ import {
   Heart, Building2, Send, RotateCcw,
   Pause, Navigation, Activity,
   Footprints, MessageSquareText, Ban, ShieldAlert,
-  Menu, X, Palette, Gem, Crown, Star, Award, Compass, Download
+  Menu, X, Palette, Gem, Crown, Star, Award, Compass, Download,
+  Box, Layers, Eye, ScrollText
 } from 'lucide-react';
  
 // ============================================================================
@@ -753,6 +754,20 @@ const SYSTEM_CSS = `
     border-width: 0 2.5px 2.5px 0;
     border-bottom-right-radius: 10px;
   }
+  @keyframes orbit3dSlow {
+    from { transform: rotateX(72deg) rotateZ(0deg); }
+    to { transform: rotateX(72deg) rotateZ(360deg); }
+  }
+  @keyframes orbit3dReverse {
+    from { transform: rotateX(64deg) rotateY(18deg) rotateZ(360deg); }
+    to { transform: rotateX(64deg) rotateY(18deg) rotateZ(0deg); }
+  }
+  .pex-3d-pedestal-cw {
+    animation: orbit3dSlow 16s linear infinite;
+  }
+  .pex-3d-pedestal-ccw {
+    animation: orbit3dReverse 12s linear infinite;
+  }
 `;
  
 // ============================================================================
@@ -895,18 +910,26 @@ const CLASS_AFFINITIES = [
   { name: 'de Sangre Real', accent: '#be123c', resonance: 'Resonancia Dinástica: +25 LP adicionales por victoria.' },
 ];
  
-function generateRandomInfiniteClass(seedNumber) {
+function generateRandomInfiniteClass(seedNumber, preferredRaceId = null) {
   const arch = CLASS_ARCHETYPES[Math.abs(seedNumber) % CLASS_ARCHETYPES.length];
   const aff = CLASS_AFFINITIES[Math.abs(seedNumber * 7 + 13) % CLASS_AFFINITIES.length];
+  const race =
+    RACES_POOL.find((r) => r.id === preferredRaceId) ||
+    RACES_POOL[Math.abs(seedNumber * 3 + 5) % RACES_POOL.length];
   const variantCode = (Math.abs(seedNumber * 19) % 999) + 1;
   return {
-    name: `${arch.base} ${aff.name}`,
-    weaponType: arch.weaponType,
-    accentColor: aff.accent,
-    variantCode,
-    passiveName: `${arch.passiveTitle} (${aff.name})`,
-    passiveDesc: `${arch.passiveRule} ${aff.resonance}`,
-    desc: `Arquetipo ${arch.base} sincronizado con afinidad ${aff.name} (Linaje Único #${variantCode}).`
+    race,
+    cls: {
+      name: `${arch.base} ${aff.name}`,
+      baseArchetype: arch.base,
+      affinityName: aff.name,
+      weaponType: arch.weaponType,
+      accentColor: aff.accent,
+      variantCode,
+      passiveName: `${arch.passiveTitle} (${aff.name})`,
+      passiveDesc: `${arch.passiveRule} ${aff.resonance}`,
+      desc: `Arquetipo ${arch.base} sincronizado con afinidad ${aff.name} (Linaje Único #${variantCode}).`
+    }
   };
 }
  
@@ -1104,13 +1127,103 @@ const CITY_BUILDINGS_CATALOG = [
 ];
  
 const RACES_POOL = [
-  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#6366f1' },
-  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#00f0ff' },
-  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#fbbf24' },
-  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#6366f1' },
-  { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b' },
-  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8' },
+  { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#6366f1', auraColor: '#00eaff', originSeed: 'un relicario sellado bajo las ruinas antiguas donde dormía la corona sin heredero' },
+  { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#00f0ff', auraColor: '#f97316', originSeed: 'las fraguas volcánicas de la frontera, donde cada caída templa el espíritu como acero vivo' },
+  { id: 'abyss_demon', name: 'Revenant Abisal Carmesí', trait: 'Pacto de Sangre: Bonificación en cargas máximas', hairColor: '#130714', eyeColor: '#fbbf24', auraColor: '#e11d48', originSeed: 'el umbral de la primera Grieta Carmesí, tras sobrevivir a una sobrecarga de mana abisal' },
+  { id: 'valkyrie_dusk', name: 'Valkiria del Crepúsculo', trait: 'Égida Lunar: Recuperación muscular acelerada', hairColor: '#0f172a', eyeColor: '#6366f1', auraColor: '#c084fc', originSeed: 'los bastiones suspendidos entre el día y la noche, jurando proteger la última llama humana' },
+  { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b', auraColor: '#38bdf8', originSeed: 'los bosques helados del norte, guiado por el pulso primitivo de la manada plateada' },
+  { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8', auraColor: '#ffd45a', originSeed: 'el santuario silencioso de los obeliscos blancos, forjando una voluntad inquebrantable' },
 ];
+
+function generateHunterOriginAndDestinyLore({
+  hunterName,
+  gender,
+  race,
+  cls,
+  classEvolution,
+  hunterGrade,
+  gradeData,
+  cityName,
+  level,
+  streak,
+  completedChaptersCount
+}) {
+  const safeName = hunterName || 'CAZADOR_01';
+  const isFemale = gender === 'female';
+  const articleHero = isFemale ? 'la cazadora' : 'el cazador';
+  const titleHero = isFemale ? 'portadora' : 'portador';
+  const raceObj = race || RACES_POOL[0];
+  const className = cls?.name || 'Centinela Infinito';
+  const weaponLabelMap = {
+    sword: 'una hoja rúnica equilibrada',
+    greatsword: 'un mandoble colosal de hierro oscuro',
+    spear: 'una lanza perforadora de runas',
+    staff: 'un báculo arcano de resonancia',
+    daggers: 'dos dagas gemelas del abismo',
+    gauntlets: 'guanteletes de impacto cinético'
+  };
+  const weaponDesc = weaponLabelMap[cls?.weaponType] || 'un arma rúnica vinculada a su alma';
+  const originSeed = raceObj.originSeed || 'las ruinas olvidadas del primer despertar';
+
+  const originTitle = `Crónica del Despertar — Linaje ${raceObj.name}`;
+  const originText =
+    `Antes de alzar su nombre en ${cityName || 'Bastión de Ceniza'}, ${safeName} despertó en ${originSeed}. ` +
+    `Allí, su sangre de ${raceObj.name} respondió al llamado del Sistema, manifestando la senda de ${className} ` +
+    `y empuñando ${weaponDesc}. Partiendo estrictamente desde cero, ${articleHero} juró forjar cada punto de poder ` +
+    `con disciplina real, transformando cada repetición, cada kilómetro recorrido y cada noche de recuperación en energía vital.`;
+
+  const grade = hunterGrade || 'F';
+  const isMyth = ['F', 'E', 'D'].includes(grade);
+  const isLegend = ['C', 'B', 'A'].includes(grade);
+
+  if (isMyth) {
+    return {
+      originTitle,
+      originText,
+      destinyTier: 'MITO',
+      destinyBadge: `MITO FRAGMENTADO • GRADO ${grade}`,
+      destinyAccent: '#38bdf8',
+      destinyTitle: 'El Susurro del Iniciado sin Límites',
+      destinyText:
+        `En las tabernas y forjas de ${cityName || 'Bastión de Ceniza'} circula un mito antiguo sobre ${articleHero} de estirpe ${raceObj.name} ` +
+        `que comenzó sin fuerza prestada y cuyo núcleo (${cls?.passiveName || 'Pasiva Única'}) aún está despertando. ` +
+        `Dicen los viejos exploradores que cuando sus marcas de fuerza superen el umbral del Grado C, este rumor dejará de ser un mito ` +
+        `para grabarse como leyenda viva. (Nivel ${level} • Racha actual: ${streak} días).`,
+      tierStep: 1
+    };
+  }
+
+  if (isLegend) {
+    return {
+      originTitle,
+      originText,
+      destinyTier: 'LEYENDA',
+      destinyBadge: `LEYENDA EN ASCENSO • GRADO ${grade}`,
+      destinyAccent: '#fbbf24',
+      destinyTitle: `La Gesta de ${safeName}, ${classEvolution.title}`,
+      destinyText:
+        `Las crónicas de ${cityName || 'Bastión de Ceniza'} ya cantan las hazañas de ${safeName}, ${titleHero} del linaje ${raceObj.name}. ` +
+        `Con marcas verificadas de ${gradeData?.bench1RM || 0} kg en Banca, ${gradeData?.squat1RM || 0} kg en Sentadilla y ` +
+        `${gradeData?.deadlift1RM || 0} kg en Peso Muerto, su presencia impone respeto en toda la ciudadela. ` +
+        `Habiendo superado ${completedChaptersCount || 0} capítulos de campaña, su leyenda crece hacia el umbral mítico del Grado S.`,
+      tierStep: 2
+    };
+  }
+
+  return {
+    originTitle,
+    originText,
+    destinyTier: 'PROFECÍA',
+    destinyBadge: `PROFECÍA CUMPLIDA • GRADO ${grade}`,
+    destinyAccent: '#ff3e9d',
+    destinyTitle: `El Augurio del Monarca Eterno (${classEvolution.title})`,
+    destinyText:
+      `Grabada en los obeliscos del Observatorio Astral, la profecía de los Antiguos anunciaba el ascenso de un Soberano de sangre ` +
+      `${raceObj.name} capaz de trascender los límites humanos. Hoy ${safeName} encarna ese augurio absoluto en Grado ${grade}: ` +
+      `su dominio de ${className} y su poder combativo convierten cada paso en un decreto celestial sobre ${cityName || 'Bastión de Ceniza'} y el Abismo.`,
+    tierStep: 3
+  };
+}
  
 const HOME_EQUIPMENT_OPTIONS = [
   'Mancuernas ajustables',
@@ -3773,15 +3886,459 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
   );
 }
  
+function buildUserLinkedAnimePrompt(gender, cls, race, evolutionStage) {
+  const isFemale = gender === 'female';
+  const subject = isFemale
+    ? 'young adult anime woman hunter, solo, layered dark hair, expressive glowing eyes, determined heroic expression'
+    : 'young adult anime man hunter, solo, messy layered dark hair with individual strands, expressive glowing eyes, serious heroic expression';
+
+  const raceDescriptorMap = {
+    monarch_vessel: 'subtle ethereal shadow-sovereign aura, dark royal mantle collar',
+    ash_saiyan: 'embers and fiery cyan-orange battle aura sparks around shoulders',
+    abyss_demon: 'subtle arcane crimson rune markings on cheek, abyssal obsidian armor',
+    valkyrie_dusk: 'luminous twilight feather particles, silver-gold filigree pauldrons',
+    fenrir_kin: 'silver wolf-spirit aura, fierce predator gaze, fur-trimmed tactical collar',
+    hollow_lord: 'pale celestial steel armor plates, translucent astral halo behind head'
+  };
+  const racePrompt = raceDescriptorMap[race?.id] || 'fantasy hunter obsidian armor with golden filigree';
+
+  const weaponMap = {
+    spear: 'glowing runic spear behind one shoulder',
+    greatsword: 'colossal dark runic greatsword behind shoulder',
+    staff: 'ornate arcane crystal staff behind shoulder',
+    daggers: 'twin glowing abyssal daggers at sides',
+    gauntlets: 'luminous kinetic combat gauntlets',
+    sword: 'glowing runic longsword hilt behind shoulder'
+  };
+  const weaponPrompt = weaponMap[cls?.weaponType] || weaponMap.sword;
+  const affinityName = cls?.affinityName || 'Infinito';
+  const stageHint = evolutionStage >= 4
+    ? 'transcendent sovereign aura, intricate sacred magic circle'
+    : 'arcane geometric magic circle behind shoulders';
+
+  return `${subject}, chest-up half-body portrait, centered composition, ${racePrompt}, ${weaponPrompt}, elemental resonance ${affinityName}, ${stageHint}, deep navy-black cosmos background, dramatic rim lighting, polished Japanese 2D anime key visual, clean lineart, painterly cel shading, premium anime RPG character illustration`;
+}
+
+function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, race, profile }) {
+  const uid = `${isFemale ? 'fem' : 'masc'}_${race?.id || 'base'}`;
+  const primaryGlow = accentColor || race?.auraColor || '#00eaff';
+  const raceAura = race?.auraColor || '#963cff';
+  const irisColor = race?.eyeColor || '#4f46e5';
+  const stageScale = Math.min(6, Math.max(1, Number(stage) || 1));
+
+  const bmi = (Number(profile?.weightKg) || 75) / Math.pow((Number(profile?.heightCm) || 176) / 100, 2);
+  const shoulderSpread = bmi > 26 ? 1.06 : bmi < 20 ? 0.94 : 1.0;
+
+  return (
+    <svg
+      viewBox="0 0 420 400"
+      width="100%"
+      height="395"
+      style={{ display: 'block', maxWidth: '460px', margin: '0 auto' }}
+      aria-label={`Modelo vinculado a ${profile?.hunterName || 'Cazador'} (${race?.name || 'Linaje'})`}
+    >
+      <defs>
+        <radialGradient id={`pexCosmos_${uid}`} cx="50%" cy="38%" r="68%">
+          <stop offset="0%" stopColor="#261b5e" />
+          <stop offset="45%" stopColor="#0f1b44" />
+          <stop offset="82%" stopColor="#070d24" />
+          <stop offset="100%" stopColor="#050817" />
+        </radialGradient>
+        <radialGradient id={`pexArcaneHalo_${uid}`} cx="50%" cy="44%" r="50%">
+          <stop offset="0%" stopColor={primaryGlow} stopOpacity="0.46" />
+          <stop offset="50%" stopColor={raceAura} stopOpacity="0.24" />
+          <stop offset="100%" stopColor="#050817" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`pexSkin_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffedd5" />
+          <stop offset="72%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#f5b882" />
+        </linearGradient>
+        <linearGradient id={`pexNeckShade_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#d99b6c" />
+          <stop offset="55%" stopColor="#fed7aa" />
+          <stop offset="100%" stopColor="#ffedd5" />
+        </linearGradient>
+        <linearGradient id={`pexHair_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#1e293b" />
+          <stop offset="45%" stopColor={race?.hairColor || '#090d1c'} />
+          <stop offset="100%" stopColor="#04060e" />
+        </linearGradient>
+        <linearGradient id={`pexObsidian_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={race?.id === 'hollow_lord' ? '#334155' : '#1e293b'} />
+          <stop offset="45%" stopColor="#0d1429" />
+          <stop offset="100%" stopColor="#050814" />
+        </linearGradient>
+        <linearGradient id={`pexGold_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="48%" stopColor="#ffd45a" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+        <linearGradient id={`pexCape_${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={race?.id === 'valkyrie_dusk' ? '#4c1d95' : '#be123c'} />
+          <stop offset="55%" stopColor={race?.id === 'valkyrie_dusk' ? '#2e1065' : '#881337'} />
+          <stop offset="100%" stopColor="#1e0716" />
+        </linearGradient>
+        <linearGradient id={`pexCrystal_${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="45%" stopColor={primaryGlow} />
+          <stop offset="100%" stopColor={raceAura} />
+        </linearGradient>
+        <filter id={`pexNeonBlur_${uid}`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="4.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <rect width="420" height="400" fill={`url(#pexCosmos_${uid})`} />
+      <circle cx="210" cy="175" r="180" fill={`url(#pexArcaneHalo_${uid})`} />
+
+      <g className="pex-arcane-ring-cw" opacity={0.48 + stageScale * 0.08}>
+        <circle cx="210" cy="175" r="126" fill="none" stroke={primaryGlow} strokeWidth="1.5" strokeDasharray="8 5 2 5" />
+        <circle cx="210" cy="175" r="116" fill="none" stroke="#ffd45a" strokeWidth="0.9" strokeOpacity="0.65" />
+        <polygon points="210,52 297,88 333,175 297,262 210,298 123,262 87,175 123,88" fill="none" stroke={primaryGlow} strokeWidth="1.1" strokeOpacity="0.6" />
+        <polygon points="210,52 333,175 210,298 87,175" fill="none" stroke={raceAura} strokeWidth="1.2" strokeOpacity="0.7" />
+        <circle cx="210" cy="49" r="3.8" fill={primaryGlow} />
+        <circle cx="336" cy="175" r="3.8" fill={primaryGlow} />
+        <circle cx="210" cy="301" r="3.8" fill={primaryGlow} />
+        <circle cx="84" cy="175" r="3.8" fill={primaryGlow} />
+      </g>
+
+      <g className="pex-arcane-ring-ccw" opacity="0.6">
+        <circle cx="210" cy="175" r="92" fill="none" stroke={raceAura} strokeWidth="1.3" strokeDasharray="4 6" />
+        {stageScale >= 2 && <circle cx="210" cy="175" r="142" fill="none" stroke="#ffd45a" strokeWidth="1.1" strokeDasharray="3 9" />}
+        {stageScale >= 4 && <circle cx="210" cy="175" r="154" fill="none" stroke={primaryGlow} strokeWidth="1.3" strokeDasharray="12 6" />}
+      </g>
+
+      <g className="pex-avatar-hero-float">
+        {(race?.id === 'valkyrie_dusk' || stageScale >= 4) && (
+          <g opacity="0.78" filter={`url(#pexNeonBlur_${uid})`}>
+            <path d="M135 215 C72 175, 42 125, 36 82 C75 102, 112 138, 145 186 Z" fill={primaryGlow} opacity="0.35" stroke="#ffd45a" strokeWidth="1.2" />
+            <path d="M285 215 C348 175, 378 125, 384 82 C345 102, 308 138, 275 186 Z" fill={primaryGlow} opacity="0.35" stroke="#ffd45a" strokeWidth="1.2" />
+          </g>
+        )}
+
+        <path d="M118 228 C78 265, 58 325, 48 398 L372 398 C362 325, 342 265, 302 228 Z" fill={`url(#pexCape_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2" />
+
+        {weaponType === 'spear' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <line x1="336" y1="36" x2="292" y2="396" stroke={`url(#pexGold_${uid})`} strokeWidth="5" strokeLinecap="round" />
+            <polygon points="336,14 348,54 336,68 324,54" fill={`url(#pexCrystal_${uid})`} stroke="#ffffff" strokeWidth="1" />
+          </g>
+        )}
+        {weaponType === 'greatsword' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <polygon points="334,26 350,48 318,266 296,262" fill="#0f172a" stroke={primaryGlow} strokeWidth="2.2" />
+            <line x1="333" y1="44" x2="308" y2="254" stroke={primaryGlow} strokeWidth="2.6" />
+            <rect x="285" y="260" width="44" height="9" rx="3" transform="rotate(9 307 264)" fill={`url(#pexGold_${uid})`} />
+          </g>
+        )}
+        {weaponType === 'staff' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <line x1="330" y1="68" x2="298" y2="396" stroke={`url(#pexGold_${uid})`} strokeWidth="5.5" strokeLinecap="round" />
+            <circle cx="332" cy="52" r="18" fill="none" stroke="#ffd45a" strokeWidth="2.5" />
+            <polygon points="332,37 342,52 332,67 322,52" fill={`url(#pexCrystal_${uid})`} />
+          </g>
+        )}
+        {weaponType === 'daggers' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <polygon points="78,195 92,268 74,274" fill={`url(#pexCrystal_${uid})`} stroke="#ffd45a" strokeWidth="1.2" />
+            <polygon points="342,195 328,268 346,274" fill={`url(#pexCrystal_${uid})`} stroke="#ffd45a" strokeWidth="1.2" />
+          </g>
+        )}
+        {weaponType === 'gauntlets' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <circle cx="94" cy="316" r="22" fill="none" stroke={primaryGlow} strokeWidth="2.4" strokeDasharray="6 4" />
+            <circle cx="326" cy="316" r="22" fill="none" stroke={primaryGlow} strokeWidth="2.4" strokeDasharray="6 4" />
+          </g>
+        )}
+        {(!weaponType || weaponType === 'sword') && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <polygon points="338,34 346,52 312,264 300,262" fill={`url(#pexCrystal_${uid})`} stroke="#ffffff" strokeWidth="1" />
+            <path d="M284 258 L328 266 L324 274 L282 266 Z" fill={`url(#pexGold_${uid})`} />
+            <circle cx="305" cy="266" r="4.5" fill={primaryGlow} />
+          </g>
+        )}
+
+        {isFemale && (
+          <path d="M142 104 C114 156, 108 242, 118 332 C142 318, 152 292, 158 265 L262 265 C268 292, 278 318, 302 332 C312 242, 306 156, 278 104 Z" fill={`url(#pexHair_${uid})`} stroke={primaryGlow} strokeWidth="1.1" />
+        )}
+
+        <g transform={`translate(210, 260) scale(${shoulderSpread}, 1) translate(-210, -260)`}>
+          <path
+            d={isFemale ? 'M146 224 L274 224 L294 398 L126 398 Z' : 'M134 222 L286 222 L310 398 L110 398 Z'}
+            fill={`url(#pexObsidian_${uid})`}
+            stroke={`url(#pexGold_${uid})`}
+            strokeWidth="2.4"
+          />
+          <path d="M164 204 L182 232 L238 232 L256 204 L268 226 L236 250 L184 250 L152 226 Z" fill="#0b1226" stroke={`url(#pexGold_${uid})`} strokeWidth="2" />
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <path d="M154 266 L180 280 L176 312" fill="none" stroke={primaryGlow} strokeWidth="1.9" strokeLinecap="round" />
+            <path d="M266 266 L240 280 L244 312" fill="none" stroke={primaryGlow} strokeWidth="1.9" strokeLinecap="round" />
+            <path d="M166 352 L192 338 L228 338 L254 352" fill="none" stroke={primaryGlow} strokeWidth="1.9" strokeLinecap="round" />
+          </g>
+          <path d="M148 218 C108 216, 84 242, 82 284 C106 286, 132 276, 152 254 Z" fill={`url(#pexObsidian_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2.4" />
+          <path d="M272 218 C312 216, 336 242, 338 284 C314 286, 288 276, 268 254 Z" fill={`url(#pexObsidian_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2.4" />
+        </g>
+
+        <g filter={`url(#pexNeonBlur_${uid})`}>
+          <polygon points="210,256 232,286 210,316 188,286" fill="#071329" stroke={`url(#pexGold_${uid})`} strokeWidth="2.8" />
+          <polygon points="210,263 225,286 210,309 195,286" fill={`url(#pexCrystal_${uid})`} />
+          <circle cx="206" cy="278" r="2.6" fill="#ffffff" />
+        </g>
+
+        <path d={isFemale ? 'M194 184 L226 184 L232 232 L188 232 Z' : 'M190 182 L230 182 L238 232 L182 232 Z'} fill={`url(#pexNeckShade_${uid})`} />
+        <path
+          d={isFemale
+            ? 'M168 122 C168 162, 184 184, 210 190 C236 184, 252 162, 252 122 C252 86, 234 74, 210 74 C186 74, 168 86, 168 122 Z'
+            : 'M165 120 C165 162, 182 186, 210 193 C238 186, 255 162, 255 120 C255 84, 236 72, 210 72 C184 72, 165 84, 165 120 Z'}
+          fill={`url(#pexSkin_${uid})`}
+        />
+
+        {race?.id === 'abyss_demon' && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <path d="M166 96 C150 76, 152 54, 166 44 C164 62, 168 76, 178 86 Z" fill="#be123c" stroke="#ffd45a" strokeWidth="1.2" />
+            <path d="M254 96 C270 76, 268 54, 254 44 C256 62, 252 76, 242 86 Z" fill="#be123c" stroke="#ffd45a" strokeWidth="1.2" />
+          </g>
+        )}
+        {race?.id === 'fenrir_kin' && (
+          <g>
+            <polygon points="164,95 154,54 184,78" fill="#1e293b" stroke={primaryGlow} strokeWidth="1.5" />
+            <polygon points="256,95 266,54 236,78" fill="#1e293b" stroke={primaryGlow} strokeWidth="1.5" />
+          </g>
+        )}
+        {(race?.id === 'monarch_vessel' || race?.id === 'hollow_lord' || stageScale >= 3) && (
+          <g filter={`url(#pexNeonBlur_${uid})`}>
+            <path d="M178 62 L192 44 L210 56 L228 44 L242 62" fill="none" stroke="#ffd45a" strokeWidth="2.2" strokeLinecap="round" />
+          </g>
+        )}
+
+        <g>
+          <ellipse cx="191" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
+          <ellipse cx="191.5" cy="142.5" rx="6.2" ry={isFemale ? '7.2' : '6.2'} fill={irisColor} />
+          <ellipse cx="191.5" cy="143.5" rx="4.2" ry="4.5" fill={primaryGlow} opacity="0.72" />
+          <circle cx="191.5" cy="142.5" r="2.8" fill="#050817" />
+          <circle cx="189" cy="139.5" r="2.3" fill="#ffffff" />
+          <path d={isFemale ? 'M179 136 Q191 129 202 137' : 'M180 137 Q191 132 202 138'} fill="none" stroke="#050817" strokeWidth="2.9" strokeLinecap="round" />
+        </g>
+        <g>
+          <ellipse cx="229" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
+          <ellipse cx="228.5" cy="142.5" rx="6.2" ry={isFemale ? '7.2' : '6.2'} fill={irisColor} />
+          <ellipse cx="228.5" cy="143.5" rx="4.2" ry="4.5" fill={primaryGlow} opacity="0.72" />
+          <circle cx="228.5" cy="142.5" r="2.8" fill="#050817" />
+          <circle cx="226" cy="139.5" r="2.3" fill="#ffffff" />
+          <path d={isFemale ? 'M218 137 Q229 129 241 136' : 'M218 138 Q229 132 240 137'} fill="none" stroke="#050817" strokeWidth="2.9" strokeLinecap="round" />
+        </g>
+
+        <path d="M209 152 L207 160 L211 161" fill="none" stroke="#c98a5b" strokeWidth="1.6" strokeLinecap="round" />
+        <path d={isFemale ? 'M202 171 Q210 175 218 171' : 'M200 172 Q210 175 220 172'} fill="none" stroke="#9a5b38" strokeWidth="2" strokeLinecap="round" />
+
+        {isFemale ? (
+          <g>
+            <path d="M158 134 C154 82, 180 58, 210 58 C240 58, 266 82, 262 134 L254 228 L244 156 L234 126 L222 146 L212 118 L202 146 L190 124 L178 154 L166 228 Z" fill={`url(#pexHair_${uid})`} />
+            <path d="M174 96 Q210 82 246 96" fill="none" stroke={primaryGlow} strokeWidth="1.6" opacity="0.5" strokeLinecap="round" />
+          </g>
+        ) : (
+          <g>
+            <path d="M156 130 L146 96 L168 102 L162 66 L188 84 L198 52 L214 78 L234 54 L236 86 L262 72 L252 104 L272 100 L262 132 L252 154 L244 122 L232 142 L222 114 L210 144 L198 114 L186 142 L176 122 L166 154 Z" fill={`url(#pexHair_${uid})`} />
+            <path d="M178 92 L198 76 L212 92 L228 76 L244 92" fill="none" stroke={primaryGlow} strokeWidth="1.6" opacity="0.5" strokeLinecap="round" />
+          </g>
+        )}
+      </g>
+
+      <g className="pex-ember-pulse" filter={`url(#pexNeonBlur_${uid})`}>
+        <circle cx="96" cy="296" r="2.8" fill="#ffd45a" />
+        <circle cx="324" cy="288" r="2.8" fill="#ffd45a" />
+        <circle cx="118" cy="196" r="2.4" fill={primaryGlow} />
+        <circle cx="302" cy="192" r="2.4" fill={primaryGlow} />
+      </g>
+    </svg>
+  );
+}
+
+function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, race, profile, hunterGrade }) {
+  const [rotY, setRotY] = useState(0);
+  const [rotX, setRotX] = useState(4);
+  const [autoSpin, setAutoSpin] = useState(true);
+  const draggingRef = useRef(false);
+  const lastPosRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (!autoSpin) return;
+    const id = setInterval(() => {
+      if (!draggingRef.current) {
+        setRotY((prev) => (prev + 1.2) % 360);
+      }
+    }, 30);
+    return () => clearInterval(id);
+  }, [autoSpin]);
+
+  const handlePointerDown = (e) => {
+    draggingRef.current = true;
+    setAutoSpin(false);
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!draggingRef.current) return;
+    const dx = e.clientX - lastPosRef.current.x;
+    const dy = e.clientY - lastPosRef.current.y;
+    lastPosRef.current = { x: e.clientX, y: e.clientY };
+    setRotY((prev) => (prev + dx * 0.65 + 360) % 360);
+    setRotX((prev) => Math.max(-22, Math.min(24, prev - dy * 0.35)));
+  };
+
+  const handlePointerUp = () => {
+    draggingRef.current = false;
+  };
+
+  const primaryGlow = accentColor || race?.auraColor || '#00eaff';
+  const normalizedYaw = rotY > 180 ? rotY - 360 : rotY;
+  const parallaxX = Math.sin((rotY * Math.PI) / 180) * 18;
+  const parallaxScaleX = Math.max(0.72, Math.cos((rotY * Math.PI) / 180) * 0.25 + 0.75);
+
+  return (
+    <div
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
+      style={{
+        position: 'relative',
+        height: '395px',
+        width: '100%',
+        perspective: '920px',
+        background: 'radial-gradient(circle at 50% 45%, #19265c 0%, #070c22 65%, #040612 100%)',
+        cursor: 'grab',
+        userSelect: 'none',
+        touchAction: 'none',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <div style={{ position: 'absolute', bottom: '52px', left: '12px', zIndex: 12, display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.85)', color: primaryGlow, border: `1px solid ${primaryGlow}`, fontSize: '9px' }}>
+          <Box size={11} /> VISOR 3D • YAW {Math.round(normalizedYaw)}°
+        </span>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setAutoSpin((s) => !s); }}
+          style={{
+            background: 'rgba(5,8,23,0.85)', border: '1px solid rgba(255,212,90,0.5)', color: '#ffd45a',
+            borderRadius: '999px', padding: '3px 8px', fontSize: '9px', fontFamily: 'Orbitron, sans-serif', cursor: 'pointer'
+          }}
+        >
+          {autoSpin ? 'Pausar Órbita' : 'Auto-Rotar'}
+        </button>
+      </div>
+
+      <div
+        style={{
+          position: 'relative',
+          width: '320px',
+          height: '340px',
+          transformStyle: 'preserve-3d',
+          transform: `rotateX(${rotX}deg) rotateY(${normalizedYaw * 0.42}deg)`,
+          transition: draggingRef.current ? 'none' : 'transform 0.12s ease-out'
+        }}
+      >
+        <div
+          className="pex-3d-pedestal-cw"
+          style={{
+            position: 'absolute',
+            bottom: '16px',
+            left: '50%',
+            width: '250px',
+            height: '250px',
+            marginLeft: '-125px',
+            borderRadius: '50%',
+            border: `2px dashed ${primaryGlow}`,
+            boxShadow: `0 0 28px ${primaryGlow}, inset 0 0 24px ${primaryGlow}`,
+            pointerEvents: 'none'
+          }}
+        />
+        <div
+          className="pex-3d-pedestal-ccw"
+          style={{
+            position: 'absolute',
+            bottom: '34px',
+            left: '50%',
+            width: '190px',
+            height: '190px',
+            marginLeft: '-95px',
+            borderRadius: '50%',
+            border: '1.5px solid #ffd45a',
+            opacity: 0.75,
+            pointerEvents: 'none'
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transform: `translateZ(26px) translateX(${parallaxX * 0.4}px) scaleX(${parallaxScaleX})`,
+            filter: `drop-shadow(0 12px 24px rgba(0,0,0,0.85)) drop-shadow(0 0 14px ${primaryGlow})`
+          }}
+        >
+          <UserLinkedAnimeAvatarSvg
+            isFemale={isFemale}
+            weaponType={weaponType}
+            stage={stage}
+            accentColor={primaryGlow}
+            race={race}
+            profile={profile}
+          />
+        </div>
+
+        <div
+          style={{
+            position: 'absolute',
+            top: '56px',
+            right: '24px',
+            transform: `translateZ(58px) translateX(${-parallaxX}px)`,
+            padding: '5px 9px',
+            borderRadius: '8px',
+            background: 'rgba(5,8,23,0.86)',
+            border: `1px solid ${primaryGlow}`,
+            fontSize: '9px',
+            fontFamily: 'Orbitron, sans-serif',
+            color: '#fff'
+          }}
+        >
+          {race?.name?.toUpperCase()} • {hunterGrade}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function JrpgFantasyPortrait({
   hunterClass,
   hunterGrade,
-  level,
+  gradeData = {},
+  level = 0,
+  streak = 0,
+  cityName = 'Bastión de Ceniza',
+  completedChaptersCount = 0,
+  profile = {},
   classEvolution,
   gender,
   onToggleGender,
-  passiveClassBonus
+  passiveClassBonus,
+  avatarRenderMode = '2d',
+  onToggleRenderMode = () => {}
 }) {
+  const race =
+    hunterClass?.race ||
+    RACES_POOL.find((r) => r.id === profile?.preferredRaceId) ||
+    RACES_POOL[0];
+
   const cls = hunterClass?.cls || {
     name: 'Centinela Infinito',
     weaponType: 'sword',
@@ -3790,64 +4347,68 @@ function JrpgFantasyPortrait({
     passiveName: 'Muralla Inquebrantable',
     passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
   };
- 
-  const stage = classEvolution.stage;
+
+  const stage = classEvolution?.stage || 1;
   const isFemale = gender === 'female';
-  const cacheKey = `pex_ai_avatar_v4_anime2d_${gender}_${cls.variantCode || 1}`;
-  const defaultPortraitSrc = isFemale ? null : DEFAULT_ANIME_AVATAR_MALE;
- 
+  const cacheKey = `pex_ai_avatar_v5_linked_${gender}_${race.id}_${cls.variantCode || 1}`;
+
   const [aiImageSrc, setAiImageSrc] = useState(() => {
     try {
-      return localStorage.getItem(cacheKey) || defaultPortraitSrc;
+      return localStorage.getItem(cacheKey) || null;
     } catch {
-      return defaultPortraitSrc;
+      return null;
     }
   });
   const [aiStatus, setAiStatus] = useState('');
   const [styleIdx, setStyleIdx] = useState(0);
   const [showPassiveDetails, setShowPassiveDetails] = useState(false);
- 
-  // Sincroniza si existe una imagen personalizada o generada previamente para el género/clase actual
+  const [loreSubTab, setLoreSubTab] = useState('origin');
+
   useEffect(() => {
     try {
-      const cached = localStorage.getItem(cacheKey);
-      setAiImageSrc(cached || defaultPortraitSrc);
+      setAiImageSrc(localStorage.getItem(cacheKey) || null);
     } catch {
-      setAiImageSrc(defaultPortraitSrc);
+      setAiImageSrc(null);
     }
-  }, [cacheKey, defaultPortraitSrc]);
- 
+  }, [cacheKey]);
+
+  const loreData = generateHunterOriginAndDestinyLore({
+    hunterName: profile?.hunterName,
+    gender,
+    race,
+    cls,
+    classEvolution,
+    hunterGrade,
+    gradeData,
+    cityName,
+    level,
+    streak,
+    completedChaptersCount
+  });
+
   const handleInvokeAiPortrait = async () => {
     if (aiStatus) return;
-    const prompt = buildAnimeAvatarPrompt(gender, cls);
+    const prompt = buildUserLinkedAnimePrompt(gender, cls, race, stage);
     const seed = (cls.variantCode || 77) + Math.floor(Math.random() * 900) + (isFemale ? 500 : 100);
     const engines = [
       { label: 'IA 1/3 (Flux)', run: () => tryPollinationsEngine(prompt, seed, 'flux') },
       { label: 'IA 2/3 (Turbo)', run: () => tryPollinationsEngine(prompt, seed + 9, 'turbo') },
       { label: 'IA 3/3 (AI Horde)', run: () => tryAiHordeEngine(prompt) }
     ];
- 
     for (const engine of engines) {
-      setAiStatus(`Invocando retrato con ${engine.label}...`);
+      setAiStatus(`Invocando retrato de ${race.name} con ${engine.label}...`);
       try {
         const verifiedDataUrl = await engine.run();
         setAiImageSrc(verifiedDataUrl);
         setAiStatus('');
-        try {
-          localStorage.setItem(cacheKey, verifiedDataUrl);
-        } catch {
-          // Mantiene en memoria de sesión si localStorage está lleno
-        }
+        try { localStorage.setItem(cacheKey, verifiedDataUrl); } catch {}
         return;
-      } catch {
-        // Pasa al siguiente motor sin borrar el retrato Anime Fantasy actual
-      }
+      } catch {}
     }
- 
-    setAiStatus('Servidores IA ocupados • Manteniendo retrato Anime RPG');
+    setAiStatus('Servidores IA ocupados • Manteniendo modelo vinculado');
     setTimeout(() => setAiStatus(''), 3200);
   };
- 
+
   const handleUploadCustomAvatar = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -3856,375 +4417,270 @@ function JrpgFantasyPortrait({
       const dataUrl = ev.target?.result;
       if (typeof dataUrl === 'string') {
         setAiImageSrc(dataUrl);
-        try {
-          localStorage.setItem(cacheKey, dataUrl);
-        } catch {}
+        try { localStorage.setItem(cacheKey, dataUrl); } catch {}
       }
     };
     reader.readAsDataURL(file);
     e.target.value = '';
   };
- 
+
   const activeStyle = GACHA_STYLES[styleIdx];
-  const isStylized = styleIdx !== 0;
- 
+  const is3D = avatarRenderMode === '3d';
+
   return (
-    <div className="cinematic-entry" style={{ position: 'relative', paddingBottom: '18px' }}>
-      {/* ESCENARIO ATMOSFÉRICO DE MEDIO CUERPO */}
+    <div className="cinematic-entry" style={{ position: 'relative', paddingBottom: '12px' }}>
       <div
         style={{
           position: 'relative',
           borderRadius: '20px',
           overflow: 'hidden',
-          background:
-            'radial-gradient(circle at 50% 42%, rgba(var(--neon-secondary-rgb), 0.28) 0%, rgba(var(--neon-primary-rgb), 0.14) 40%, rgba(5, 8, 23, 0.98) 80%)',
+          background: 'radial-gradient(circle at 50% 42%, rgba(var(--neon-secondary-rgb), 0.28) 0%, rgba(var(--neon-primary-rgb), 0.14) 40%, rgba(5, 8, 23, 0.98) 80%)',
           border: '1.5px solid rgba(var(--neon-primary-rgb), 0.38)',
-          boxShadow:
-            '0 14px 36px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(var(--neon-secondary-rgb), 0.18)',
+          boxShadow: '0 14px 36px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(var(--neon-secondary-rgb), 0.18)',
         }}
       >
-        {/* MARCO ORNAMENTAL DE FONDO Y ESQUINAS DORADAS RPG */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: '14px 24px 32px',
-            border: '1px solid rgba(var(--neon-primary-rgb), 0.34)',
-            borderRadius: '12px',
-            boxShadow: 'inset 0 0 24px rgba(var(--neon-primary-rgb), 0.1)',
-            pointerEvents: 'none',
-            zIndex: 5,
-          }}
-        />
+        <div style={{ position: 'absolute', inset: '14px 24px 32px', border: '1px solid rgba(var(--neon-primary-rgb), 0.34)', borderRadius: '12px', pointerEvents: 'none', zIndex: 5 }} />
         <div className="pex-avatar-corner-tl" />
         <div className="pex-avatar-corner-tr" />
         <div className="pex-avatar-corner-bl" />
         <div className="pex-avatar-corner-br" />
- 
-        {/* CONTROLES FLOTANTES COMPACTOS EN LA ESQUINA SUPERIOR DERECHA DEL AVATAR */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            zIndex: 8,
-            display: 'flex',
-            gap: '5px',
-            flexWrap: 'wrap',
-            justifyContent: 'flex-end',
-            maxWidth: '72%',
-          }}
-        >
+
+        <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ background: 'rgba(6, 11, 28, 0.86)', backdropFilter: 'blur(8px)', border: '1px solid rgba(var(--neon-accent-rgb), 0.55)', borderRadius: '999px', padding: '4px 10px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 800, color: 'var(--neon-gold)' }}>
+            GRADO {hunterGrade} • ETAPA {stage}
+          </div>
+          <div style={{ background: 'rgba(6, 11, 28, 0.84)', border: `1px solid ${race.auraColor || '#00eaff'}`, borderRadius: '999px', padding: '3px 9px', fontSize: '9.5px', fontWeight: 700, color: '#e2e8f0' }}>
+            {race.name}
+          </div>
+        </div>
+
+        <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 8, display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '64%' }}>
           <button
             type="button"
-            title={`Filtro visual: ${activeStyle.label}`}
-            onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
+            title="Alternar renderizado 2D / 3D"
+            onClick={onToggleRenderMode}
             style={{
-              background: 'rgba(6, 11, 28, 0.84)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
-              color: 'var(--neon-gold)',
-              borderRadius: '999px',
-              padding: '4px 8px',
-              fontSize: '9.5px',
-              fontFamily: 'Orbitron, sans-serif',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
+              background: is3D ? 'rgba(0, 234, 255, 0.22)' : 'rgba(6, 11, 28, 0.84)',
+              border: '1px solid var(--neon-blue)', color: 'var(--neon-blue)', borderRadius: '999px',
+              padding: '4px 8px', fontSize: '9.5px', fontFamily: 'Orbitron, sans-serif', fontWeight: 800,
+              display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
             }}
           >
-            <Sparkles size={11} /> {activeStyle.label}
+            {is3D ? <Box size={11} /> : <Layers size={11} />} {is3D ? '3D' : '2D'}
           </button>
- 
+
+          {!is3D && (
+            <>
+              <button
+                type="button"
+                onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
+                style={{
+                  background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
+                  color: 'var(--neon-gold)', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+                  fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
+                }}
+              >
+                <Sparkles size={11} /> {activeStyle.label}
+              </button>
+
+              <button
+                type="button"
+                disabled={Boolean(aiStatus)}
+                onClick={handleInvokeAiPortrait}
+                style={{
+                  background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(var(--neon-secondary-rgb), 0.55)',
+                  color: '#e9d5ff', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+                  fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
+                }}
+              >
+                <RotateCcw size={11} /> {aiStatus ? 'IA...' : 'IA Perfil'}
+              </button>
+
+              <label
+                style={{
+                  background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(16, 185, 129, 0.55)',
+                  color: '#6ee7b7', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+                  fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
+                }}
+              >
+                <Upload size={11} /> IMG
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadCustomAvatar} />
+              </label>
+
+              {aiImageSrc && (
+                <button
+                  type="button"
+                  onClick={() => { try { localStorage.removeItem(cacheKey); } catch {} setAiImageSrc(null); }}
+                  style={{
+                    background: 'rgba(6, 11, 28, 0.84)', border: '1px solid var(--neon-gold)',
+                    color: 'var(--neon-gold)', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+                    fontFamily: 'Orbitron, sans-serif', fontWeight: 700, cursor: 'pointer'
+                  }}
+                >
+                  Modelo Base
+                </button>
+              )}
+            </>
+          )}
+
           <button
             type="button"
-            title="Generar variante adicional con IA"
-            disabled={Boolean(aiStatus)}
-            onClick={handleInvokeAiPortrait}
-            style={{
-              background: 'rgba(6, 11, 28, 0.84)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(var(--neon-secondary-rgb), 0.55)',
-              color: '#e9d5ff',
-              borderRadius: '999px',
-              padding: '4px 8px',
-              fontSize: '9.5px',
-              fontFamily: 'Orbitron, sans-serif',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-              opacity: aiStatus ? 0.65 : 1,
-            }}
-          >
-            <RotateCcw size={11} /> {aiStatus ? 'IA...' : 'Nueva IA'}
-          </button>
- 
-          <label
-            title="Subir retrato personalizado desde tu dispositivo"
-            style={{
-              background: 'rgba(6, 11, 28, 0.84)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(16, 185, 129, 0.55)',
-              color: '#6ee7b7',
-              borderRadius: '999px',
-              padding: '4px 8px',
-              fontSize: '9.5px',
-              fontFamily: 'Orbitron, sans-serif',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            <Upload size={11} /> IMG
-            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadCustomAvatar} />
-          </label>
- 
-          {aiImageSrc && (
-            <button
-              type="button"
-              title="Volver al retrato Anime Fantasy RPG integrado"
-              onClick={() => {
-                try { localStorage.removeItem(cacheKey); } catch {}
-                setAiImageSrc(defaultPortraitSrc);
-              }}
-              style={{
-                background: 'rgba(6, 11, 28, 0.84)',
-                border: '1px solid var(--neon-gold)',
-                color: 'var(--neon-gold)',
-                borderRadius: '999px',
-                padding: '4px 8px',
-                fontSize: '9.5px',
-                fontFamily: 'Orbitron, sans-serif',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Anime RPG
-            </button>
-          )}
- 
-          {isStylized && (
-            <button
-              type="button"
-              onClick={() => setStyleIdx(0)}
-              style={{
-                background: 'rgba(6, 11, 28, 0.84)',
-                border: '1px solid var(--neon-pink)',
-                color: 'var(--neon-pink)',
-                borderRadius: '999px',
-                padding: '4px 8px',
-                fontSize: '9.5px',
-                fontFamily: 'Orbitron, sans-serif',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Reset
-            </button>
-          )}
- 
-          <button
-            type="button"
-            title="Cambiar género del avatar"
             onClick={onToggleGender}
             style={{
-              background: 'rgba(6, 11, 28, 0.84)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
-              color: 'var(--neon-blue)',
-              borderRadius: '999px',
-              padding: '4px 8px',
-              fontSize: '9.5px',
-              fontFamily: 'Orbitron, sans-serif',
-              fontWeight: 700,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              cursor: 'pointer',
+              background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
+              color: 'var(--neon-blue)', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+              fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
             }}
           >
             <UserCheck size={11} /> {isFemale ? 'FEM' : 'MASC'}
           </button>
         </div>
- 
-        {/* BADGE DE GRADO SUTIL ARRIBA A LA IZQUIERDA */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '10px',
-            left: '10px',
-            zIndex: 8,
-            background: 'rgba(6, 11, 28, 0.84)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(var(--neon-accent-rgb), 0.55)',
-            borderRadius: '999px',
-            padding: '4px 10px',
-            fontSize: '10px',
-            fontFamily: 'Orbitron, sans-serif',
-            fontWeight: 800,
-            color: 'var(--neon-gold)',
-          }}
-        >
-          GRADO {hunterGrade} • ETAPA {stage}
-        </div>
- 
+
         {aiStatus && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '44px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 9,
-              background: 'rgba(5, 8, 23, 0.92)',
-              border: '1px solid var(--neon-blue)',
-              borderRadius: '999px',
-              padding: '5px 12px',
-              fontSize: '11px',
-              fontWeight: 700,
-              color: 'var(--neon-blue)',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <div style={{ position: 'absolute', top: '54px', left: '50%', transform: 'translateX(-50%)', zIndex: 9, background: 'rgba(5, 8, 23, 0.92)', border: '1px solid var(--neon-blue)', borderRadius: '999px', padding: '5px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--neon-blue)', whiteSpace: 'nowrap' }}>
             ⚡ {aiStatus}
           </div>
         )}
- 
-        {/* RETRATO DE MEDIO CUERPO (ANIME FANTASY RPG INTEGRADO + IMAGEN IA/PERSONALIZADA OPCIONAL) */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            filter: activeStyle.filter,
-            transition: 'filter 0.45s ease',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-          }}
-        >
-          {aiImageSrc ? (
-            <img
-              src={aiImageSrc}
-              alt={`Avatar ${isFemale ? 'Femenino' : 'Masculino'} Anime Fantasy RPG`}
-              onError={() => setAiImageSrc(defaultPortraitSrc)}
-              style={{
-                width: '100%',
-                height: '395px',
-                objectFit: 'cover',
-                objectPosition: 'center 28%',
-                display: 'block',
-              }}
-            />
-          ) : (
-            <FantasyAnimeAvatarSvg
+
+        <div style={{ position: 'relative', zIndex: 2, filter: is3D ? 'none' : activeStyle.filter, transition: 'filter 0.45s ease' }}>
+          {is3D ? (
+            <Interactive3DAvatarViewer
               isFemale={isFemale}
               weaponType={cls.weaponType}
               stage={stage}
               accentColor={cls.accentColor}
+              race={race}
+              profile={profile}
+              hunterGrade={hunterGrade}
+            />
+          ) : aiImageSrc ? (
+            <img
+              src={aiImageSrc}
+              alt={`Avatar ${race.name} de ${profile?.hunterName}`}
+              onError={() => setAiImageSrc(null)}
+              style={{ width: '100%', height: '395px', objectFit: 'cover', objectPosition: 'center 28%', display: 'block' }}
+            />
+          ) : (
+            <UserLinkedAnimeAvatarSvg
+              isFemale={isFemale}
+              weaponType={cls.weaponType}
+              stage={stage}
+              accentColor={cls.accentColor}
+              race={race}
+              profile={profile}
             />
           )}
         </div>
- 
-        {/* HALO DE ENERGÍA NEÓN Y PARTÍCULAS */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 3,
-            pointerEvents: 'none',
-            background: activeStyle.auraOverlay,
-            transition: 'background 0.45s ease',
-          }}
-        />
- 
-        {/* DESVANECIMIENTO INFERIOR PARA FUSIONAR EL MEDIO CUERPO CON EL FONDO */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '115px',
-            zIndex: 4,
-            pointerEvents: 'none',
-            background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 23, 0.85) 60%, #050817 100%)',
-          }}
-        />
+
+        <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', background: activeStyle.auraOverlay }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '105px', zIndex: 4, pointerEvents: 'none', background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 23, 0.85) 60%, #050817 100%)' }} />
       </div>
- 
-      {/* CINTAS ESTILIZADAS DE CLASE Y PASIVA SUPERPUESTAS EN LA BASE DEL RETRATO */}
+
+      {/* CINTAS DE CLASE Y PASIVA ÚNICA */}
       <div
         onClick={() => setShowPassiveDetails((prev) => !prev)}
-        title="Toca para ver detalles de tu Pasiva Única"
-        style={{
-          position: 'relative',
-          zIndex: 7,
-          marginTop: '-34px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '5px',
-          cursor: 'pointer',
-          padding: '0 12px',
-        }}
+        style={{ position: 'relative', zIndex: 7, marginTop: '-34px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer', padding: '0 12px' }}
       >
-        <div className="pex-ribbon-badge" style={{ minWidth: '235px', maxWidth: '92%' }}>
-          <span
-            className="font-hud"
-            style={{
-              fontSize: '11px',
-              fontWeight: 800,
-              color: 'var(--neon-gold)',
-              letterSpacing: '0.09em',
-            }}
-          >
+        <div className="pex-ribbon-badge" style={{ minWidth: '235px', maxWidth: '94%' }}>
+          <span className="font-hud" style={{ fontSize: '11px', fontWeight: 800, color: 'var(--neon-gold)', letterSpacing: '0.09em' }}>
             CLASE: {classEvolution.title.toUpperCase()}
           </span>
         </div>
-        <div
-          className="pex-ribbon-badge"
-          style={{
-            minWidth: '265px',
-            maxWidth: '96%',
-            borderColor: 'rgba(var(--neon-secondary-rgb), 0.55)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '12px',
-              fontWeight: 700,
-              color: 'var(--text-main)',
-              letterSpacing: '0.04em',
-            }}
-          >
-            <strong style={{ color: 'var(--neon-blue)' }}>PASIVA:</strong>{' '}
-            {cls.passiveName || 'Muralla Inquebrantable'}
+        <div className="pex-ribbon-badge" style={{ minWidth: '265px', maxWidth: '96%', borderColor: 'rgba(var(--neon-secondary-rgb), 0.55)' }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-main)' }}>
+            <strong style={{ color: 'var(--neon-blue)' }}>PASIVA:</strong> {cls.passiveName}
           </span>
         </div>
- 
+
         {showPassiveDetails && (
-          <div
-            style={{
-              marginTop: '6px',
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: '12px',
-              background: 'rgba(11, 21, 48, 0.95)',
-              border: '1px solid rgba(var(--neon-primary-rgb), 0.35)',
-              textAlign: 'center',
-              fontSize: '12px',
-              color: 'var(--text-secondary)',
-            }}
-          >
+          <div style={{ marginTop: '6px', width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'rgba(11, 21, 48, 0.95)', border: '1px solid rgba(var(--neon-primary-rgb), 0.35)', textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)' }}>
             <div style={{ color: 'var(--neon-gold)', fontWeight: 700, marginBottom: '4px' }}>
               Bono Pasivo Activo: +{passiveClassBonus} PWR • {classEvolution.bonus}
             </div>
             <div>{cls.passiveDesc}</div>
+          </div>
+        )}
+      </div>
+
+      {/* TARJETA DE HISTORIA DE ORIGEN Y PROFECÍA / LEYENDA / MITO EVOLUTIVO */}
+      <div
+        className="pex-ornate-panel"
+        style={{ marginTop: '12px', padding: '14px', borderColor: loreData.destinyAccent }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
+          <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.9)', color: loreData.destinyAccent, border: `1px solid ${loreData.destinyAccent}` }}>
+            <ScrollText size={12} /> {loreData.destinyBadge}
+          </span>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              type="button"
+              onClick={() => setLoreSubTab('origin')}
+              style={{
+                padding: '4px 10px', borderRadius: '8px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 700, cursor: 'pointer',
+                background: loreSubTab === 'origin' ? 'rgba(0,234,255,0.22)' : 'rgba(5,8,23,0.8)',
+                border: `1px solid ${loreSubTab === 'origin' ? '#00eaff' : 'rgba(148,163,184,0.3)'}`,
+                color: loreSubTab === 'origin' ? '#fff' : '#94a3b8'
+              }}
+            >
+              ORIGEN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoreSubTab('destiny')}
+              style={{
+                padding: '4px 10px', borderRadius: '8px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 700, cursor: 'pointer',
+                background: loreSubTab === 'destiny' ? 'rgba(255,212,90,0.22)' : 'rgba(5,8,23,0.8)',
+                border: `1px solid ${loreSubTab === 'destiny' ? '#ffd45a' : 'rgba(148,163,184,0.3)'}`,
+                color: loreSubTab === 'destiny' ? '#fde047' : '#94a3b8'
+              }}
+            >
+              {loreData.destinyTier}
+            </button>
+          </div>
+        </div>
+
+        {loreSubTab === 'origin' ? (
+          <div>
+            <div className="font-souls" style={{ fontSize: '14px', fontWeight: 800, color: '#00eaff', marginBottom: '5px' }}>
+              {loreData.originTitle}
+            </div>
+            <p style={{ fontSize: '13px', lineHeight: 1.5, color: '#e2e8f0' }}>
+              {loreData.originText}
+            </p>
+            <div style={{ marginTop: '8px', fontSize: '11px', color: '#94a3b8' }}>
+              Rasgo Racial Activo: <strong style={{ color: '#ffd45a' }}>{race.trait}</strong>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="font-souls" style={{ fontSize: '14px', fontWeight: 800, color: loreData.destinyAccent, marginBottom: '5px' }}>
+              {loreData.destinyTitle}
+            </div>
+            <p style={{ fontSize: '13px', lineHeight: 1.5, color: '#e2e8f0' }}>
+              {loreData.destinyText}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginTop: '10px', textAlign: 'center' }}>
+              {[
+                { step: 1, label: 'MITO (F–D)', color: '#38bdf8' },
+                { step: 2, label: 'LEYENDA (C–A)', color: '#fbbf24' },
+                { step: 3, label: 'PROFECÍA (S–EX)', color: '#ff3e9d' }
+              ].map((t) => {
+                const active = loreData.tierStep >= t.step;
+                return (
+                  <div
+                    key={t.step}
+                    style={{
+                      padding: '5px 4px', borderRadius: '7px', fontSize: '9.5px', fontWeight: 800,
+                      background: active ? 'rgba(15,23,42,0.95)' : 'rgba(5,8,23,0.6)',
+                      border: `1px solid ${active ? t.color : 'rgba(148,163,184,0.2)'}`,
+                      color: active ? t.color : '#64748b'
+                    }}
+                  >
+                    {active ? '✦ ' : ''}{t.label}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -5999,6 +6455,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       accent: '#ffd45a',
     };
   });
+  const [avatarRenderMode, setAvatarRenderMode] = useState(() => initialData?.avatarRenderMode || '2d');
  
   useEffect(() => {
     const hexToRgb = (hex) => {
@@ -6370,6 +6827,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         routineDayLogs,
         activityLogs,
         neonTheme,
+        avatarRenderMode,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
@@ -6399,6 +6857,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         routineDayLogs,
         activityLogs,
         neonTheme,
+        avatarRenderMode,
       };
       localStorage.setItem(storageKey, JSON.stringify(fallbackPayload));
     }
@@ -6416,7 +6875,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     lp, exp, streak, unlockedInventory, completedChapters,
     cityName, builtBuildings, characterStates,
     friends, quests, nextWeekQueue, justificationHistory, cancellationsRemaining,
-    savedRoutineAnalysis, dailyStepGoal, sleepLogs, yearlyRecap, routineDayLogs, activityLogs
+    savedRoutineAnalysis, dailyStepGoal, sleepLogs, yearlyRecap, routineDayLogs, activityLogs, neonTheme, avatarRenderMode
   ]);
  
   const triggerToast = (msg) => {
@@ -7222,8 +7681,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       Number(profile.heightCm) * 11 +
       Math.floor(Math.random() * 9973);
  
-    const chosenRace = RACES_POOL[seed % RACES_POOL.length];
-    const chosenCls = generateRandomInfiniteClass(seed + Date.now());
+    const generatedClass = generateRandomInfiniteClass(seed + Date.now(), profile.preferredRaceId || null);
+    const chosenRace = generatedClass.race;
+    const chosenCls = generatedClass.cls;
     const assigned = { race: chosenRace, cls: chosenCls, assignedAt: new Date().toLocaleDateString() };
  
     const initGrade = computeHunterGradeData(initialLifts, profile.weightKg).currentStd.grade;
@@ -8088,11 +8548,22 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <JrpgFantasyPortrait
               hunterClass={hunterClass}
               hunterGrade={hunterGrade}
+              gradeData={gradeData}
               level={level}
+              streak={streak}
+              cityName={cityName}
+              completedChaptersCount={completedChapters.length}
+              profile={profile}
               classEvolution={classEvolution}
               gender={profile.gender || 'male'}
-              onToggleGender={() => setProfile({ ...profile, gender: profile.gender === 'female' ? 'male' : 'female' })}
+              onToggleGender={() => setProfile((p) => ({ ...p, gender: p.gender === 'female' ? 'male' : 'female' }))}
               passiveClassBonus={passiveClassBonus}
+              avatarRenderMode={avatarRenderMode}
+              onToggleRenderMode={() => {
+                const nextMode = avatarRenderMode === '2d' ? '3d' : '2d';
+                setAvatarRenderMode(nextMode);
+                triggerToast(`Modo de Avatar cambiado a ${nextMode.toUpperCase()}`);
+              }}
             />
  
             {/* 2. PANEL ORNAMENTADO DE HABILIDADES Y EQUIPAMIENTO (2 FILAS x 5 RANURAS) */}
@@ -10778,6 +11249,54 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   onChange={(e) => setProfile({ ...profile, weightKg: Number(e.target.value) })}
                 />
               </div>
+            </div>
+
+            <div style={{ padding: '14px', borderRadius: '14px', background: 'rgba(5,8,23,0.9)', border: '1px solid rgba(0,234,255,0.4)', marginBottom: '12px' }}>
+              <div className="font-hud" style={{ fontSize: '11.5px', color: 'var(--neon-blue)', marginBottom: '8px' }}>
+                MOTOR DE RENDERIZADO DE AVATAR (2D / 3D) & LINAJE
+              </div>
+              <div className="grid-2" style={{ marginBottom: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => { setAvatarRenderMode('2d'); triggerToast('Modo 2D (Anime Ilustrado) activado.'); }}
+                  style={{
+                    padding: '10px', borderRadius: '10px', cursor: 'pointer', textAlign: 'left',
+                    background: avatarRenderMode === '2d' ? 'rgba(0,234,255,0.22)' : 'rgba(11,21,48,0.7)',
+                    border: `1.5px solid ${avatarRenderMode === '2d' ? 'var(--neon-blue)' : 'rgba(148,163,184,0.25)'}`,
+                    color: '#fff'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '12px', color: '#00eaff' }}>
+                    <Layers size={14} /> MODO 2D (ANIME)
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAvatarRenderMode('3d'); triggerToast('Modo 3D (Visor Interactivo) activado.'); }}
+                  style={{
+                    padding: '10px', borderRadius: '10px', cursor: 'pointer', textAlign: 'left',
+                    background: avatarRenderMode === '3d' ? 'rgba(255,212,90,0.22)' : 'rgba(11,21,48,0.7)',
+                    border: `1.5px solid ${avatarRenderMode === '3d' ? 'var(--neon-gold)' : 'rgba(148,163,184,0.25)'}`,
+                    color: '#fff'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '12px', color: '#ffd45a' }}>
+                    <Box size={14} /> MODO 3D (INTERACTIVO)
+                  </div>
+                </button>
+              </div>
+              <select
+                className="sys-select"
+                value={hunterClass?.race?.id || profile.preferredRaceId || 'monarch_vessel'}
+                onChange={(e) => {
+                  const raceObj = RACES_POOL.find((r) => r.id === e.target.value) || RACES_POOL[0];
+                  setProfile((p) => ({ ...p, preferredRaceId: raceObj.id }));
+                  setHunterClass((prev) => ({ ...(prev || generateRandomInfiniteClass(101, raceObj.id)), race: raceObj }));
+                  triggerToast(`Linaje actualizado a ${raceObj.name}`);
+                }}
+              >
+                {RACES_POOL.map((r) => <option key={r.id} value={r.id}>{r.name} — {r.trait}</option>)}
+              </select>
             </div>
  
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
