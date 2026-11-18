@@ -12,19 +12,19 @@ import {
   Menu, X, Palette, Gem, Crown, Star, Award, Compass, Download,
   Box, Layers, Eye, ScrollText
 } from 'lucide-react';
- 
+
 // ============================================================================
 // ESTILOS INTEGRADOS (ANIME FANTASY RPG - VISUAL SYSTEM)
 // ============================================================================
 const SYSTEM_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
- 
+
   /* ANIME FANTASY RPG - VISUAL SYSTEM */
   :root {
     --bg-main: #050817;
     --bg-card: #0b1530;
     --bg-panel: #101b38;
- 
+
     --neon-blue: #00eaff;
     --neon-purple: #963cff;
     --neon-gold: #ffd45a;
@@ -32,10 +32,10 @@ const SYSTEM_CSS = `
     --neon-primary-rgb: 0, 234, 255;
     --neon-secondary-rgb: 150, 60, 255;
     --neon-accent-rgb: 255, 212, 90;
- 
+
     --text-main: #f4f6ff;
     --text-secondary: #aab9d5;
- 
+
     --bg-void: var(--bg-main);
     --cyan-glow: var(--neon-blue);
     --gold-rank: var(--neon-gold);
@@ -45,13 +45,13 @@ const SYSTEM_CSS = `
     --rose-love: var(--neon-pink);
     --text-dim: var(--text-secondary);
   }
- 
+
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
- 
+
   /* Fondo RPG */
   body {
     background:
@@ -62,23 +62,23 @@ const SYSTEM_CSS = `
     min-height: 100vh;
     overflow-x: hidden;
   }
- 
+
   .font-hud {
     font-family: 'Orbitron', sans-serif;
     letter-spacing: 0.06em;
   }
- 
+
   .font-souls {
     font-family: 'Cinzel', Georgia, serif;
     letter-spacing: 0.08em;
   }
- 
+
   .sys-container {
     max-width: 980px;
     margin: 0 auto;
     padding: 14px 12px 96px;
   }
- 
+
   .sys-window {
     background: linear-gradient(145deg, rgba(16, 27, 56, 0.94), rgba(6, 10, 25, 0.96));
     backdrop-filter: blur(14px);
@@ -90,7 +90,7 @@ const SYSTEM_CSS = `
     position: relative;
     overflow: hidden;
   }
- 
+
   .sys-window::before {
     content: '';
     position: absolute;
@@ -98,7 +98,7 @@ const SYSTEM_CSS = `
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-blue), var(--neon-gold), transparent);
   }
- 
+
   /* Tarjetas de personajes */
   .rpg-card {
     position: relative;
@@ -111,20 +111,20 @@ const SYSTEM_CSS = `
       inset 0 0 25px rgba(var(--neon-primary-rgb), 0.1);
     overflow: hidden;
   }
- 
+
   /* Iluminación cinematográfica */
   .neon-glow {
     text-shadow:
       0 0 8px var(--neon-blue),
       0 0 20px var(--neon-blue);
   }
- 
+
   .neon-glow-gold {
     text-shadow:
       0 0 8px var(--neon-gold),
       0 0 20px rgba(var(--neon-accent-rgb), 0.65);
   }
- 
+
   /* Botones RPG */
   .rpg-button {
     display: inline-flex;
@@ -144,16 +144,16 @@ const SYSTEM_CSS = `
     box-shadow: 0 0 12px rgba(var(--neon-primary-rgb), 0.34);
     transition: 0.3s ease;
   }
- 
+
   .rpg-button:hover {
     transform: translateY(-3px);
     box-shadow: 0 0 25px rgba(var(--neon-primary-rgb), 0.68);
   }
- 
+
   .rpg-button:active {
     transform: translateY(0) scale(0.97);
   }
- 
+
   /* Efecto dorado legendario */
   .legendary {
     border: 2px solid var(--neon-gold);
@@ -162,47 +162,47 @@ const SYSTEM_CSS = `
       0 0 30px rgba(var(--neon-accent-rgb), 0.28),
       inset 0 0 24px rgba(var(--neon-secondary-rgb), 0.16);
   }
- 
+
   /* Animación de energía */
   @keyframes energyPulse {
     0%, 100% {
       filter: brightness(1);
       box-shadow: 0 0 10px rgba(var(--neon-primary-rgb), 0.34);
     }
- 
+
     50% {
       filter: brightness(1.16);
       box-shadow: 0 0 28px rgba(var(--neon-primary-rgb), 0.68), 0 0 18px rgba(var(--neon-secondary-rgb), 0.45);
     }
   }
- 
+
   .energy-effect {
     animation: energyPulse 2.5s infinite ease-in-out;
   }
- 
+
   /* Aparición cinematográfica */
   @keyframes cinematicEntry {
     from {
       opacity: 0;
       transform: translateY(20px) scale(.96);
     }
- 
+
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
   }
- 
+
   .cinematic-entry {
     animation: cinematicEntry .8s ease-out;
   }
- 
+
   /* Aplicación explícita del sistema visual RPG al módulo Avatar */
   .avatar-rpg-shell {
     position: relative;
     isolation: isolate;
   }
- 
+
   .avatar-rpg-shell::before {
     content: '';
     position: absolute;
@@ -216,17 +216,17 @@ const SYSTEM_CSS = `
     filter: blur(12px);
     pointer-events: none;
   }
- 
+
   .avatar-rpg-shell .rpg-card {
     background: linear-gradient(145deg, var(--bg-panel), var(--bg-main));
     color: var(--text-main);
   }
- 
+
   .avatar-rpg-shell .rpg-button:focus-visible {
     outline: 2px solid var(--neon-gold);
     outline-offset: 3px;
   }
- 
+
   @media (prefers-reduced-motion: reduce) {
     .avatar-rpg-shell *,
     .avatar-rpg-shell::before {
@@ -234,7 +234,7 @@ const SYSTEM_CSS = `
       transition: none !important;
     }
   }
- 
+
   .sys-btn {
     display: inline-flex;
     align-items: center;
@@ -250,52 +250,52 @@ const SYSTEM_CSS = `
     transition: all 0.25s ease;
     border: 1px solid transparent;
   }
- 
+
   .sys-btn:hover {
     transform: translateY(-2px);
   }
- 
+
   .sys-btn:active {
     transform: scale(0.97);
   }
- 
+
   .sys-btn-primary {
     background: linear-gradient(135deg, #101b38 0%, #0284c7 100%);
     color: var(--text-main);
     border-color: var(--neon-blue);
     box-shadow: 0 0 14px rgba(var(--neon-primary-rgb), 0.34);
   }
- 
+
   .sys-btn-gold {
     background: linear-gradient(135deg, #92400e 0%, var(--neon-gold) 100%);
     color: #050817;
     box-shadow: 0 0 18px rgba(var(--neon-accent-rgb), 0.4);
   }
- 
+
   .sys-btn-love {
     background: linear-gradient(135deg, #9f1239 0%, var(--neon-pink) 100%);
     color: #fff;
     box-shadow: 0 0 16px rgba(255, 62, 157, 0.4);
   }
- 
+
   .sys-btn-ghost {
     background: rgba(16, 27, 56, 0.88);
     border-color: rgba(170, 185, 213, 0.28);
     color: var(--text-main);
   }
- 
+
   .sys-btn-danger {
     background: rgba(225, 29, 72, 0.16);
     border-color: rgba(225, 29, 72, 0.5);
     color: #fda4af;
   }
- 
+
   .sys-btn-success {
     background: rgba(16, 185, 129, 0.18);
     border-color: rgba(16, 185, 129, 0.55);
     color: #6ee7b7;
   }
- 
+
   .sys-input, .sys-select, .sys-textarea {
     width: 100%;
     background: rgba(5, 8, 23, 0.92);
@@ -309,12 +309,12 @@ const SYSTEM_CSS = `
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
- 
+
   .sys-input:focus, .sys-select:focus, .sys-textarea:focus {
     border-color: var(--neon-blue);
     box-shadow: 0 0 12px rgba(var(--neon-primary-rgb), 0.28);
   }
- 
+
   .sys-badge {
     display: inline-flex;
     align-items: center;
@@ -326,7 +326,7 @@ const SYSTEM_CSS = `
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
- 
+
   .hud-nav-steps-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -342,14 +342,14 @@ const SYSTEM_CSS = `
   .hud-nav-steps-layout .nav-tabs {
     margin-bottom: 0;
   }
- 
+
   .nav-tabs {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 7px;
     margin-bottom: 16px;
   }
- 
+
   .nav-tab {
     background: rgba(11, 21, 48, 0.88);
     border: 1px solid rgba(var(--neon-primary-rgb), 0.22);
@@ -366,14 +366,14 @@ const SYSTEM_CSS = `
     transition: all 0.2s;
     text-align: center;
   }
- 
+
   .nav-tab.active {
     background: linear-gradient(180deg, rgba(var(--neon-accent-rgb), 0.24) 0%, rgba(16, 27, 56, 0.96) 100%);
     border-color: var(--neon-gold);
     color: #fff;
     box-shadow: 0 0 16px rgba(var(--neon-accent-rgb), 0.34), inset 0 0 12px rgba(var(--neon-accent-rgb), 0.16);
   }
- 
+
   .progress-track {
     width: 100%;
     height: 8px;
@@ -382,25 +382,25 @@ const SYSTEM_CSS = `
     border: 1px solid rgba(255, 255, 255, 0.12);
     overflow: hidden;
   }
- 
+
   .progress-fill {
     height: 100%;
     border-radius: 999px;
     transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
- 
+
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr;
     gap: 14px;
   }
- 
+
   @media (min-width: 680px) {
     .grid-2 {
       grid-template-columns: 1fr 1fr;
     }
   }
- 
+
   .toast-alert {
     position: fixed;
     top: 16px;
@@ -421,12 +421,12 @@ const SYSTEM_CSS = `
     max-width: 92vw;
     animation: slideDown 0.3s ease;
   }
- 
+
   @keyframes slideDown {
     from { opacity: 0; transform: translate(-50%, -20px); }
     to { opacity: 1; transform: translate(-50%, 0); }
   }
- 
+
   @keyframes npcPatrol1 {
     0%, 100% { transform: translate(0px, 0px); }
     50% { transform: translate(22px, -3px); }
@@ -437,7 +437,7 @@ const SYSTEM_CSS = `
   }
   .npc-walk-1 { animation: npcPatrol1 4.5s ease-in-out infinite; }
   .npc-walk-2 { animation: npcPatrol2 5.2s ease-in-out infinite; }
- 
+
   @keyframes animPress {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-28px); }
@@ -453,7 +453,7 @@ const SYSTEM_CSS = `
   .bio-press { animation: animPress 2.2s ease-in-out infinite; }
   .bio-squat { animation: animSquat 2.4s ease-in-out infinite; transform-origin: bottom center; }
   .bio-pull  { animation: animPull 2.2s ease-in-out infinite; }
- 
+
   /* ==========================================================================
      NUEVA INTERFAZ EQUILIBRADA (PANTALLA PRINCIPAL LIMPIA + MENÚ LATERAL)
      ========================================================================== */
@@ -464,7 +464,7 @@ const SYSTEM_CSS = `
     flex-direction: column;
     gap: 14px;
   }
- 
+
   .pex-topbar {
     position: relative;
     display: flex;
@@ -474,7 +474,7 @@ const SYSTEM_CSS = `
     padding: 4px 56px;
     margin-bottom: 4px;
   }
- 
+
   .pex-menu-trigger {
     position: absolute;
     left: 0;
@@ -498,14 +498,14 @@ const SYSTEM_CSS = `
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     z-index: 20;
   }
- 
+
   .pex-menu-trigger:hover {
     transform: translateY(-50%) scale(1.04);
     box-shadow:
       0 0 22px rgba(var(--neon-primary-rgb), 0.6),
       inset 0 0 14px rgba(var(--neon-primary-rgb), 0.22);
   }
- 
+
   .pex-menu-trigger span {
     font-family: 'Orbitron', sans-serif;
     font-size: 8px;
@@ -513,7 +513,7 @@ const SYSTEM_CSS = `
     letter-spacing: 0.08em;
     color: var(--neon-blue);
   }
- 
+
   .pex-drawer-backdrop {
     position: fixed;
     inset: 0;
@@ -522,12 +522,12 @@ const SYSTEM_CSS = `
     z-index: 900;
     animation: fadeInBackdrop 0.22s ease;
   }
- 
+
   @keyframes fadeInBackdrop {
     from { opacity: 0; }
     to { opacity: 1; }
   }
- 
+
   .pex-drawer-panel {
     position: fixed;
     top: 0;
@@ -544,12 +544,12 @@ const SYSTEM_CSS = `
     overflow-y: auto;
     animation: slideInDrawer 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }
- 
+
   @keyframes slideInDrawer {
     from { transform: translateX(-100%); }
     to { transform: translateX(0); }
   }
- 
+
   .pex-drawer-item {
     width: 100%;
     display: flex;
@@ -568,20 +568,20 @@ const SYSTEM_CSS = `
     transition: all 0.18s ease;
     text-align: left;
   }
- 
+
   .pex-drawer-item:hover {
     background: rgba(var(--neon-primary-rgb), 0.12);
     border-color: rgba(var(--neon-primary-rgb), 0.45);
     transform: translateX(3px);
   }
- 
+
   .pex-drawer-item.active {
     background: linear-gradient(90deg, rgba(var(--neon-primary-rgb), 0.22), rgba(var(--neon-secondary-rgb), 0.16));
     border-color: var(--neon-blue);
     box-shadow: 0 0 14px rgba(var(--neon-primary-rgb), 0.25);
     color: #fff;
   }
- 
+
   .pex-ornate-panel {
     position: relative;
     background: linear-gradient(165deg, rgba(15, 25, 52, 0.9) 0%, rgba(6, 10, 24, 0.95) 100%);
@@ -593,7 +593,7 @@ const SYSTEM_CSS = `
       0 12px 32px rgba(0, 0, 0, 0.78),
       inset 0 0 24px rgba(var(--neon-primary-rgb), 0.07);
   }
- 
+
   .pex-ornate-panel::before,
   .pex-ornate-panel::after {
     content: '';
@@ -605,21 +605,20 @@ const SYSTEM_CSS = `
     pointer-events: none;
     opacity: 0.85;
   }
- 
+
   .pex-ornate-panel::before {
     top: 5px;
     left: 5px;
     border-width: 2px 0 0 2px;
     border-top-left-radius: 8px;
   }
- 
+
   .pex-ornate-panel::after {
     top: 5px;
     right: 5px;
     border-width: 2px 2px 0 0;
     border-top-right-radius: 8px;
   }
-
   .pex-ornate-frame {
     position: relative;
     background: linear-gradient(160deg, rgba(13, 22, 48, 0.95) 0%, rgba(5, 8, 22, 0.98) 100%);
@@ -630,7 +629,6 @@ const SYSTEM_CSS = `
       inset 0 0 28px rgba(var(--neon-primary-rgb), 0.08);
     overflow: hidden;
   }
-
   .pex-tactical-card {
     background: linear-gradient(155deg, rgba(18, 30, 64, 0.96) 0%, rgba(7, 11, 28, 0.98) 100%);
     border: 1.5px solid rgba(var(--neon-primary-rgb), 0.42);
@@ -643,18 +641,15 @@ const SYSTEM_CSS = `
     position: relative;
     overflow: hidden;
   }
-
   .pex-tactical-card:hover:not(:disabled) {
     transform: translateY(-4px);
     border-color: var(--neon-gold);
     box-shadow: 0 8px 22px rgba(var(--neon-accent-rgb), 0.3), inset 0 0 14px rgba(var(--neon-primary-rgb), 0.14);
   }
-
   .pex-tactical-card:disabled {
     opacity: 0.45;
     cursor: not-allowed;
   }
-
   @keyframes torchFlicker {
     0%, 100% { opacity: 0.75; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.14); }
@@ -662,7 +657,7 @@ const SYSTEM_CSS = `
   .pex-torch-glow {
     animation: torchFlicker 2.1s ease-in-out infinite;
   }
- 
+
   .pex-ribbon-badge {
     background: linear-gradient(90deg, rgba(8, 14, 34, 0.95) 0%, rgba(20, 32, 66, 0.96) 50%, rgba(8, 14, 34, 0.95) 100%);
     border: 1px solid rgba(var(--neon-primary-rgb), 0.48);
@@ -672,13 +667,13 @@ const SYSTEM_CSS = `
     text-align: center;
     position: relative;
   }
- 
+
   .pex-equip-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 9px;
   }
- 
+
   .pex-equip-slot {
     aspect-ratio: 1 / 1;
     border-radius: 12px;
@@ -692,24 +687,24 @@ const SYSTEM_CSS = `
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.75);
   }
- 
+
   .pex-equip-slot:hover {
     transform: translateY(-2px) scale(1.04);
   }
- 
+
   .pex-equip-slot.unlocked {
     border-color: var(--slot-border, var(--neon-blue));
     box-shadow:
       0 0 12px var(--slot-glow, rgba(var(--neon-primary-rgb), 0.35)),
       inset 0 0 12px var(--slot-inner, rgba(var(--neon-primary-rgb), 0.16));
   }
- 
+
   .pex-equip-slot.selected {
     transform: scale(1.06);
     outline: 2px solid var(--neon-gold);
     outline-offset: 2px;
   }
- 
+
   .pex-quest-checkbox {
     width: 22px;
     height: 22px;
@@ -722,7 +717,7 @@ const SYSTEM_CSS = `
     flex-shrink: 0;
     transition: all 0.2s ease;
   }
- 
+
   .pex-quest-checkbox.checked {
     border-color: var(--neon-blue);
     background: rgba(var(--neon-primary-rgb), 0.22);
@@ -812,7 +807,7 @@ const SYSTEM_CSS = `
     animation: orbit3dReverse 12s linear infinite;
   }
 `;
- 
+
 // ============================================================================
 // UTILIDAD DE SEGURIDAD DE CREDENCIALES (HASH LOCAL SHA-256)
 // ============================================================================
@@ -826,7 +821,7 @@ async function hashSecret(text) {
   }
   return btoa(text);
 }
- 
+
 // ============================================================================
 // DATOS DEL SISTEMA: RANGOS, GRADOS DE CAZADOR Y CLASES CON PASIVAS ÚNICAS
 // ============================================================================
@@ -847,7 +842,7 @@ const RANKS = [
   { name: 'Jefe Maestro', tier: 13, color: '#f43f5e' },
   { name: 'Challenger', tier: 14, color: '#fbbf24' },
 ];
- 
+
 const HUNTER_GRADE_STANDARDS = [
   { grade: 'F', minComposite: 0.0, benchReq: 0.0, squatReq: 0.0, deadliftReq: 0.0, desc: 'Iniciado / Punto de partida desde 0' },
   { grade: 'E', minComposite: 0.70, benchReq: 0.65, squatReq: 0.85, deadliftReq: 1.00, desc: 'Novato consolidado' },
@@ -860,7 +855,7 @@ const HUNTER_GRADE_STANDARDS = [
   { grade: 'SSS', minComposite: 2.28, benchReq: 1.95, squatReq: 2.50, deadliftReq: 2.85, desc: 'Portento físico sobrehumano' },
   { grade: 'EX', minComposite: 2.50, benchReq: 2.15, squatReq: 2.75, deadliftReq: 3.10, desc: 'Cúspide humana absoluta' },
 ];
- 
+
 const CLASS_ARCHETYPES = [
   {
     base: 'Centinela',
@@ -935,7 +930,7 @@ const CLASS_ARCHETYPES = [
     passiveRule: 'Aumenta la prosperidad de tu ciudad y otorga +20% de afinidad con todos los personajes.'
   },
 ];
- 
+
 const CLASS_AFFINITIES = [
   { name: 'Infinito', accent: '#00f0ff', resonance: 'Resonancia Sin Límites: Escala +5 puntos de poder por cada nivel.' },
   { name: 'de Ceniza', accent: '#f97316', resonance: 'Resonancia Ígnea: +12% Poder al mantener racha activa.' },
@@ -952,7 +947,7 @@ const CLASS_AFFINITIES = [
   { name: 'Primordial', accent: '#fbbf24', resonance: 'Resonancia Ancestral: +20% poder de pasiva base.' },
   { name: 'de Sangre Real', accent: '#be123c', resonance: 'Resonancia Dinástica: +25 LP adicionales por victoria.' },
 ];
- 
+
 function generateRandomInfiniteClass(seedNumber, preferredRaceId = null) {
   const arch = CLASS_ARCHETYPES[Math.abs(seedNumber) % CLASS_ARCHETYPES.length];
   const aff = CLASS_AFFINITIES[Math.abs(seedNumber * 7 + 13) % CLASS_AFFINITIES.length];
@@ -975,7 +970,7 @@ function generateRandomInfiniteClass(seedNumber, preferredRaceId = null) {
     }
   };
 }
- 
+
 function getInfiniteClassEvolution(baseClassName, level) {
   const safeBase = baseClassName || 'Centinela Infinito';
   if (level < 5) return { stage: 1, title: `${safeBase} Iniciado [Rango I]`, bonus: '+5% Poder Base', nextLvl: 5 };
@@ -991,7 +986,7 @@ function getInfiniteClassEvolution(baseClassName, level) {
     nextLvl: 75 + ascensionTier * 25
   };
 }
- 
+
 const DAILY_REWARD_POOL = [
   { id: 'skill_slash', type: 'Habilidad', name: 'Tajo de Acero Templado', power: 35, desc: 'Golpe preciso que escala con tu 1RM de Press Banca.' },
   { id: 'gear_cloak', type: 'Equipamiento', name: 'Capa Real Carmesí', power: 25, desc: 'Manto de batalla que eleva la resistencia en PvE y PvP.' },
@@ -1000,7 +995,7 @@ const DAILY_REWARD_POOL = [
   { id: 'skill_zenkai', type: 'Habilidad', name: 'Despertar Zenkai de Sangre', power: 85, desc: 'Multiplica tu ataque cuando estás en racha activa.' },
   { id: 'gear_crown', type: 'Equipamiento', name: 'Coraza del Monarca Eterno', power: 110, desc: 'Armadura legendaria de placas doradas.' },
 ];
- 
+
 const PVE_STORY_CHAPTERS = [
   {
     id: 'act1_ch1',
@@ -1213,7 +1208,7 @@ const PVE_STORY_CHAPTERS = [
     lpReward: 160
   }
 ];
- 
+
 const STORY_CHARACTERS = [
   {
     id: 'lyra',
@@ -1280,7 +1275,7 @@ const STORY_CHARACTERS = [
     intro: 'Las estrellas sobre nuestra ciudad brillan distinto desde que superaste tus marcas... Estaba esperando hablar contigo.'
   }
 ];
- 
+
 const CITY_BUILDINGS_CATALOG = [
   { id: 'forge', name: 'Forja de Acero Real', bonus: '+15 Poder de Equipo y rumores sobre tu fuerza en Press Banca.' },
   { id: 'tavern', name: 'Taberna del Crepúsculo', bonus: 'Centro de rumores del pueblo y +3 Afinidad extra en citas.' },
@@ -1288,7 +1283,7 @@ const CITY_BUILDINGS_CATALOG = [
   { id: 'observatory', name: 'Observatorio Astral', bonus: 'Amplifica tu Habilidad Pasiva Única de Clase.' },
   { id: 'garden', name: 'Jardín de los Juramentos', bonus: 'Lugar especial en el mapa 2D para citas románticas.' },
 ];
- 
+
 const RACES_POOL = [
   { id: 'monarch_vessel', name: 'Recipiente del Monarca', trait: 'Soberanía: Evolución ilimitada de estadísticas', hairColor: '#070a12', eyeColor: '#6366f1', auraColor: '#00eaff', originSeed: 'un relicario sellado bajo las ruinas antiguas donde dormía la corona sin heredero' },
   { id: 'ash_saiyan', name: 'Estirpe Guerrero Ceniza', trait: 'Zenkai: +15% EXP al superar misiones retomadas', hairColor: '#0b0f19', eyeColor: '#00f0ff', auraColor: '#f97316', originSeed: 'las fraguas volcánicas de la frontera, donde cada caída templa el espíritu como acero vivo' },
@@ -1297,7 +1292,6 @@ const RACES_POOL = [
   { id: 'fenrir_kin', name: 'Semi-Humano de Fenrir', trait: 'Instinto Depredador: Potencia explosiva y agilidad', hairColor: '#090d16', eyeColor: '#f59e0b', auraColor: '#38bdf8', originSeed: 'los bosques helados del norte, guiado por el pulso primitivo de la manada plateada' },
   { id: 'hollow_lord', name: 'Señor Espectral Celestial', trait: 'Cuerpo de Acero Pálido: Resistencia neural superior', hairColor: '#0c1220', eyeColor: '#38bdf8', auraColor: '#ffd45a', originSeed: 'el santuario silencioso de los obeliscos blancos, forjando una voluntad inquebrantable' },
 ];
-
 function generateHunterOriginAndDestinyLore({
   hunterName,
   gender,
@@ -1327,18 +1321,15 @@ function generateHunterOriginAndDestinyLore({
   };
   const weaponDesc = weaponLabelMap[cls?.weaponType] || 'un arma rúnica vinculada a su alma';
   const originSeed = raceObj.originSeed || 'las ruinas olvidadas del primer despertar';
-
   const originTitle = `Crónica del Despertar — Linaje ${raceObj.name}`;
   const originText =
     `Antes de alzar su nombre en ${cityName || 'Bastión de Ceniza'}, ${safeName} despertó en ${originSeed}. ` +
     `Allí, su sangre de ${raceObj.name} respondió al llamado del Sistema, manifestando la senda de ${className} ` +
     `y empuñando ${weaponDesc}. Partiendo estrictamente desde cero, ${articleHero} juró forjar cada punto de poder ` +
     `con disciplina real, transformando cada repetición, cada kilómetro recorrido y cada noche de recuperación en energía vital.`;
-
   const grade = hunterGrade || 'F';
   const isMyth = ['F', 'E', 'D'].includes(grade);
   const isLegend = ['C', 'B', 'A'].includes(grade);
-
   if (isMyth) {
     return {
       originTitle,
@@ -1355,7 +1346,6 @@ function generateHunterOriginAndDestinyLore({
       tierStep: 1
     };
   }
-
   if (isLegend) {
     return {
       originTitle,
@@ -1372,7 +1362,6 @@ function generateHunterOriginAndDestinyLore({
       tierStep: 2
     };
   }
-
   return {
     originTitle,
     originText,
@@ -1387,7 +1376,7 @@ function generateHunterOriginAndDestinyLore({
     tierStep: 3
   };
 }
- 
+
 const HOME_EQUIPMENT_OPTIONS = [
   'Mancuernas ajustables',
   'Barra de dominadas',
@@ -1396,7 +1385,7 @@ const HOME_EQUIPMENT_OPTIONS = [
   'Banco plano / inclinable',
   'Barra recta y discos'
 ];
- 
+
 const ZERO_LIFTS = {
   'Press Banca': { weight: 0, reps: 0, date: 'Sin registrar' },
   'Sentadilla Trasera': { weight: 0, reps: 0, date: 'Sin registrar' },
@@ -1405,7 +1394,7 @@ const ZERO_LIFTS = {
   'Remo con Barra': { weight: 0, reps: 0, date: 'Sin registrar' },
   'Dominadas Lastradas (Total)': { weight: 0, reps: 0, date: 'Sin registrar' },
 };
- 
+
 const ZERO_SLEEP_LOG = [
   { day: 'Lun', hours: 0 },
   { day: 'Mar', hours: 0 },
@@ -1415,7 +1404,7 @@ const ZERO_SLEEP_LOG = [
   { day: 'Sáb', hours: 0 },
   { day: 'Dom', hours: 0 },
 ];
- 
+
 function getRankFromLP(lp) {
   const rawLP = Math.max(0, Number(lp) || 0);
   const safeLP = Math.min(8999, rawLP);
@@ -1428,7 +1417,6 @@ function getRankFromLP(lp) {
   const rankEndLP = rankStartLP + 599;
   const lpInCurrentRank = rawLP >= 9000 ? 600 : safeLP - rankStartLP;
   const rankProgressPct = Math.min(100, Math.round((lpInCurrentRank / 600) * 100));
-
   const isMaxChallenger = rankIndex === 14 && divInRank === 1 && rawLP >= 9000;
   const lpToNextLayer = isMaxChallenger ? 0 : 100 - (safeLP % 100);
   const nextLayerTargetLP = isMaxChallenger ? 9000 : safeLP + lpToNextLayer;
@@ -1439,11 +1427,9 @@ function getRankFromLP(lp) {
     : rankIndex < 14
     ? `${RANKS[rankIndex + 1].name} • Capa 6`
     : 'Challenger • Capa 1 (Cúspide Máxima)';
-
   const nextRank = rankIndex < 14 ? RANKS[rankIndex + 1] : null;
   const nextRankRequiredLP = nextRank ? (rankIndex + 1) * 600 : 9000;
   const lpToNextRank = nextRank ? Math.max(0, nextRankRequiredLP - rawLP) : 0;
-
   const layers = [6, 5, 4, 3, 2, 1].map((layerNum) => {
     const layerOffset = 6 - layerNum;
     const minLP = rankStartLP + layerOffset * 100;
@@ -1462,7 +1448,6 @@ function getRankFromLP(lp) {
       lpMissing
     };
   });
-
   return {
     ...currentRank,
     rankIndex,
@@ -1484,7 +1469,6 @@ function getRankFromLP(lp) {
     layers,
   };
 }
-
 function getClassResourceProfile(clsObj, level = 0) {
   const base = String(clsObj?.baseArchetype || clsObj?.name || '').toLowerCase();
   const aff = String(clsObj?.affinityName || '').toLowerCase();
@@ -1498,7 +1482,6 @@ function getClassResourceProfile(clsObj, level = 0) {
     aff.includes('astral') ||
     aff.includes('espectral') ||
     aff.includes('eclipse');
-
   if (isArcane) {
     return {
       type: 'mana',
@@ -1524,14 +1507,12 @@ function getClassResourceProfile(clsObj, level = 0) {
     mechanicNote: 'Regeneración explosiva (+38 Estamina/turno) para encadenar múltiples golpes tácticos.'
   };
 }
-
 function buildHunterTacticalDeck({ clsObj, gradeData, hunterCombatPower, unlockedInventory = [], atkMultiplier = 1 }) {
   const mult = Math.max(0.5, Number(atkMultiplier) || 1);
   const benchDmg = Math.max(24, Math.round((22 + (gradeData?.bench1RM || 0) * 0.35 + hunterCombatPower * 0.14) * mult));
   const deadliftDmg = Math.max(38, Math.round((34 + (gradeData?.deadlift1RM || 0) * 0.32 + hunterCombatPower * 0.22) * mult));
   const squatShield = Math.max(26, Math.round(24 + (gradeData?.squat1RM || 0) * 0.36 + hunterCombatPower * 0.12));
   const ultimateDmg = Math.max(54, Math.round((48 + hunterCombatPower * 0.32) * mult));
-
   const baseCards = [
     {
       id: 'card_bench_strike',
@@ -1599,7 +1580,6 @@ function buildHunterTacticalDeck({ clsObj, gradeData, hunterCombatPower, unlocke
       desc: `Desata ${ultimateDmg} daño de clase + ${Math.round(squatShield * 0.6)} Escudo.`
     }
   ];
-
   const relicCards = (unlockedInventory || []).slice(0, 3).map((item, idx) => {
     const relicDmg = Math.max(28, Math.round((24 + (item.power || 30) * 0.55) * mult));
     return {
@@ -1616,10 +1596,8 @@ function buildHunterTacticalDeck({ clsObj, gradeData, hunterCombatPower, unlocke
       desc: `Carta de equipo: ${relicDmg} daño + ${Math.round((item.power || 20) * 0.35)} Escudo.`
     };
   });
-
   return [...baseCards, ...relicCards];
 }
-
 function drawTacticalHand(deck, count = 4) {
   const pool = [...deck];
   const hand = [];
@@ -1630,14 +1608,14 @@ function drawTacticalHand(deck, count = 4) {
   }
   return hand;
 }
- 
- 
+
+
 function calcEpley1RM(weight, reps) {
   if (!weight || weight <= 0 || !reps || reps <= 0) return 0;
   if (reps <= 1) return Math.round(weight);
   return Math.round(weight * (1 + reps / 30));
 }
- 
+
 function getEffectiveExercise1RM(exName, weight, reps, bodyWeight) {
   const w = Number(weight) || 0;
   const r = Number(reps) || 0;
@@ -1648,25 +1626,25 @@ function getEffectiveExercise1RM(exName, weight, reps, bodyWeight) {
   }
   return calcEpley1RM(w, r);
 }
- 
+
 function computeHunterGradeData(liftsObj, weightKg) {
   const bw = Math.max(40, Number(weightKg) || 75);
   const bench1RM = getEffectiveExercise1RM('Press Banca', liftsObj['Press Banca']?.weight || 0, liftsObj['Press Banca']?.reps || 0, bw);
   const squat1RM = getEffectiveExercise1RM('Sentadilla Trasera', liftsObj['Sentadilla Trasera']?.weight || 0, liftsObj['Sentadilla Trasera']?.reps || 0, bw);
   const deadlift1RM = getEffectiveExercise1RM('Peso Muerto Convencional', liftsObj['Peso Muerto Convencional']?.weight || 0, liftsObj['Peso Muerto Convencional']?.reps || 0, bw);
- 
+
   const benchRatio = bench1RM / bw;
   const squatRatio = squat1RM / bw;
   const deadliftRatio = deadlift1RM / bw;
   const compositeRelStrength = (benchRatio + squatRatio + deadliftRatio) / 3;
- 
+
   let currentIdx = 0;
   for (let i = HUNTER_GRADE_STANDARDS.length - 1; i >= 1; i--) {
     const std = HUNTER_GRADE_STANDARDS[i];
     const reqBenchKg = Math.round(std.benchReq * bw);
     const reqSquatKg = Math.round(std.squatReq * bw);
     const reqDeadliftKg = Math.round(std.deadliftReq * bw);
- 
+
     if (
       bench1RM >= reqBenchKg &&
       squat1RM >= reqSquatKg &&
@@ -1676,7 +1654,7 @@ function computeHunterGradeData(liftsObj, weightKg) {
       break;
     }
   }
- 
+
   return {
     bw,
     bench1RM,
@@ -1688,7 +1666,7 @@ function computeHunterGradeData(liftsObj, weightKg) {
     nextStd: HUNTER_GRADE_STANDARDS[Math.min(HUNTER_GRADE_STANDARDS.length - 1, currentIdx + 1)],
   };
 }
- 
+
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -1702,7 +1680,7 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return Number((R * c).toFixed(1));
 }
- 
+
 function getPreciseDistanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -1716,11 +1694,11 @@ function getPreciseDistanceKm(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
- 
+
 function getLocalDateISO(dateObj = new Date()) {
   return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 }
- 
+
 function getRelationshipLabel(affection) {
   if (affection >= 100) return { label: 'Pareja Jurada ♥', color: '#fb7185' };
   if (affection >= 70) return { label: 'Interés Romántico ♥', color: '#f472b6' };
@@ -1728,41 +1706,41 @@ function getRelationshipLabel(affection) {
   if (affection >= 15) return { label: 'Aliado de Armas', color: '#00f0ff' };
   return { label: 'Conocido', color: '#94a3b8' };
 }
- 
+
 function generateCharacterAIReply(char, userMsg, memoryList, context) {
   const lower = userMsg.toLowerCase();
   const { hunterName, hunterGrade, bench1RM, squat1RM, deadlift1RM, streak, cityName, clearedCount, affection, clsName } = context;
   const prevTopic = memoryList.length > 0 ? memoryList[memoryList.length - 1] : null;
   const isRomantic = affection >= 70;
- 
+
   if (lower.includes('entren') || lower.includes('pesa') || lower.includes('fuerza') || lower.includes('banca') || lower.includes('sentadilla') || lower.includes('gimnasio')) {
     return isRomantic
       ? `${hunterName}, sé perfectamente cuánto te esfuerzas... Todos en ${cityName} hablan de tus ${bench1RM} kg en Banca y ${squat1RM} kg en Sentadilla. Verte alcanzar el Grado ${hunterGrade} me hace sentir orgullosa de estar a tu lado.`
       : `Los rumores en ${cityName} son ciertos: levantar ${bench1RM} kg en Banca y ${deadlift1RM} kg en Peso Muerto como ${clsName} no es algo que logre cualquiera. Tu Grado de Cazador ${hunterGrade} impone respeto.`;
   }
- 
+
   if (lower.includes('amor') || lower.includes('gustas') || lower.includes('cita') || lower.includes('quiero') || lower.includes('beso') || lower.includes('pareja')) {
     if (affection >= 70) {
       return `Mi corazón ya te pertenece, ${hunterName}... Desde que luchamos juntos y construiste ${cityName}, no dejo de pensar en ti. Siempre estaré a tu lado, sin importar qué tan alto llegues.`;
     }
     return `Me tomas por sorpresa, ${hunterName}... Aprecio mucho nuestra cercanía y cada momento que compartimos en ${cityName}. Sigamos pasando tiempo juntos y verás cuánto significas para mí.`;
   }
- 
+
   if (lower.includes('historia') || lower.includes('jefe') || lower.includes('mision') || lower.includes('batalla')) {
     return `Ya hemos superado ${clearedCount} capítulos de esta campaña. Como ${char.role}, confío plenamente en tu poder como ${clsName}. Cuando decidas avanzar al siguiente acto, cubriré tu retaguardia.`;
   }
- 
+
   if (prevTopic) {
     return isRomantic
       ? `Estaba recordando cuando hablamos sobre "${prevTopic.slice(0, 38)}...". Contigo cada charla en ${cityName} se siente especial, ${hunterName}. Con tu racha de ${streak} días, siento que somos invencibles.`
       : `No olvido lo que me dijiste antes sobre "${prevTopic.slice(0, 38)}...". Aquí en ${cityName} todos admiran tu racha de ${streak} días y tu ascenso al Grado ${hunterGrade}.`;
   }
- 
+
   return isRomantic
     ? `Me alegra tanto que vinieras a verme a ${cityName}, ${hunterName}. Después de verte entrenar tan duro para mantener tu Grado ${hunterGrade}, solo quería pasar un momento tranquilo contigo.`
     : `Bienvenido de nuevo a mi puesto en ${cityName}, ${hunterName}. He oído que tu clase (${clsName}) sigue evolucionando sin detenerse.`;
 }
- 
+
 // ============================================================================
 // MOTOR MULTI-IA CON FILTRO ANTI-ERROR Y CACHÉ LOCAL (100% SIN CANVAS)
 // ============================================================================
@@ -3618,7 +3596,7 @@ const DEFAULT_ANIME_AVATAR_MALE =
   'xBVFJcSjt3oa8EJarocEEIK5tjO7denMBMoGeDtiA5DtXL+I/cZ+sDoYD7StEoxWZpBVEqa5qVcSNRVE5mFf0TFbKygpQevpVyqgqsnuZQcQpqYhpIrYTlI8' +
   'wIkNkG7MaeolSm3MWcfQzMVuuI29ac5JglUPl9Bbf0P2rmXgjsm5LnxAA7ho328e054VW/uEW9RDy8n8QBRzthVvlq33FeImymIW1u3zCK3QzPBR8QOS/ERY' +
   'XavGvbE4sqv5TvEnK8DqZjDhC3gjhcedr4i/4D0TeXJLZcWF6NzXMSxNkAppBrmUJRbU+KlTAwq2VQa0s1DLCDH0dfRjmMKly6VHDNwm5//Z';
- 
+
 function buildAnimeAvatarPrompt(gender, cls) {
   // Dirección de arte: anime 2D ilustrado, nunca avatar vectorial ni render 3D.
   const subject = gender === 'female'
@@ -3635,10 +3613,10 @@ function buildAnimeAvatarPrompt(gender, cls) {
     : cls?.weaponType === 'gauntlets'
     ? 'subtle glowing combat gauntlets'
     : 'subtle sword hilt behind one shoulder';
- 
+
   return `${subject}, chest-up half-body portrait, centered composition, wearing a fitted black tactical hunter jacket with a tall raised collar, layered black fabric and leather panels, detailed seams, pockets and metal buckles, ${weapon}, deep navy-black fantasy background, vivid electric blue aura behind shoulders, cyan rim light on hair and jacket, subtle violet shadow energy, floating blue particles, faint elegant arcane geometric frame, polished Japanese 2D anime key visual, hand-drawn illustration, precise clean lineart, detailed expressive anime face, natural human proportions, painterly cel shading, soft highlights, intricate hair strands, rich dark blue palette, dramatic cinematic lighting, premium anime RPG character illustration, detailed mature anime art`;
 }
- 
+
 // Filtro detector: rechaza imágenes < 45 KB o con esquinas beige/blancas ("At its limit right now")
 async function verifyAndCompressAiBlob(blob) {
   if (!blob || blob.size < 45000) {
@@ -3665,7 +3643,7 @@ async function verifyAndCompressAiBlob(blob) {
     URL.revokeObjectURL(objectUrl);
   }
 }
- 
+
 async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -3675,7 +3653,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
     clearTimeout(timer);
   }
 }
- 
+
 // Motor 1 y 2: Pollinations con distintos modelos
 async function tryPollinationsEngine(prompt, seed, modelName) {
   const encoded = encodeURIComponent(prompt);
@@ -3686,7 +3664,7 @@ async function tryPollinationsEngine(prompt, seed, modelName) {
   const blob = await res.blob();
   return await verifyAndCompressAiBlob(blob);
 }
- 
+
 // Motor 3: AI Horde (red comunitaria gratuita con modelos anime)
 async function tryAiHordeEngine(prompt) {
   const submitRes = await fetchWithTimeout(
@@ -3719,7 +3697,7 @@ async function tryAiHordeEngine(prompt) {
   if (!submitRes.ok) throw new Error('AI Horde no disponible');
   const { id } = await submitRes.json();
   if (!id) throw new Error('Sin ID de tarea en AI Horde');
- 
+
   for (let attempt = 0; attempt < 12; attempt++) {
     await new Promise((r) => setTimeout(r, 2500));
     const checkRes = await fetchWithTimeout(`https://aihorde.net/api/v2/generate/check/${id}`, {}, 6000);
@@ -3738,7 +3716,7 @@ async function tryAiHordeEngine(prompt) {
   }
   throw new Error('Tiempo agotado en AI Horde');
 }
- 
+
 // ============================================================================
 // TARJETA ANIME FANTASY RPG CHARACTER + EVOLUCIÓN INFINITA
 // ============================================================================
@@ -3781,12 +3759,12 @@ const GACHA_STYLES = [
     borderColor: 'var(--neon-gold)',
   },
 ];
- 
+
 function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
   const uid = isFemale ? 'fem' : 'masc';
   const primaryGlow = accentColor || '#00eaff';
   const stageScale = Math.min(5, Math.max(1, Number(stage) || 1));
- 
+
   return (
     <svg
       viewBox="0 0 420 400"
@@ -3803,63 +3781,63 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           <stop offset="82%" stopColor="#070d24" />
           <stop offset="100%" stopColor="#050817" />
         </radialGradient>
- 
+
         {/* Halo arcano detrás del personaje */}
         <radialGradient id={`pexArcaneHalo_${uid}`} cx="50%" cy="44%" r="48%">
           <stop offset="0%" stopColor={primaryGlow} stopOpacity="0.42" />
           <stop offset="48%" stopColor="#963cff" stopOpacity="0.22" />
           <stop offset="100%" stopColor="#050817" stopOpacity="0" />
         </radialGradient>
- 
+
         {/* Piel estilo anime cel-shaded */}
         <linearGradient id={`pexSkin_${uid}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#ffedd5" />
           <stop offset="72%" stopColor="#fed7aa" />
           <stop offset="100%" stopColor="#f5b882" />
         </linearGradient>
- 
+
         {/* Sombra de cuello */}
         <linearGradient id={`pexNeckShade_${uid}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#d99b6c" />
           <stop offset="55%" stopColor="#fed7aa" />
           <stop offset="100%" stopColor="#ffedd5" />
         </linearGradient>
- 
+
         {/* Cabello negro azabache con reflejos índigo/cian */}
         <linearGradient id={`pexHair_${uid}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#1e293b" />
           <stop offset="45%" stopColor="#090d1c" />
           <stop offset="100%" stopColor="#04060e" />
         </linearGradient>
- 
+
         {/* Armadura obsidiana */}
         <linearGradient id={`pexObsidian_${uid}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#1e293b" />
           <stop offset="45%" stopColor="#0d1429" />
           <stop offset="100%" stopColor="#050814" />
         </linearGradient>
- 
+
         {/* Filigrana dorada */}
         <linearGradient id={`pexGold_${uid}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#fef08a" />
           <stop offset="48%" stopColor="#ffd45a" />
           <stop offset="100%" stopColor="#b45309" />
         </linearGradient>
- 
+
         {/* Capa carmesí real */}
         <linearGradient id={`pexCape_${uid}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#be123c" />
           <stop offset="55%" stopColor="#881337" />
           <stop offset="100%" stopColor="#3b0716" />
         </linearGradient>
- 
+
         {/* Cristal romboidal cian del pecho */}
         <linearGradient id={`pexCrystal_${uid}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#e0f2fe" />
           <stop offset="45%" stopColor="#00eaff" />
           <stop offset="100%" stopColor="#0284c7" />
         </linearGradient>
- 
+
         {/* Filtro de resplandor neón */}
         <filter id={`pexNeonBlur_${uid}`} x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="4.5" result="blur" />
@@ -3869,11 +3847,11 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           </feMerge>
         </filter>
       </defs>
- 
+
       {/* 1. FONDO CÓSMICO ESTRELLADO */}
       <rect width="420" height="400" fill={`url(#pexCosmos_${uid})`} />
       <circle cx="210" cy="175" r="175" fill={`url(#pexArcaneHalo_${uid})`} />
- 
+
       {/* Estrellas y partículas ambientales */}
       <g opacity="0.8">
         <circle cx="52" cy="58" r="1.4" fill="#ffffff" />
@@ -3885,7 +3863,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
         <circle cx="122" cy="46" r="1.2" fill="#ffd45a" />
         <circle cx="302" cy="48" r="1.2" fill="#00eaff" />
       </g>
- 
+
       {/* 2. CÍRCULO MÁGICO ARCANO GIRATORIO DETRÁS DEL HÉROE */}
       <g className="pex-arcane-ring-cw" opacity={0.45 + stageScale * 0.08}>
         <circle cx="210" cy="175" r="126" fill="none" stroke={primaryGlow} strokeWidth="1.4" strokeDasharray="8 5 2 5" />
@@ -3917,14 +3895,14 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
         <circle cx="210" cy="301" r="3.5" fill="#00eaff" />
         <circle cx="84" cy="175" r="3.5" fill="#00eaff" />
       </g>
- 
+
       <g className="pex-arcane-ring-ccw" opacity="0.55">
         <circle cx="210" cy="175" r="92" fill="none" stroke="#c084fc" strokeWidth="1.2" strokeDasharray="4 6" />
         {stageScale >= 2 && (
           <circle cx="210" cy="175" r="142" fill="none" stroke="#ffd45a" strokeWidth="1" strokeDasharray="3 9" />
         )}
       </g>
- 
+
       {/* 3. GRUPO PRINCIPAL DEL PERSONAJE DE MEDIO CUERPO */}
       <g className="pex-avatar-hero-float">
         {/* CAPA CARMESÍ REAL ONDEANDO DETRÁS DE LOS HOMBROS */}
@@ -3937,7 +3915,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
         {/* Pliegues internos de la capa */}
         <path d="M128 242 L95 398" stroke="#4c0519" strokeWidth="4" opacity="0.65" />
         <path d="M292 242 L325 398" stroke="#4c0519" strokeWidth="4" opacity="0.65" />
- 
+
         {/* ARMA RÚNICA DE CLASE (DETRÁS / COSTADO DEL HÉROE) */}
         {weaponType === 'spear' && (
           <g filter={`url(#pexNeonBlur_${uid})`}>
@@ -3984,7 +3962,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
             <circle cx="296" cy="321" r="5" fill="#ffd45a" />
           </g>
         )}
- 
+
         {/* CABELLO TRASERO LARGO PARA VERSIÓN FEMENINA */}
         {isFemale && (
           <path
@@ -3994,7 +3972,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
             strokeWidth="1.2"
           />
         )}
- 
+
         {/* TORSO Y ARMADURA FANTASY OBSIDIANA CON FILIGRANA DORADA */}
         <path
           d={
@@ -4006,7 +3984,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           stroke={`url(#pexGold_${uid})`}
           strokeWidth="2.4"
         />
- 
+
         {/* Cuello alto blindado de la armadura */}
         <path
           d="M164 204 L182 232 L238 232 L256 204 L268 226 L236 250 L184 250 L152 226 Z"
@@ -4014,7 +3992,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           stroke={`url(#pexGold_${uid})`}
           strokeWidth="2"
         />
- 
+
         {/* Placas pectorales esculpidas y filigranas doradas */}
         <path
           d="M148 246 L192 268 L184 334 L138 312 Z"
@@ -4028,14 +4006,14 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           stroke={`url(#pexGold_${uid})`}
           strokeWidth="1.8"
         />
- 
+
         {/* Circuitos rúnicos cian brillantes en la coraza */}
         <g filter={`url(#pexNeonBlur_${uid})`}>
           <path d="M154 266 L180 280 L176 312" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
           <path d="M266 266 L240 280 L244 312" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
           <path d="M166 352 L192 338 L228 338 L254 352" fill="none" stroke="#00eaff" strokeWidth="1.8" strokeLinecap="round" />
         </g>
- 
+
         {/* HOMBRERAS ORNAMENTADAS (PAULDRONS) CON FILIGRANA DORADA Y RUNAS */}
         <g>
           {/* Hombrera izquierda */}
@@ -4054,7 +4032,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
             filter={`url(#pexNeonBlur_${uid})`}
           />
           <circle cx="116" cy="252" r="4" fill="#ffd45a" />
- 
+
           {/* Hombrera derecha */}
           <path
             d="M272 218 C312 216, 336 242, 338 284 C314 286, 288 276, 268 254 Z"
@@ -4072,7 +4050,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           />
           <circle cx="304" cy="252" r="4" fill="#ffd45a" />
         </g>
- 
+
         {/* GRAN CRISTAL ROMBOIDAL CIAN EN EL CENTRO DEL PECHO */}
         <g filter={`url(#pexNeonBlur_${uid})`}>
           <polygon
@@ -4089,7 +4067,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           <polygon points="210,263 225,286 210,286" fill="#ffffff" opacity="0.45" />
           <circle cx="206" cy="278" r="2.6" fill="#ffffff" />
         </g>
- 
+
         {/* CUELLO Y CLAVÍCULAS */}
         <path
           d={
@@ -4099,7 +4077,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           }
           fill={`url(#pexNeckShade_${uid})`}
         />
- 
+
         {/* ROSTRO ANIME */}
         <path
           d={
@@ -4109,7 +4087,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           }
           fill={`url(#pexSkin_${uid})`}
         />
- 
+
         {/* OJOS ANIME EXPRESIVOS CON IRIS VIOLETA-ÍNDIGO Y DESTELLO CIAN */}
         {/* Ojo Izquierdo */}
         <g>
@@ -4135,7 +4113,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
             strokeLinecap="round"
           />
         </g>
- 
+
         {/* Ojo Derecho */}
         <g>
           <ellipse cx="229" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
@@ -4160,7 +4138,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
             strokeLinecap="round"
           />
         </g>
- 
+
         {/* Nariz y expresión heroica anime */}
         <path d="M209 152 L207 160 L211 161" fill="none" stroke="#c98a5b" strokeWidth="1.6" strokeLinecap="round" />
         <path
@@ -4170,7 +4148,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           strokeWidth="2"
           strokeLinecap="round"
         />
- 
+
         {/* CABELLO FRONTAL ANIME (DISTINTO PARA MASCULINO Y FEMENINO) */}
         {isFemale ? (
           <g>
@@ -4218,7 +4196,7 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
           </g>
         )}
       </g>
- 
+
       {/* 4. CHISPAS DORADAS Y PARTÍCULAS DE ENERGÍA FLOTANDO */}
       <g className="pex-ember-pulse" filter={`url(#pexNeonBlur_${uid})`}>
         <circle cx="96" cy="296" r="2.6" fill="#ffd45a" />
@@ -4231,13 +4209,12 @@ function FantasyAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor }) {
     </svg>
   );
 }
- 
+
 function buildUserLinkedAnimePrompt(gender, cls, race, evolutionStage) {
   const isFemale = gender === 'female';
   const subject = isFemale
     ? 'young adult anime woman hunter, solo, layered dark hair, expressive glowing eyes, determined heroic expression'
     : 'young adult anime man hunter, solo, messy layered dark hair with individual strands, expressive glowing eyes, serious heroic expression';
-
   const raceDescriptorMap = {
     monarch_vessel: 'subtle ethereal shadow-sovereign aura, dark royal mantle collar',
     ash_saiyan: 'embers and fiery cyan-orange battle aura sparks around shoulders',
@@ -4247,7 +4224,6 @@ function buildUserLinkedAnimePrompt(gender, cls, race, evolutionStage) {
     hollow_lord: 'pale celestial steel armor plates, translucent astral halo behind head'
   };
   const racePrompt = raceDescriptorMap[race?.id] || 'fantasy hunter obsidian armor with golden filigree';
-
   const weaponMap = {
     spear: 'glowing runic spear behind one shoulder',
     greatsword: 'colossal dark runic greatsword behind shoulder',
@@ -4261,20 +4237,16 @@ function buildUserLinkedAnimePrompt(gender, cls, race, evolutionStage) {
   const stageHint = evolutionStage >= 4
     ? 'transcendent sovereign aura, intricate sacred magic circle'
     : 'arcane geometric magic circle behind shoulders';
-
   return `${subject}, chest-up half-body portrait, centered composition, ${racePrompt}, ${weaponPrompt}, elemental resonance ${affinityName}, ${stageHint}, deep navy-black cosmos background, dramatic rim lighting, polished Japanese 2D anime key visual, clean lineart, painterly cel shading, premium anime RPG character illustration`;
 }
-
 function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, race, profile }) {
   const uid = `${isFemale ? 'fem' : 'masc'}_${race?.id || 'base'}`;
   const primaryGlow = accentColor || race?.auraColor || '#00eaff';
   const raceAura = race?.auraColor || '#963cff';
   const irisColor = race?.eyeColor || '#4f46e5';
   const stageScale = Math.min(6, Math.max(1, Number(stage) || 1));
-
   const bmi = (Number(profile?.weightKg) || 75) / Math.pow((Number(profile?.heightCm) || 176) / 100, 2);
   const shoulderSpread = bmi > 26 ? 1.06 : bmi < 20 ? 0.94 : 1.0;
-
   return (
     <svg
       viewBox="0 0 420 400"
@@ -4338,10 +4310,8 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
           </feMerge>
         </filter>
       </defs>
-
       <rect width="420" height="400" fill={`url(#pexCosmos_${uid})`} />
       <circle cx="210" cy="175" r="180" fill={`url(#pexArcaneHalo_${uid})`} />
-
       <g className="pex-arcane-ring-cw" opacity={0.48 + stageScale * 0.08}>
         <circle cx="210" cy="175" r="126" fill="none" stroke={primaryGlow} strokeWidth="1.5" strokeDasharray="8 5 2 5" />
         <circle cx="210" cy="175" r="116" fill="none" stroke="#ffd45a" strokeWidth="0.9" strokeOpacity="0.65" />
@@ -4352,13 +4322,11 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
         <circle cx="210" cy="301" r="3.8" fill={primaryGlow} />
         <circle cx="84" cy="175" r="3.8" fill={primaryGlow} />
       </g>
-
       <g className="pex-arcane-ring-ccw" opacity="0.6">
         <circle cx="210" cy="175" r="92" fill="none" stroke={raceAura} strokeWidth="1.3" strokeDasharray="4 6" />
         {stageScale >= 2 && <circle cx="210" cy="175" r="142" fill="none" stroke="#ffd45a" strokeWidth="1.1" strokeDasharray="3 9" />}
         {stageScale >= 4 && <circle cx="210" cy="175" r="154" fill="none" stroke={primaryGlow} strokeWidth="1.3" strokeDasharray="12 6" />}
       </g>
-
       <g className="pex-avatar-hero-float">
         {(race?.id === 'valkyrie_dusk' || stageScale >= 4) && (
           <g opacity="0.78" filter={`url(#pexNeonBlur_${uid})`}>
@@ -4366,9 +4334,7 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
             <path d="M285 215 C348 175, 378 125, 384 82 C345 102, 308 138, 275 186 Z" fill={primaryGlow} opacity="0.35" stroke="#ffd45a" strokeWidth="1.2" />
           </g>
         )}
-
         <path d="M118 228 C78 265, 58 325, 48 398 L372 398 C362 325, 342 265, 302 228 Z" fill={`url(#pexCape_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2" />
-
         {weaponType === 'spear' && (
           <g filter={`url(#pexNeonBlur_${uid})`}>
             <line x1="336" y1="36" x2="292" y2="396" stroke={`url(#pexGold_${uid})`} strokeWidth="5" strokeLinecap="round" />
@@ -4408,11 +4374,9 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
             <circle cx="305" cy="266" r="4.5" fill={primaryGlow} />
           </g>
         )}
-
         {isFemale && (
           <path d="M142 104 C114 156, 108 242, 118 332 C142 318, 152 292, 158 265 L262 265 C268 292, 278 318, 302 332 C312 242, 306 156, 278 104 Z" fill={`url(#pexHair_${uid})`} stroke={primaryGlow} strokeWidth="1.1" />
         )}
-
         <g transform={`translate(210, 260) scale(${shoulderSpread}, 1) translate(-210, -260)`}>
           <path
             d={isFemale ? 'M146 224 L274 224 L294 398 L126 398 Z' : 'M134 222 L286 222 L310 398 L110 398 Z'}
@@ -4429,13 +4393,11 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
           <path d="M148 218 C108 216, 84 242, 82 284 C106 286, 132 276, 152 254 Z" fill={`url(#pexObsidian_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2.4" />
           <path d="M272 218 C312 216, 336 242, 338 284 C314 286, 288 276, 268 254 Z" fill={`url(#pexObsidian_${uid})`} stroke={`url(#pexGold_${uid})`} strokeWidth="2.4" />
         </g>
-
         <g filter={`url(#pexNeonBlur_${uid})`}>
           <polygon points="210,256 232,286 210,316 188,286" fill="#071329" stroke={`url(#pexGold_${uid})`} strokeWidth="2.8" />
           <polygon points="210,263 225,286 210,309 195,286" fill={`url(#pexCrystal_${uid})`} />
           <circle cx="206" cy="278" r="2.6" fill="#ffffff" />
         </g>
-
         <path d={isFemale ? 'M194 184 L226 184 L232 232 L188 232 Z' : 'M190 182 L230 182 L238 232 L182 232 Z'} fill={`url(#pexNeckShade_${uid})`} />
         <path
           d={isFemale
@@ -4443,7 +4405,6 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
             : 'M165 120 C165 162, 182 186, 210 193 C238 186, 255 162, 255 120 C255 84, 236 72, 210 72 C184 72, 165 84, 165 120 Z'}
           fill={`url(#pexSkin_${uid})`}
         />
-
         {race?.id === 'abyss_demon' && (
           <g filter={`url(#pexNeonBlur_${uid})`}>
             <path d="M166 96 C150 76, 152 54, 166 44 C164 62, 168 76, 178 86 Z" fill="#be123c" stroke="#ffd45a" strokeWidth="1.2" />
@@ -4461,7 +4422,6 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
             <path d="M178 62 L192 44 L210 56 L228 44 L242 62" fill="none" stroke="#ffd45a" strokeWidth="2.2" strokeLinecap="round" />
           </g>
         )}
-
         <g>
           <ellipse cx="191" cy="142" rx={isFemale ? '9.5' : '8.8'} ry={isFemale ? '7.8' : '6.6'} fill="#ffffff" />
           <ellipse cx="191.5" cy="142.5" rx="6.2" ry={isFemale ? '7.2' : '6.2'} fill={irisColor} />
@@ -4478,10 +4438,8 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
           <circle cx="226" cy="139.5" r="2.3" fill="#ffffff" />
           <path d={isFemale ? 'M218 137 Q229 129 241 136' : 'M218 138 Q229 132 240 137'} fill="none" stroke="#050817" strokeWidth="2.9" strokeLinecap="round" />
         </g>
-
         <path d="M209 152 L207 160 L211 161" fill="none" stroke="#c98a5b" strokeWidth="1.6" strokeLinecap="round" />
         <path d={isFemale ? 'M202 171 Q210 175 218 171' : 'M200 172 Q210 175 220 172'} fill="none" stroke="#9a5b38" strokeWidth="2" strokeLinecap="round" />
-
         {isFemale ? (
           <g>
             <path d="M158 134 C154 82, 180 58, 210 58 C240 58, 266 82, 262 134 L254 228 L244 156 L234 126 L222 146 L212 118 L202 146 L190 124 L178 154 L166 228 Z" fill={`url(#pexHair_${uid})`} />
@@ -4494,7 +4452,6 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
           </g>
         )}
       </g>
-
       <g className="pex-ember-pulse" filter={`url(#pexNeonBlur_${uid})`}>
         <circle cx="96" cy="296" r="2.8" fill="#ffd45a" />
         <circle cx="324" cy="288" r="2.8" fill="#ffd45a" />
@@ -4504,14 +4461,12 @@ function UserLinkedAnimeAvatarSvg({ isFemale, weaponType, stage, accentColor, ra
     </svg>
   );
 }
-
-function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, race, profile, hunterGrade }) {
+function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, race, profile, hunterGrade, imageSrc = null }) {
   const [rotY, setRotY] = useState(0);
   const [rotX, setRotX] = useState(4);
   const [autoSpin, setAutoSpin] = useState(true);
   const draggingRef = useRef(false);
   const lastPosRef = useRef({ x: 0, y: 0 });
-
   useEffect(() => {
     if (!autoSpin) return;
     const id = setInterval(() => {
@@ -4521,13 +4476,11 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
     }, 30);
     return () => clearInterval(id);
   }, [autoSpin]);
-
   const handlePointerDown = (e) => {
     draggingRef.current = true;
     setAutoSpin(false);
     lastPosRef.current = { x: e.clientX, y: e.clientY };
   };
-
   const handlePointerMove = (e) => {
     if (!draggingRef.current) return;
     const dx = e.clientX - lastPosRef.current.x;
@@ -4536,16 +4489,13 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
     setRotY((prev) => (prev + dx * 0.65 + 360) % 360);
     setRotX((prev) => Math.max(-22, Math.min(24, prev - dy * 0.35)));
   };
-
   const handlePointerUp = () => {
     draggingRef.current = false;
   };
-
   const primaryGlow = accentColor || race?.auraColor || '#00eaff';
   const normalizedYaw = rotY > 180 ? rotY - 360 : rotY;
   const parallaxX = Math.sin((rotY * Math.PI) / 180) * 18;
   const parallaxScaleX = Math.max(0.72, Math.cos((rotY * Math.PI) / 180) * 0.25 + 0.75);
-
   return (
     <div
       onPointerDown={handlePointerDown}
@@ -4582,7 +4532,6 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
           {autoSpin ? 'Pausar Órbita' : 'Auto-Rotar'}
         </button>
       </div>
-
       <div
         style={{
           position: 'relative',
@@ -4623,7 +4572,6 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
             pointerEvents: 'none'
           }}
         />
-
         <div
           style={{
             position: 'absolute',
@@ -4632,16 +4580,24 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
             filter: `drop-shadow(0 12px 24px rgba(0,0,0,0.85)) drop-shadow(0 0 14px ${primaryGlow})`
           }}
         >
-          <UserLinkedAnimeAvatarSvg
-            isFemale={isFemale}
-            weaponType={weaponType}
-            stage={stage}
-            accentColor={primaryGlow}
-            race={race}
-            profile={profile}
-          />
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt="Retrato 3D del cazador"
+              draggable={false}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 22%', display: 'block', borderRadius: '18px', WebkitMaskImage: 'radial-gradient(ellipse at 50% 46%, #000 62%, transparent 100%)', maskImage: 'radial-gradient(ellipse at 50% 46%, #000 62%, transparent 100%)' }}
+            />
+          ) : (
+            <UserLinkedAnimeAvatarSvg
+              isFemale={isFemale}
+              weaponType={weaponType}
+              stage={stage}
+              accentColor={primaryGlow}
+              race={race}
+              profile={profile}
+            />
+          )}
         </div>
-
         <div
           style={{
             position: 'absolute',
@@ -4663,7 +4619,6 @@ function Interactive3DAvatarViewer({ isFemale, weaponType, stage, accentColor, r
     </div>
   );
 }
-
 function JrpgFantasyPortrait({
   hunterClass,
   hunterGrade,
@@ -4684,7 +4639,6 @@ function JrpgFantasyPortrait({
     hunterClass?.race ||
     RACES_POOL.find((r) => r.id === profile?.preferredRaceId) ||
     RACES_POOL[0];
-
   const cls = hunterClass?.cls || {
     name: 'Centinela Infinito',
     weaponType: 'sword',
@@ -4693,11 +4647,9 @@ function JrpgFantasyPortrait({
     passiveName: 'Muralla Inquebrantable',
     passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.'
   };
-
   const stage = classEvolution?.stage || 1;
   const isFemale = gender === 'female';
   const cacheKey = `pex_ai_avatar_v5_linked_${gender}_${race.id}_${cls.variantCode || 1}`;
-
   const [aiImageSrc, setAiImageSrc] = useState(() => {
     try {
       return localStorage.getItem(cacheKey) || null;
@@ -4705,11 +4657,17 @@ function JrpgFantasyPortrait({
       return null;
     }
   });
+  const cacheKey2d = `pex_2d_avatar_v1_${gender}`;
+  const [custom2dSrc, setCustom2dSrc] = useState(() => {
+    try { return localStorage.getItem(cacheKey2d) || null; } catch { return null; }
+  });
+  useEffect(() => {
+    try { setCustom2dSrc(localStorage.getItem(cacheKey2d) || null); } catch { setCustom2dSrc(null); }
+  }, [cacheKey2d]);
   const [aiStatus, setAiStatus] = useState('');
   const [styleIdx, setStyleIdx] = useState(0);
   const [showPassiveDetails, setShowPassiveDetails] = useState(false);
   const [loreSubTab, setLoreSubTab] = useState('origin');
-
   useEffect(() => {
     try {
       setAiImageSrc(localStorage.getItem(cacheKey) || null);
@@ -4717,7 +4675,6 @@ function JrpgFantasyPortrait({
       setAiImageSrc(null);
     }
   }, [cacheKey]);
-
   const loreData = generateHunterOriginAndDestinyLore({
     hunterName: profile?.hunterName,
     gender,
@@ -4731,7 +4688,6 @@ function JrpgFantasyPortrait({
     streak,
     completedChaptersCount
   });
-
   const handleInvokeAiPortrait = async () => {
     if (aiStatus) return;
     const prompt = buildUserLinkedAnimePrompt(gender, cls, race, stage);
@@ -4754,7 +4710,6 @@ function JrpgFantasyPortrait({
     setAiStatus('Servidores IA ocupados • Manteniendo modelo vinculado');
     setTimeout(() => setAiStatus(''), 3200);
   };
-
   const handleUploadCustomAvatar = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -4762,17 +4717,16 @@ function JrpgFantasyPortrait({
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result;
       if (typeof dataUrl === 'string') {
-        setAiImageSrc(dataUrl);
-        try { localStorage.setItem(cacheKey, dataUrl); } catch {}
+        if (is3D) { setAiImageSrc(dataUrl); try { localStorage.setItem(cacheKey, dataUrl); } catch {} }
+        else { setCustom2dSrc(dataUrl); try { localStorage.setItem(cacheKey2d, dataUrl); } catch {} }
       }
     };
     reader.readAsDataURL(file);
     e.target.value = '';
   };
-
   const activeStyle = GACHA_STYLES[styleIdx];
   const is3D = avatarRenderMode === '3d';
-
+  const base2dSrc = custom2dSrc || (!isFemale ? DEFAULT_ANIME_AVATAR_MALE : null);
   return (
     <div className="cinematic-entry" style={{ position: 'relative', paddingBottom: '12px' }}>
       <div
@@ -4790,7 +4744,6 @@ function JrpgFantasyPortrait({
         <div className="pex-avatar-corner-tr" />
         <div className="pex-avatar-corner-bl" />
         <div className="pex-avatar-corner-br" />
-
         <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{ background: 'rgba(6, 11, 28, 0.86)', backdropFilter: 'blur(8px)', border: '1px solid rgba(var(--neon-accent-rgb), 0.55)', borderRadius: '999px', padding: '4px 10px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 800, color: 'var(--neon-gold)' }}>
             GRADO {hunterGrade} • ETAPA {stage}
@@ -4799,7 +4752,6 @@ function JrpgFantasyPortrait({
             {race.name}
           </div>
         </div>
-
         <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 8, display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '64%' }}>
           <button
             type="button"
@@ -4814,9 +4766,9 @@ function JrpgFantasyPortrait({
           >
             {is3D ? <Box size={11} /> : <Layers size={11} />} {is3D ? '3D' : '2D'}
           </button>
-
-          {!is3D && (
+          {(
             <>
+              {!is3D && (
               <button
                 type="button"
                 onClick={() => setStyleIdx((prev) => (prev + 1) % GACHA_STYLES.length)}
@@ -4828,7 +4780,8 @@ function JrpgFantasyPortrait({
               >
                 <Sparkles size={11} /> {activeStyle.label}
               </button>
-
+              )}
+              {is3D && (
               <button
                 type="button"
                 disabled={Boolean(aiStatus)}
@@ -4841,7 +4794,7 @@ function JrpgFantasyPortrait({
               >
                 <RotateCcw size={11} /> {aiStatus ? 'IA...' : 'IA Perfil'}
               </button>
-
+              )}
               <label
                 style={{
                   background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(16, 185, 129, 0.55)',
@@ -4852,11 +4805,10 @@ function JrpgFantasyPortrait({
                 <Upload size={11} /> IMG
                 <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadCustomAvatar} />
               </label>
-
-              {aiImageSrc && (
+              {(is3D ? aiImageSrc : custom2dSrc) && (
                 <button
                   type="button"
-                  onClick={() => { try { localStorage.removeItem(cacheKey); } catch {} setAiImageSrc(null); }}
+                  onClick={() => { if (is3D) { try { localStorage.removeItem(cacheKey); } catch {} setAiImageSrc(null); } else { try { localStorage.removeItem(cacheKey2d); } catch {} setCustom2dSrc(null); } }}
                   style={{
                     background: 'rgba(6, 11, 28, 0.84)', border: '1px solid var(--neon-gold)',
                     color: 'var(--neon-gold)', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
@@ -4868,7 +4820,6 @@ function JrpgFantasyPortrait({
               )}
             </>
           )}
-
           <button
             type="button"
             onClick={onToggleGender}
@@ -4881,13 +4832,11 @@ function JrpgFantasyPortrait({
             <UserCheck size={11} /> {isFemale ? 'FEM' : 'MASC'}
           </button>
         </div>
-
         {aiStatus && (
           <div style={{ position: 'absolute', top: '54px', left: '50%', transform: 'translateX(-50%)', zIndex: 9, background: 'rgba(5, 8, 23, 0.92)', border: '1px solid var(--neon-blue)', borderRadius: '999px', padding: '5px 12px', fontSize: '11px', fontWeight: 700, color: 'var(--neon-blue)', whiteSpace: 'nowrap' }}>
             ⚡ {aiStatus}
           </div>
         )}
-
         <div style={{ position: 'relative', zIndex: 2, filter: is3D ? 'none' : activeStyle.filter, transition: 'filter 0.45s ease' }}>
           {is3D ? (
             <Interactive3DAvatarViewer
@@ -4898,12 +4847,13 @@ function JrpgFantasyPortrait({
               race={race}
               profile={profile}
               hunterGrade={hunterGrade}
+              imageSrc={aiImageSrc}
             />
-          ) : aiImageSrc ? (
+          ) : base2dSrc ? (
             <img
-              src={aiImageSrc}
+              src={base2dSrc}
               alt={`Avatar ${race.name} de ${profile?.hunterName}`}
-              onError={() => setAiImageSrc(null)}
+              onError={() => setCustom2dSrc(null)}
               style={{ width: '100%', height: '395px', objectFit: 'cover', objectPosition: 'center 28%', display: 'block' }}
             />
           ) : (
@@ -4917,11 +4867,9 @@ function JrpgFantasyPortrait({
             />
           )}
         </div>
-
         <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', background: activeStyle.auraOverlay }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '105px', zIndex: 4, pointerEvents: 'none', background: 'linear-gradient(180deg, transparent 0%, rgba(5, 8, 23, 0.85) 60%, #050817 100%)' }} />
       </div>
-
       {/* CINTAS DE CLASE Y PASIVA ÚNICA */}
       <div
         onClick={() => setShowPassiveDetails((prev) => !prev)}
@@ -4937,7 +4885,6 @@ function JrpgFantasyPortrait({
             <strong style={{ color: 'var(--neon-blue)' }}>PASIVA:</strong> {cls.passiveName}
           </span>
         </div>
-
         {showPassiveDetails && (
           <div style={{ marginTop: '6px', width: '100%', padding: '12px 14px', borderRadius: '12px', background: 'rgba(11, 21, 48, 0.95)', border: '1px solid rgba(var(--neon-primary-rgb), 0.35)', textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)' }}>
             <div style={{ color: 'var(--neon-gold)', fontWeight: 700, marginBottom: '4px' }}>
@@ -4947,7 +4894,6 @@ function JrpgFantasyPortrait({
           </div>
         )}
       </div>
-
       {/* TARJETA DE HISTORIA DE ORIGEN Y PROFECÍA / LEYENDA / MITO EVOLUTIVO */}
       <div
         className="pex-ornate-panel"
@@ -4984,7 +4930,6 @@ function JrpgFantasyPortrait({
             </button>
           </div>
         </div>
-
         {loreSubTab === 'origin' ? (
           <div>
             <div className="font-souls" style={{ fontSize: '14px', fontWeight: 800, color: '#00eaff', marginBottom: '5px' }}>
@@ -5033,7 +4978,7 @@ function JrpgFantasyPortrait({
     </div>
   );
 }
- 
+
 // ============================================================================
 // RETRATO ANIME PARA PERSONAJES DE NOVELA VISUAL
 // ============================================================================
@@ -5061,10 +5006,10 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
             <stop offset="100%" stopColor="#fdba74" />
           </linearGradient>
         </defs>
- 
+
         <rect width="300" height="340" fill={`url(#vnCosmic_${char.id})`} />
         <circle cx="150" cy="145" r="115" fill={char.glowColor || '#fb7185'} opacity="0.16" />
- 
+
         <path
           d="M102 86 C86 155, 88 225, 98 285 L202 285 C212 225, 214 155, 198 86 Z"
           fill={char.hairColor}
@@ -5077,13 +5022,13 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
         />
         <path d="M132 152 L150 186 L168 152" fill="#ffedd5" stroke={char.trimColor} strokeWidth="2" />
         <polygon points="150,194 160,208 150,222 140,208" fill={char.glowColor || '#fb7185'} opacity="0.85" />
- 
+
         <rect x="140" y="130" width="20" height="24" rx="5" fill={`url(#vnSkin_${char.id})`} />
         <path
           d="M120 92 C120 122, 132 136, 150 140 C168 136, 180 122, 180 92 C180 64, 166 56, 150 56 C134 56, 120 64, 120 92 Z"
           fill={`url(#vnSkin_${char.id})`}
         />
- 
+
         <g>
           <ellipse cx="136" cy="105" rx="6.8" ry="5.8" fill="#ffffff" />
           <ellipse cx="136.5" cy="105" rx="4.8" ry="5.4" fill={char.eyeColor} />
@@ -5098,17 +5043,17 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
           <circle cx="161.8" cy="103" r="1.8" fill="#ffffff" />
           <path d="M156 101 Q164 95 172 100" fill="none" stroke="#090d16" strokeWidth="2.2" strokeLinecap="round" />
         </g>
- 
+
         <ellipse cx="130" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
         <ellipse cx="170" cy="115" rx="5" ry="2.2" fill="#fb7185" opacity="0.45" />
         <path d="M144 124 Q150 129 156 124" fill="none" stroke="#be123c" strokeWidth="1.8" strokeLinecap="round" />
- 
+
         <path
           d="M116 94 C115 58, 134 46, 150 46 C166 46, 185 58, 184 94 L178 132 L171 100 L163 84 L154 100 L150 82 L144 100 L135 84 L128 102 L122 132 Z"
           fill={char.hairColor}
         />
       </svg>
- 
+
       <div style={{
         position: 'absolute',
         bottom: 0,
@@ -5128,13 +5073,12 @@ function VisualNovelCharacterPortrait({ char, affectionLabel, affectionColor, af
     </div>
   );
 }
- 
+
 // ============================================================================
 // MAPA 2D INTERACTIVO DE LA CIUDAD
 // ============================================================================
 function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selectedCharId, onSelectCharacter }) {
   const [selectedLandmark, setSelectedLandmark] = useState(null);
-
   const landmarksInfo = {
     hall: { title: 'Ayuntamiento del Soberano', detail: 'Sede central de gobierno, rango y gestión de tu ciudadela.' },
     forge: { title: 'Forja de Acero Real', detail: '+15 Poder de Equipo. Lyra templa armas rúnicas aquí.' },
@@ -5143,7 +5087,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
     observatory: { title: 'Observatorio Astral', detail: 'Amplifica tu Pasiva Única de Clase y lee las estrellas.' },
     garden: { title: 'Jardín de los Juramentos ♥', detail: 'Santuario floral iluminado para encuentros románticos.' },
   };
-
   return (
     <div
       className="pex-ornate-frame"
@@ -5156,7 +5099,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
       <span className="pex-avatar-corner-tr" />
       <span className="pex-avatar-corner-bl" style={{ bottom: '8px' }} />
       <span className="pex-avatar-corner-br" style={{ bottom: '8px' }} />
-
       <div style={{
         position: 'absolute',
         top: '10px',
@@ -5177,7 +5119,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           ALIADOS EN PLAZA: {unlockedCharacters.length}/{STORY_CHARACTERS.length}
         </span>
       </div>
-
       <svg viewBox="0 0 540 250" width="100%" height="250" style={{ display: 'block' }}>
         <defs>
           <linearGradient id="citySky2d" x1="0" y1="0" x2="0" y2="1">
@@ -5200,12 +5141,10 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <stop offset="100%" stopColor="#1e293b" />
           </linearGradient>
         </defs>
-
         <rect width="540" height="250" fill="url(#citySky2d)" />
         <circle cx="468" cy="48" r="46" fill="url(#moonHalo2d)" />
         <circle cx="468" cy="48" r="16" fill="#fef08a" opacity="0.88" />
         <circle cx="474" cy="44" r="14" fill="#12183b" />
-
         {[
           [48, 34, 1.6], [92, 52, 1.2], [148, 28, 1.8], [204, 46, 1.3],
           [320, 32, 1.7], [385, 55, 1.2], [512, 26, 1.5], [30, 72, 1.1]
@@ -5213,20 +5152,16 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           <circle key={idx} cx={sx} cy={sy} r={sr} fill="#e0f2fe" opacity="0.8" />
         ))}
         <polyline points="148,28 204,46 248,30" fill="none" stroke="#00eaff" strokeWidth="0.6" strokeOpacity="0.3" strokeDasharray="3 3" />
-
         <polygon points="0,152 85,78 175,152" fill="#0b1124" />
         <polygon points="130,152 265,64 395,152" fill="#090e1f" />
         <polygon points="325,152 448,74 540,152" fill="#0b1124" />
-
         <rect x="0" y="140" width="540" height="12" fill="#1e293b" stroke="#475569" strokeWidth="0.8" />
         {Array.from({ length: 18 }, (_, i) => (
           <rect key={i} x={i * 30 + 4} y="135" width="16" height="6" fill="#334155" stroke="#ffd45a" strokeWidth="0.4" />
         ))}
-
         <rect x="0" y="150" width="540" height="100" fill="url(#ground2d)" />
         <rect x="0" y="176" width="540" height="30" fill="url(#road2d)" stroke="#475569" strokeWidth="1" />
         <line x1="0" y1="191" x2="540" y2="191" stroke="#00eaff" strokeWidth="1" strokeDasharray="8 10" strokeOpacity="0.45" />
-
         {[52, 195, 345, 505].map((lx, idx) => (
           <g key={idx}>
             <line x1={lx} y1="158" x2={lx} y2="177" stroke="#94a3b8" strokeWidth="2" />
@@ -5234,7 +5169,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <circle cx={lx} cy="156" r="10" fill="#00eaff" opacity="0.22" />
           </g>
         ))}
-
         <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.hall)}>
           <rect x="230" y="96" width="80" height="56" rx="3" fill="#162038" stroke="#ffd45a" strokeWidth="2" />
           <polygon points="222,96 270,64 318,96" fill="#7f1d1d" stroke="#ffd45a" strokeWidth="1.6" />
@@ -5245,7 +5179,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           <rect x="226" y="42" width="88" height="14" rx="4" fill="rgba(5,8,23,0.88)" stroke="#ffd45a" strokeWidth="0.8" />
           <text x="270" y="52" textAnchor="middle" fill="#ffd45a" fontSize="8" fontWeight="bold">AYUNTAMIENTO</text>
         </g>
-
         {builtBuildings.includes('forge') && (
           <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.forge)}>
             <rect x="64" y="110" width="68" height="42" rx="3" fill="#292524" stroke="#f97316" strokeWidth="1.8" />
@@ -5255,7 +5188,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <text x="98" y="81" textAnchor="middle" fill="#fdba74" fontSize="8" fontWeight="bold">FORJA</text>
           </g>
         )}
-
         {builtBuildings.includes('tavern') && (
           <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.tavern)}>
             <rect x="148" y="108" width="68" height="44" rx="3" fill="#3b2618" stroke="#fbbf24" strokeWidth="1.8" />
@@ -5264,7 +5196,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <text x="182" y="79" textAnchor="middle" fill="#fde047" fontSize="8" fontWeight="bold">TABERNA</text>
           </g>
         )}
-
         {builtBuildings.includes('dojo') && (
           <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.dojo)}>
             <rect x="324" y="110" width="72" height="42" rx="3" fill="#13263a" stroke="#00eaff" strokeWidth="1.8" />
@@ -5272,7 +5203,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <text x="360" y="81" textAnchor="middle" fill="#00eaff" fontSize="8" fontWeight="bold">ARENA DOJO</text>
           </g>
         )}
-
         {builtBuildings.includes('observatory') && (
           <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.observatory)}>
             <rect x="410" y="98" width="46" height="54" rx="3" fill="#2e1065" stroke="#c084fc" strokeWidth="1.8" />
@@ -5281,7 +5211,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <text x="433" y="64" textAnchor="middle" fill="#e9d5ff" fontSize="8" fontWeight="bold">OBSERVATORIO</text>
           </g>
         )}
-
         {builtBuildings.includes('garden') && (
           <g style={{ cursor: 'pointer' }} onClick={() => setSelectedLandmark(landmarksInfo.garden)}>
             <circle cx="490" cy="136" r="18" fill="#064e3b" stroke="#ff3e9d" strokeWidth="1.8" />
@@ -5290,7 +5219,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
             <text x="490" y="113" textAnchor="middle" fill="#fda4af" fontSize="8" fontWeight="bold">JARDÍN ♥</text>
           </g>
         )}
-
         {unlockedCharacters.map((char, idx) => {
           const isSelected = char.id === selectedCharId;
           return (
@@ -5316,7 +5244,6 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
           );
         })}
       </svg>
-
       <div style={{
         padding: '9px 14px',
         background: 'rgba(5, 8, 23, 0.94)',
@@ -5346,14 +5273,14 @@ function City2DWorldMap({ cityName, builtBuildings, unlockedCharacters, selected
     </div>
   );
 }
- 
+
 // ============================================================================
 // VISOR DE MINI ANIMACIÓN BIOMECÁNICA DE EJERCICIOS
 // ============================================================================
 function ExerciseAnimationModal({ exercise, onClose }) {
   if (!exercise) return null;
   const animType = exercise.anim || 'press';
- 
+
   return (
     <div style={{
       position: 'fixed',
@@ -5376,7 +5303,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
         <p style={{ fontSize: '12px', color: '#fbbf24', marginBottom: '12px' }}>
           {exercise.sets} • {exercise.focus}
         </p>
- 
+
         <div style={{
           background: 'radial-gradient(circle at 50% 50%, #111827 0%, #05070d 100%)',
           border: '1px solid rgba(251, 191, 36, 0.4)',
@@ -5386,7 +5313,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
         }}>
           <svg viewBox="0 0 220 150" width="100%" height="150">
             <line x1="20" y1="132" x2="200" y2="132" stroke="#475569" strokeWidth="3" strokeLinecap="round" />
- 
+
             {animType === 'press' && (
               <g>
                 <rect x="45" y="102" width="130" height="8" rx="3" fill="#334155" />
@@ -5402,7 +5329,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
                 </g>
               </g>
             )}
- 
+
             {animType === 'squat' && (
               <g>
                 <g className="bio-squat">
@@ -5416,7 +5343,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
                 </g>
               </g>
             )}
- 
+
             {animType === 'pull' && (
               <g>
                 <line x1="50" y1="22" x2="170" y2="22" stroke="#fbbf24" strokeWidth="4" strokeLinecap="round" />
@@ -5435,11 +5362,11 @@ function ExerciseAnimationModal({ exercise, onClose }) {
             Fase Excéntrica: 3 seg controlados • Fase Concéntrica: Explosiva
           </div>
         </div>
- 
+
         <div style={{ textAlign: 'left', fontSize: '13px', color: '#e2e8f0', background: 'rgba(4,6,12,0.85)', padding: '10px 12px', borderRadius: '9px', marginBottom: '12px' }}>
           <strong>Claves Biomecánicas:</strong> {exercise.cue}
         </div>
- 
+
         <button className="sys-btn sys-btn-gold" style={{ width: '100%' }} onClick={onClose}>
           ENTENDIDO, CERRAR VISOR
         </button>
@@ -5447,7 +5374,7 @@ function ExerciseAnimationModal({ exercise, onClose }) {
     </div>
   );
 }
- 
+
 // ============================================================================
 // PORTAL DE INICIO DE SESIÓN Y REGISTRO (SESIÓN PERMANENTE AUTOMÁTICA)
 // ============================================================================
@@ -5458,7 +5385,7 @@ function AuthPortal({ onAuthenticated }) {
   const [hunterTagInput, setHunterTagInput] = useState('');
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
- 
+
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setAuthError('');
@@ -5467,12 +5394,12 @@ function AuthPortal({ onAuthenticated }) {
       setAuthError('Ingresa un correo/usuario válido y una contraseña de al menos 4 caracteres.');
       return;
     }
- 
+
     setLoading(true);
     try {
       const passHash = await hashSecret(passwordInput);
       const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v12') || '{}');
- 
+
       if (authMode === 'register') {
         if (usersDb[cleanEmail]) {
           setAuthError('Ese correo o usuario ya está registrado. Cambia a "Iniciar Sesión".');
@@ -5508,7 +5435,7 @@ function AuthPortal({ onAuthenticated }) {
     }
     setLoading(false);
   };
- 
+
   return (
     <div className="sys-container" style={{ maxWidth: '460px', paddingTop: '44px' }}>
       <div className="sys-window" style={{ padding: '26px 22px' }}>
@@ -5523,7 +5450,7 @@ function AuthPortal({ onAuthenticated }) {
             Inicia desde 0 y conserva tu progreso automáticamente
           </p>
         </div>
- 
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '18px' }}>
           <button
             type="button"
@@ -5540,7 +5467,7 @@ function AuthPortal({ onAuthenticated }) {
             <UserPlus size={14} /> CREAR CUENTA
           </button>
         </div>
- 
+
         <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {authMode === 'register' && (
             <div>
@@ -5553,7 +5480,7 @@ function AuthPortal({ onAuthenticated }) {
               />
             </div>
           )}
- 
+
           <div>
             <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>
               <Mail size={12} style={{ display: 'inline', marginRight: '4px' }} />
@@ -5568,7 +5495,7 @@ function AuthPortal({ onAuthenticated }) {
               required
             />
           </div>
- 
+
           <div>
             <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>
               <KeyRound size={12} style={{ display: 'inline', marginRight: '4px' }} />
@@ -5583,7 +5510,7 @@ function AuthPortal({ onAuthenticated }) {
               required
             />
           </div>
- 
+
           {authError && (
             <div style={{
               padding: '10px',
@@ -5596,7 +5523,7 @@ function AuthPortal({ onAuthenticated }) {
               {authError}
             </div>
           )}
- 
+
           <button type="submit" className="sys-btn sys-btn-primary" style={{ padding: '14px', fontSize: '12px', marginTop: '4px' }} disabled={loading}>
             <Zap size={16} /> {authMode === 'login' ? 'ENTRAR AL SISTEMA' : 'REGISTRAR Y COMENZAR'}
           </button>
@@ -5605,11 +5532,11 @@ function AuthPortal({ onAuthenticated }) {
     </div>
   );
 }
- 
+
 // ============================================================================
 // CONTENEDOR PRINCIPAL (SESIÓN PERSISTENTE HASTA ELIMINACIÓN DE CUENTA)
 // ============================================================================
- 
+
 // ============================================================================
 // EXPLORADOR SEMANAL DE RUTINAS — CALENDARIO, HISTORIAL Y MISIONES FIELES AL PLAN
 // ============================================================================
@@ -5640,7 +5567,7 @@ function extractRoutineDaysFromText(rawText) {
   });
   return groups.filter((day) => day.isRest || day.exercises.length);
 }
- 
+
 function RoutineDayExplorer({
   generatedDays, weeklyRoutinePlan, routineText, logs, setLogs, onCreateMission, onCompleteTodayTraining, scopeKey = 'routine'
 }) {
@@ -5685,7 +5612,7 @@ function RoutineDayExplorer({
   const weekStart = new Date(`${selectedDate}T12:00:00`);
   weekStart.setDate(weekStart.getDate() - mondayIndex);
   const weekLabels = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
- 
+
   return (
     <div className="sys-window" style={{ padding: '16px', marginTop: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -5807,7 +5734,7 @@ function RoutineDayExplorer({
     </div>
   );
 }
- 
+
 export default function App() {
   useEffect(() => {
     const styleTag = document.createElement('style');
@@ -5815,7 +5742,7 @@ export default function App() {
     document.head.appendChild(styleTag);
     return () => document.head.removeChild(styleTag);
   }, []);
- 
+
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('pex_permanent_session_v12');
@@ -5824,12 +5751,12 @@ export default function App() {
       return null;
     }
   });
- 
+
   const handleAuthenticated = (account) => {
     setCurrentUser(account);
     localStorage.setItem('pex_permanent_session_v12', JSON.stringify(account));
   };
- 
+
   const handleDeleteAccount = (emailToDelete) => {
     const usersDb = JSON.parse(localStorage.getItem('pex_users_registry_v12') || '{}');
     delete usersDb[emailToDelete];
@@ -5838,11 +5765,11 @@ export default function App() {
     localStorage.removeItem('pex_permanent_session_v12');
     setCurrentUser(null);
   };
- 
+
   if (!currentUser) {
     return <AuthPortal onAuthenticated={handleAuthenticated} />;
   }
- 
+
   return (
     <HunterSystemWorkspace
       key={currentUser.email}
@@ -5851,7 +5778,7 @@ export default function App() {
     />
   );
 }
- 
+
 // ============================================================================
 // MÓDULO DE MOVIMIENTO & CARDIO GPS (PASOS, CARRERA Y BICICLETA)
 // ============================================================================
@@ -5871,7 +5798,7 @@ function MovementTrackerModule({
   const [manualSteps, setManualSteps] = useState('');
   const [manualKm, setManualKm] = useState('');
   const [manualMinutes, setManualMinutes] = useState('');
- 
+
   const todayKey = getLocalDateISO();
   const todayData = activityLogs[todayKey] || {
     steps: 0,
@@ -5882,14 +5809,14 @@ function MovementTrackerModule({
     stepGoalClaimed: false,
     bikeGoalClaimed: false,
   };
- 
+
   const STEP_GOAL = 8000;
   const DISTANCE_GOAL_KM = 10;
- 
+
   const totalTodayKm = Number(((todayData.walkRunKm || 0) + (todayData.bikeKm || 0)).toFixed(2));
   const stepProgressPct = Math.min(100, Math.round(((todayData.steps || 0) / STEP_GOAL) * 100));
   const distProgressPct = Math.min(100, Math.round((totalTodayKm / DISTANCE_GOAL_KM) * 100));
- 
+
   const formatElapsed = (sec) => {
     const mins = Math.floor(sec / 60);
     const remSec = sec % 60;
@@ -5899,7 +5826,7 @@ function MovementTrackerModule({
     }
     return `${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
   };
- 
+
   const estimateCalories = (mode, steps, km, elapsedSec) => {
     const weight = Number(profile.weightKg) || 75;
     const hours = Math.max(
@@ -5909,12 +5836,12 @@ function MovementTrackerModule({
     const met = mode === 'bike' ? 7.5 : mode === 'run' ? 8.8 : 3.8;
     return Math.max(1, Math.round(met * weight * hours));
   };
- 
+
   const commitActivityRecord = ({ mode, steps, distanceKm, elapsedSec, sourceLabel }) => {
     const cleanSteps = mode === 'bike' ? 0 : Math.max(0, Math.round(steps));
     const cleanKm = Math.max(0, Number(distanceKm.toFixed(2)));
     if (cleanSteps === 0 && cleanKm === 0) return;
- 
+
     const kcal = estimateCalories(mode, cleanSteps, cleanKm, elapsedSec);
     const prevDay = activityLogs[todayKey] || {
       steps: 0,
@@ -5925,24 +5852,24 @@ function MovementTrackerModule({
       stepGoalClaimed: false,
       bikeGoalClaimed: false,
     };
- 
+
     const nextSteps = (prevDay.steps || 0) + cleanSteps;
     const nextWalkRunKm = Number(((prevDay.walkRunKm || 0) + (mode !== 'bike' ? cleanKm : 0)).toFixed(2));
     const nextBikeKm = Number(((prevDay.bikeKm || 0) + (mode === 'bike' ? cleanKm : 0)).toFixed(2));
     const nextTotalKm = Number((nextWalkRunKm + nextBikeKm).toFixed(2));
- 
+
     const stepExp = Math.floor(cleanSteps / 1000) * 10;
     const stepLp = Math.floor(cleanSteps / 1000) * 5;
     const kmExp = Math.floor(cleanKm * 12);
     const kmLp = Math.floor(cleanKm * 6);
- 
+
     let gainedExp = Math.max(5, mode === 'bike' ? kmExp : Math.max(stepExp, kmExp));
     let gainedLp = Math.max(3, mode === 'bike' ? kmLp : Math.max(stepLp, kmLp));
- 
+
     let claimedStepBonus = Boolean(prevDay.stepGoalClaimed);
     let claimedDistBonus = Boolean(prevDay.bikeGoalClaimed);
     const bonusNotes = [];
- 
+
     if (!claimedStepBonus && nextSteps >= STEP_GOAL) {
       claimedStepBonus = true;
       gainedExp += 40;
@@ -5955,7 +5882,7 @@ function MovementTrackerModule({
       gainedLp += 25;
       bonusNotes.push('Meta 10 km diarios (+50 EXP / +25 LP)');
     }
- 
+
     const modeNames = { walk: 'Caminata', run: 'Carrera', bike: 'Bicicleta' };
     const newSession = {
       id: Date.now(),
@@ -5970,7 +5897,7 @@ function MovementTrackerModule({
       exp: gainedExp,
       lp: gainedLp,
     };
- 
+
     setActivityLogs({
       ...activityLogs,
       [todayKey]: {
@@ -5983,19 +5910,19 @@ function MovementTrackerModule({
         bikeGoalClaimed: claimedDistBonus,
       },
     });
- 
+
     const summaryStr =
       mode === 'bike'
         ? `${cleanKm.toFixed(2)} km en bici`
         : `${cleanSteps.toLocaleString()} pasos (${cleanKm.toFixed(2)} km)`;
- 
+
     onAwardProgress(
       gainedExp,
       gainedLp,
       `[MOVIMIENTO GUARDADO] ${summaryStr} • +${gainedExp} EXP y +${gainedLp} LP${bonusNotes.length ? ` • ¡${bonusNotes.join(' + ')}!` : ''}`
     );
   };
- 
+
   const handleFinishLiveSession = () => {
     if (tracker.sessionSteps === 0 && tracker.sessionDistanceKm < 0.01) {
       onDiscardTracker('No se registró desplazamiento suficiente para guardar la sesión.');
@@ -6010,7 +5937,7 @@ function MovementTrackerModule({
     });
     onDiscardTracker(null);
   };
- 
+
   const handleSaveManual = () => {
     const stepsVal = manualMode === 'bike' ? 0 : Math.max(0, Number(manualSteps) || 0);
     const heightM = (Number(profile.heightCm) || 176) / 100;
@@ -6024,9 +5951,9 @@ function MovementTrackerModule({
         ? stepsVal
         : Math.round((derivedKm * 1000) / strideM);
     const mins = Math.max(1, Number(manualMinutes) || 15);
- 
+
     if (derivedSteps === 0 && derivedKm === 0) return;
- 
+
     commitActivityRecord({
       mode: manualMode,
       steps: derivedSteps,
@@ -6039,9 +5966,9 @@ function MovementTrackerModule({
     setManualMinutes('');
     setShowManualForm(false);
   };
- 
+
   const recentDates = Object.keys(activityLogs).sort().reverse().slice(0, 5);
- 
+
   return (
     <div className="sys-window" style={{ padding: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
@@ -6069,7 +5996,7 @@ function MovementTrackerModule({
           )}
         </div>
       </div>
- 
+
       <div className="grid-2" style={{ marginBottom: '14px' }}>
         <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(5,8,23,0.85)', border: '1px solid rgba(0,234,255,0.22)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
@@ -6084,7 +6011,7 @@ function MovementTrackerModule({
             <div className="progress-fill" style={{ width: `${stepProgressPct}%`, background: 'linear-gradient(90deg, #0284c7, #00f0ff)' }} />
           </div>
         </div>
- 
+
         <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'rgba(5,8,23,0.85)', border: '1px solid rgba(255,212,90,0.25)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '4px' }}>
             <span style={{ color: '#fde047', fontWeight: 700 }}>
@@ -6102,7 +6029,7 @@ function MovementTrackerModule({
           </div>
         </div>
       </div>
- 
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
         {[
           { id: 'walk', label: 'Caminar', sub: 'Pasos + GPS' },
@@ -6137,7 +6064,7 @@ function MovementTrackerModule({
           );
         })}
       </div>
- 
+
       <div
         style={{
           display: 'grid',
@@ -6161,14 +6088,14 @@ function MovementTrackerModule({
               : tracker.sessionSteps.toLocaleString()}
           </div>
         </div>
- 
+
         <div>
           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>DISTANCIA</div>
           <div className="font-hud" style={{ fontSize: '20px', fontWeight: 900, color: '#fbbf24' }}>
             {tracker.sessionDistanceKm.toFixed(2)} km
           </div>
         </div>
- 
+
         <div>
           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>TIEMPO</div>
           <div className="font-hud" style={{ fontSize: '20px', fontWeight: 900, color: '#f4f6ff' }}>
@@ -6176,7 +6103,7 @@ function MovementTrackerModule({
           </div>
         </div>
       </div>
- 
+
       <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
         <span>
           <Navigation size={12} style={{ display: 'inline', marginRight: '4px', color: '#00f0ff' }} />
@@ -6186,7 +6113,7 @@ function MovementTrackerModule({
           Sensor: <strong style={{ color: '#e2e8f0' }}>{tracker.hasAccelerometer ? 'Acelerómetro + GPS' : `Híbrido GPS (Altura ${profile.heightCm || 176} cm)`}</strong>
         </span>
       </div>
- 
+
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {!tracker.isRunning ? (
           <button type="button" className="sys-btn sys-btn-primary" style={{ flex: 1 }} onClick={onStartTracker}>
@@ -6197,7 +6124,7 @@ function MovementTrackerModule({
             <Pause size={15} /> PAUSAR
           </button>
         )}
- 
+
         {(tracker.elapsedSec > 0 || tracker.sessionSteps > 0 || tracker.sessionDistanceKm > 0) && (
           <>
             <button type="button" className="sys-btn sys-btn-success" onClick={handleFinishLiveSession}>
@@ -6208,12 +6135,12 @@ function MovementTrackerModule({
             </button>
           </>
         )}
- 
+
         <button type="button" className="sys-btn sys-btn-ghost" onClick={() => setShowManualForm(!showManualForm)}>
           <Plus size={15} /> MANUAL
         </button>
       </div>
- 
+
       {showManualForm && (
         <div style={{ marginTop: '12px', padding: '12px', borderRadius: '12px', background: 'rgba(5,8,23,0.92)', border: '1px solid rgba(251,191,36,0.35)' }}>
           <div style={{ fontSize: '11px', color: '#fde047', fontWeight: 700, marginBottom: '8px' }}>
@@ -6257,7 +6184,7 @@ function MovementTrackerModule({
           </button>
         </div>
       )}
- 
+
       {todayData.sessions?.length > 0 && (
         <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginBottom: '6px' }}>
@@ -6291,7 +6218,7 @@ function MovementTrackerModule({
           </div>
         </div>
       )}
- 
+
       {recentDates.length > 1 && (
         <div style={{ marginTop: '8px', fontSize: '11px', color: '#94a3b8' }}>
           Días registrados: {recentDates.map((d) => `${d.slice(5)} (${(activityLogs[d]?.steps || 0).toLocaleString()} pasos / ${((activityLogs[d]?.walkRunKm || 0) + (activityLogs[d]?.bikeKm || 0)).toFixed(1)} km)`).join(' • ')}
@@ -6300,26 +6227,26 @@ function MovementTrackerModule({
     </div>
   );
 }
- 
+
 // ============================================================================
 // UTILIDADES DE RUTINA LIMPIA, JUSTIFICACIÓN LIBRE Y ANULACIÓN (CUPO 12/12)
 // ============================================================================
 const CANCELLATION_MAX_QUOTA = 12;
- 
+
 export function procesarRutinaImportada(textoRutina, misionesActuales = []) {
   const lineas = String(textoRutina || '')
     .replace(/\r/g, '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean);
- 
+
   // Ejercicios estructurados únicamente para la pestaña Rutina
   const ejerciciosParaTabRutina = lineas.map((linea, idx) => ({
     id: `ej-${Date.now()}-${idx}`,
     detalle: linea,
     completado: false,
   }));
- 
+
   // En Misiones crea únicamente la misión diaria limpia "Entrenar hoy"
   const hoy = getLocalDateISO();
   const yaExisteMisionHoy = misionesActuales.some(
@@ -6328,7 +6255,7 @@ export function procesarRutinaImportada(textoRutina, misionesActuales = []) {
       m.title === 'Entrenar hoy' &&
       (m.dailyDate === hoy || m.fecha === hoy)
   );
- 
+
   const misionesActualizadas = yaExisteMisionHoy
     ? misionesActuales
     : [
@@ -6348,17 +6275,17 @@ export function procesarRutinaImportada(textoRutina, misionesActuales = []) {
           (q) => !(q.isDaily && (q.title === 'Entrenar hoy' || q.env === 'Rutina diaria' || q.id === 1))
         ),
       ];
- 
+
   return { ejerciciosParaTabRutina, misionesActualizadas };
 }
- 
+
 export function generarConsejoTactico(motivoTexto, tituloMision = 'Entrenar hoy') {
   const clean = String(motivoTexto || '').trim();
   const texto = clean
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
- 
+
   if (!clean) {
     return {
       category: 'ESCRIBÍ TU MOTIVO',
@@ -6405,7 +6332,7 @@ export function generarConsejoTactico(motivoTexto, tituloMision = 'Entrenar hoy'
     advice: `Registro asimilado para "${tituloMision}". Dividí el objetivo pendiente en un micro-bloque de 15 minutos mañana a primera hora y sumalo a tu Cola de Retoma para recuperar el progreso sin perder consistencia.`,
   };
 }
- 
+
 function normalizeQuestList(rawList) {
   if (!Array.isArray(rawList)) return [];
   return rawList.map((q, idx) => {
@@ -6425,7 +6352,7 @@ function normalizeQuestList(rawList) {
     };
   });
 }
- 
+
 function parseRoutineExercisesAndLoads(rawText) {
   const lines = String(rawText || '')
     .replace(/\r/g, '')
@@ -6438,7 +6365,7 @@ function parseRoutineExercisesAndLoads(rawText) {
     /^(d[ií]a\s*\d+|semana\s*\d+|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|bloque|hoja:|upper|lower|push|pull|legs|full\s*body|torso|pierna)/i;
   const exerciseRegex =
     /(\d+\s*[x×]\s*\d+|series|reps|repeticiones|\d+(?:[.,]\d+)?\s*(?:kg|lbs?|%\s*1rm)|rir\s*\d+|rpe\s*\d+|press|sentadilla|peso muerto|remo|dominada|curl|extensi[oó]n|plancha|fondos|zancada|b[uú]lgara|elevaci[oó]n|jal[oó]n|prensa|hip\s*thrust|aperturas|face\s*pull)/i;
- 
+
   lines.forEach((line, idx) => {
     const cleanLine = line.replace(/^[-•*\d.)]+\s*/, '').trim();
     if (!cleanLine) return;
@@ -6451,11 +6378,11 @@ function parseRoutineExercisesAndLoads(rawText) {
       return;
     }
     if (!exerciseRegex.test(cleanLine)) return;
- 
+
     const setsRepsMatch = cleanLine.match(/(\d+\s*[x×]\s*\d+(?:\s*[-–]\s*\d+)?(?:\s*(?:reps?|seg|s))?)/i);
     const loadMatch = cleanLine.match(/(@?\s*\d+(?:[.,]\d+)?\s*(?:kg|lbs?|%\s*1rm))/i);
     const rirMatch = cleanLine.match(/(RIR\s*\d+(?:\s*[-–]\s*\d+)?|RPE\s*\d+(?:[.,]\d+)?)/i);
- 
+
     let namePart = cleanLine;
     if (setsRepsMatch) namePart = namePart.replace(setsRepsMatch[0], ' ');
     if (loadMatch) namePart = namePart.replace(loadMatch[0], ' ');
@@ -6466,7 +6393,7 @@ function parseRoutineExercisesAndLoads(rawText) {
       .replace(/^[-–—\s]+|[-–—\s]+$/g, '')
       .trim();
     if (!namePart || namePart.length < 2) namePart = cleanLine.slice(0, 48);
- 
+
     const numericKgMatch = loadMatch ? loadMatch[0].match(/(\d+(?:[.,]\d+)?)\s*kg/i) : null;
     items.push({
       id: `rut_item_${idx}_${namePart.slice(0, 12)}`,
@@ -6480,7 +6407,7 @@ function parseRoutineExercisesAndLoads(rawText) {
   });
   return items;
 }
- 
+
 function getCurrentWeekDaysSteps(activityLogs) {
   const LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   const now = new Date();
@@ -6489,7 +6416,7 @@ function getCurrentWeekDaysSteps(activityLogs) {
   const diffToMonday = jsDay === 0 ? -6 : 1 - jsDay;
   const monday = new Date(now);
   monday.setDate(now.getDate() + diffToMonday);
- 
+
   return LABELS.map((label, idx) => {
     const d = new Date(monday);
     d.setDate(monday.getDate() + idx);
@@ -6498,7 +6425,7 @@ function getCurrentWeekDaysSteps(activityLogs) {
     return { label, iso, steps, isToday: iso === todayIso };
   });
 }
- 
+
 function normalizeSleepLogs(rawSleepLogs, legacySleepArray) {
   const normalized = {};
   if (rawSleepLogs && typeof rawSleepLogs === 'object' && !Array.isArray(rawSleepLogs)) {
@@ -6535,7 +6462,7 @@ function normalizeSleepLogs(rawSleepLogs, legacySleepArray) {
   }
   return normalized;
 }
- 
+
 function getCurrentWeekSleepDays(sleepLogs) {
   const LABELS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
   const FULL_LABELS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -6564,7 +6491,7 @@ function getCurrentWeekSleepDays(sleepLogs) {
     };
   });
 }
- 
+
 function formatSleepDateLabel(isoDate) {
   if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return isoDate || '';
   const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -6575,7 +6502,7 @@ function formatSleepDateLabel(isoDate) {
   const yyyy = d.getFullYear();
   return `${dayName} ${dd}/${mm}/${yyyy}`;
 }
- 
+
 function IntegratedStepCounterPanel({
   todaySteps,
   stepGoal,
@@ -6590,12 +6517,12 @@ function IntegratedStepCounterPanel({
   const [inputPasos, setInputPasos] = useState('');
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalInput, setGoalInput] = useState(String(stepGoal || 8000));
- 
+
   const safeGoal = Math.max(1000, Number(stepGoal) || 8000);
   const safeSteps = Math.max(0, Number(todaySteps) || 0);
   const pct = Math.min(100, Math.round((safeSteps / safeGoal) * 100));
   const weekDays = getCurrentWeekDaysSteps(activityLogs);
- 
+
   return (
     <div
       className="sys-window"
@@ -6671,7 +6598,7 @@ function IntegratedStepCounterPanel({
           </button>
         </div>
       </div>
- 
+
       {editingGoal && (
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
           <input
@@ -6696,7 +6623,7 @@ function IntegratedStepCounterPanel({
           </button>
         </div>
       )}
- 
+
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '6px' }}>
           <span
@@ -6724,7 +6651,7 @@ function IntegratedStepCounterPanel({
           />
         </div>
       </div>
- 
+
       {/* Mini tarjetas semanales (Lun a Dom) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center' }}>
         {weekDays.map((d) => (
@@ -6744,7 +6671,7 @@ function IntegratedStepCounterPanel({
           </div>
         ))}
       </div>
- 
+
       {/* Botones de carga rápida */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '5px' }}>
         {[500, 1000, 2500, 5000].map((inc) => (
@@ -6767,7 +6694,7 @@ function IntegratedStepCounterPanel({
           </button>
         ))}
       </div>
- 
+
       {/* Input manual directo + botón SUMAR PASOS */}
       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
         <input
@@ -6802,7 +6729,7 @@ function IntegratedStepCounterPanel({
 // ============================================================================
 function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const storageKey = `pex_user_data_v12_${currentUser.email}`;
- 
+
   const loadUserState = () => {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -6811,12 +6738,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       return null;
     }
   };
- 
+
   const initialData = loadUserState();
- 
+
   const [awakened, setAwakened] = useState(() => initialData?.awakened === true);
   const [surveyStep, setSurveyStep] = useState(1);
- 
+
   const [profile, setProfile] = useState(() => initialData?.profile || {
     hunterName: currentUser.hunterName || 'CAZADOR_01',
     hunterCode: currentUser.hunterCode || '#PEX-1000',
@@ -6838,7 +6765,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     photoScanned: false,
     censoredPreview: null,
   });
- 
+
   useEffect(() => {
     const lvl0ResetFlag = `pex_lvl0_init_v13_${currentUser.email}`;
     if (!localStorage.getItem(lvl0ResetFlag)) {
@@ -6848,18 +6775,18 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   }, [currentUser.email]);
   const [hunterClass, setHunterClass] = useState(() => initialData?.hunterClass || null);
   const [savedLifts, setSavedLifts] = useState(() => initialData?.savedLifts || ZERO_LIFTS);
- 
+
   const [lp, setLp] = useState(() => initialData?.lp ?? 0);
   const [exp, setExp] = useState(() => initialData?.exp ?? 0);
   const [streak, setStreak] = useState(() => initialData?.streak ?? 0);
- 
+
   const [unlockedInventory, setUnlockedInventory] = useState(() => initialData?.unlockedInventory || []);
   const [completedChapters, setCompletedChapters] = useState(() => initialData?.completedChapters || []);
   const [pveBattleLog, setPveBattleLog] = useState(null);
   const [activeStoryEncounter, setActiveStoryEncounter] = useState(null);
   const [activePvpDuel, setActivePvpDuel] = useState(null);
   const [showAllRanksLadder, setShowAllRanksLadder] = useState(false);
- 
+
   const [cityName, setCityName] = useState(() => initialData?.cityName || 'Bastión de Ceniza');
   const [builtBuildings, setBuiltBuildings] = useState(() => initialData?.builtBuildings || []);
   const [selectedCharId, setSelectedCharId] = useState('lyra');
@@ -6871,21 +6798,21 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   });
   const [chatInput, setChatInput] = useState('');
   const [confirmDeleteText, setConfirmDeleteText] = useState('');
- 
- 
+
+
   const [userCoords, setUserCoords] = useState({ lat: -34.0981, lon: -59.0286, label: 'Zárate, Buenos Aires (GPS Activo)' });
   const [friends, setFriends] = useState(() => initialData?.friends || []);
   const [newFriendName, setNewFriendName] = useState('');
   const [newFriendCode, setNewFriendCode] = useState('');
   const [newFriendDistKm, setNewFriendDistKm] = useState(5);
   const [pvpLog, setPvpLog] = useState(null);
- 
+
   const [activeTab, setActiveTab] = useState('avatar');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedSlotIdx, setSelectedSlotIdx] = useState(0);
   const [toast, setToast] = useState(null);
   const [animModalEx, setAnimModalEx] = useState(null);
- 
+
   const [neonTheme, setNeonTheme] = useState(() => {
     if (initialData?.neonTheme) return initialData.neonTheme;
     try {
@@ -6899,7 +6826,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     };
   });
   const [avatarRenderMode, setAvatarRenderMode] = useState(() => initialData?.avatarRenderMode || '2d');
- 
+
   useEffect(() => {
     const hexToRgb = (hex) => {
       const clean = (hex || '#00eaff').replace('#', '');
@@ -6908,7 +6835,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       if (Number.isNaN(num)) return '0, 234, 255';
       return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
     };
- 
+
     const root = document.documentElement.style;
     root.setProperty('--neon-blue', neonTheme.primary || '#00eaff');
     root.setProperty('--cyan-glow', neonTheme.primary || '#00eaff');
@@ -6918,12 +6845,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     root.setProperty('--neon-primary-rgb', hexToRgb(neonTheme.primary || '#00eaff'));
     root.setProperty('--neon-secondary-rgb', hexToRgb(neonTheme.secondary || '#963cff'));
     root.setProperty('--neon-accent-rgb', hexToRgb(neonTheme.accent || '#ffd45a'));
- 
+
     try {
       localStorage.setItem(`pex_neon_theme_v1_${currentUser.email}`, JSON.stringify(neonTheme));
     } catch {}
   }, [neonTheme, currentUser.email]);
- 
+
   const [quests, setQuests] = useState(() =>
     initialData?.quests
       ? normalizeQuestList(initialData.quests)
@@ -6995,20 +6922,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     } catch {}
     return 8000;
   });
- 
+
   useEffect(() => {
     const timer = setInterval(() => setNowTimestamp(Date.now()), 30000);
     return () => clearInterval(timer);
   }, []);
- 
+
   const [selectedExercise, setSelectedExercise] = useState('Press Banca');
   const [liftWeightInput, setLiftWeightInput] = useState(savedLifts['Press Banca']?.weight || 0);
   const [liftRepsInput, setLiftRepsInput] = useState(savedLifts['Press Banca']?.reps || 0);
- 
+
   const [daysUntilEval] = useState(90);
   const [vaultPhotos, setVaultPhotos] = useState({ front: null, back: null });
   const [yearlyRecap, setYearlyRecap] = useState(() => initialData?.yearlyRecap || []);
- 
+
   const [customRoutineText, setCustomRoutineText] = useState('');
   const [scanReport, setScanReport] = useState(null);
   const [routineFileName, setRoutineFileName] = useState('');
@@ -7016,7 +6943,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const [interactiveRoutineDoc, setInteractiveRoutineDoc] = useState(null);
   const [showGeneratedRoutine, setShowGeneratedRoutine] = useState(false);
   const [routineDayLogs, setRoutineDayLogs] = useState(() => initialData?.routineDayLogs || {});
- 
+
   const [sleepLogs, setSleepLogs] = useState(() =>
     normalizeSleepLogs(initialData?.sleepLogs, initialData?.sleepLog)
   );
@@ -7031,7 +6958,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const todayRec = initialMap[getLocalDateISO()];
     return todayRec?.note || '';
   });
- 
+
   const [activityLogs, setActivityLogs] = useState(() => initialData?.activityLogs || {});
   const [tracker, setTracker] = useState({
     isRunning: false,
@@ -7044,13 +6971,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     hasAccelerometer: false,
     wakeLockActive: false,
   });
- 
+
   const lastGpsPointRef = useRef(null);
   const wakeLockRef = useRef(null);
   const lastStepTimestampRef = useRef(0);
   const gravityEstimateRef = useRef(9.81);
   const hasAccelRef = useRef(false);
- 
+
   useEffect(() => {
     if (!tracker.isRunning) {
       if (wakeLockRef.current) {
@@ -7060,11 +6987,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       setTracker((prev) => (prev.wakeLockActive ? { ...prev, wakeLockActive: false } : prev));
       return;
     }
- 
+
     const intervalId = setInterval(() => {
       setTracker((prev) => ({ ...prev, elapsedSec: prev.elapsedSec + 1 }));
     }, 1000);
- 
+
     if ('wakeLock' in navigator && !wakeLockRef.current) {
       navigator.wakeLock
         .request('screen')
@@ -7074,13 +7001,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         })
         .catch(() => {});
     }
- 
+
     return () => clearInterval(intervalId);
   }, [tracker.isRunning]);
- 
+
   useEffect(() => {
     if (!tracker.isRunning) return;
- 
+
     let watchId = null;
     if (navigator.geolocation) {
       setTracker((prev) => ({ ...prev, gpsStatus: 'Buscando satélite...' }));
@@ -7091,17 +7018,17 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             setTracker((prev) => ({ ...prev, gpsStatus: `Señal débil (±${Math.round(accuracy)}m)` }));
             return;
           }
- 
+
           setUserCoords({
             lat: latitude,
             lon: longitude,
             label: `GPS Activo (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
           });
- 
+
           const prevPt = lastGpsPointRef.current;
           const nowMs = Date.now();
           let deltaKm = 0;
- 
+
           if (prevPt) {
             const rawDist = getPreciseDistanceKm(prevPt.lat, prevPt.lon, latitude, longitude);
             const dtHours = Math.max((nowMs - prevPt.time) / 3600000, 1 / 3600);
@@ -7113,7 +7040,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           } else {
             lastGpsPointRef.current = { lat: latitude, lon: longitude, time: nowMs };
           }
- 
+
           setTracker((prev) => {
             const heightM = (Number(profile.heightCm) || 176) / 100;
             const strideM = prev.mode === 'run' ? heightM * 0.65 : heightM * 0.415;
@@ -7127,7 +7054,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 : deltaKm > 0 && prevPt
                 ? Number((deltaKm / Math.max((nowMs - prevPt.time) / 3600000, 1 / 3600)).toFixed(1))
                 : 0;
- 
+
             return {
               ...prev,
               gpsStatus: `Conectado (±${Math.round(accuracy || 10)}m)`,
@@ -7143,7 +7070,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
       );
     }
- 
+
     const handleDeviceMotion = (event) => {
       if (tracker.mode === 'bike') return;
       const acc =
@@ -7151,18 +7078,18 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           ? event.acceleration
           : event.accelerationIncludingGravity;
       if (!acc) return;
- 
+
       const mag = Math.sqrt((acc.x || 0) ** 2 + (acc.y || 0) ** 2 + (acc.z || 0) ** 2);
       let dynamicDelta = mag;
       if (!event.acceleration || event.acceleration.x === null) {
         gravityEstimateRef.current = 0.9 * gravityEstimateRef.current + 0.1 * mag;
         dynamicDelta = Math.abs(mag - gravityEstimateRef.current);
       }
- 
+
       const threshold = tracker.mode === 'run' ? 2.6 : 1.65;
       const minGapMs = tracker.mode === 'run' ? 190 : 280;
       const now = Date.now();
- 
+
       if (dynamicDelta > threshold && now - lastStepTimestampRef.current > minGapMs) {
         lastStepTimestampRef.current = now;
         if (!hasAccelRef.current) {
@@ -7175,7 +7102,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         }));
       }
     };
- 
+
     window.addEventListener('devicemotion', handleDeviceMotion);
     return () => {
       if (watchId !== null && navigator.geolocation) {
@@ -7184,7 +7111,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       window.removeEventListener('devicemotion', handleDeviceMotion);
     };
   }, [tracker.isRunning, tracker.mode, profile.heightCm]);
- 
+
   const handleStartTracker = async () => {
     if (
       typeof DeviceMotionEvent !== 'undefined' &&
@@ -7200,13 +7127,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setTracker((prev) => ({ ...prev, isRunning: true }));
     triggerToast('[SISTEMA GPS] Rastreo de actividad iniciado.');
   };
- 
+
   const handlePauseTracker = () => {
     lastGpsPointRef.current = null;
     setTracker((prev) => ({ ...prev, isRunning: false, speedKmh: 0 }));
     triggerToast('[SISTEMA GPS] Sesión en pausa.');
   };
- 
+
   const handleDiscardTracker = (msg) => {
     lastGpsPointRef.current = null;
     hasAccelRef.current = false;
@@ -7222,14 +7149,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     }));
     if (msg) triggerToast(msg);
   };
- 
- 
+
+
   const gradeData = computeHunterGradeData(savedLifts, profile.weightKg);
   const hunterGrade = gradeData.currentStd.grade;
   const prevGradeRef = useRef(hunterGrade);
- 
+
   const cityUnlocked = completedChapters.includes('act1_ch1');
- 
+
   useEffect(() => {
     if (awakened && prevGradeRef.current !== hunterGrade) {
       const oldIdx = HUNTER_GRADE_STANDARDS.findIndex((g) => g.grade === prevGradeRef.current);
@@ -7240,7 +7167,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       prevGradeRef.current = hunterGrade;
     }
   }, [hunterGrade, awakened]);
- 
+
   useEffect(() => {
     try {
       const payload = {
@@ -7319,12 +7246,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     friends, quests, nextWeekQueue, justificationHistory, cancellationsRemaining,
     savedRoutineAnalysis, dailyStepGoal, sleepLogs, yearlyRecap, routineDayLogs, activityLogs, neonTheme, avatarRenderMode
   ]);
- 
+
   const triggerToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 4600);
   };
- 
+
   const resetProgressToZero = () => {
     setLp(0);
     setExp(0);
@@ -7354,12 +7281,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     prevGradeRef.current = 'F';
     triggerToast('[SISTEMA REINICIADO] Todos tus stats, racha (0d), nivel (0), LP (0) y cargas volvieron a 0.');
   };
- 
+
   const level = Math.floor(exp / 100);
   const expInLevel = exp % 100;
   const classEvolution = getInfiniteClassEvolution(hunterClass?.cls?.name, level);
- 
- 
+
+
   const passiveClassBonus = 30 + level * 6 + builtBuildings.length * 12;
   const gearBonusPower = unlockedInventory.reduce((acc, item) => acc + (item.power || 0), 0);
   const hunterCombatPower = Math.round(
@@ -7368,7 +7295,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     gearBonusPower +
     passiveClassBonus
   );
- 
+
   const townRumors = [
     `En la ${builtBuildings.includes('tavern') ? 'Taberna del Crepúsculo' : 'plaza'} comentan que ${profile.hunterName} inicia su leyenda desde cero con ${gradeData.bench1RM} kg en Banca.`,
     `Los guardias de ${cityName} observan tu progreso en Grado de Cazador ${hunterGrade}.`,
@@ -7377,16 +7304,16 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       : `Se rumorea que en las Ruinas de Ceniza aguarda un Centinela que pondrá a prueba tu clase (${hunterClass?.cls?.name}).`,
     `Tu racha disciplinada actual es de ${streak} días.`
   ];
- 
+
   const unlockedCharacters = STORY_CHARACTERS.filter((c) => completedChapters.includes(c.unlockChapter));
   const activeChar = unlockedCharacters.find((c) => c.id === selectedCharId) || unlockedCharacters[0] || STORY_CHARACTERS[0];
   const activeCharState = characterStates[activeChar.id] || { affection: 0, memories: [], lastReply: activeChar.intro };
   const activeRel = getRelationshipLabel(activeCharState.affection);
- 
+
   const handleSendVisualNovelMessage = (customPromptText = null, affectionGain = 4) => {
     const textToSend = (customPromptText || chatInput).trim();
     if (!textToSend) return;
- 
+
     const aiReply = generateCharacterAIReply(
       activeChar,
       textToSend,
@@ -7404,11 +7331,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         clsName: hunterClass?.cls?.name || 'Centinela Infinito'
       }
     );
- 
+
     const updatedMemories = [...(activeCharState.memories || []).slice(-4), textToSend];
     const bonusTavern = builtBuildings.includes('tavern') ? 3 : 0;
     const nextAffection = Math.min(120, activeCharState.affection + affectionGain + bonusTavern);
- 
+
     setCharacterStates({
       ...characterStates,
       [activeChar.id]: {
@@ -7419,7 +7346,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     });
     if (!customPromptText) setChatInput('');
   };
- 
+
   const generatePersonalizedRoutine = () => {
     const months = Number(profile.routineDurationMonths) === 1 ? 1 : 2;
     const weeks = months === 1 ? 4 : 8;
@@ -7434,7 +7361,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const goal = profile.goal || 'Hipertrofia y Estética';
     const strengthGoal = goal === 'Fuerza Máxima (Powerlifting)';
     const enduranceGoal = goal === 'Resistencia y Calistenia';
- 
+
     const ex = (name, focus, cue, anim = 'press', sets = 3, reps = '8-12') => ({
       name, focus, cue, anim, baseSets: sets, baseReps: reps, sets: `${sets} × ${reps}`
     });
@@ -7449,7 +7376,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const triceps = noEquipment ? 'Flexiones diamante (según tolerancia)' : partialEquipment && !hasDumbbells ? 'Extensión de tríceps con banda' : 'Extensión de tríceps en polea';
     const quad = noEquipment ? 'Zancada hacia atrás' : partialEquipment && !hasDumbbells ? 'Sentadilla búlgara' : 'Prensa de piernas';
     const hamstring = noEquipment ? 'Curl femoral deslizante' : partialEquipment && !hasDumbbells ? 'Curl femoral con banda' : 'Curl femoral en máquina';
- 
+
     const makeDay = (name, focus, exercises) => ({ name, focus, exercises });
     const fullBody = (variant = 0) => makeDay(`Cuerpo completo ${variant + 1}`, 'Trabajo global con énfasis alternado', [
       ex(variant % 2 ? squat : press, variant % 2 ? 'Cuádriceps y glúteos' : 'Pectoral y tríceps', 'Usá un rango de movimiento cómodo y mantené la técnica estable.', variant % 2 ? 'squat' : 'press', 3, strengthGoal ? '4-6' : '8-12'),
@@ -7459,7 +7386,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       ex(variant % 2 ? curl : triceps, 'Brazos', 'Movimiento controlado, sin balanceo.', 'press', 2, '10-15'),
       ex('Plancha frontal', 'Core y estabilidad', 'Mantené pelvis y caja torácica alineadas.', 'core', 2, '20-40 s')
     ]);
- 
+
     const pushDay = () => makeDay('Empuje', 'Pectoral, hombros y tríceps', [
       ex(press, 'Pectoral', 'Escápulas estables y descenso controlado.', 'press', 3, strengthGoal ? '4-6' : '6-10'),
       ex(incline, 'Pectoral superior', 'No rebotes en la parte baja.', 'press', 3, '8-12'),
@@ -7497,13 +7424,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       ex('Elevación de gemelos', 'Gemelos', 'Pausa en el estiramiento y en la contracción.', 'squat', 3, '12-20'),
       ex('Plancha lateral', 'Core', 'Cuerpo alineado de hombros a tobillos.', 'core', 2, '20-40 s por lado')
     ]);
- 
+
     let days;
     if (daysPerWeek === 3) days = [fullBody(0), fullBody(1), fullBody(2)];
     else if (daysPerWeek === 4) days = [makeDay('Tren superior A', 'Énfasis fuerza e hipertrofia de torso', upperDay().exercises), makeDay('Tren inferior A', 'Énfasis fuerza e hipertrofia de piernas', lowerDay().exercises), makeDay('Tren superior B', 'Segundo estímulo de torso', upperDay().exercises), makeDay('Tren inferior B', 'Segundo estímulo de piernas', lowerDay().exercises)];
     else if (daysPerWeek === 5) days = [pushDay(), pullDay(), legDay(0), makeDay('Tren superior mixto', 'Segundo estímulo de torso', [...upperDay().exercises]), makeDay('Tren inferior y core', 'Segundo estímulo de piernas con volumen moderado', [...lowerDay().exercises].slice(0, 5))];
     else days = [pushDay(), pullDay(), legDay(0), pushDay(), pullDay(), legDay(1)];
- 
+
     // En resistencia/calistenia se priorizan rangos moderados-altos y descansos controlados.
     if (enduranceGoal) days = days.map(day => ({ ...day, exercises: day.exercises.map(item => ({ ...item, baseReps: item.baseReps.includes('s') ? item.baseReps : '12-20' })) }));
     const phases = months === 1
@@ -7517,9 +7444,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       exercises: days.flatMap(day => day.exercises)
     };
   };
- 
+
   const activeRoutinePlan = generatePersonalizedRoutine();
- 
+
   // Cada semana conserva el split y muestra la prescripción de cada ejercicio.
   const weeklyRoutinePlan = Array.from(
     { length: profile.routineDurationMonths === 1 ? 4 : 8 },
@@ -7565,7 +7492,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       };
     }
   );
- 
+
   const loadBrowserScript = (src) => {
     if (typeof window === 'undefined') return Promise.reject(new Error('Sin entorno navegador'));
     window.__pexScriptsCache = window.__pexScriptsCache || {};
@@ -7591,7 +7518,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     });
     return window.__pexScriptsCache[src];
   };
- 
+
   const parseDelimitedRows = (raw, delimiter = ',') => {
     const rows = [];
     let currentRow = [];
@@ -7629,7 +7556,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       return padded;
     });
   };
- 
+
   const stripRtfContent = (rtf) => {
     return String(rtf || '')
       .replace(/\{\\(?:fonttbl|colortbl|stylesheet|info|pict|object)[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/gi, ' ')
@@ -7642,7 +7569,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       .replace(/\n{3,}/g, '\n\n')
       .trim();
   };
- 
+
   const buildInteractiveDocLines = (rawText) => {
     const rawLines = String(rawText || '')
       .replace(/\r/g, '')
@@ -7661,7 +7588,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       };
     });
   };
- 
+
   const serializeSheetsToText = (sheets) => {
     return (sheets || [])
       .map((sh) => {
@@ -7674,11 +7601,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       .join('\n\n')
       .trim();
   };
- 
+
   const evaluateRoutineContent = (rawText, sourceName = 'Texto pegado') => {
     const cleanText = String(rawText || '').replace(/\r/g, '').trim();
     if (!cleanText) return null;
- 
+
     const lines = cleanText.split('\n').map((line) => line.trim()).filter(Boolean);
     const prescriptionLines = lines.filter((line) => /\d+\s*[x×]\s*\d+/i.test(line));
     const rirMentions = (cleanText.match(/RIR\s*\d+|RPE\s*\d+|repeticiones en reserva|al fallo/gi) || []).length;
@@ -7686,46 +7613,46 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const progressionMentions = (cleanText.match(/semana\s*\d+|progresi[oó]n|sobrecarga|descarga|deload|bloque/gi) || []).length;
     const recoveryMentions = (cleanText.match(/descanso|recuperaci[oó]n|sueño|deload|descarga|\d+\s*(?:seg|min)/gi) || []).length;
     const daysMentions = (cleanText.match(/d[ií]a\s*[1-7]|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo|upper|lower|push|pull|legs|full\s*body/gi) || []).length;
- 
+
     const findings = [];
     const improvements = [];
- 
+
     if (prescriptionLines.length >= 4) {
       findings.push(`Se identificaron ${prescriptionLines.length} prescripciones de series × repeticiones: el volumen semanal es cuantificable.`);
     } else {
       improvements.push('Faltan prescripciones explícitas de series × repeticiones (ej. 3 × 8-12) en varios ejercicios. Editá las filas o líneas arriba para completarlas.');
     }
- 
+
     if (rirMentions > 0) {
       findings.push(`Incluye ${rirMentions} referencia(s) a esfuerzo interno (RIR/RPE), clave para controlar la fatiga neural.`);
     } else {
       improvements.push('No se especifica RIR ni proximidad al fallo. Añadí RIR 1-3 en ejercicios compuestos para regular la intensidad.');
     }
- 
+
     if (loadMentions > 0) {
       findings.push(`Registra ${loadMentions} mención(es) de carga o porcentaje (%1RM / kg), facilitando la sobrecarga progresiva.`);
     } else {
       improvements.push('No figuran cargas objetivo en kg ni %1RM. Agregar una columna o nota de peso te permitirá medir el progreso real.');
     }
- 
+
     if (progressionMentions > 0) {
       findings.push('Contiene estructura por semanas, bloques o criterios de progresión/descarga.');
     } else {
       improvements.push('No se observa un esquema de progresión semanal ni semana de descarga (deload). Definí cómo subirán repeticiones o kilos.');
     }
- 
+
     if (recoveryMentions > 0) {
       findings.push('Contempla tiempos de descanso entre series o pautas de recuperación.');
     } else {
       improvements.push('Faltan tiempos de descanso entre series (ej. 2-3 min en básicos, 60-90 seg en accesorios).');
     }
- 
+
     if (daysMentions > 0) {
       findings.push('Presenta distribución organizada por días de entrenamiento o grupos musculares.');
     } else {
       improvements.push('No se distingue una división clara por días (Día 1, Día 2, Lunes, etc.). Agrupá los ejercicios por sesión.');
     }
- 
+
     const scoreNum = Math.min(
       100,
       30 +
@@ -7736,7 +7663,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         recoveryMentions * 5 +
         daysMentions * 3
     );
- 
+
     return {
       sourceName,
       rawText: cleanText,
@@ -7749,7 +7676,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         : ['¡Excelente estructura! La rutina contempla volumen, esfuerzo (RIR), cargas, descansos y progresión semanal.']
     };
   };
- 
+
   const applyAnalyzedRoutineToTabs = (combinedText, sourceName) => {
     const parsedItems = parseRoutineExercisesAndLoads(combinedText);
     setSavedRoutineAnalysis({
@@ -7758,10 +7685,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       items: parsedItems,
       totalExercises: parsedItems.length,
     });
- 
+
     setQuests((prev) => procesarRutinaImportada(combinedText, prev).misionesActualizadas);
   };
- 
+
   const syncInteractiveSpreadsheet = (nextSheets, sourceName, nextActiveSheetIdx = 0, nextCheckedRows = {}) => {
     const combinedText = serializeSheetsToText(nextSheets);
     setCustomRoutineText(combinedText);
@@ -7777,7 +7704,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     if (report) setScanReport(report);
     applyAnalyzedRoutineToTabs(combinedText, sourceName);
   };
- 
+
   const syncInteractiveDocumentLines = (nextDocLines, sourceName, editMode = 'interactive') => {
     const combinedText = nextDocLines.map((l) => l.text).join('\n');
     setCustomRoutineText(combinedText);
@@ -7791,7 +7718,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     if (report) setScanReport(report);
     applyAnalyzedRoutineToTabs(combinedText, sourceName);
   };
- 
+
   const analyzeRoutineText = (rawText, sourceName = 'Texto pegado') => {
     const cleanText = String(rawText || '').replace(/\r/g, '').trim();
     if (!cleanText) {
@@ -7802,22 +7729,22 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     syncInteractiveDocumentLines(docLines, sourceName, 'interactive');
     triggerToast('[RUTINA & MISIONES] Ejercicios y cargas guardados en Rutina; tarjeta diaria "Entrenar hoy" lista en Misiones.');
   };
- 
+
   const handleRoutineFileUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
- 
+
     const MAX_FILE_SIZE = 30 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       triggerToast('[ESCÁNER] El archivo supera el límite de 30 MB.');
       event.target.value = '';
       return;
     }
- 
+
     const extension = (file.name.split('.').pop() || '').toLowerCase();
     setRoutineFileName(file.name);
     setRoutineLoadingMsg(`Procesando "${file.name}"...`);
- 
+
     try {
       // 1. PLANILLAS DE CÁLCULO (EXCEL .xlsx/.xls, .ods, .csv, .tsv)
       if (['csv', 'tsv'].includes(extension)) {
@@ -7831,7 +7758,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         event.target.value = '';
         return;
       }
- 
+
       if (['xlsx', 'xls', 'ods', 'numbers'].includes(extension)) {
         if (!window.XLSX) {
           setRoutineLoadingMsg('Cargando motor lector de Excel y planillas...');
@@ -7853,7 +7780,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           });
           return { name: sheetName, rows: normalized };
         });
- 
+
         if (sheets.length > 0) {
           syncInteractiveSpreadsheet(sheets, file.name, 0, {});
           setRoutineLoadingMsg('');
@@ -7862,7 +7789,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           return;
         }
       }
- 
+
       // 2. DOCUMENTOS PDF (.pdf)
       if (extension === 'pdf' || file.type === 'application/pdf') {
         if (!window.pdfjsLib) {
@@ -7907,7 +7834,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           return;
         }
       }
- 
+
       // 3. DOCUMENTOS WORD Y TEXTO ENRIQUECIDO (.docx, .doc, .odt, .rtf)
       if (['docx', 'doc'].includes(extension)) {
         let wordText = '';
@@ -7933,7 +7860,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           return;
         }
       }
- 
+
       if (extension === 'odt') {
         if (!window.JSZip) {
           setRoutineLoadingMsg('Cargando motor lector de OpenDocument (.odt)...');
@@ -7959,7 +7886,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           }
         }
       }
- 
+
       if (extension === 'rtf') {
         const rawRtf = await file.text();
         const plainRtf = stripRtfContent(rawRtf);
@@ -7971,7 +7898,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           return;
         }
       }
- 
+
       // 4. CUALQUIER OTRO ARCHIVO DE TEXTO, MARKDOWN, HTML, JSON, XML, ETC.
       const fallbackText = await file.text();
       let cleanFallback = fallbackText;
@@ -7995,7 +7922,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       event.target.value = '';
     }
   };
- 
+
   const toggleHomeEquipment = (eq) => {
     const current = profile.ownedHomeEquipment || [];
     const exists = current.includes(eq);
@@ -8004,7 +7931,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       ownedHomeEquipment: exists ? current.filter((x) => x !== eq) : [...current, eq]
     });
   };
- 
+
   const handleSelectExercise = (exName) => {
     setSelectedExercise(exName);
     const existing = savedLifts[exName];
@@ -8016,26 +7943,26 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       setLiftRepsInput(0);
     }
   };
- 
+
   const handleSaveExerciseLoad = () => {
     const w = Math.max(0, Number(liftWeightInput));
     const r = Math.max(0, Number(liftRepsInput));
- 
+
     if (w <= 0 || r <= 0) {
       triggerToast('[ALERTA] Ingresa un peso y repeticiones mayores a 0 para registrar tu marca.');
       return;
     }
- 
+
     const prevRecord = savedLifts[selectedExercise];
     const prev1RM = prevRecord
       ? getEffectiveExercise1RM(selectedExercise, prevRecord.weight, prevRecord.reps, profile.weightKg)
       : 0;
     const new1RM = getEffectiveExercise1RM(selectedExercise, w, r, profile.weightKg);
- 
+
     const kgGain = Math.max(0, new1RM - prev1RM);
     const gainedExp = 35 + kgGain * 10;
     const gainedLp = 15 + kgGain * 4;
- 
+
     const updated = {
       ...savedLifts,
       [selectedExercise]: {
@@ -8044,18 +7971,18 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         date: new Date().toLocaleDateString(),
       },
     };
- 
+
     const prevLevel = Math.floor(exp / 100);
     const nextTotalExp = exp + gainedExp;
     const nextLevel = Math.floor(nextTotalExp / 100);
- 
+
     setSavedLifts(updated);
     setExp(nextTotalExp);
     setLp((l) => l + gainedLp);
- 
+
     const nextGradeInfo = computeHunterGradeData(updated, profile.weightKg);
     const nextGrade = nextGradeInfo.currentStd.grade;
- 
+
     if (nextGrade !== hunterGrade) {
       prevGradeRef.current = nextGrade;
       triggerToast(`¡ASCENSO AUTOMÁTICO A GRADO ${nextGrade} Y NIVEL ${nextLevel}! (+${gainedExp} EXP por récord de ${new1RM} kg)`);
@@ -8065,7 +7992,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       triggerToast(`[SISTEMA] ${selectedExercise} registrado (${new1RM} kg 1RM) • +${gainedExp} EXP y +${gainedLp} LP.`);
     }
   };
- 
+
   const handleSecurePhotoUpload = (e, target = 'onboarding') => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -8083,12 +8010,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     };
     reader.readAsDataURL(file);
   };
- 
+
   const awakenHunter = () => {
     const bW = Math.max(0, Number(profile.benchKg) || 0);
     const sW = Math.max(0, Number(profile.squatKg) || 0);
     const dW = Math.max(0, Number(profile.deadliftKg) || 0);
- 
+
     const initialLifts = {
       ...ZERO_LIFTS,
       'Press Banca': { weight: bW, reps: bW > 0 ? 5 : 0, date: bW > 0 ? 'Despertar' : 'Sin registrar' },
@@ -8098,20 +8025,20 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setSavedLifts(initialLifts);
     setLiftWeightInput(bW);
     setLiftRepsInput(bW > 0 ? 5 : 0);
- 
+
     const seed =
       Number(profile.weightKg) * 17 +
       Number(profile.heightCm) * 11 +
       Math.floor(Math.random() * 9973);
- 
+
     const generatedClass = generateRandomInfiniteClass(seed + Date.now(), profile.preferredRaceId || null);
     const chosenRace = generatedClass.race;
     const chosenCls = generatedClass.cls;
     const assigned = { race: chosenRace, cls: chosenCls, assignedAt: new Date().toLocaleDateString() };
- 
+
     const initGrade = computeHunterGradeData(initialLifts, profile.weightKg).currentStd.grade;
     prevGradeRef.current = initGrade;
- 
+
     setHunterClass(assigned);
     setLp(0);
     setExp(0);
@@ -8126,7 +8053,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     setActiveTab('avatar');
     triggerToast(`¡DESPERTAR INICIADO DESDE 0! Clase: ${chosenCls.name} • Pasiva: ${chosenCls.passiveName}`);
   };
- 
+
   const requestGpsLocation = () => {
     if (!navigator.geolocation) {
       triggerToast('[GPS] Tu navegador no soporta geolocalización; usando coordenadas locales.');
@@ -8146,7 +8073,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       }
     );
   };
- 
+
   const rankInfo = getRankFromLP(lp);
   const weekSleepDays = getCurrentWeekSleepDays(sleepLogs);
   const totalSleep = Number(
@@ -8156,7 +8083,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   const avgSleepPerNight = loggedSleepDaysCount > 0 ? Number((totalSleep / loggedSleepDaysCount).toFixed(1)) : 0;
   const optimalSleepDaysCount = weekSleepDays.filter((d) => d.hours >= 7 && d.hours <= 9).length;
   const sleepOptimal = totalSleep >= 49 && totalSleep <= 63;
- 
+
   const handleSelectSleepDate = (isoDate) => {
     if (!isoDate) return;
     setSelectedSleepDate(isoDate);
@@ -8166,7 +8093,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
   };
   const currentEx1RM = getEffectiveExercise1RM(selectedExercise, liftWeightInput, liftRepsInput, profile.weightKg);
   const currentExRatio = (currentEx1RM / gradeData.bw).toFixed(2);
- 
+
   // ==========================================================================
   // PANTALLA 1: ENCUESTA ÚNICA DE DESPERTAR (TODO PARTE DESDE 0)
   // ==========================================================================
@@ -8179,12 +8106,12 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <span>{toast}</span>
           </div>
         )}
- 
+
         <div className="sys-window" style={{ padding: '24px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 700 }}>● Sesión Activa: {currentUser.email}</span>
           </div>
- 
+
           <div style={{ textAlign: 'center', marginBottom: '20px' }}>
             <span className="sys-badge" style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid #fbbf24' }}>
               [ALERTA DEL SISTEMA // INICIO DESDE 0]
@@ -8199,7 +8126,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               <div className="progress-fill" style={{ width: `${surveyStep * 20}%`, background: 'linear-gradient(90deg, #00f0ff, #fbbf24)' }} />
             </div>
           </div>
- 
+
           {surveyStep === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
@@ -8268,13 +8195,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </button>
             </div>
           )}
- 
+
           {surveyStep === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <label style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 700 }}>
                 SELECCIONA TU EQUIPAMIENTO DISPONIBLE
               </label>
- 
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[
                   { id: 'no_equip', title: 'En Casa — Sin Nada de Equipo', desc: '100% peso corporal, calistenia y palancas biomecánicas.' },
@@ -8297,7 +8224,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 ))}
               </div>
- 
+
               {profile.equipmentMode === 'some_equip' && (
                 <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.35)' }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: '#00f0ff', marginBottom: '8px' }}>
@@ -8328,7 +8255,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 </div>
               )}
- 
+
               <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
                 <button className="sys-btn sys-btn-ghost" onClick={() => setSurveyStep(1)}>ATRÁS</button>
                 <button className="sys-btn sys-btn-gold" style={{ flex: 1 }} onClick={() => setSurveyStep(3)}>
@@ -8337,7 +8264,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
           )}
- 
+
           {surveyStep === 3 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div className="grid-2">
@@ -8360,7 +8287,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <input type="number" className="sys-input" value={profile.experienceMonths} onChange={(e) => setProfile({ ...profile, experienceMonths: e.target.value })} />
                 </div>
               </div>
- 
+
               {profile.equipmentMode !== 'no_equip' ? (
                 <>
                   <div className="grid-2">
@@ -8384,7 +8311,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <input type="number" className="sys-input" value={profile.pushupsMax} onChange={(e) => setProfile({ ...profile, pushupsMax: e.target.value })} />
                 </div>
               )}
- 
+
               <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
                 <button className="sys-btn sys-btn-ghost" onClick={() => setSurveyStep(2)}>ATRÁS</button>
                 <button className="sys-btn sys-btn-gold" style={{ flex: 1 }} onClick={() => setSurveyStep(4)}>
@@ -8393,13 +8320,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
           )}
- 
+
           {surveyStep === 4 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'center' }}>
               <p style={{ fontSize: '14px', color: '#cbd5e1' }}>
                 Subí una foto de cuerpo completo para sellar tu <strong>Clase aleatoria con pasiva única</strong>. El Sistema censura tu rostro localmente antes de procesarla.
               </p>
- 
+
               <label style={{
                 border: '2px dashed rgba(251,191,36,0.45)',
                 borderRadius: '14px',
@@ -8412,14 +8339,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <div style={{ fontSize: '12px', color: '#94a3b8' }}>Censura facial local instantánea</div>
                 <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleSecurePhotoUpload(e, 'onboarding')} />
               </label>
- 
+
               {profile.censoredPreview && (
                 <div style={{ margin: '0 auto' }}>
                   <img src={profile.censoredPreview} alt="Escaneo seguro" style={{ width: '130px', borderRadius: '10px', border: '1px solid #fbbf24' }} />
                   <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>✓ Biometría verificada y protegida</div>
                 </div>
               )}
- 
+
               <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
                 <button className="sys-btn sys-btn-ghost" onClick={() => setSurveyStep(3)}>ATRÁS</button>
                 <button className="sys-btn sys-btn-gold" style={{ flex: 1 }} onClick={() => setSurveyStep(5)}>
@@ -8428,7 +8355,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
           )}
- 
+
           {surveyStep === 5 && (
             <div style={{ textAlign: 'center', padding: '14px 4px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <Shield size={54} color="#fbbf24" style={{ margin: '0 auto' }} />
@@ -8447,11 +8374,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       </div>
     );
   }
- 
+
   const handleQuickAddDailySteps = (addedSteps) => {
     const inc = Math.max(0, Math.round(Number(addedSteps) || 0));
     if (inc <= 0) return;
- 
+
     const todayKey = getLocalDateISO();
     const prevDay = activityLogs[todayKey] || {
       steps: 0,
@@ -8462,26 +8389,26 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       stepGoalClaimed: false,
       bikeGoalClaimed: false,
     };
- 
+
     const heightM = (Number(profile.heightCm) || 176) / 100;
     const addedKm = Number(((inc * heightM * 0.415) / 1000).toFixed(2));
     const kcal = Math.max(1, Math.round(3.8 * (Number(profile.weightKg) || 75) * (inc / 6500)));
- 
+
     const nextSteps = (prevDay.steps || 0) + inc;
     const nextWalkRunKm = Number(((prevDay.walkRunKm || 0) + addedKm).toFixed(2));
- 
+
     let gainedExp = Math.max(3, Math.floor(inc / 1000) * 10 || 4);
     let gainedLp = Math.max(2, Math.floor(inc / 1000) * 5 || 2);
     let claimedStepBonus = Boolean(prevDay.stepGoalClaimed);
     let bonusNote = '';
- 
+
     if (!claimedStepBonus && nextSteps >= dailyStepGoal) {
       claimedStepBonus = true;
       gainedExp += 40;
       gainedLp += 20;
       bonusNote = ` • ¡Meta de ${dailyStepGoal.toLocaleString()} pasos cumplida (+40 EXP / +20 LP)!`;
     }
- 
+
     const quickSession = {
       id: Date.now(),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -8495,7 +8422,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       exp: gainedExp,
       lp: gainedLp,
     };
- 
+
     setActivityLogs({
       ...activityLogs,
       [todayKey]: {
@@ -8513,7 +8440,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       `[PASOS +${inc.toLocaleString()}] Total hoy: ${nextSteps.toLocaleString()} pasos (+${gainedExp} EXP / +${gainedLp} LP)${bonusNote}`
     );
   };
- 
+
   const handleCompleteTodayTrainingFromAgenda = () => {
     const todayQuest = quests.find(
       (q) => q.isDaily && q.title.toLowerCase().includes('entrenar hoy') && q.status !== 'completed'
@@ -8532,21 +8459,21 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
       triggerToast('¡ENTRENAMIENTO DE AGENDA REGISTRADO! +100 EXP • +50 LP');
     }
   };
- 
+
   // ==========================================================================
   // INTERFAZ PRINCIPAL DEL SISTEMA (ANIME FANTASY RPG HUD)
   // ==========================================================================
   return (
     <div className="sys-container">
       <ExerciseAnimationModal exercise={animModalEx} onClose={() => setAnimModalEx(null)} />
- 
+
       {toast && (
         <div className="toast-alert">
           <Zap size={18} color="#fbbf24" />
           <span>{toast}</span>
         </div>
       )}
- 
+
       {/* ====================================================================
           MENÚ LATERAL DESPLEGABLE (DRAWER OCULTO EN ESQUINA SUPERIOR IZQUIERDA)
          ==================================================================== */}
@@ -8596,7 +8523,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <X size={18} />
               </button>
             </div>
- 
+
             <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
               PRINCIPAL
             </div>
@@ -8611,7 +8538,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </span>
                 <span style={{ fontSize: '11px', color: 'var(--neon-gold)' }}>NV.{level}</span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'quests' ? 'active' : ''}`}
@@ -8625,7 +8552,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </span>
               </button>
             </div>
- 
+
             <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
               ENTRENAMIENTO & ACTIVIDAD
             </div>
@@ -8639,7 +8566,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <Cpu size={17} color="#10b981" /> Rutina & Agenda
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'tracker' ? 'active' : ''}`}
@@ -8652,7 +8579,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   {tracker.isRunning ? '● ACTIVO' : `${(activityLogs[getLocalDateISO()]?.steps || 0).toLocaleString()}`}
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'strength' ? 'active' : ''}`}
@@ -8662,7 +8589,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <Dumbbell size={17} color="#f43f5e" /> Cargas & Marcas 1RM
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'sleep' ? 'active' : ''}`}
@@ -8674,7 +8601,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <span style={{ fontSize: '11px', color: '#38bdf8' }}>{totalSleep}h</span>
               </button>
             </div>
- 
+
             <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
               MODOS DE JUEGO
             </div>
@@ -8688,7 +8615,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <BookOpen size={17} color="#f59e0b" /> Historia PvE
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'city_vn' ? 'active' : ''}`}
@@ -8705,7 +8632,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   Ciudad 2D & Novela Visual
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'pvp' ? 'active' : ''}`}
@@ -8716,7 +8643,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </span>
               </button>
             </div>
- 
+
             <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-blue)', margin: '6px 0 6px 4px', letterSpacing: '0.1em' }}>
               SISTEMA
             </div>
@@ -8730,7 +8657,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <Shield size={17} color="var(--neon-purple)" /> Bóveda Física
                 </span>
               </button>
- 
+
               <button
                 type="button"
                 className={`pex-drawer-item ${activeTab === 'settings' ? 'active' : ''}`}
@@ -8741,7 +8668,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </span>
               </button>
             </div>
- 
+
             <div
               style={{
                 marginTop: 'auto',
@@ -8761,7 +8688,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </aside>
         </>
       )}
- 
+
       {/* ====================================================================
           CABECERA LIMPIA Y CENTRADA (BOTÓN MENÚ EN ESQUINA SUPERIOR IZQUIERDA)
          ==================================================================== */}
@@ -8790,7 +8717,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               />
             )}
           </button>
- 
+
           <h1
             className="font-souls neon-glow-gold"
             style={{
@@ -8803,7 +8730,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           >
             PROYECTO EX
           </h1>
- 
+
           {activeTab !== 'avatar' && (
             <button
               type="button"
@@ -8828,7 +8755,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             </button>
           )}
         </div>
- 
+
         {/* SUBTÍTULO DE NIVEL + BARRAS COMPACTAS LP Y EXP + RACHA / PC */}
         <div style={{ padding: '0 6px' }}>
           <div
@@ -8844,7 +8771,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           >
             NIVEL {level} • {profile.hunterName} ({hunterGrade})
           </div>
- 
+
           {/* INDICADOR VISIBLE DE RANGO ACTUAL Y SUS 6 CAPAS */}
           <div
             style={{
@@ -8867,7 +8794,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 RANGO {rankInfo.name.toUpperCase()} • CAPA {rankInfo.division}/6
               </span>
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }} title="Progreso de las 6 Capas del Rango Actual">
               {rankInfo.layers.map((lyr) => (
                 <span
@@ -8901,7 +8827,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               ))}
             </div>
           </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto', alignItems: 'center', gap: '8px' }}>
               <span className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>
@@ -8925,7 +8850,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 {rankInfo.currentDivLP}/100 LP
               </span>
             </div>
- 
+
             <div style={{ display: 'grid', gridTemplateColumns: '36px 1fr', alignItems: 'center', gap: '8px' }}>
               <span className="font-hud" style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>
                 EXP
@@ -8946,7 +8871,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </div>
             </div>
           </div>
- 
+
           <div
             style={{
               display: 'flex',
@@ -8967,7 +8892,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
       </div>
- 
+
       {/* ====================================================================
           PANTALLA PRINCIPAL EQUILIBRADA: AVATAR MEDIO CUERPO + HABILIDADES/EQUIPO + MISIONES DIARIAS
          ==================================================================== */}
@@ -8977,7 +8902,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           passiveName: 'Muralla Inquebrantable',
           passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
         };
- 
+
         const innatePassiveSlot = {
           id: 'innate_passive',
           name: clsObj.passiveName || 'Pasiva Única',
@@ -8986,11 +8911,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           power: passiveClassBonus,
           rarity: 'primary',
         };
- 
+
         const combinedSlots = [innatePassiveSlot, ...unlockedInventory].slice(0, 10);
         const totalSlotBoxes = Array.from({ length: 10 }, (_, idx) => combinedSlots[idx] || null);
         const activeSlotItem = totalSlotBoxes[selectedSlotIdx] || null;
- 
+
         const renderSlotIcon = (item, idx) => {
           if (!item) return null;
           const lower = `${item.type || ''} ${item.name || ''}`.toLowerCase();
@@ -9011,7 +8936,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           }
           return <Zap size={22} color="var(--neon-blue)" />;
         };
- 
+
         const getSlotColors = (item, idx) => {
           if (!item) return {};
           if (idx === 0 || (item.type || '').toLowerCase().includes('habilidad')) {
@@ -9034,9 +8959,9 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             '--slot-inner': 'rgba(16, 185, 129, 0.16)',
           };
         };
- 
+
         const homeQuests = quests.slice(0, 5);
- 
+
         return (
           <div className="pex-home-shell">
             {/* 1. AVATAR DE MEDIO CUERPO CON CINTAS DE CLASE Y PASIVA */}
@@ -9060,7 +8985,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 triggerToast(`Modo de Avatar cambiado a ${nextMode.toUpperCase()}`);
               }}
             />
- 
+
             {/* PANEL ORNAMENTADO: RANGO ACTUAL, 6 CAPAS Y REQUERIMIENTOS DE SUBIDA */}
             <div className="pex-ornate-panel">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
@@ -9082,7 +9007,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   {rankInfo.name.toUpperCase()} • CAPA {rankInfo.division} ({rankInfo.totalLP} LP)
                 </span>
               </div>
-
               <div
                 style={{
                   display: 'grid',
@@ -9104,7 +9028,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     Progreso de capa actual: {rankInfo.currentDivLP}/100 LP
                   </div>
                 </div>
-
                 <div style={{ padding: '10px', borderRadius: '11px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(255, 212, 90, 0.35)' }}>
                   <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--neon-gold)', fontWeight: 700 }}>
                     ASCENSO DE RANGO: {rankInfo.nextRank ? rankInfo.nextRank.name.toUpperCase() : 'MÁXIMO'}
@@ -9119,7 +9042,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 </div>
               </div>
-
               <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: 'var(--text-secondary)', marginBottom: '6px' }}>
                 DESGLOSE DE LAS 6 CAPAS DE {rankInfo.name.toUpperCase()} (100 LP POR CAPA):
               </div>
@@ -9172,7 +9094,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   );
                 })}
               </div>
-
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
                   Gana LP: <strong style={{ color: '#fff' }}>Misiones (+25..50)</strong> • <strong style={{ color: '#fff' }}>Cargas (+15+)</strong> • <strong style={{ color: '#fff' }}>Historia/PvP (+25..160)</strong>
@@ -9186,7 +9107,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   {showAllRanksLadder ? 'Ocultar 15 Rangos' : 'Ver 15 Rangos (Tierra → Challenger)'}
                 </button>
               </div>
-
               {showAllRanksLadder && (
                 <div style={{ marginTop: '10px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '6px' }}>
                   {RANKS.map((rk) => {
@@ -9217,7 +9137,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               )}
             </div>
-
             {/* 2. PANEL ORNAMENTADO DE HABILIDADES Y EQUIPAMIENTO (2 FILAS x 5 RANURAS) */}
             <div className="pex-ornate-panel">
               <div
@@ -9233,7 +9152,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               >
                 HABILIDADES Y EQUIPAMIENTO
               </div>
- 
+
               <div className="pex-equip-grid">
                 {totalSlotBoxes.map((item, idx) => {
                   const isUnlocked = Boolean(item);
@@ -9252,7 +9171,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   );
                 })}
               </div>
- 
+
               {/* INSPECTOR DE LA RANURA SELECCIONADA */}
               <div
                 style={{
@@ -9334,7 +9253,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 )}
               </div>
             </div>
- 
+
             {/* 3. PANEL DE MISIONES DIARIAS EN PORTADA */}
             <div className="pex-ornate-panel">
               <div
@@ -9372,7 +9291,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   Gestionar ({quests.length}) →
                 </button>
               </div>
- 
+
               {homeQuests.length === 0 ? (
                 <div style={{ fontSize: '13px', color: 'var(--text-secondary)', textAlign: 'center', padding: '8px 0' }}>
                   No hay misiones activas. Toca "Gestionar" para crear una nueva.
@@ -9391,7 +9310,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           setLp((prev) => prev + q.lp);
                           setExp((prev) => prev + (q.exp || 85));
                           setStreak((s) => s + 1);
- 
+
                           const lockedDrops = DAILY_REWARD_POOL.filter(
                             (drop) => !unlockedInventory.some((owned) => owned.id === drop.id)
                           );
@@ -9448,7 +9367,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         );
       })()}
- 
+
       {/* ====================================================================
           MÓDULO DEDICADO: RASTREADOR DE PASOS, GPS Y ACTIVIDAD DIARIA (DESDE MENÚ)
          ==================================================================== */}
@@ -9480,7 +9399,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             }}
             onOpenFullTracker={() => setActiveTab('tracker')}
           />
- 
+
           <MovementTrackerModule
             profile={profile}
             activityLogs={activityLogs}
@@ -9498,7 +9417,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           />
         </div>
       )}
- 
+
       {/* ====================================================================
           MÓDULO 1: MISIONES DIARIAS (PROTECCIÓN DIARIA, CUPO 12/12 Y JUSTIFICACIÓN LIBRE)
          ==================================================================== */}
@@ -9520,7 +9439,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <ShieldAlert size={13} /> ANULACIONES: {cancellationsRemaining}/{CANCELLATION_MAX_QUOTA}
               </span>
             </div>
- 
+
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
               <input
                 className="sys-input"
@@ -9580,7 +9499,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 + SOLICITADA
               </button>
             </div>
- 
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {quests.map((q) => {
                 const esDiaria = q.isDaily === true || q.tipo === 'diaria';
@@ -9590,7 +9509,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   : q.tipo === 'solicitada' || q.origin === 'solicitada'
                   ? 'Solicitada'
                   : 'Personal';
- 
+
                 return (
                   <div
                     key={q.id}
@@ -9633,7 +9552,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           Recompensa: +{q.lp} LP • +{q.exp || 85} EXP • Cofre de Habilidad/Equipo
                         </div>
                       </div>
- 
+
                       <span
                         className="sys-badge"
                         style={{
@@ -9673,7 +9592,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           : 'EN CURSO'}
                       </span>
                     </div>
- 
+
                     {/* Botones de acción principales */}
                     {(q.status === 'pending' || q.status === 'justified') && (
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -9685,7 +9604,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             setLp((prev) => prev + q.lp);
                             setExp((prev) => prev + (q.exp || 85));
                             setStreak((s) => s + 1);
- 
+
                             const lockedDrops = DAILY_REWARD_POOL.filter(
                               (drop) => !unlockedInventory.some((owned) => owned.id === drop.id)
                             );
@@ -9700,7 +9619,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         >
                           <CheckCircle2 size={14} /> LOGRADO
                         </button>
- 
+
                         <button
                           className="sys-btn sys-btn-danger"
                           style={{ padding: '8px 12px', fontSize: '11px' }}
@@ -9715,7 +9634,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         >
                           <XCircle size={14} /> NO LOGRADO
                         </button>
- 
+
                         <button
                           className="sys-btn sys-btn-ghost"
                           style={{ padding: '8px 12px', fontSize: '11px', borderColor: 'rgba(0, 234, 255, 0.45)', color: '#67e8f9' }}
@@ -9726,7 +9645,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         >
                           <MessageSquareText size={14} /> JUSTIFICAR
                         </button>
- 
+
                         {!esDiaria ? (
                           <button
                             type="button"
@@ -9777,7 +9696,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         )}
                       </div>
                     )}
- 
+
                     {/* Panel inline de Justificación Libre */}
                     {estaJustificando && (
                       <div
@@ -9859,7 +9778,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         </div>
                       </div>
                     )}
- 
+
                     {/* Resultado registrado + Consejo Táctico del Sistema */}
                     {q.justificationReason && (
                       <div
@@ -9907,7 +9826,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               })}
             </div>
           </div>
- 
+
           <div className="sys-window" style={{ padding: '16px' }}>
             <h3 className="font-hud" style={{ fontSize: '13px', color: '#e11d48', marginBottom: '10px' }}>
               COLA DE RETOMA (PRÓXIMA SEMANA)
@@ -9962,7 +9881,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 {profile.daysPerWeek} DÍAS / SEMANA
               </span>
             </div>
- 
+
             <div className="grid-2" style={{ marginBottom: '12px' }}>
               <div>
                 <label style={{ fontSize: '11px', color: '#94a3b8' }}>DURACIÓN DEL BLOQUE (MÁX. 2 MESES)</label>
@@ -9988,7 +9907,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </select>
               </div>
             </div>
- 
+
             {profile.equipmentMode === 'some_equip' && (
               <div style={{ marginBottom: '12px', padding: '10px', borderRadius: '10px', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.3)' }}>
                 <div style={{ fontSize: '11px', color: '#00f0ff', fontWeight: 700, marginBottom: '6px' }}>
@@ -10017,7 +9936,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               </div>
             )}
- 
+
             <div style={{ marginTop: '8px', marginBottom: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button
                 className="sys-btn sys-btn-primary"
@@ -10033,7 +9952,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 La rutina y su desglose semanal permanecerán ocultos hasta que solicites generarlos.
               </p>
             </div>
- 
+
             {showGeneratedRoutine && (
             <div className="cinematic-entry">
             <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.3)', marginBottom: '14px' }}>
@@ -10044,7 +9963,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <div key={idx} style={{ fontSize: '12px', color: '#e2e8f0' }}>• {ph}</div>
               ))}
             </div>
- 
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {activeRoutinePlan.days.map((day, dayIndex) => (
                 <div key={`preview-day-${dayIndex}`} style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.88)', border: '1px solid rgba(148,163,184,0.25)' }}>
@@ -10066,7 +9985,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               ))}
             </div>
- 
+
             <div style={{ marginTop: '18px', borderTop: '1px solid rgba(0,240,255,0.25)', paddingTop: '14px' }}>
               <h3 className="font-hud" style={{ fontSize: '13px', color: '#00f0ff', marginBottom: '10px' }}>
                 PLAN COMPLETO — DESGLOSE SEMANA POR SEMANA
@@ -10112,8 +10031,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             </div>
             )}
           </div>
- 
- 
+
+
           <div className="sys-window" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
               <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff' }}>
@@ -10125,11 +10044,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </span>
               )}
             </div>
- 
+
             <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '10px' }}>
               Subí tu rutina en <strong>Excel (.xlsx, .xls, .csv, .ods)</strong>, <strong>Word (.docx, .doc, .odt, .rtf)</strong>, <strong>PDF (.pdf)</strong> o texto. Podrás editar celdas, marcar ejercicios completados o enviarlos a tus Misiones, y verás la <strong>crítica constructiva abajo</strong> actualizada al instante.
             </p>
- 
+
             <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
               <label className="sys-btn sys-btn-gold" style={{ cursor: 'pointer' }}>
                 <Upload size={15} /> SUBIR ARCHIVO (WORD / EXCEL / PDF / OTROS)
@@ -10162,7 +10081,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </button>
               )}
             </div>
- 
+
             {routineLoadingMsg && (
               <div style={{
                 padding: '10px 12px',
@@ -10177,7 +10096,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 ⏳ {routineLoadingMsg}
               </div>
             )}
- 
+
             {!interactiveRoutineDoc && (
               <textarea
                 className="sys-textarea"
@@ -10187,7 +10106,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 onChange={(e) => setCustomRoutineText(e.target.value)}
               />
             )}
- 
+
             {/* ==============================================================
                 1) ESPACIO INTERACTIVO DEL ARCHIVO SUBIDO (ARRIBA)
                ============================================================== */}
@@ -10212,7 +10131,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       {interactiveRoutineDoc.fileName}
                     </div>
                   </div>
- 
+
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     <button
                       type="button"
@@ -10232,7 +10151,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     </button>
                   </div>
                 </div>
- 
+
                 {/* MODO TEXTO LIBRE EDITABLE EN VIVO */}
                 {interactiveRoutineDoc.editMode === 'raw' ? (
                   <div>
@@ -10277,7 +10196,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         ))}
                       </div>
                     )}
- 
+
                     {/* BARRA DE HERRAMIENTAS DE PLANILLA */}
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
                       <button
@@ -10334,7 +10253,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         <Save size={12} /> DESCARGAR CSV
                       </button>
                     </div>
- 
+
                     {/* TABLA EDITABLE CELDA POR CELDA */}
                     {(() => {
                       const sIdx = interactiveRoutineDoc.activeSheetIdx;
@@ -10483,7 +10402,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         <Plus size={12} /> AÑADIR LÍNEA / EJERCICIO
                       </button>
                     </div>
- 
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '7px', maxHeight: '360px', overflowY: 'auto', paddingRight: '4px' }}>
                       {(interactiveRoutineDoc.docLines || []).map((item, idx) => (
                         <div
@@ -10534,7 +10453,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                               <Check size={13} />
                             </button>
                           )}
- 
+
                           <input
                             type="text"
                             value={item.text}
@@ -10556,7 +10475,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                               outline: 'none'
                             }}
                           />
- 
+
                           {!item.isHeader && (
                             <button
                               type="button"
@@ -10577,7 +10496,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 )}
               </div>
             )}
- 
+
             <RoutineDayExplorer
               generatedDays={[]}
               weeklyRoutinePlan={[]}
@@ -10593,7 +10512,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               }}
               onCompleteTodayTraining={handleCompleteTodayTrainingFromAgenda}
             />
- 
+
             {savedRoutineAnalysis && savedRoutineAnalysis.items?.length > 0 && (
               <div
                 style={{
@@ -10652,7 +10571,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               </div>
             )}
- 
+
             {/* ==============================================================
                 2) CRÍTICA CONSTRUCTIVA Y PUNTOS FUERTES (DEBAJO DEL ARCHIVO)
                ============================================================== */}
@@ -10676,7 +10595,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <div style={{ color: '#94a3b8', fontSize: '11px', marginTop: '4px' }}>
                   Fuente: <strong>{scanReport.sourceName}</strong> • Esta crítica se actualiza automáticamente cada vez que editás el archivo arriba.
                 </div>
- 
+
                 <div style={{ marginTop: '12px', padding: '10px 12px', borderRadius: '9px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.35)' }}>
                   <div style={{ fontWeight: 800, color: '#6ee7b7', fontSize: '12px', marginBottom: '4px' }}>
                     ✓ PUNTOS FUERTES DETECTADOS
@@ -10685,7 +10604,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     <p key={`finding-${index}`} style={{ color: '#e2e8f0', marginTop: '4px', fontSize: '12.5px' }}>• {item}</p>
                   ))}
                 </div>
- 
+
                 <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '9px', background: 'rgba(251, 191, 36, 0.09)', border: '1px solid rgba(251, 191, 36, 0.42)' }}>
                   <div style={{ fontWeight: 800, color: '#fbbf24', fontSize: '12px', marginBottom: '4px' }}>
                     ⚡ CRÍTICA CONSTRUCTIVA Y SUGERENCIAS DE MEJORA
@@ -10694,7 +10613,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     <p key={`fix-${index}`} style={{ color: '#fde68a', marginTop: '4px', fontSize: '12.5px' }}>• {item}</p>
                   ))}
                 </div>
- 
+
                 <div style={{ marginTop: '10px' }}>
                   <div style={{ fontWeight: 700, color: '#00f0ff', fontSize: '11px', marginBottom: '4px' }}>
                     PRESCRIPCIONES DETECTADAS ({scanReport.exerciseLines.length}):
@@ -10725,7 +10644,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
       )}
- 
+
       {/* ====================================================================
           MÓDULO 4: MODO HISTORIA PVE SECUENCIAL
          ==================================================================== */}
@@ -10736,7 +10655,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
         };
         const resProfile = getClassResourceProfile(clsObj, level);
-
         const startStoryEncounter = (ch) => {
           const prevCleared = ch.prevId === null || completedChapters.includes(ch.prevId);
           if (!prevCleared) return;
@@ -10769,7 +10687,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             combatLogs: [`Escena narrativa iniciada en ${ch.chapter}.`]
           });
         };
-
         const chooseVnOptionAndEnterCombat = (choice) => {
           setActiveStoryEncounter((prev) => {
             if (!prev) return null;
@@ -10799,7 +10716,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             };
           });
         };
-
         const playStoryCard = (card) => {
           setActiveStoryEncounter((prev) => {
             if (!prev || prev.phase !== 'combat') return prev;
@@ -10820,7 +10736,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             const nextPlayerHp = Math.min(prev.playerMaxHp, prev.playerHp + (card.heal || 0));
             const nextHand = prev.hand.filter((c) => c.instanceId !== card.instanceId);
             const logLine = `Turno ${prev.turn}: Usaste "${card.name}" (${card.damage > 0 ? `-${card.damage} HP jefe` : ''}${card.shield > 0 ? ` +${card.shield} Escudo` : ''}${card.resourceGain > 0 ? ` +${card.resourceGain} ${resProfile.shortName}` : ''}).`;
-
             if (nextBossHp <= 0) {
               const ch = prev.chapter;
               if (!completedChapters.includes(ch.id)) {
@@ -10846,7 +10761,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               );
               return null;
             }
-
             return {
               ...prev,
               resource: nextResource,
@@ -10859,7 +10773,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             };
           });
         };
-
         const endStoryTurn = () => {
           setActiveStoryEncounter((prev) => {
             if (!prev || prev.phase !== 'combat') return prev;
@@ -10869,7 +10782,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             let nextPlayerShield = prev.playerShield;
             let nextBossShield = prev.bossShield;
             let enemyActionText = '';
-
             if (intent.type === 'attack' || intent.type === 'heavy') {
               let dmg = intent.value;
               if (nextPlayerShield > 0) {
@@ -10883,7 +10795,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               nextBossShield += intent.value;
               enemyActionText = `${ch.enemy} refuerza su guardia (+${intent.value} Escudo).`;
             }
-
             if (nextPlayerHp <= 0) {
               setPveBattleLog({
                 victory: false,
@@ -10892,7 +10803,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               });
               return null;
             }
-
             const nextTurn = prev.turn + 1;
             const roll = nextTurn % 3;
             const nextIntent =
@@ -10901,7 +10811,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 : roll === 1
                 ? { label: `Golpe de Grieta (${ch.bossAtk} daño)`, type: 'attack', value: ch.bossAtk }
                 : { label: `Postura Defensiva (+${Math.round(ch.bossAtk * 0.9)} Escudo)`, type: 'defend', value: Math.round(ch.bossAtk * 0.9) };
-
             const nextResource = Math.min(prev.maxResource, prev.resource + resProfile.regenPerTurn);
             return {
               ...prev,
@@ -10916,7 +10825,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             };
           });
         };
-
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="sys-window" style={{ padding: '18px' }}>
@@ -10928,7 +10836,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   PODER: {hunterCombatPower} • {resProfile.shortName}
                 </span>
               </div>
-
               {activeStoryEncounter && (
                 <div
                   className="pex-ornate-frame"
@@ -10956,7 +10863,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       Retirarse
                     </button>
                   </div>
-
                   {activeStoryEncounter.phase === 'vn' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {(() => {
@@ -10986,7 +10892,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                                 «{currentScene?.text}»
                               </p>
                             </div>
-
                             {!isLastScene ? (
                               <button
                                 type="button"
@@ -11046,7 +10951,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             <span style={{ color: '#fbbf24' }}>Intención: <strong>{activeStoryEncounter.bossIntent.label}</strong></span>
                           </div>
                         </div>
-
                         <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(0, 234, 255, 0.09)', border: '1px solid rgba(0, 234, 255, 0.4)' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#00eaff' }}>
                             <span>{profile.hunterName} ({clsObj.name})</span>
@@ -11069,7 +10973,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           </div>
                         </div>
                       </div>
-
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <span className="font-hud" style={{ fontSize: '11px', color: '#ffd45a' }}>
@@ -11084,7 +10987,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             FINALIZAR TURNO (+{resProfile.regenPerTurn} {resProfile.shortName})
                           </button>
                         </div>
-
                         <div className="grid-2" style={{ gap: '8px' }}>
                           {activeStoryEncounter.hand.map((card) => {
                             const canAfford = activeStoryEncounter.resource >= card.cost;
@@ -11123,7 +11025,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           })}
                         </div>
                       </div>
-
                       <div style={{ padding: '9px 11px', borderRadius: '10px', background: 'rgba(5, 8, 23, 0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
                         <div style={{ fontSize: '10px', fontFamily: 'Orbitron, sans-serif', color: '#94a3b8', marginBottom: '4px' }}>
                           CRÓNICA DEL COMBATE:
@@ -11138,7 +11039,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   )}
                 </div>
               )}
-
               {pveBattleLog && (
                 <div style={{
                   padding: '14px',
@@ -11153,13 +11053,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <p style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pveBattleLog.detail}</p>
                 </div>
               )}
-
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {PVE_STORY_CHAPTERS.map((ch) => {
                   const cleared = completedChapters.includes(ch.id);
                   const prevCleared = ch.prevId === null || completedChapters.includes(ch.prevId);
                   const recommendedReady = hunterCombatPower >= ch.reqPower;
-
                   return (
                     <div
                       key={ch.id}
@@ -11184,7 +11082,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             : `PODER SUGERIDO: ${ch.reqPower}`}
                         </span>
                       </div>
-
                       <h3 className="font-souls" style={{ fontSize: '16px', color: '#fff', marginTop: '4px' }}>
                         {ch.chapter}
                       </h3>
@@ -11197,7 +11094,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       <div style={{ fontSize: '12px', color: '#00f0ff', marginTop: '2px' }}>
                         <strong>Recompensa Especial:</strong> {ch.rewardName} (+{ch.expReward} EXP, +{ch.lpReward} LP)
                       </div>
-
                       {!cleared && (
                         <button
                           disabled={!prevCleared}
@@ -11220,7 +11116,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         );
       })()}
-
       {/* ====================================================================
           MÓDULO 5: CIUDAD PERSONALIZABLE 2D + NOVELA VISUAL
          ==================================================================== */}
@@ -11250,7 +11145,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   EDIFICIOS 2D: {builtBuildings.length}/{CITY_BUILDINGS_CATALOG.length}
                 </span>
               </div>
- 
+
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                 <input
                   className="sys-input"
@@ -11259,7 +11154,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   placeholder="Personaliza el nombre de tu ciudad..."
                 />
               </div>
- 
+
               <City2DWorldMap
                 cityName={cityName}
                 builtBuildings={builtBuildings}
@@ -11267,7 +11162,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 selectedCharId={activeChar.id}
                 onSelectCharacter={(id) => setSelectedCharId(id)}
               />
- 
+
               <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.35)', marginBottom: '14px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 700, color: '#fde047', marginBottom: '6px' }}>
                   RUMORES EN LAS CALLES DE {cityName.toUpperCase()}:
@@ -11278,7 +11173,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 ))}
               </div>
- 
+
               <div className="grid-2">
                 {CITY_BUILDINGS_CATALOG.map((b) => {
                   const isBuilt = builtBuildings.includes(b.id);
@@ -11321,13 +11216,13 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 })}
               </div>
             </div>
- 
+
             <div className="sys-window" style={{ padding: '18px' }}>
               <h2 className="font-souls" style={{ fontSize: '16px', color: '#fb7185', marginBottom: '8px' }}>
                 <Heart size={16} style={{ display: 'inline', marginRight: '6px' }} />
                 NOVELA VISUAL — ALIADOS ({unlockedCharacters.length}/{STORY_CHARACTERS.length})
               </h2>
- 
+
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
                 {STORY_CHARACTERS.map((char) => {
                   const isUnlocked = completedChapters.includes(char.unlockChapter);
@@ -11345,7 +11240,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   );
                 })}
               </div>
- 
+
               <div className="grid-2">
                 <VisualNovelCharacterPortrait
                   char={activeChar}
@@ -11353,7 +11248,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   affectionColor={activeRel.color}
                   affectionPoints={activeCharState.affection}
                 />
- 
+
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
                   <div>
                     <div style={{
@@ -11370,7 +11265,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         «{activeCharState.lastReply}»
                       </p>
                     </div>
- 
+
                     <div style={{
                       padding: '10px',
                       borderRadius: '10px',
@@ -11390,7 +11285,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       )}
                     </div>
                   </div>
- 
+
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                       <button
@@ -11408,7 +11303,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         <Heart size={12} /> CITA ROMÁNTICA (+12)
                       </button>
                     </div>
- 
+
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input
                         className="sys-input"
@@ -11428,7 +11323,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         )
       )}
- 
+
       {/* ====================================================================
           MÓDULO 6: AMIGOS & MODO PVP POR PROXIMIDAD (LÍMITE MÁXIMO 30 KM)
          ==================================================================== */}
@@ -11441,13 +11336,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           passiveDesc: 'Reduce a la mitad el desgaste y otorga +40 de defensa base.',
         };
         const playerRes = getClassResourceProfile(clsObj, level);
-
         const startPvpTacticalDuel = (opponent, distKm, isRankedFriend = true) => {
           const enemySeed = (opponent.id || 77) + opponent.name.length * 13;
           const enemyGen = generateRandomInfiniteClass(enemySeed);
           const enemyCls = opponent.cls || enemyGen.cls;
           const enemyRes = getClassResourceProfile(enemyCls, opponent.level || 1);
-
           const playerMaxHp = 220 + level * 20 + Math.round(hunterCombatPower * 0.42);
           const enemyMaxHp = 210 + (opponent.level || 1) * 20 + Math.round((opponent.power || 80) * 0.42);
           const deck = buildHunterTacticalDeck({
@@ -11457,7 +11350,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             unlockedInventory,
             atkMultiplier: 1
           });
-
           setActivePvpDuel({
             opponent,
             distKm,
@@ -11483,7 +11375,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             ]
           });
         };
-
         const playPvpCard = (card) => {
           setActivePvpDuel((prev) => {
             if (!prev) return null;
@@ -11496,7 +11387,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               prev.playerResource - card.cost + (card.resourceGain || 0)
             );
             const nextEnemyResource = Math.max(0, prev.enemyResource - (card.drainEnemyResource || 0));
-
             let dmg = card.damage || 0;
             let nextEnemyShield = prev.enemyShield;
             if (nextEnemyShield > 0 && dmg > 0) {
@@ -11508,7 +11398,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             const nextPlayerShield = prev.playerShield + (card.shield || 0);
             const nextPlayerHp = Math.min(prev.playerMaxHp, prev.playerHp + (card.heal || 0));
             const nextHand = prev.hand.filter((c) => c.instanceId !== card.instanceId);
-
             if (nextEnemyHp <= 0) {
               const lpWon = prev.isRankedFriend
                 ? (String(clsObj.affinityName || '').includes('Sangre Real') ? 35 : 25)
@@ -11524,7 +11413,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               triggerToast(`[ARENA PVP] ¡Victoria! +${lpWon} LP y +${expWon} EXP.`);
               return null;
             }
-
             const logEntry = `Turno ${prev.turn}: Jugaste "${card.name}" (${card.damage > 0 ? `-${card.damage} HP` : ''}${card.shield > 0 ? ` +${card.shield} Escudo` : ''}${card.drainEnemyResource > 0 ? ` -${card.drainEnemyResource} ${prev.enemyRes.shortName} rival` : ''}).`;
             return {
               ...prev,
@@ -11539,7 +11427,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             };
           });
         };
-
         const endPvpTurn = () => {
           setActivePvpDuel((prev) => {
             if (!prev) return null;
@@ -11550,7 +11437,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             let enemyShieldGain = 0;
             let nextEnemyResource = prev.enemyResource;
             let actionDesc = '';
-
             if (nextEnemyResource >= skillCost) {
               nextEnemyResource -= skillCost;
               if (isEnemyArcane) {
@@ -11566,7 +11452,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               enemyShieldGain = 18;
               actionDesc = `${prev.opponent.name} concentra recurso y golpea ligero (${enemyAtk} daño + 18 Escudo).`;
             }
-
             let dmgToPlayer = enemyAtk;
             let nextPlayerShield = prev.playerShield;
             if (nextPlayerShield > 0) {
@@ -11575,7 +11460,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               dmgToPlayer -= absorbed;
             }
             const nextPlayerHp = Math.max(0, prev.playerHp - dmgToPlayer);
-
             if (nextPlayerHp <= 0) {
               setPvpLog({
                 win: false,
@@ -11584,10 +11468,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               });
               return null;
             }
-
             nextEnemyResource = Math.min(prev.enemyMaxResource, nextEnemyResource + prev.enemyRes.regenPerTurn);
             const nextPlayerResource = Math.min(prev.playerMaxResource, prev.playerResource + playerRes.regenPerTurn);
-
             return {
               ...prev,
               turn: prev.turn + 1,
@@ -11601,7 +11483,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             };
           });
         };
-
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="sys-window" style={{ padding: '18px' }}>
@@ -11613,7 +11494,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <Crosshair size={13} color="#00f0ff" /> CALIBRAR GPS
                 </button>
               </div>
-
               <div
                 style={{
                   padding: '12px',
@@ -11635,7 +11515,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   {playerRes.mechanicNote}
                 </div>
               </div>
-
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#94a3b8', marginBottom: '12px' }}>
                 <div>
                   <MapPin size={13} style={{ display: 'inline', color: '#00f0ff', marginRight: '4px' }} />
@@ -11662,7 +11541,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <Sword size={13} /> DUELO TÁCTICO DE PRÁCTICA (2.4 KM)
                 </button>
               </div>
-
               {activePvpDuel && (
                 <div
                   className="pex-ornate-frame"
@@ -11690,7 +11568,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       Abandonar Duelo
                     </button>
                   </div>
-
                   <div className="grid-2" style={{ gap: '10px', marginBottom: '12px' }}>
                     <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(0, 234, 255, 0.09)', border: `1px solid ${playerRes.color}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#fff' }}>
@@ -11722,7 +11599,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         />
                       </div>
                     </div>
-
                     <div style={{ padding: '11px', borderRadius: '12px', background: 'rgba(244, 63, 94, 0.1)', border: `1px solid ${activePvpDuel.enemyRes.color}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 800, color: '#fda4af' }}>
                         <span>{activePvpDuel.opponent.name} • {activePvpDuel.enemyCls.name}</span>
@@ -11754,7 +11630,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       </div>
                     </div>
                   </div>
-
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
                     <span className="font-hud" style={{ fontSize: '11px', color: '#ffd45a' }}>
                       ACCIONES TÁCTICAS DE CLASE ({activePvpDuel.hand.length})
@@ -11768,7 +11643,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       CEDER TURNO (+{playerRes.regenPerTurn} {playerRes.shortName})
                     </button>
                   </div>
-
                   <div className="grid-2" style={{ gap: '8px', marginBottom: '10px' }}>
                     {activePvpDuel.hand.map((card) => {
                       const canAfford = activePvpDuel.playerResource >= card.cost;
@@ -11804,7 +11678,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                       );
                     })}
                   </div>
-
                   <div style={{ padding: '9px 11px', borderRadius: '10px', background: 'rgba(5, 8, 23, 0.9)', border: '1px solid rgba(255,255,255,0.1)' }}>
                     {activePvpDuel.duelLogs.map((entry, idx) => (
                       <div key={idx} style={{ fontSize: '11px', color: idx === 0 ? '#00eaff' : '#cbd5e1' }}>
@@ -11814,7 +11687,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 </div>
               )}
-
               <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(4,6,12,0.85)', border: '1px solid rgba(244,63,94,0.3)', marginBottom: '14px' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#fda4af', marginBottom: '8px' }}>
                   AGREGAR CAZADOR AMIGO
@@ -11872,7 +11744,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </button>
                 </div>
               </div>
-
               {pvpLog && (
                 <div style={{
                   padding: '12px',
@@ -11887,7 +11758,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   <div style={{ fontSize: '13px', color: '#e2e8f0', marginTop: '4px' }}>{pvpLog.body}</div>
                 </div>
               )}
-
               {friends.length === 0 ? (
                 <p style={{ fontSize: '13px', color: '#94a3b8' }}>
                   Tu lista de amigos empieza en 0. Agrega un amigo arriba con su código `#PEX` para combatir dentro de un radio de 30 km (o usa el botón de Duelo Táctico de Práctica arriba).
@@ -11927,7 +11797,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             Nivel {fr.level} • Grado de Cazador {fr.grade} • Poder: {fr.power}
                           </div>
                         </div>
-
                         <button
                           className={`sys-btn ${inRange ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
                           style={{ padding: '8px 12px', fontSize: '11px', opacity: inRange ? 1 : 0.6 }}
@@ -11950,7 +11819,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         );
       })()}
-
       {/* ====================================================================
           MÓDULO 7: CARGAS GUARDADAS (DESDE 0 -> SUBE NIVEL Y GRADO AUTOMÁTICAMENTE)
          ==================================================================== */}
@@ -11960,7 +11828,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#e11d48', marginBottom: '12px' }}>
               REGISTRO DE CARGAS POR EJERCICIO (SUBE NIVEL Y GRADO AUTOMÁTICAMENTE)
             </h2>
- 
+
             <div className="grid-2" style={{ marginBottom: '14px' }}>
               <div>
                 <label style={{ fontSize: '12px', color: '#94a3b8' }}>SELECCIONAR EJERCICIO</label>
@@ -11997,8 +11865,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               </div>
             </div>
- 
- 
+
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
               <div style={{ fontSize: '13px', color: '#cbd5e1' }}>
                 1RM Efectivo en <strong>{selectedExercise}</strong>: <span style={{ color: '#00f0ff', fontWeight: 700 }}>{currentEx1RM} kg</span> ({currentExRatio}x peso corporal)
@@ -12007,7 +11875,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <Save size={15} /> GUARDAR MARCA DE {selectedExercise.toUpperCase()}
               </button>
             </div>
- 
+
             <div className="grid-2">
               {Object.entries(savedLifts).map(([exName, data]) => {
                 const ex1rm = getEffectiveExercise1RM(exName, data.weight, data.reps, gradeData.bw);
@@ -12045,7 +11913,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
       )}
- 
+
       {/* ====================================================================
           MÓDULO 8: EVALUACIÓN FÍSICA TRIMESTRAL Y BÓVEDA SEGURA
          ==================================================================== */}
@@ -12060,7 +11928,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 PRÓXIMA REVISIÓN EN {daysUntilEval} DÍAS
               </span>
             </div>
- 
+
             <div className="grid-2">
               {['front', 'back'].map((side) => (
                 <div key={side} style={{ padding: '14px', borderRadius: '11px', background: 'rgba(4,6,12,0.85)', border: '1px dashed rgba(168,85,247,0.5)', textAlign: 'center' }}>
@@ -12080,7 +11948,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               ))}
             </div>
           </div>
- 
+
           <div className="sys-window" style={{ padding: '18px' }}>
             <h3 className="font-hud" style={{ fontSize: '14px', color: '#fbbf24', marginBottom: '10px' }}>
               RECOPILACIÓN ANUAL DE EVOLUCIÓN
@@ -12106,7 +11974,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         </div>
       )}
- 
+
       {/* ====================================================================
           MÓDULO 9: CONTADOR DE HORAS DE SUEÑO DÍA A DÍA + HISTORIAL PERSISTENTE
          ==================================================================== */}
@@ -12114,7 +11982,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
         const todayIso = getLocalDateISO();
         const isSelectedToday = selectedSleepDate === todayIso;
         const allHistoryDates = Object.keys(sleepLogs).sort().reverse();
- 
+
         const handleSaveSleepEntry = () => {
           const parsedHours = Number(String(sleepHoursInput).replace(',', '.'));
           if (!Number.isFinite(parsedHours) || parsedHours <= 0 || parsedHours > 24) {
@@ -12126,7 +11994,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           const targetDate = selectedSleepDate || todayIso;
           const alreadyExisted = Boolean(sleepLogs[targetDate]?.hours > 0);
           const timeStamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
- 
+
           setSleepLogs((prev) => ({
             ...prev,
             [targetDate]: {
@@ -12135,7 +12003,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               updatedAt: timeStamp,
             },
           }));
- 
+
           if (targetDate === todayIso && cleanHours >= 7.5) {
             setQuests((prev) =>
               prev.map((q) =>
@@ -12147,7 +12015,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               )
             );
           }
- 
+
           if (!alreadyExisted) {
             setExp((prev) => prev + 15);
             setLp((prev) => prev + 10);
@@ -12160,7 +12028,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             );
           }
         };
- 
+
         const handleDeleteSleepEntry = (isoToDelete) => {
           setSleepLogs((prev) => {
             const copy = { ...prev };
@@ -12173,7 +12041,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           }
           triggerToast(`[SUEÑO] Registro del ${formatSleepDateLabel(isoToDelete)} eliminado.`);
         };
- 
+
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* PANEL PRINCIPAL: SEMANA ACTUAL + FORMULARIO DE REGISTRO DÍA A DÍA */}
@@ -12193,7 +12061,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   SEMANA: {totalSleep}H / META: 49–63H
                 </span>
               </div>
- 
+
               {/* RESUMEN RÁPIDO DE MÉTRICAS SEMANALES */}
               <div
                 style={{
@@ -12223,14 +12091,14 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   </div>
                 </div>
               </div>
- 
+
               {!sleepOptimal && (
                 <div style={{ padding: '10px 12px', borderRadius: '10px', background: 'rgba(225,29,72,0.15)', border: '1px solid #e11d48', marginBottom: '14px', fontSize: '13px', color: '#fecdd3' }}>
                   <AlertTriangle size={15} style={{ display: 'inline', marginRight: '6px' }} />
                   <strong>Registro semanal en {totalSleep}h:</strong> Tocá cualquier día de la semana (Lun a Dom) para anotar tus horas de descanso y alcanzar la ventana óptima de 49–63 horas.
                 </div>
               )}
- 
+
               {/* TARJETAS INTERACTIVAS DE LUNES A DOMINGO */}
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginBottom: '6px' }}>
                 SEMANA ACTUAL (TOCÁ UN DÍA PARA ANOTAR O EDITAR):
@@ -12287,7 +12155,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   );
                 })}
               </div>
- 
+
               {/* FORMULARIO PARA ANOTAR EL DÍA SELECCIONADO */}
               <div
                 style={{
@@ -12333,7 +12201,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     />
                   </div>
                 </div>
- 
+
                 {/* BOTONES RÁPIDOS DE HORAS */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px' }}>
                   {[6, 6.5, 7, 7.5, 8, 8.5, 9].map((preset) => {
@@ -12359,7 +12227,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     );
                   })}
                 </div>
- 
+
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                   <input
                     type="number"
@@ -12381,7 +12249,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     onChange={(e) => setSleepNoteInput(e.target.value)}
                   />
                 </div>
- 
+
                 <button
                   type="button"
                   className="sys-btn sys-btn-primary"
@@ -12395,7 +12263,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </button>
               </div>
             </div>
- 
+
             {/* BLOQUE 2: RESUMEN DÍA A DÍA DE LA SEMANA ACTUAL */}
             <div className="sys-window" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
@@ -12467,7 +12335,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                           </div>
                         )}
                       </div>
- 
+
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                         <span
                           className="font-hud"
@@ -12493,7 +12361,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 })}
               </div>
             </div>
- 
+
             {/* BLOQUE 3: REGISTRO HISTÓRICO COMPLETO DE HORAS DE SUEÑO */}
             <div className="sys-window" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
@@ -12504,7 +12372,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   Guardado automáticamente por fecha
                 </span>
               </div>
- 
+
               {allHistoryDates.length === 0 ? (
                 <p style={{ fontSize: '13px', color: '#94a3b8' }}>
                   Todavía no hay días registrados. Anotá tus horas arriba para que queden guardadas en tu historial.
@@ -12563,7 +12431,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                             {item?.updatedAt ? `Registrado a las ${item.updatedAt}` : 'Guardado en sistema'}
                           </div>
                         </div>
- 
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                           <span
                             className="font-hud"
@@ -12598,7 +12466,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
           </div>
         );
       })()}
- 
+
       {/* ====================================================================
           MÓDULO 10: CONFIGURACIÓN, REINICIO A 0 Y BORRADO DE CUENTA
          ==================================================================== */}
@@ -12608,7 +12476,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
             <h2 className="font-hud" style={{ fontSize: '14px', color: '#00f0ff', marginBottom: '12px' }}>
               CONFIGURACIÓN DE CUENTA Y REINICIO DESDE 0
             </h2>
- 
+
             <div className="grid-2" style={{ marginBottom: '14px' }}>
               <div>
                 <label style={{ fontSize: '11px', color: '#94a3b8' }}>NOMBRE DE CAZADOR</label>
@@ -12628,7 +12496,6 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 />
               </div>
             </div>
-
             <div style={{ padding: '14px', borderRadius: '14px', background: 'rgba(5,8,23,0.9)', border: '1px solid rgba(0,234,255,0.4)', marginBottom: '12px' }}>
               <div className="font-hud" style={{ fontSize: '11.5px', color: 'var(--neon-blue)', marginBottom: '8px' }}>
                 MOTOR DE RENDERIZADO DE AVATAR (2D / 3D) & LINAJE
@@ -12676,7 +12543,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 {RACES_POOL.map((r) => <option key={r.id} value={r.id}>{r.name} — {r.trait}</option>)}
               </select>
             </div>
- 
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
               <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
                 Cuenta activa: <strong>{currentUser.email}</strong> • Código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
@@ -12704,7 +12571,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 >
                   <Download size={14} /> EXPORTAR RESPALDO (.JSON)
                 </button>
- 
+
                 <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
                   <Upload size={14} /> IMPORTAR (.JSON)
                   <input
@@ -12732,15 +12599,15 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     }}
                   />
                 </label>
- 
+
                 <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
                   <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
                 </button>
               </div>
             </div>
           </div>
- 
- 
+
+
           {/* PERSONALIZACIÓN DE COLORES NEÓN A ELECCIÓN DEL USUARIO */}
           <div className="sys-window" style={{ padding: '18px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
@@ -12759,11 +12626,11 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 <RotateCcw size={12} /> RESTAURAR ORIGINALES
               </button>
             </div>
- 
+
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.45 }}>
               Elegí cualquier color libremente usando los selectores o ingresando el código HEX. Todos los bordes, brillos, menús y barras de energía se actualizan al instante.
             </p>
- 
+
             {/* SELECTORES DE COLOR LIBRE (INPUT TYPE="COLOR" + HEX) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px', marginBottom: '16px' }}>
               <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-primary-rgb), 0.35)' }}>
@@ -12791,7 +12658,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   />
                 </div>
               </div>
- 
+
               <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-secondary-rgb), 0.35)' }}>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--neon-purple)', marginBottom: '6px' }}>
                   NEÓN SECUNDARIO (AURAS Y RELIQUIAS)
@@ -12817,8 +12684,8 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                   />
                 </div>
               </div>
- 
- 
+
+
               <div style={{ padding: '12px', borderRadius: '12px', background: 'rgba(5, 8, 23, 0.88)', border: '1px solid rgba(var(--neon-accent-rgb), 0.35)' }}>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--neon-gold)', marginBottom: '6px' }}>
                   NEÓN ACENTO (TÍTULOS Y RANGOS)
@@ -12845,7 +12712,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 </div>
               </div>
             </div>
- 
+
             {/* TEMAS RÁPIDOS DE INSPIRACIÓN RPG */}
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 700, marginBottom: '8px' }}>
               COMBINACIONES RÁPIDAS SUGERIDAS:
@@ -12890,7 +12757,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               ))}
             </div>
           </div>
- 
+
           <div className="sys-window" style={{ padding: '18px', borderColor: 'rgba(225, 29, 72, 0.55)' }}>
             <h3 className="font-hud" style={{ fontSize: '14px', color: '#fb7185', marginBottom: '8px' }}>
               <Trash2 size={15} style={{ display: 'inline', marginRight: '6px' }} />
