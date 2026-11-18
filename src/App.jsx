@@ -9,7 +9,7 @@ import {
   Heart, Building2, Send, RotateCcw,
   Pause, Navigation, Activity,
   Footprints, MessageSquareText, Ban, ShieldAlert,
-  Menu, X, Palette, Gem, Crown, Star, Award, Compass
+  Menu, X, Palette, Gem, Crown, Star, Award, Compass, Download
 } from 'lucide-react';
  
 // ============================================================================
@@ -4746,7 +4746,7 @@ function extractRoutineDaysFromText(rawText) {
 }
  
 function RoutineDayExplorer({
-  generatedDays, weeklyRoutinePlan, routineText, logs, setLogs, onCreateMission, scopeKey = 'routine'
+  generatedDays, weeklyRoutinePlan, routineText, logs, setLogs, onCreateMission, onCompleteTodayTraining, scopeKey = 'routine'
 }) {
   const todayISO = (() => {
     const d = new Date();
@@ -4874,14 +4874,30 @@ function RoutineDayExplorer({
                 </div>
               );
             })}
-            <button type="button" className="sys-btn sys-btn-gold" style={{ width: '100%', marginTop: '10px' }}
-              onClick={() => onCreateMission({
-                title: `Entrenamiento ${selectedDay.name} (${selectedDate})`,
-                date: selectedDate,
-                detail: exercises.map((x) => x.name).join(' · ')
-              })}>
-              <Sword size={14} /> CREAR MISIÓN CON ESTE ENTRENAMIENTO
-            </button>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+              {onCompleteTodayTraining && (
+                <button
+                  type="button"
+                  className="sys-btn sys-btn-success"
+                  style={{ flex: 1 }}
+                  onClick={onCompleteTodayTraining}
+                >
+                  <CheckCircle2 size={14} /> COMPLETAR &quot;ENTRENAR HOY&quot; (+100 EXP)
+                </button>
+              )}
+              <button
+                type="button"
+                className="sys-btn sys-btn-gold"
+                style={{ flex: 1 }}
+                onClick={() => onCreateMission({
+                  title: `Entrenamiento ${selectedDay.name} (${selectedDate})`,
+                  date: selectedDate,
+                  detail: exercises.map((x) => x.name).join(' · ')
+                })}
+              >
+                <Sword size={14} /> CREAR MISIÓN CON ESTE ENTRENAMIENTO
+              </button>
+            </div>
           </>
         ) : (
           <div style={{ color: '#94a3b8', fontSize: '12px', padding: '12px 0' }}>
@@ -7616,6 +7632,25 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     );
   };
  
+  const handleCompleteTodayTrainingFromAgenda = () => {
+    const todayQuest = quests.find(
+      (q) => q.isDaily && q.title.toLowerCase().includes('entrenar hoy') && q.status !== 'completed'
+    );
+    if (todayQuest) {
+      setQuests((prev) =>
+        prev.map((item) => (item.id === todayQuest.id ? { ...item, status: 'completed' } : item))
+      );
+      setExp((prev) => prev + (todayQuest.exp || 100));
+      setLp((prev) => prev + (todayQuest.lp || 50));
+      setStreak((s) => s + 1);
+      triggerToast(`¡MISIÓN DIARIA COMPLETADA! "${todayQuest.title}" (+${todayQuest.exp || 100} EXP • +${todayQuest.lp || 50} LP)`);
+    } else {
+      setExp((prev) => prev + 100);
+      setLp((prev) => prev + 50);
+      triggerToast('¡ENTRENAMIENTO DE AGENDA REGISTRADO! +100 EXP • +50 LP');
+    }
+  };
+ 
   // ==========================================================================
   // INTERFAZ PRINCIPAL DEL SISTEMA (ANIME FANTASY RPG HUD)
   // ==========================================================================
@@ -8134,11 +8169,39 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                         {activeSlotItem.desc}
                       </div>
                     </div>
-                    <div
-                      className="font-hud"
-                      style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', whiteSpace: 'nowrap' }}
-                    >
-                      +{activeSlotItem.power} PWR
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                      <div
+                        className="font-hud"
+                        style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', whiteSpace: 'nowrap' }}
+                      >
+                        +{activeSlotItem.power} PWR
+                      </div>
+                      {selectedSlotIdx > 1 && activeSlotItem.id !== 'innate_passive' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUnlockedInventory((prev) => [
+                              activeSlotItem,
+                              ...prev.filter((it) => it.id !== activeSlotItem.id),
+                            ]);
+                            setSelectedSlotIdx(1);
+                            triggerToast(`Equipado en ranura principal: ${activeSlotItem.name}`);
+                          }}
+                          style={{
+                            padding: '3px 8px',
+                            borderRadius: '7px',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            background: 'rgba(0, 234, 255, 0.16)',
+                            border: '1px solid rgba(0, 234, 255, 0.45)',
+                            color: 'var(--neon-blue)',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Equipar Principal
+                        </button>
+                      )}
                     </div>
                   </>
                 ) : (
@@ -8921,6 +8984,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina programada', lp: 40, exp: 80, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...prev]);
                 triggerToast('[MISIÓN] Creada a partir del entrenamiento programado, sin modificar ejercicios.');
               }}
+              onCompleteTodayTraining={handleCompleteTodayTrainingFromAgenda}
             />
             </div>
             )}
@@ -9404,6 +9468,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 setQuests((prev) => [{ id: Date.now(), title: payload.title, detail: payload.detail, routineDate: payload.date, env: 'Rutina importada', lp: 40, exp: 80, status: 'pending', isDaily: false, origin: 'custom', createdAt: Date.now() }, ...prev]);
                 triggerToast('[MISIÓN] Creada desde los ejercicios detectados en tu rutina importada.');
               }}
+              onCompleteTodayTraining={handleCompleteTodayTrainingFromAgenda}
             />
  
             {savedRoutineAnalysis && savedRoutineAnalysis.items?.length > 0 && (
@@ -10719,9 +10784,62 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
                 Cuenta activa: <strong>{currentUser.email}</strong> • Código: <strong style={{ color: '#fbbf24' }}>{profile.hunterCode}</strong>
               </div>
-              <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
-                <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="sys-btn sys-btn-primary"
+                  onClick={() => {
+                    const backup = {
+                      version: 'PROTOCOLO_EX_V4_V5_COMBINADO',
+                      exportedAt: new Date().toISOString(),
+                      hunter: profile.hunterName,
+                      data: JSON.parse(localStorage.getItem(storageKey) || '{}'),
+                    };
+                    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Respaldo_${profile.hunterName}_ProyectoEX.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    triggerToast('[SISTEMA] Respaldo JSON descargado correctamente.');
+                  }}
+                >
+                  <Download size={14} /> EXPORTAR RESPALDO (.JSON)
+                </button>
+ 
+                <label className="sys-btn sys-btn-ghost" style={{ cursor: 'pointer' }}>
+                  <Upload size={14} /> IMPORTAR (.JSON)
+                  <input
+                    type="file"
+                    accept=".json,application/json"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        try {
+                          const parsed = JSON.parse(String(ev.target?.result || '{}'));
+                          const payload = parsed.data || parsed;
+                          if (!payload || typeof payload !== 'object') throw new Error('Formato inválido');
+                          localStorage.setItem(storageKey, JSON.stringify(payload));
+                          triggerToast('[SISTEMA] Respaldo restaurado. Recargando sesión...');
+                          setTimeout(() => window.location.reload(), 700);
+                        } catch {
+                          triggerToast('[ERROR] El archivo JSON seleccionado no es un respaldo válido.');
+                        }
+                      };
+                      reader.readAsText(file);
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+ 
+                <button className="sys-btn sys-btn-gold" onClick={resetProgressToZero}>
+                  <RotateCcw size={14} /> REINICIAR TODO EL PROGRESO A 0
+                </button>
+              </div>
             </div>
           </div>
  
