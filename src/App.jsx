@@ -12,9 +12,8 @@ import {
   Menu, X, Palette, Gem, Crown, Star, Award, Compass, Download,
   Box, Layers, Eye, ScrollText
 } from 'lucide-react';
-import * as THREE from 'three';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Float, ContactShadows, Sparkles as DreiSparkles } from '@react-three/drei';
+import { computeHunter3DDna, extractPhotoDnaFromDataUrl } from './utils/avatarDna';
+import { Real3DHunterCanvas, VisualNovel3DPortrait } from './components/StylizedAvatars3D';
 
 // ============================================================================
 // ESTILOS INTEGRADOS (ANIME FANTASY RPG - VISUAL SYSTEM)
@@ -1817,446 +1816,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
   }
 }
 
-// ============================================================================
-// AVATAR 3D REAL (WebGL · react-three-fiber) — ADN VISUAL ÚNICO POR CUENTA
-// ============================================================================
-function computeHunter3DDna({ profile, hunterClass, unlockedInventory = [], level = 0, neonTheme }) {
-  const codeStr = `${profile?.hunterCode || '#PEX-1000'}_${hunterClass?.cls?.variantCode || 101}_${profile?.hunterName || 'CAZADOR'}`;
-  let hash = 2166136261;
-  for (let i = 0; i < codeStr.length; i++) {
-    hash ^= codeStr.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  const seed = Math.abs(hash);
-
-  const heightM = Math.max(1.45, Math.min(2.15, (Number(profile?.heightCm) || 176) / 100));
-  const weightKg = Math.max(42, Math.min(180, Number(profile?.weightKg) || 75));
-  const bmi = weightKg / (heightM * heightM);
-
-  const isFemale = profile?.gender === 'female';
-  const heightScale = heightM / 1.76;
-  const muscularity = Math.max(0.84, Math.min(1.32, (bmi / 23.5) * (isFemale ? 0.92 : 1.05)));
-  const shoulderWidth = isFemale ? 0.88 * muscularity : 1.06 * muscularity;
-  const waistWidth = isFemale ? 0.72 * Math.min(1.15, muscularity) : 0.88 * Math.min(1.2, muscularity);
-
-  const raceId = hunterClass?.race?.id || profile?.preferredRaceId || 'monarch_vessel';
-  const weaponType = hunterClass?.cls?.weaponType || 'sword';
-  const custom = profile?.avatar3d || {};
-
-  const hairStyles = ['spiky', 'layered', 'long', 'ponytail', 'crown_swept'];
-  const defaultHairStyle = isFemale ? 'long' : hairStyles[seed % hairStyles.length];
-
-  const armorPalettes = [
-    { primary: '#0f172a', trim: '#ffd45a', metalness: 0.78 },
-    { primary: '#1e1b4b', trim: '#00eaff', metalness: 0.82 },
-    { primary: '#27101c', trim: '#f43f5e', metalness: 0.75 },
-    { primary: '#0b2520', trim: '#10b981', metalness: 0.76 },
-    { primary: '#1f2937', trim: '#c084fc', metalness: 0.85 },
-  ];
-  const basePalette = armorPalettes[seed % armorPalettes.length];
-
-  const hasCloak = unlockedInventory.some((it) => it.id === 'gear_cloak') || level >= 3;
-  const hasLegendaryCrown = unlockedInventory.some((it) => it.id === 'gear_crown') || level >= 15;
-  const hasRunicBlade = unlockedInventory.some((it) => it.id === 'gear_blade');
-
-  return {
-    seed,
-    isFemale,
-    raceId,
-    weaponType,
-    heightScale,
-    shoulderWidth,
-    waistWidth,
-    muscularity,
-    hairStyle: custom.hairStyle || defaultHairStyle,
-    hairColor: custom.hairColor || hunterClass?.race?.hairColor || '#0b0f19',
-    eyeColor: custom.eyeColor || hunterClass?.race?.eyeColor || '#00eaff',
-    skinTone: custom.skinTone || (seed % 3 === 0 ? '#f6c8a8' : seed % 3 === 1 ? '#eab692' : '#d59b73'),
-    armorColor: custom.armorColor || basePalette.primary,
-    trimColor: custom.trimColor || basePalette.trim,
-    auraColor: custom.auraColor || neonTheme?.primary || hunterClass?.cls?.accentColor || '#00eaff',
-    secondaryAura: neonTheme?.secondary || hunterClass?.race?.auraColor || '#963cff',
-    auraStyle: custom.auraStyle || 'runes',
-    pose: custom.pose || 'heroic',
-    metalness: basePalette.metalness,
-    hasCloak,
-    hasLegendaryCrown,
-    hasRunicBlade,
-    crestVariant: seed % 4,
-  };
-}
-
-function Hunter3DCharacterMesh({ dna, stage = 1 }) {
-  const rootRef = useRef();
-  const chestRef = useRef();
-  const leftArmRef = useRef();
-  const rightArmRef = useRef();
-  const auraRingRef = useRef();
-  const coreCrystalRef = useRef();
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (rootRef.current) {
-      rootRef.current.position.y = -0.95 + Math.sin(t * 1.8) * 0.035;
-    }
-    if (chestRef.current) {
-      const breath = 1 + Math.sin(t * 2.4) * 0.025;
-      chestRef.current.scale.set(dna.shoulderWidth * breath, 1, dna.muscularity * breath);
-    }
-    if (leftArmRef.current && rightArmRef.current) {
-      const swing = Math.sin(t * 1.8) * 0.06;
-      leftArmRef.current.rotation.z = 0.14 + swing;
-      rightArmRef.current.rotation.z = dna.pose === 'guard' ? -0.45 : -0.16 - swing;
-      rightArmRef.current.rotation.x = dna.pose === 'guard' ? -0.55 : -0.18;
-    }
-    if (auraRingRef.current) {
-      auraRingRef.current.rotation.z = t * 0.55;
-    }
-    if (coreCrystalRef.current) {
-      coreCrystalRef.current.rotation.y = t * 1.6;
-    }
-  });
-
-  const stageScale = Math.min(6, Math.max(1, Number(stage) || 1));
-
-  return (
-    <group ref={rootRef} scale={[1, dna.heightScale, 1]}>
-      {/* PEDESTAL RÚNICO 3D */}
-      <mesh position={[0, -0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.72, 0.92, 48]} />
-        <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={1.6} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[0, -0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.72, 48]} />
-        <meshStandardMaterial color="#060b1d" metalness={0.85} roughness={0.25} />
-      </mesh>
-
-      {/* HALO ARCANO VERTICAL GIRATORIO */}
-      <group ref={auraRingRef} position={[0, 1.35, -0.32]}>
-        <mesh>
-          <torusGeometry args={[0.78 + stageScale * 0.04, 0.015, 16, 64]} />
-          <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={2} />
-        </mesh>
-        {stageScale >= 2 && (
-          <mesh rotation={[0, 0, Math.PI / 4]}>
-            <torusGeometry args={[0.92, 0.01, 12, 6]} />
-            <meshStandardMaterial color={dna.trimColor} emissive={dna.trimColor} emissiveIntensity={1.5} />
-          </mesh>
-        )}
-      </group>
-
-      {/* PIERNAS Y GREBAS BLINDADAS */}
-      {[-0.17, 0.17].map((xPos, i) => (
-        <group key={`leg_${i}`} position={[xPos * dna.waistWidth, 0.45, 0]}>
-          <mesh castShadow>
-            <capsuleGeometry args={[0.095 * dna.muscularity, 0.62, 10, 18]} />
-            <meshStandardMaterial color={dna.armorColor} metalness={dna.metalness} roughness={0.3} />
-          </mesh>
-          <mesh position={[0, -0.18, 0.06]}>
-            <boxGeometry args={[0.13, 0.28, 0.08]} />
-            <meshStandardMaterial color={dna.trimColor} metalness={0.9} roughness={0.2} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* CINTURA / FAJÍN TÁCTICO */}
-      <mesh position={[0, 0.92, 0]}>
-        <cylinderGeometry args={[0.21 * dna.waistWidth, 0.24 * dna.waistWidth, 0.22, 20]} />
-        <meshStandardMaterial color="#090d1c" metalness={0.6} roughness={0.4} />
-      </mesh>
-
-      {/* TORSO Y CORAZA ARTICULADA */}
-      <group ref={chestRef} position={[0, 1.28, 0]}>
-        <mesh castShadow>
-          <cylinderGeometry args={[0.31, 0.22, 0.54, 24]} />
-          <meshStandardMaterial color={dna.armorColor} metalness={dna.metalness} roughness={0.26} />
-        </mesh>
-        {/* Placas pectorales */}
-        {[-0.12, 0.12].map((px, idx) => (
-          <mesh key={`pec_${idx}`} position={[px, 0.08, 0.16]} rotation={[0.12, px > 0 ? -0.2 : 0.2, 0]}>
-            <boxGeometry args={[0.18, 0.22, 0.08]} />
-            <meshStandardMaterial color={dna.armorColor} metalness={0.85} roughness={0.22} />
-          </mesh>
-        ))}
-        {/* Cristal de Núcleo en el pecho */}
-        <mesh ref={coreCrystalRef} position={[0, 0.06, 0.22]}>
-          <octahedronGeometry args={[0.075, 0]} />
-          <meshStandardMaterial color="#ffffff" emissive={dna.auraColor} emissiveIntensity={2.6} />
-        </mesh>
-
-        {/* HOMBRERAS (PAULDRONS) */}
-        {[-0.37, 0.37].map((sx, idx) => (
-          <group key={`pauldron_${idx}`} position={[sx, 0.2, 0]} rotation={[0, 0, sx > 0 ? -0.32 : 0.32]}>
-            <mesh>
-              <sphereGeometry args={[0.145, 20, 16, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
-              <meshStandardMaterial color={dna.armorColor} metalness={0.88} roughness={0.2} />
-            </mesh>
-            <mesh position={[0, 0.02, 0]}>
-              <torusGeometry args={[0.135, 0.014, 10, 24]} />
-              <meshStandardMaterial color={dna.trimColor} emissive={dna.trimColor} emissiveIntensity={0.8} />
-            </mesh>
-          </group>
-        ))}
-
-        {/* CAPA REAL O MANTO DE CAZADOR */}
-        {dna.hasCloak && (
-          <mesh position={[0, -0.26, -0.22]} rotation={[0.18, 0, 0]}>
-            <boxGeometry args={[0.62, 0.96, 0.03]} />
-            <meshStandardMaterial
-              color={dna.raceId === 'valkyrie_dusk' ? '#3b0764' : '#7f1d1d'}
-              roughness={0.65}
-            />
-          </mesh>
-        )}
-
-        {/* ALAS ASTRALES (VALKIRIA O ETAPA >= 4) */}
-        {(dna.raceId === 'valkyrie_dusk' || stageScale >= 4) && (
-          <group position={[0, 0.14, -0.2]}>
-            {[-1, 1].map((dir) => (
-              <mesh key={`wing_${dir}`} position={[dir * 0.48, 0.16, -0.06]} rotation={[0.1, dir * -0.35, dir * 0.42]}>
-                <boxGeometry args={[0.65, 0.24, 0.02]} />
-                <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={1.4} transparent opacity={0.72} />
-              </mesh>
-            ))}
-          </group>
-        )}
-      </group>
-
-      {/* BRAZO IZQUIERDO */}
-      <group ref={leftArmRef} position={[-0.4 * dna.shoulderWidth, 1.42, 0]}>
-        <mesh position={[0, -0.24, 0]}>
-          <capsuleGeometry args={[0.072 * dna.muscularity, 0.42, 8, 16]} />
-          <meshStandardMaterial color={dna.armorColor} metalness={0.75} roughness={0.32} />
-        </mesh>
-        {dna.weaponType === 'daggers' && (
-          <mesh position={[0, -0.52, 0.14]} rotation={[1.2, 0, 0]}>
-            <coneGeometry args={[0.035, 0.42, 4]} />
-            <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={2} />
-          </mesh>
-        )}
-        {dna.weaponType === 'gauntlets' && (
-          <mesh position={[0, -0.46, 0]}>
-            <sphereGeometry args={[0.11, 16, 16]} />
-            <meshStandardMaterial color={dna.trimColor} emissive={dna.auraColor} emissiveIntensity={1.6} />
-          </mesh>
-        )}
-      </group>
-
-      {/* BRAZO DERECHO + ARMA DE CLASE 3D */}
-      <group ref={rightArmRef} position={[0.4 * dna.shoulderWidth, 1.42, 0]}>
-        <mesh position={[0, -0.24, 0]}>
-          <capsuleGeometry args={[0.072 * dna.muscularity, 0.42, 8, 16]} />
-          <meshStandardMaterial color={dna.armorColor} metalness={0.75} roughness={0.32} />
-        </mesh>
-
-        {/* Arma Rúnica 3D según Clase */}
-        {(dna.weaponType === 'sword' || dna.weaponType === 'greatsword') && (
-          <group position={[0.04, -0.46, 0.22]} rotation={[1.15, 0, -0.15]}>
-            {/* Empuñadura y guarda */}
-            <mesh position={[0, -0.12, 0]}>
-              <cylinderGeometry args={[0.022, 0.022, 0.24, 12]} />
-              <meshStandardMaterial color="#1e293b" />
-            </mesh>
-            <mesh position={[0, 0.02, 0]}>
-              <boxGeometry args={[dna.weaponType === 'greatsword' ? 0.34 : 0.22, 0.04, 0.06]} />
-              <meshStandardMaterial color={dna.trimColor} metalness={0.95} roughness={0.15} />
-            </mesh>
-            {/* Hoja de energía */}
-            <mesh position={[0, dna.weaponType === 'greatsword' ? 0.68 : 0.52, 0]}>
-              <boxGeometry args={[dna.weaponType === 'greatsword' ? 0.14 : 0.075, dna.weaponType === 'greatsword' ? 1.25 : 0.95, 0.022]} />
-              <meshStandardMaterial
-                color={dna.hasRunicBlade ? '#ffffff' : dna.auraColor}
-                emissive={dna.auraColor}
-                emissiveIntensity={dna.hasRunicBlade ? 2.4 : 1.6}
-                metalness={0.9}
-                roughness={0.1}
-              />
-            </mesh>
-          </group>
-        )}
-
-        {dna.weaponType === 'spear' && (
-          <group position={[0.06, -0.35, 0.12]} rotation={[0.35, 0, -0.1]}>
-            <mesh>
-              <cylinderGeometry args={[0.02, 0.02, 1.85, 12]} />
-              <meshStandardMaterial color={dna.trimColor} metalness={0.85} roughness={0.25} />
-            </mesh>
-            <mesh position={[0, 1.02, 0]}>
-              <coneGeometry args={[0.065, 0.28, 4]} />
-              <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={2.2} />
-            </mesh>
-          </group>
-        )}
-
-        {dna.weaponType === 'staff' && (
-          <group position={[0.06, -0.35, 0.12]} rotation={[0.25, 0, -0.08]}>
-            <mesh>
-              <cylinderGeometry args={[0.024, 0.024, 1.72, 12]} />
-              <meshStandardMaterial color={dna.trimColor} metalness={0.85} roughness={0.25} />
-            </mesh>
-            <mesh position={[0, 0.94, 0]}>
-              <octahedronGeometry args={[0.11, 0]} />
-              <meshStandardMaterial color={dna.secondaryAura} emissive={dna.auraColor} emissiveIntensity={2.4} />
-            </mesh>
-          </group>
-        )}
-
-        {dna.weaponType === 'daggers' && (
-          <mesh position={[0, -0.52, 0.14]} rotation={[1.2, 0, 0]}>
-            <coneGeometry args={[0.035, 0.42, 4]} />
-            <meshStandardMaterial color={dna.auraColor} emissive={dna.auraColor} emissiveIntensity={2} />
-          </mesh>
-        )}
-
-        {dna.weaponType === 'gauntlets' && (
-          <mesh position={[0, -0.46, 0]}>
-            <sphereGeometry args={[0.11, 16, 16]} />
-            <meshStandardMaterial color={dna.trimColor} emissive={dna.auraColor} emissiveIntensity={1.6} />
-          </mesh>
-        )}
-      </group>
-
-      {/* CUELLO Y CABEZA 3D ESTILIZADA */}
-      <group position={[0, 1.76, 0]}>
-        <mesh position={[0, -0.14, 0]}>
-          <cylinderGeometry args={[0.075, 0.09, 0.16, 16]} />
-          <meshStandardMaterial color={dna.skinTone} roughness={0.45} />
-        </mesh>
-
-        {/* Cráneo / Rostro */}
-        <mesh castShadow>
-          <sphereGeometry args={[0.21, 28, 24]} />
-          <meshStandardMaterial color={dna.skinTone} roughness={0.42} />
-        </mesh>
-
-        {/* Ojos luminosos 3D */}
-        {[-0.072, 0.072].map((ex, idx) => (
-          <mesh key={`eye_${idx}`} position={[ex, 0.01, 0.188]}>
-            <sphereGeometry args={[0.026, 12, 12]} />
-            <meshStandardMaterial color={dna.eyeColor} emissive={dna.eyeColor} emissiveIntensity={2.2} />
-          </mesh>
-        ))}
-
-        {/* Cabello 3D Procedural Único */}
-        <mesh position={[0, 0.07, -0.02]}>
-          <sphereGeometry args={[0.225, 24, 20, 0, Math.PI * 2, 0, Math.PI * 0.62]} />
-          <meshStandardMaterial color={dna.hairColor} roughness={0.5} />
-        </mesh>
-        {(dna.hairStyle === 'long' || dna.isFemale) && (
-          <mesh position={[0, -0.18, -0.14]}>
-            <boxGeometry args={[0.36, 0.52, 0.12]} />
-            <meshStandardMaterial color={dna.hairColor} roughness={0.5} />
-          </mesh>
-        )}
-        {dna.hairStyle === 'ponytail' && (
-          <mesh position={[0, -0.08, -0.24]} rotation={[0.45, 0, 0]}>
-            <coneGeometry args={[0.08, 0.46, 12]} />
-            <meshStandardMaterial color={dna.hairColor} roughness={0.5} />
-          </mesh>
-        )}
-        {(dna.hairStyle === 'spiky' || dna.hairStyle === 'crown_swept') &&
-          [-0.12, 0, 0.12].map((hx, idx) => (
-            <mesh key={`spike_${idx}`} position={[hx, 0.24, -0.02]} rotation={[0.2, 0, hx * -1.4]}>
-              <coneGeometry args={[0.06, 0.18, 6]} />
-              <meshStandardMaterial color={dna.hairColor} roughness={0.45} />
-            </mesh>
-          ))}
-
-        {/* Rasgos Raciales 3D */}
-        {dna.raceId === 'abyss_demon' &&
-          [-0.13, 0.13].map((cx, idx) => (
-            <mesh key={`horn_${idx}`} position={[cx, 0.19, 0.04]} rotation={[0.25, 0, cx > 0 ? -0.45 : 0.45]}>
-              <coneGeometry args={[0.032, 0.22, 8]} />
-              <meshStandardMaterial color="#be123c" emissive="#f43f5e" emissiveIntensity={1.2} />
-            </mesh>
-          ))}
-        {dna.raceId === 'fenrir_kin' &&
-          [-0.12, 0.12].map((fx, idx) => (
-            <mesh key={`ear_${idx}`} position={[fx, 0.21, 0]} rotation={[0, 0, fx > 0 ? -0.3 : 0.3]}>
-              <coneGeometry args={[0.048, 0.16, 4]} />
-              <meshStandardMaterial color={dna.hairColor} />
-            </mesh>
-          ))}
-        {(dna.hasLegendaryCrown || dna.raceId === 'monarch_vessel' || dna.raceId === 'hollow_lord') && (
-          <mesh position={[0, 0.26, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.14, 0.014, 10, 32]} />
-            <meshStandardMaterial color="#ffd45a" emissive="#ffd45a" emissiveIntensity={2.1} />
-          </mesh>
-        )}
-      </group>
-    </group>
-  );
-}
-
-function Real3DHunterCanvas({ profile, hunterClass, unlockedInventory, level, streak, stage, hunterGrade, neonTheme }) {
-  const [autoRotate, setAutoRotate] = useState(true);
-  const dna = computeHunter3DDna({ profile, hunterClass, unlockedInventory, level, streak, neonTheme });
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        height: '405px',
-        width: '100%',
-        background: 'radial-gradient(circle at 50% 42%, #19265c 0%, #070c22 68%, #040612 100%)',
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ position: 'absolute', bottom: '50px', left: '12px', zIndex: 10, display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <span className="sys-badge" style={{ background: 'rgba(5,8,23,0.88)', color: dna.auraColor, border: `1px solid ${dna.auraColor}`, fontSize: '9px' }}>
-          <Box size={11} /> WEBGL 3D • ADN #{dna.seed.toString(16).slice(0, 6).toUpperCase()}
-        </span>
-        <button
-          type="button"
-          onClick={() => setAutoRotate((v) => !v)}
-          style={{
-            background: 'rgba(5,8,23,0.88)',
-            border: '1px solid rgba(255,212,90,0.55)',
-            color: '#ffd45a',
-            borderRadius: '999px',
-            padding: '3px 9px',
-            fontSize: '9px',
-            fontFamily: 'Orbitron, sans-serif',
-            cursor: 'pointer',
-          }}
-        >
-          {autoRotate ? 'Pausar Órbita' : 'Auto-Rotar 360°'}
-        </button>
-      </div>
-
-      <Canvas camera={{ position: [0, 0.6, 3.6], fov: 42 }} dpr={[1, 2]}>
-        <ambientLight intensity={0.65} />
-        <directionalLight position={[3, 5, 4]} intensity={1.45} color="#ffffff" />
-        <pointLight position={[-2.2, 1.8, 2]} intensity={2.2} color={dna.auraColor} />
-        <pointLight position={[2.2, 1.2, -1.8]} intensity={1.8} color={dna.secondaryAura} />
-
-        <Float speed={1.4} rotationIntensity={0.05} floatIntensity={0.12}>
-          <Hunter3DCharacterMesh dna={dna} stage={stage} />
-        </Float>
-
-        <DreiSparkles
-          count={38}
-          scale={[2.4, 2.6, 2.4]}
-          size={2.6}
-          speed={0.45}
-          color={dna.auraColor}
-        />
-        <ContactShadows position={[0, -0.98, 0]} opacity={0.55} scale={4} blur={2.2} far={3} />
-        <OrbitControls
-          target={[0, 0.15, 0]}
-          enablePan={false}
-          enableZoom={true}
-          minDistance={2.1}
-          maxDistance={4.4}
-          minPolarAngle={Math.PI / 4.5}
-          maxPolarAngle={Math.PI / 1.85}
-          autoRotate={autoRotate}
-          autoRotateSpeed={1.6}
-        />
-      </Canvas>
-    </div>
-  );
-}
+// (Los componentes estilizados 3D y cálculo de ADN se importan desde ./components/StylizedAvatars3D y ./utils/avatarDna)
 
 function JrpgFantasyPortrait({
   hunterClass,
@@ -2270,6 +1830,7 @@ function JrpgFantasyPortrait({
   classEvolution,
   gender,
   onToggleGender,
+  onUploadPhotoForAvatar,
   passiveClassBonus,
   unlockedInventory = [],
   neonTheme
@@ -2290,6 +1851,7 @@ function JrpgFantasyPortrait({
   const isFemale = gender === 'female';
   const [showPassiveDetails, setShowPassiveDetails] = useState(false);
   const [loreSubTab, setLoreSubTab] = useState('origin');
+  const activeDna = computeHunter3DDna({ profile, hunterClass, unlockedInventory, level, streak, neonTheme });
   const loreData = generateHunterOriginAndDestinyLore({
     hunterName: profile?.hunterName,
     gender,
@@ -2321,19 +1883,32 @@ function JrpgFantasyPortrait({
         <div className="pex-avatar-corner-bl" />
         <div className="pex-avatar-corner-br" />
         <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 8, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ background: 'rgba(6, 11, 28, 0.86)', backdropFilter: 'blur(8px)', border: '1px solid rgba(var(--neon-accent-rgb), 0.55)', borderRadius: '999px', padding: '4px 10px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 800, color: 'var(--neon-gold)' }}>
+          <div style={{ background: 'rgba(6, 11, 28, 0.9)', border: '1px solid rgba(var(--neon-accent-rgb), 0.55)', borderRadius: '999px', padding: '4px 10px', fontSize: '10px', fontFamily: 'Orbitron, sans-serif', fontWeight: 800, color: 'var(--neon-gold)' }}>
             GRADO {hunterGrade} • ETAPA {stage}
           </div>
-          <div style={{ background: 'rgba(6, 11, 28, 0.84)', border: `1px solid ${race.auraColor || '#00eaff'}`, borderRadius: '999px', padding: '3px 9px', fontSize: '9.5px', fontWeight: 700, color: '#e2e8f0' }}>
+          <div style={{ background: 'rgba(6, 11, 28, 0.88)', border: `1px solid ${race.auraColor || '#00eaff'}`, borderRadius: '999px', padding: '3px 9px', fontSize: '9.5px', fontWeight: 700, color: '#e2e8f0' }}>
             {race.name}
           </div>
         </div>
         <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 8, display: 'flex', gap: '5px', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '64%' }}>
+          {onUploadPhotoForAvatar && (
+            <label
+              style={{
+                background: 'rgba(6, 11, 28, 0.9)', border: '1px solid rgba(16, 185, 129, 0.65)',
+                color: '#6ee7b7', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
+                fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
+              }}
+              title="Adaptar colores y estilo del avatar 3D desde una foto"
+            >
+              <Camera size={11} /> FOTO 3D
+              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={onUploadPhotoForAvatar} />
+            </label>
+          )}
           <button
             type="button"
             onClick={onToggleGender}
             style={{
-              background: 'rgba(6, 11, 28, 0.84)', border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
+              background: 'rgba(6, 11, 28, 0.9)', border: '1px solid rgba(var(--neon-primary-rgb), 0.55)',
               color: 'var(--neon-blue)', borderRadius: '999px', padding: '4px 8px', fontSize: '9.5px',
               fontFamily: 'Orbitron, sans-serif', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer'
             }}
@@ -2376,6 +1951,44 @@ function JrpgFantasyPortrait({
               Bono Pasivo Activo: +{passiveClassBonus} PWR • {classEvolution.bonus}
             </div>
             <div>{cls.passiveDesc}</div>
+          </div>
+        )}
+        {activeDna.photoAdapted && (
+          <div
+            style={{
+              marginTop: '6px',
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: '11px',
+              background: 'rgba(6, 15, 34, 0.92)',
+              border: '1px solid rgba(16, 185, 129, 0.42)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '8px',
+              fontSize: '11px',
+              color: '#cbd5e1',
+              cursor: 'default',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span style={{ color: '#6ee7b7', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <Camera size={12} /> Avatar sincronizado con tu foto {activeDna.silhouetteTag ? `(${activeDna.silhouetteTag})` : ''}
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              {[
+                { label: 'Piel', hex: activeDna.skinTone },
+                { label: 'Pelo', hex: activeDna.hairColor },
+                { label: 'Coraza', hex: activeDna.armorColor },
+                { label: 'Aura', hex: activeDna.auraColor },
+              ].map((sw) => (
+                <span key={sw.label} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10px' }}>
+                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: sw.hex, border: '1px solid rgba(255,255,255,0.45)', display: 'inline-block' }} />
+                  {sw.label}
+                </span>
+              ))}
+            </span>
           </div>
         )}
       </div>
@@ -2464,119 +2077,7 @@ function JrpgFantasyPortrait({
   );
 }
 
-// ============================================================================
-// RETRATO 3D EN TIEMPO REAL PARA PERSONAJES DE NOVELA VISUAL
-// ============================================================================
-function VisualNovelAlly3DMesh({ char, affectionPoints }) {
-  const groupRef = useRef();
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(t * 0.9) * 0.28;
-      groupRef.current.position.y = -0.35 + Math.sin(t * 2.1) * 0.03;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* Busto / Atuendo del personaje */}
-      <mesh position={[0, 0.1, 0]}>
-        <cylinderGeometry args={[0.32, 0.42, 0.68, 24]} />
-        <meshStandardMaterial color={char.outfitColor} metalness={0.45} roughness={0.35} />
-      </mesh>
-      {/* Detalle dorado / rúnico del cuello */}
-      <mesh position={[0, 0.42, 0.04]} rotation={[0.2, 0, 0]}>
-        <torusGeometry args={[0.24, 0.025, 10, 28]} />
-        <meshStandardMaterial color={char.trimColor} metalness={0.9} roughness={0.2} />
-      </mesh>
-      {/* Gema pectoral de afinidad */}
-      <mesh position={[0, 0.22, 0.34]}>
-        <octahedronGeometry args={[0.075, 0]} />
-        <meshStandardMaterial
-          color={affectionPoints >= 70 ? '#fb7185' : char.glowColor}
-          emissive={affectionPoints >= 70 ? '#fb7185' : char.glowColor}
-          emissiveIntensity={2.2}
-        />
-      </mesh>
-      {/* Cuello y Cabeza */}
-      <mesh position={[0, 0.54, 0]}>
-        <cylinderGeometry args={[0.1, 0.12, 0.2, 16]} />
-        <meshStandardMaterial color="#fed7aa" roughness={0.45} />
-      </mesh>
-      <mesh position={[0, 0.82, 0]}>
-        <sphereGeometry args={[0.28, 28, 24]} />
-        <meshStandardMaterial color="#ffedd5" roughness={0.4} />
-      </mesh>
-      {/* Ojos expresivos */}
-      {[-0.095, 0.095].map((ex, idx) => (
-        <mesh key={idx} position={[ex, 0.83, 0.25]}>
-          <sphereGeometry args={[0.035, 14, 14]} />
-          <meshStandardMaterial color={char.eyeColor} emissive={char.eyeColor} emissiveIntensity={1.6} />
-        </mesh>
-      ))}
-      {/* Cabello 3D del personaje */}
-      <mesh position={[0, 0.9, -0.02]}>
-        <sphereGeometry args={[0.3, 24, 20, 0, Math.PI * 2, 0, Math.PI * 0.65]} />
-        <meshStandardMaterial color={char.hairColor} roughness={0.45} />
-      </mesh>
-      <mesh position={[0, 0.46, -0.18]}>
-        <boxGeometry args={[0.52, 0.78, 0.16]} />
-        <meshStandardMaterial color={char.hairColor} roughness={0.48} />
-      </mesh>
-    </group>
-  );
-}
-
-function VisualNovel3DPortrait({ char, affectionLabel, affectionColor, affectionPoints }) {
-  return (
-    <div
-      style={{
-        borderRadius: '14px',
-        overflow: 'hidden',
-        border: '1.5px solid #fb7185',
-        boxShadow: '0 0 24px rgba(251, 113, 133, 0.28)',
-        background: 'radial-gradient(circle at 50% 35%, #2e1065 0%, #090d1e 75%)',
-        position: 'relative',
-        height: '340px',
-      }}
-    >
-      <Canvas camera={{ position: [0, 0.55, 2.75], fov: 40 }} dpr={[1, 2]}>
-        <ambientLight intensity={0.75} />
-        <directionalLight position={[2, 4, 3]} intensity={1.3} />
-        <pointLight position={[-1.5, 1.5, 1.5]} intensity={2} color={char.glowColor || '#fb7185'} />
-        <VisualNovelAlly3DMesh char={char} affectionPoints={affectionPoints} />
-        <DreiSparkles
-          count={affectionPoints >= 70 ? 32 : 14}
-          scale={[1.8, 1.8, 1.8]}
-          size={2.2}
-          speed={0.4}
-          color={affectionPoints >= 70 ? '#fb7185' : char.glowColor}
-        />
-        <OrbitControls target={[0, 0.28, 0]} enablePan={false} enableZoom={false} minPolarAngle={Math.PI / 3} maxPolarAngle={Math.PI / 1.8} />
-      </Canvas>
-
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'linear-gradient(0deg, rgba(4,6,12,0.97) 0%, rgba(4,6,12,0.82) 75%, transparent 100%)',
-          padding: '16px 12px 10px',
-          pointerEvents: 'none',
-        }}
-      >
-        <div className="font-souls" style={{ fontSize: '16px', fontWeight: 900, color: '#fff' }}>{char.name}</div>
-        <div style={{ fontSize: '11px', color: '#fda4af' }}>{char.role}</div>
-        <div style={{ marginTop: '5px' }}>
-          <span className="sys-badge" style={{ background: 'rgba(251,113,133,0.2)', color: affectionColor, border: `1px solid ${affectionColor}` }}>
-            {affectionLabel} ({affectionPoints} pts)
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+// (VisualNovel3DPortrait y VisualNovelAlly3DMesh importados desde ./components/StylizedAvatars3D)
 
 // ============================================================================
 // MAPA 2D INTERACTIVO DE LA CIUDAD
@@ -2887,8 +2388,34 @@ function AuthPortal({ onAuthenticated }) {
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [hunterTagInput, setHunterTagInput] = useState('');
+  const [regPhotoPreview, setRegPhotoPreview] = useState(null);
+  const [regPhotoDna, setRegPhotoDna] = useState(null);
+  const [photoStatusMsg, setPhotoStatusMsg] = useState('');
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleRegisterPhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoStatusMsg('Analizando paleta y rasgos localmente...');
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const rawDataUrl = String(ev.target?.result || '');
+      if (!rawDataUrl) return;
+      try {
+        const { photoDna, safePreviewUrl } = await extractPhotoDnaFromDataUrl(rawDataUrl, {
+          gender: 'male',
+          applyPrivacyVisor: true,
+        });
+        setRegPhotoDna(photoDna);
+        setRegPhotoPreview(safePreviewUrl);
+        setPhotoStatusMsg(`Avatar adaptado (${photoDna.silhouetteTag})`);
+      } catch {
+        setPhotoStatusMsg('No se pudo procesar esta imagen. Prueba otra foto.');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
@@ -2915,6 +2442,8 @@ function AuthPortal({ onAuthenticated }) {
           passHash,
           hunterName: (hunterTagInput.trim() || cleanEmail.split('@')[0] || 'CAZADOR_01').toUpperCase(),
           hunterCode: `#PEX-${Math.floor(1000 + Math.random() * 8999)}`,
+          initialPhotoDna: regPhotoDna || null,
+          initialPhotoPreview: regPhotoPreview || null,
           createdAt: new Date().toISOString()
         };
         usersDb[cleanEmail] = newAccount;
@@ -2974,15 +2503,73 @@ function AuthPortal({ onAuthenticated }) {
 
         <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {authMode === 'register' && (
-            <div>
-              <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>NOMBRE CLAVE DE CAZADOR</label>
-              <input
-                className="sys-input"
-                placeholder="Ej: ORIGEN / AKIRA"
-                value={hunterTagInput}
-                onChange={(e) => setHunterTagInput(e.target.value)}
-              />
-            </div>
+            <>
+              <div>
+                <label style={{ fontSize: '11px', color: '#fbbf24', fontWeight: 700 }}>NOMBRE CLAVE DE CAZADOR</label>
+                <input
+                  className="sys-input"
+                  placeholder="Ej: ORIGEN / AKIRA"
+                  value={hunterTagInput}
+                  onChange={(e) => setHunterTagInput(e.target.value)}
+                />
+              </div>
+
+              <div
+                style={{
+                  padding: '12px',
+                  borderRadius: '12px',
+                  border: '1px dashed rgba(0, 234, 255, 0.45)',
+                  background: 'rgba(0, 234, 255, 0.05)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', color: '#00eaff', fontWeight: 700 }}>
+                      FOTO PARA ADAPTAR TU AVATAR 3D (OPCIONAL)
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      Extrae piel, cabello, armadura y aura en tu dispositivo.
+                    </div>
+                  </div>
+                  <label
+                    className="sys-btn sys-btn-ghost"
+                    style={{ padding: '7px 10px', fontSize: '10px', cursor: 'pointer' }}
+                  >
+                    <Camera size={13} color="#00eaff" /> {regPhotoPreview ? 'CAMBIAR FOTO' : 'SUBIR FOTO'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleRegisterPhotoSelect} />
+                  </label>
+                </div>
+
+                {regPhotoPreview && regPhotoDna && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(148,163,184,0.2)' }}>
+                    <img
+                      src={regPhotoPreview}
+                      alt="Vista previa de avatar"
+                      style={{ width: '54px', height: '54px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #00eaff' }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '11px', color: '#6ee7b7', fontWeight: 700 }}>{photoStatusMsg}</div>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px', fontSize: '10px', color: '#cbd5e1' }}>
+                        {[
+                          { k: 'Piel', hex: regPhotoDna.skinTone },
+                          { k: 'Pelo', hex: regPhotoDna.hairColor },
+                          { k: 'Coraza', hex: regPhotoDna.armorColor },
+                          { k: 'Aura', hex: regPhotoDna.auraColor },
+                        ].map((s) => (
+                          <span key={s.k} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: s.hex, border: '1px solid #fff', display: 'inline-block' }} />
+                            {s.k}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!regPhotoPreview && photoStatusMsg && (
+                  <div style={{ fontSize: '11px', color: '#fbbf24', marginTop: '6px' }}>{photoStatusMsg}</div>
+                )}
+              </div>
+            </>
           )}
 
           <div>
@@ -4548,8 +4135,10 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     squatKg: 0,
     deadliftKg: 0,
     pushupsMax: 0,
-    photoScanned: false,
-    censoredPreview: null,
+    photoScanned: Boolean(currentUser.initialPhotoPreview || currentUser.initialPhotoDna),
+    censoredPreview: currentUser.initialPhotoPreview || null,
+    photoDna: currentUser.initialPhotoDna || null,
+    usePhotoAdaptation: true,
   });
 
   useEffect(() => {
@@ -5795,12 +5384,31 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const safeDataUrl = String(ev.target?.result || '');
       if (!safeDataUrl) return;
-      if (target === 'onboarding') {
-        setProfile((p) => ({ ...p, photoScanned: true, censoredPreview: safeDataUrl }));
-        triggerToast('[SISTEMA] Fotografía escaneada y protegida con escudo local AES-256.');
+      if (target === 'onboarding' || target === 'avatar_sync') {
+        try {
+          const { photoDna, safePreviewUrl } = await extractPhotoDnaFromDataUrl(safeDataUrl, {
+            gender: profile.gender || 'male',
+            applyPrivacyVisor: true,
+          });
+          setProfile((p) => ({
+            ...p,
+            photoScanned: true,
+            censoredPreview: safePreviewUrl,
+            photoDna,
+            usePhotoAdaptation: true,
+            avatar3d:
+              target === 'avatar_sync'
+                ? { ...(p.avatar3d || {}), hairColor: '', armorColor: '', eyeColor: '', hairStyle: '' }
+                : p.avatar3d,
+          }));
+          triggerToast(`[SISTEMA] Avatar 3D adaptado a tu fotografía (${photoDna.silhouetteTag}).`);
+        } catch {
+          setProfile((p) => ({ ...p, photoScanned: true, censoredPreview: safeDataUrl }));
+          triggerToast('[SISTEMA] Fotografía escaneada y protegida con escudo local AES-256.');
+        }
       } else if (target === 'front' || target === 'back') {
         setVaultPhotos((v) => ({ ...v, [target]: safeDataUrl }));
         triggerToast(`[BÓVEDA] Captura ${target === 'front' ? 'frontal' : 'dorsal'} cifrada sin rostro.`);
@@ -6139,9 +5747,38 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               </label>
 
               {profile.censoredPreview && (
-                <div style={{ margin: '0 auto' }}>
+                <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                   <img src={profile.censoredPreview} alt="Escaneo seguro" style={{ width: '130px', borderRadius: '10px', border: '1px solid #fbbf24' }} />
-                  <div style={{ fontSize: '11px', color: '#10b981', marginTop: '4px' }}>✓ Biometría verificada y protegida</div>
+                  <div style={{ fontSize: '11px', color: '#10b981' }}>✓ Biometría verificada y protegida</div>
+                  {profile.photoDna && (
+                    <div
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '10px',
+                        background: 'rgba(0, 234, 255, 0.08)',
+                        border: '1px solid rgba(0, 234, 255, 0.35)',
+                        fontSize: '11px',
+                        color: '#e2e8f0',
+                      }}
+                    >
+                      <div style={{ color: '#00eaff', fontWeight: 700, marginBottom: '4px' }}>
+                        Rasgos extraídos para tu Avatar 3D ({profile.photoDna.silhouetteTag})
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        {[
+                          { k: 'Piel', hex: profile.photoDna.skinTone },
+                          { k: 'Cabello', hex: profile.photoDna.hairColor },
+                          { k: 'Armadura', hex: profile.photoDna.armorColor },
+                          { k: 'Aura', hex: profile.photoDna.auraColor },
+                        ].map((sw) => (
+                          <span key={sw.k} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px' }}>
+                            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: sw.hex, border: '1px solid #fff', display: 'inline-block' }} />
+                            {sw.k}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -6775,6 +6412,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
               classEvolution={classEvolution}
               gender={profile.gender || 'male'}
               onToggleGender={() => setProfile((p) => ({ ...p, gender: p.gender === 'female' ? 'male' : 'female' }))}
+              onUploadPhotoForAvatar={(e) => handleSecurePhotoUpload(e, 'avatar_sync')}
               passiveClassBonus={passiveClassBonus}
               unlockedInventory={unlockedInventory}
               neonTheme={neonTheme}
@@ -10377,11 +10015,58 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                 style={{ padding: '6px 10px', fontSize: '10px' }}
                 onClick={() => {
                   setProfile((p) => ({ ...p, avatar3d: {}, hunterTitle: 'Cazador Despertado' }));
-                  triggerToast('[AVATAR 3D] Apariencia restaurada a valores de linaje.');
+                  triggerToast('[AVATAR 3D] Apariencia restaurada a valores de foto/linaje.');
                 }}
               >
                 <RotateCcw size={12} /> RESTAURAR BASE
               </button>
+            </div>
+
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '12px',
+                background: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                marginBottom: '14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: '#6ee7b7' }}>
+                  ADAPTACIÓN AUTOMÁTICA DESDE TU FOTOGRAFÍA
+                </div>
+                <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '2px' }}>
+                  {profile.photoDna
+                    ? `Activa (${profile.photoDna.silhouetteTag}) — Piel, cabello, armadura y aura sincronizados.`
+                    : 'Sube una fotografía para adaptar automáticamente los colores y proporciones de tu avatar 3D.'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {profile.photoDna && (
+                  <button
+                    type="button"
+                    className={`sys-btn ${profile.usePhotoAdaptation !== false ? 'sys-btn-primary' : 'sys-btn-ghost'}`}
+                    style={{ padding: '6px 10px', fontSize: '10px' }}
+                    onClick={() =>
+                      setProfile((p) => ({
+                        ...p,
+                        usePhotoAdaptation: p.usePhotoAdaptation === false,
+                      }))
+                    }
+                  >
+                    {profile.usePhotoAdaptation !== false ? 'FOTO ACTIVA' : 'ACTIVAR FOTO'}
+                  </button>
+                )}
+                <label className="sys-btn sys-btn-gold" style={{ padding: '6px 10px', fontSize: '10px', cursor: 'pointer' }}>
+                  <Camera size={12} /> {profile.photoDna ? 'ACTUALIZAR FOTO' : 'SUBIR FOTO'}
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleSecurePhotoUpload(e, 'avatar_sync')} />
+                </label>
+              </div>
             </div>
 
             <div className="grid-2" style={{ marginBottom: '12px' }}>
@@ -10412,7 +10097,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     }))
                   }
                 >
-                  <option value="">Automático por Linaje</option>
+                  <option value="">Automático (Foto / Linaje)</option>
                   <option value="spiky">Puntiagudo Shōnen</option>
                   <option value="layered">Capas Tácticas</option>
                   <option value="long">Melena Larga</option>
@@ -10447,7 +10132,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     Coraza:
                     <input
                       type="color"
-                      value={profile.avatar3d?.armorColor || '#0f172a'}
+                      value={profile.avatar3d?.armorColor || profile.photoDna?.armorColor || '#0f172a'}
                       onChange={(e) =>
                         setProfile((p) => ({
                           ...p,
@@ -10460,7 +10145,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     Ojos:
                     <input
                       type="color"
-                      value={profile.avatar3d?.eyeColor || '#00eaff'}
+                      value={profile.avatar3d?.eyeColor || profile.photoDna?.eyeColor || '#00eaff'}
                       onChange={(e) =>
                         setProfile((p) => ({
                           ...p,
@@ -10473,7 +10158,7 @@ function HunterSystemWorkspace({ currentUser, onDeleteAccount }) {
                     Cabello:
                     <input
                       type="color"
-                      value={profile.avatar3d?.hairColor || '#0b0f19'}
+                      value={profile.avatar3d?.hairColor || profile.photoDna?.hairColor || '#0b0f19'}
                       onChange={(e) =>
                         setProfile((p) => ({
                           ...p,
